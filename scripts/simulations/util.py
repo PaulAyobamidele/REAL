@@ -15,9 +15,9 @@ import os
 import mlflow
 from tqdm import tqdm
 
-os.environ["MLFLOW_TRACKING_URI"] = "http://127.0.0.1:5000"
+os.environ.setdefault("MLFLOW_TRACKING_URI", "http://127.0.0.1:5000")
 # # Set our tracking server uri for logging
-mlflow.set_tracking_uri(uri="http://127.0.0.1:5000")
+mlflow.set_tracking_uri(uri=os.environ["MLFLOW_TRACKING_URI"])
 
 
 def get_scenic_script(param_dict, template):
@@ -120,7 +120,16 @@ class falsifier:
         return fitness
     
 
+SCRATCH_TEMPLATE = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'scenarios', 'scratch.temp')
+
+
 def evaluate(ind, dummy):
+    # Live call site: scripts.evolve.ge::start_ge(sample=False), the full DEAP/GRAPE
+    # evolutionary loop (toolbox.evaluate). Safety margin here is dist - 5 (see
+    # MyMonitor.evaluate above). scripts/evolve/util.py's evaluate() is a separate,
+    # differently-parameterised (dist - 2) implementation used by api_app.py's
+    # /validate route via its own `falsifier` directly - do not conflate results
+    # from the two in MLflow without checking which evaluate() produced them.
 
     # mlflow.end_run()
 
@@ -141,7 +150,7 @@ def evaluate(ind, dummy):
         # Substitute each {key : value} with just the value
         rule = re.sub(r'\{\s*(\w+)\s*:\s*([\w\.\d]+)\s*\}', replace_with_value, text)
 
-        code = get_scenic_script(param_dict, '/home/darkaengl/Project/REAL/scripts/scenarios/scratch.temp')
+        code = get_scenic_script(param_dict, SCRATCH_TEMPLATE)
 
         f = falsifier(code)
         fitness = f.falsify(num_test=5)
