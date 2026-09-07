@@ -37,23 +37,9 @@ def get_testcases(requirement: str = None):
     dsl = DSL(requirement)
     scenario = dsl.get_scenario()
     testcases = start_ge(sample=True)
-    
-
-    try: 
-        return {"testcases" : testcases, "STATUS" : "OK"}
-    except Exception as e:
-        return {"error" : str(e), "STATUS" : "NOT OK"}
 
 
-@app.get("/get_testcases")
-def get_testcases(requirement: str = None):
-
-    dsl = DSL(requirement)
-    scenario = dsl.get_scenario()
-    testcases = start_ge(sample=True)
-    
-
-    try: 
+    try:
         return {"testcases" : testcases, "STATUS" : "OK"}
     except Exception as e:
         return {"error" : str(e), "STATUS" : "NOT OK"}
