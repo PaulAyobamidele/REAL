@@ -128,6 +128,16 @@ class falsifier:
 
 
 def evaluate(ind, dummy):
+    # BROKEN / UNUSED - do not call.
+    # Not reachable from any live code path: api_app.py's /validate route
+    # instantiates this module's `falsifier` directly (correctly passing the
+    # required `port` arg), it does not call this function. If invoked, this
+    # function itself would fail: it calls falsifier(code) with only one
+    # argument against a constructor that requires (code, port), and even if
+    # that were fixed, it references fitness['pct'], a key falsify() in this
+    # file never sets. Margin here would be dist - 2 (see MyMonitor.evaluate
+    # above) if it worked - distinct from scripts/simulations/util.py's
+    # evaluate(), whose margin is dist - 5 and which the real GE loop uses.
 
     # mlflow.end_run()
 
