@@ -208,3 +208,9 @@ __marimo__/
 
 
 infra/db_data/*
+
+# Committed secrets (see REAL obstacle log): these were found live-committed
+# and are treated as compromised. Untracked going forward so this doesn't
+# recur - existing git history is left alone (separate, higher-risk decision).
+infra/credentials.json
+infra/config.env
