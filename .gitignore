@@ -214,3 +214,7 @@ infra/db_data/*
 # recur - existing git history is left alone (separate, higher-risk decision).
 infra/credentials.json
 infra/config.env
+
+# mlserver/Prometheus local metrics store - not real experiment data, just
+# runtime state from whoever last ran mlserver locally on this machine.
+scripts/mlops/yolo_models/.metrics/
