@@ -1,9 +1,7 @@
-version: "3.3"
-
 services:
   db:
     restart: always
-    image: postgres
+    image: postgres:16
     container_name: mlflow_db
     expose:
       - "${PG_PORT}"
