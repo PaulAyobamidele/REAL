@@ -218,3 +218,41 @@ infra/config.env
 # mlserver/Prometheus local metrics store - not real experiment data, just
 # runtime state from whoever last ran mlserver locally on this machine.
 scripts/mlops/yolo_models/.metrics/
+# Runtime data — never commit
+mlruns/
+infra/minio_data/
+infra/postgres_data/
+infra/redis_data/
+
+# Caches
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Runtime data — never commit
+mlruns/
+infra/minio_data/
+infra/postgres_data/
+infra/redis_data/
+
+# Caches
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Runtime data — never commit
+mlruns/
+infra/minio_data/
+infra/postgres_data/
+infra/redis_data/
+
+# Caches
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
