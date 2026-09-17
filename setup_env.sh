@@ -108,7 +108,7 @@ echo_msg "Installing requests for API"
 pip install requests
 
 echo_msg "Installing carla python API"
-pip install carla
+pip install carla==0.9.13
 
 echo_msg "Installing VerifAI"
 pip install -e ./VerifAI/
