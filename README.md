@@ -42,7 +42,7 @@ REAL is a requirements engineering platform for adaptive learning that bridges t
 
 - Python 3.8+
 - Redis Server
-- CARLA Simulator (0.9.15)
+- CARLA Simulator (0.9.13)
 - Docker (optional)
 
 ### Installation
