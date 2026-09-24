@@ -1,6 +1,9 @@
+import os
 import scenic
 from scenic.simulators.carla import CarlaSimulator
 import warnings
+
+from real_config import settings
 
 warnings.filterwarnings('ignore')
 
@@ -10,11 +13,14 @@ def evaluate(code : str = None):
                                             model='scenic.simulators.carla.model',
                                             mode2D=True)
     else:
-        scenario = scenic.scenarioFromFile('/home/darkaengl/Project/REAL/scripts/scenarios/sc-1.scenic',
+        default_scenario = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), '..', 'scenarios', 'sc-1.scenic'
+        )
+        scenario = scenic.scenarioFromFile(default_scenario,
                                         model='scenic.simulators.carla.model',
                                         mode2D=True)
-    carla_map_path = '/opt/carla/CarlaUE4/Content/Carla/Maps/OpenDrive/Town01.xodr'
-    carla_map = 'Town01'
+    carla_map_path = settings.carla_map_path
+    carla_map = settings.carla_map_name
     scene, _ = scenario.generate()
     simulator = CarlaSimulator(carla_map=carla_map, map_path=carla_map_path, render=True)
     simulation = simulator.simulate(scene, maxSteps=1000)

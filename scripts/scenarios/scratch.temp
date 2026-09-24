@@ -5,6 +5,9 @@ import time
 import os
 import sys
 import random
+import cv2
+
+from scripts.analysis import telemetry
 
 # Define the weather conditions
 weather = {
@@ -16,8 +19,8 @@ weather = {
 }
 
 # Apply the weather conditions to the scenario
-param map = localPath('/opt/carla/CarlaUE4/Content/Carla/Maps/OpenDrive/Town01.xodr')
-param carla_map = 'Town01'
+param map = localPath('<carla_map_path>')
+param carla_map = '<carla_map_name>'
 model scenic.simulators.carla.model  # Here the definitions of all referenceables are defined (vehicle types, road library, etc) 
 import scenic.simulators.carla as carla_simulator
 param weather = weather
@@ -29,6 +32,8 @@ SAFETY_DISTANCE = 10
 BRAKE_INTENSITY = 1.0
 PEDESTRIAN_MIN_SPEED = 2.0
 THRESHOLD = 8
+DETECTION_CONFIDENCE = 0.85   # full braking above this (baseline / paper MLSv1)
+CAUTION_CONFIDENCE = 0.30     # proportional braking starts here (paper M4)
 
 # SENSOR ATTRIBUTES
 attrs = {"image_size_x": 640,
@@ -39,12 +44,42 @@ lane = Uniform(*network.lanes)
 spot = new OrientedPoint on lane.centerline
 vending_spot = new OrientedPoint following roadDirection from spot for -3
 
-behavior Exp_EgoBehaviour():
-    try:
-        do FollowLaneBehavior(target_speed = EGO_SPEED)
-    interrupt when checkPedestrianDectectedFlag(ego.observations["front_rgb"], pedestrian.position, ego.position):
-        #print('yolo emergency braking')
-        take YoloEmergencyBraking()
+_perception = {"step": -1, "confidence": 0.0}
+
+def perceive(observations):
+    # Same detector call as checkPedestrianDectectedFlag in the vendored
+    # driving model (YOLO class 0 = person), but it returns the highest person
+    # confidence (0.0 if none) instead of a yes/no, runs YOLO at most once per
+    # simulation step (cached - the braking behaviours below may ask twice),
+    # and logs confidence + inference time for EVERY frame to the telemetry
+    # log so failure analysis can see why the car did or did not brake.
+    step = simulation().currentTime
+    if _perception["step"] == step:
+        return _perception["confidence"]
+    confidence = 0.0
+    if observations is not None:
+        resized_frame = cv2.resize(observations, (640, 640))
+        t0 = time.time()
+        results = yolo_model(resized_frame)
+        inference_ms = (time.time() - t0) * 1000
+        df = results.pandas().xyxy[0]
+        persons = df[df["class"] == 0]
+        confidence = float(persons["confidence"].max()) if not persons.empty else 0.0
+        telemetry.log_detection(step=step, confidence=confidence,
+                                inference_ms=inference_ms, ego_speed=ego.speed,
+                                dist_m=ego.position.distanceTo(pedestrian.position))
+    _perception["step"] = step
+    _perception["confidence"] = confidence
+    return confidence
+
+def brake_now(brake):
+    telemetry.log_brake(step=simulation().currentTime, brake=brake, ego_speed=ego.speed,
+                        dist_m=ego.position.distanceTo(pedestrian.position))
+
+# Filled by scripts/simulations/util.py::build_scenario from the braking module
+# the requirement names after "performed by": emergency_braking (the baseline)
+# or proportional_braking (paper M4). See BRAKING_BEHAVIOURS there.
+<ego_behavior>
 
 behavior PedestrianBehavior(min_speed=1, threshold=THRESHOLD):
     do CrossingBehavior(ego, min_speed, threshold)
@@ -70,7 +105,11 @@ ego = new Car following roadDirection from spot for -15,
 
 # RECORDING SETUP
 record ego.observations["front_rgb"] as "front_rgb"
-require monitor RecordingMonitor(ego, path=localPath(f"/home/darkaengl/Project") , recording_start=5, subsample=2)
+# Time series read back by MyMonitor (scripts/simulations/util.py) for the
+# failure-analysis log.
+record ego.speed as "ego_speed"
+record (distance from ego to pedestrian) as "pedestrian_distance"
+<recording_statement>
 
 # REQUIREMENTS
 require (distance to intersection) > 30

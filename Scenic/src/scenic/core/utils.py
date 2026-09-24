@@ -10,6 +10,7 @@ import os
 import signal
 from subprocess import CalledProcessError
 import sys
+import types
 import typing
 import warnings
 import weakref

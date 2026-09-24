@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "run_id": "882fb2fe00bf4568bdb480a281db9e8b",
+  "round": 2,
+  "parent_run_id": "35acc09e8c224fdc953e3bf82ba57e96",
+  "reviewer": "Claude (proposed - to be confirmed by Paul)",
+  "decided_at": "2026-09-23T22:40:10.827819+00:00",
+  "obstacles": {
+    "PedestrianSizeTooSmall": {
+      "verdict": "reject",
+      "renamed_to": null,
+      "status": "absent",
+      "tool_verdict": "not_supported",
+      "evidence": "failure rate 5% with vs 2% without (effect +3%, n=63)",
+      "reason": "Not supported in either round (+8%, +3%). Children were detected in nearly every encounter in this set-up; the paper's E1 finding does not reproduce here (different camera geometry / distances).",
+      "mitigation": null,
+      "options": [
+        {
+          "layer": "data",
+          "action": "Fine-tune the detector on child-pedestrian images (paper M2: collision rate 100% -> 0% in nominal weather)."
+        },
+        {
+          "layer": "model",
+          "action": "Use a larger detector (YOLOv5m) - more accurate but slower; the paper (M1) saw latency-induced late braking at short distance."
+        },
+        {
+          "layer": "system",
+          "action": "Proportional braking from 30% confidence, full braking above 85% (paper M4: child collisions 100% -> 8%)."
+        },
+        {
+          "layer": "requirement",
+          "action": "State a minimum detectable pedestrian size / distance in the requirement's domain assumptions."
+        }
+      ]
+    },
+    "PedestrianClothingNotVisible": {
+      "verdict": "accept",
+      "renamed_to": null,
+      "status": "resolved",
+      "tool_verdict": "not_supported",
+      "evidence": "failure rate 3% with vs 3% without (effect +0%, n=64)",
+      "reason": "Supported in round 1 (dark dress +15%, just over the bar), not in round 2 (0%). Consistent with dark clothing delaying the 0.85 confidence crossing under emergency braking; the timing floor was the mechanism. Resolved for now, keep the name.",
+      "mitigation": null,
+      "options": [
+        {
+          "layer": "data",
+          "action": "Add low-contrast / cluttered-background pedestrian samples."
+        },
+        {
+          "layer": "model",
+          "action": "Lower the confidence threshold only when other cues agree (risk: more unnecessary braking)."
+        },
+        {
+          "layer": "system",
+          "action": "Confidence-aware cautious braking (paper M4)."
+        },
+        {
+          "layer": "requirement",
+          "action": "Make the contrast/visibility assumption explicit in the ODD."
+        }
+      ]
+    },
+    "AdverseWeather": {
+      "verdict": "reject",
+      "renamed_to": null,
+      "status": "absent",
+      "tool_verdict": "not_supported",
+      "evidence": "failure rate 3% with vs 3% without (effect +1%, n=58)",
+      "reason": "Not supported in either round (-9%, +1%). 50% fog did not reduce detection in this set-up; the paper's E4 finding does not reproduce here.",
+      "mitigation": null,
+      "options": [
+        {
+          "layer": "data",
+          "action": "Fine-tune with foggy scenes (paper M2: braking success in fog 0% -> 100%)."
+        },
+        {
+          "layer": "model",
+          "action": "Weather-conditioned confidence threshold."
+        },
+        {
+          "layer": "system",
+          "action": "Redundant sensing (radar/lidar) or speed reduction in low visibility."
+        },
+        {
+          "layer": "requirement",
+          "action": "Either add 'fog density <= N' to the ODD (scoping) or keep the requirement and demand the data/system fix."
+        }
+      ]
+    },
+    "DetectionTooLate": {
+      "verdict": "accept",
+      "renamed_to": null,
+      "status": "resolved",
+      "tool_verdict": "insufficient_data",
+      "evidence": "1 of 4 failures (25%)",
+      "reason": "Real in round 1 (70 of 91 failures: first brake at ~7 m while doing 7.2 m/s, needs ~8 m). Resolved by proportional braking in round 2 (1 of 4). Keep as a named obstacle; re-check if the braking mode changes again.",
+      "mitigation": null,
+      "options": [
+        {
+          "layer": "data",
+          "action": "Fine-tune on distant / small pedestrian instances so confidence rises earlier."
+        },
+        {
+          "layer": "model",
+          "action": "A more sensitive detector, or a lower confidence bar with a second cue (risk: unnecessary braking)."
+        },
+        {
+          "layer": "system",
+          "action": "Proportional braking from 30% confidence, full braking above 85% (paper M4) - the car starts slowing while the detector is still unsure."
+        },
+        {
+          "layer": "requirement",
+          "action": "State the approach-speed / minimum detection-distance assumption in the ODD (e.g. assuming \"ego_speed <= 5\"), or specify a time-to-brake bound."
+        },
+        {
+          "layer": "scenario",
+          "action": "The approach speed (EGO_SPEED = 7.5 m/s) and spawn distance are fixed constants of scratch.temp, not grammar parameters - the grid cannot vary them. Consider making speed a scenario parameter."
+        }
+      ]
+    },
+    "BrakingNotLatched": {
+      "verdict": "defer",
+      "renamed_to": null,
+      "status": "absent",
+      "tool_verdict": "insufficient_data",
+      "evidence": "1 of 4 failures (25%)",
+      "reason": "17 of 91 failures in round 1 (19%, under the 25% bar), 1 of 4 in round 2. Too few events this round to judge; the per-frame trigger is still in the code, so revisit once the standoff is fixed and failures are measurable again.",
+      "mitigation": null,
+      "options": [
+        {
+          "layer": "system",
+          "action": "Latch the brake once triggered until the car has stopped or the pedestrian is confirmed clear; add a short detection memory (tracking)."
+        },
+        {
+          "layer": "requirement",
+          "action": "Specify braking as a state (\"once a pedestrian is detected, keep braking until stopped\"), not as a per-frame reaction."
+        }
+      ]
+    },
+    "StandoffUnnecessaryStop": {
+      "verdict": "accept",
+      "renamed_to": null,
+      "status": "persisting",
+      "tool_verdict": "supported",
+      "evidence": "113 of 124 passes (91%)",
+      "reason": "113 of 124 passes: the car halts 9-14 m short of the pedestrian and never resumes until the time limit. Safety goal holds, progress does not. The requirement never asked the car to keep moving, so the mitigation optimised that away. Partly a scenario artefact (8 m crossing trigger) - see scope.",
+      "mitigation": {
+        "layer": "requirement",
+        "action": "Add the soft goal explicitly (e.g. 'resume within N s once the path is clear') and state the domain assumption that pedestrians cross only when the vehicle is within/beyond a given distance."
+      },
+      "options": [
+        {
+          "layer": "model",
+          "action": "Raise the caution threshold only when the pedestrian is stationary and off the road (needs a track, not a per-frame confidence)."
+        },
+        {
+          "layer": "system",
+          "action": "Time-box the cautious stop: creep forward / resume when the pedestrian has not moved toward the road for N seconds; distinguish 'pedestrian at kerb' from 'pedestrian crossing'."
+        },
+        {
+          "layer": "requirement",
+          "action": "Add the soft goal explicitly (e.g. 'resume within N s once the path is clear') and state the domain assumption that pedestrians cross only when the vehicle is within/beyond a given distance."
+        },
+        {
+          "layer": "scenario",
+          "action": "Fix the test: let the pedestrian cross on its own schedule (time- or distance-to-crossing-based), not only once the car is within 8 m (CrossingBehavior threshold in scratch.temp) - otherwise a cautious car can never be measured getting past."
+        }
+      ]
+    }
+  },
+  "scope": {
+    "artefact:crossing_trigger_8m": {
+      "verdict": "scenario_defect",
+      "kind": "artefact",
+      "evidence": "passed_stalled = 113",
+      "description": "The pedestrian's CrossingBehavior only steps out once the car is within THRESHOLD = 8 m (scratch.temp). A car that stops cautiously before that never gets to see the crossing happen: a standoff that is a property of the test, not of the system - it makes StandoffUnnecessaryStop partly unmeasurable.",
+      "suggested_fix": "scratch.temp: trigger the crossing on a timer or on the pedestrian's own distance to the crossing point, not on proximity to the ego.",
+      "reason": "The pedestrian only steps out once the car is within 8 m (CrossingBehavior threshold). A car that stops cautiously before that is never tested for getting past - the standoff is largely the test's making. Fix the trigger before round 3 so the soft goal is measurable."
+    },
+    "artefact:no_encounter_geometry": {
+      "verdict": "scenario_defect",
+      "kind": "artefact",
+      "evidence": "n_no_encounter = 32",
+      "description": "Uniform lane choice + heading can place the ego driving away from the pedestrian, so the two never meet. These runs are excluded from the rates, but they waste ~25% of the simulation budget.",
+      "suggested_fix": "scratch.temp: choose the lane/spot so the ego approaches the crossing point; or reject such samples with a Scenic `require`.",
+      "reason": "40 of 160 (round 1) and 32 of 160 (round 2) simulations never brought the car near the pedestrian. Wasted budget; fix the lane/spot choice."
+    },
+    "artefact:distance_parameter_dead": {
+      "verdict": "scenario_defect",
+      "kind": "artefact",
+      "evidence": "n_scenarios = 32",
+      "description": "The grammar's `distance` (Short/Long) does not move the pedestrian in scratch.temp (position is a fixed random range; the angle depends only on direction). Its measured effect should be ~0 and any effect is noise.",
+      "suggested_fix": "scratch.temp: place the pedestrian from `distance` (as scenic_template.py's get_pedestrian_pos did), or drop the parameter from old.bnf.",
+      "reason": "The grammar's distance parameter does not move the pedestrian in scratch.temp; its measured effects (+7%, +3%) are noise by construction. Wire it to the pedestrian position or drop it."
+    }
+  },
+  "requirement_changes": [
+    {
+      "kind": "R",
+      "text": "ensuring \"vehicle resumes within 10 s once the crossing is clear\"",
+      "from": "StandoffUnnecessaryStop",
+      "layer": "requirement"
+    },
+    {
+      "kind": "D",
+      "text": "scratch.temp: trigger the crossing on a timer or on the pedestrian's own distance to the crossing point, not on proximity to the ego.",
+      "from": "artefact:crossing_trigger_8m",
+      "layer": "scenario"
+    },
+    {
+      "kind": "D",
+      "text": "scratch.temp: choose the lane/spot so the ego approaches the crossing point; or reject such samples with a Scenic `require`.",
+      "from": "artefact:no_encounter_geometry",
+      "layer": "scenario"
+    },
+    {
+      "kind": "D",
+      "text": "scratch.temp: place the pedestrian from `distance` (as scenic_template.py's get_pedestrian_pos did), or drop the parameter from old.bnf.",
+      "from": "artefact:distance_parameter_dead",
+      "layer": "scenario"
+    }
+  ]
+}

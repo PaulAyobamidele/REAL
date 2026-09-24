@@ -1,0 +1,2600 @@
+INFO:    Converting SIF file to temporary sandbox...
+2077750:C 21 Sep 07:30:39.154 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+2077750:C 21 Sep 07:30:39.154 # Redis version=4.0.9, bits=64, commit=00000000, modified=0, pid=2077750, just started
+2077750:C 21 Sep 07:30:39.154 # Configuration loaded
+[2026-09-21 07:30:40 -0400] [2077781] [INFO] Starting gunicorn 23.0.0
+[2026-09-21 07:30:40 -0400] [2077781] [INFO] Listening at: http://127.0.0.1:5000 (2077781)
+[2026-09-21 07:30:40 -0400] [2077781] [INFO] Using worker: sync
+[2026-09-21 07:30:40 -0400] [2077795] [INFO] Booting worker with pid: 2077795
+[2026-09-21 07:30:40 -0400] [2077799] [INFO] Booting worker with pid: 2077799
+[2026-09-21 07:30:40 -0400] [2077800] [INFO] Booting worker with pid: 2077800
+[2026-09-21 07:30:40 -0400] [2077801] [INFO] Booting worker with pid: 2077801
+chmod: changing permissions of '/home/carla/CarlaUE4/Binaries/Linux/CarlaUE4-Linux-Shipping': Read-only file system
+sh: 1: xdg-user-dir: not found
+4.26.2-0+++UE4+Release-4.26 522 0
+Disabling core dumps.
+INFO:     Started server process [2078218]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:7999 (Press CTRL+C to quit)
+A pedestrian trying to cross the street in fog.
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:04<00:19,  4.95s/it]WARNING: attempting to destroy an actor that is already dead: Actor 203 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 202 (vehicle.tesla.model3) 
+WARNING: attempting to destroy an actor that is already dead: Actor 205 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 204 (vehicle.tesla.model3) 
+ 40%|████      | 2/5 [00:07<00:10,  3.56s/it] 60%|██████    | 3/5 [00:10<00:06,  3.33s/it] 80%|████████  | 4/5 [00:14<00:03,  3.60s/it]100%|██████████| 5/5 [00:18<00:00,  3.55s/it]100%|██████████| 5/5 [00:18<00:00,  3.61s/it]
+2026/09/21 07:33:56 INFO mlflow.tracking._tracking_service.client: 🏃 View run defiant-fox-458 at: http://127.0.0.1:5000/#/experiments/0/runs/ec2ee0e8006f4f22b03b10568fdaa0eb.
+2026/09/21 07:33:56 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/0.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:02<00:08,  2.19s/it] 40%|████      | 2/5 [00:05<00:07,  2.59s/it] 60%|██████    | 3/5 [00:06<00:04,  2.06s/it] 80%|████████  | 4/5 [00:09<00:02,  2.24s/it]100%|██████████| 5/5 [00:12<00:00,  2.76s/it]100%|██████████| 5/5 [00:12<00:00,  2.54s/it]
+2026/09/21 07:36:27 INFO mlflow.tracking._tracking_service.client: 🏃 View run tasteful-robin-899 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/45aa42c5f6be48f7b5da74ee678806b4.
+2026/09/21 07:36:27 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:02<00:09,  2.38s/it] 40%|████      | 2/5 [00:06<00:11,  3.69s/it]WARNING: attempting to destroy an actor that is already dead: Actor 619 (walker.pedestrian.0007) 
+ 60%|██████    | 3/5 [00:13<00:09,  4.85s/it]WARNING: attempting to destroy an actor that is already dead: Actor 623 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 622 (vehicle.tesla.model3) 
+ 80%|████████  | 4/5 [00:16<00:04,  4.24s/it]WARNING: attempting to destroy an actor that is already dead: Actor 631 (walker.pedestrian.0007) 
+100%|██████████| 5/5 [00:23<00:00,  5.05s/it]100%|██████████| 5/5 [00:23<00:00,  4.60s/it]
+2026/09/21 07:39:08 INFO mlflow.tracking._tracking_service.client: 🏃 View run luxuriant-shrew-424 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/2f700071f8b64efbb7e54d54c2caa2c8.
+2026/09/21 07:39:08 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:02<00:11,  2.79s/it]WARNING: attempting to destroy an actor that is already dead: Actor 814 (walker.pedestrian.0048) 
+ 40%|████      | 2/5 [00:08<00:13,  4.44s/it] 60%|██████    | 3/5 [00:10<00:06,  3.40s/it] 80%|████████  | 4/5 [00:13<00:03,  3.19s/it]100%|██████████| 5/5 [00:17<00:00,  3.62s/it]100%|██████████| 5/5 [00:17<00:00,  3.56s/it]
+2026/09/21 07:41:43 INFO mlflow.tracking._tracking_service.client: 🏃 View run masked-ant-253 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/a2685dca33e34ed2a11ca97bc8f53c8c.
+2026/09/21 07:41:43 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s]WARNING: attempting to destroy an actor that is already dead: Actor 1011 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 1010 (vehicle.tesla.model3) 
+ 20%|██        | 1/5 [00:01<00:07,  2.00s/it] 40%|████      | 2/5 [00:05<00:08,  2.98s/it] 60%|██████    | 3/5 [00:08<00:05,  2.94s/it]WARNING: attempting to destroy an actor that is already dead: Actor 1029 (walker.pedestrian.0013) 
+ 80%|████████  | 4/5 [00:15<00:04,  4.57s/it]100%|██████████| 5/5 [00:17<00:00,  3.62s/it]100%|██████████| 5/5 [00:17<00:00,  3.51s/it]
+2026/09/21 07:44:19 INFO mlflow.tracking._tracking_service.client: 🏃 View run agreeable-vole-164 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/c3b921652a9f431187e1626b37d271f3.
+2026/09/21 07:44:19 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:02<00:10,  2.59s/it] 40%|████      | 2/5 [00:03<00:05,  1.81s/it]WARNING: attempting to destroy an actor that is already dead: Actor 1221 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 1220 (vehicle.tesla.model3) 
+WARNING: attempting to destroy an actor that is already dead: Actor 1223 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 1222 (vehicle.tesla.model3) 
+ 60%|██████    | 3/5 [00:07<00:05,  2.65s/it] 80%|████████  | 4/5 [00:11<00:02,  2.99s/it]100%|██████████| 5/5 [00:20<00:00,  5.25s/it]100%|██████████| 5/5 [00:20<00:00,  4.06s/it]
+2026/09/21 07:46:57 INFO mlflow.tracking._tracking_service.client: 🏃 View run rumbling-goat-386 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/6b8e2bf5f65e4290a2cec59b7a4d1143.
+2026/09/21 07:46:57 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:02<00:11,  2.85s/it] 40%|████      | 2/5 [00:05<00:08,  2.83s/it] 60%|██████    | 3/5 [00:07<00:04,  2.41s/it] 80%|████████  | 4/5 [00:11<00:03,  3.04s/it]100%|██████████| 5/5 [00:14<00:00,  2.98s/it]100%|██████████| 5/5 [00:14<00:00,  2.89s/it]
+2026/09/21 07:49:31 INFO mlflow.tracking._tracking_service.client: 🏃 View run funny-auk-157 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/15c5a387788f42e79fdc090524d2e633.
+2026/09/21 07:49:31 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:02<00:10,  2.70s/it] 40%|████      | 2/5 [00:05<00:08,  2.70s/it]WARNING: attempting to destroy an actor that is already dead: Actor 1632 (walker.pedestrian.0013) 
+ 60%|██████    | 3/5 [00:11<00:08,  4.34s/it] 80%|████████  | 4/5 [00:14<00:03,  3.85s/it]100%|██████████| 5/5 [00:16<00:00,  3.04s/it]100%|██████████| 5/5 [00:16<00:00,  3.28s/it]
+2026/09/21 07:52:06 INFO mlflow.tracking._tracking_service.client: 🏃 View run gregarious-crab-593 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/66c43fdc0f5240579686300492e5872e.
+2026/09/21 07:52:06 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:02<00:10,  2.62s/it] 40%|████      | 2/5 [00:04<00:07,  2.38s/it] 60%|██████    | 3/5 [00:07<00:05,  2.51s/it]WARNING: attempting to destroy an actor that is already dead: Actor 1834 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 1833 (vehicle.tesla.model3) 
+ 80%|████████  | 4/5 [00:14<00:04,  4.22s/it]100%|██████████| 5/5 [00:16<00:00,  3.47s/it]100%|██████████| 5/5 [00:16<00:00,  3.30s/it]
+2026/09/21 07:54:40 INFO mlflow.tracking._tracking_service.client: 🏃 View run delightful-gnat-603 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/1cc134ffd6684f29b0de212ffb6f2aeb.
+2026/09/21 07:54:40 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:02<00:10,  2.59s/it] 40%|████      | 2/5 [00:04<00:05,  1.97s/it] 60%|██████    | 3/5 [00:07<00:04,  2.49s/it]WARNING: attempting to destroy an actor that is already dead: Actor 2034 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 2033 (vehicle.tesla.model3) 
+WARNING: attempting to destroy an actor that is already dead: Actor 2036 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 2035 (vehicle.tesla.model3) 
+ 80%|████████  | 4/5 [00:09<00:02,  2.51s/it]WARNING: attempting to destroy an actor that is already dead: Actor 2043 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 2042 (vehicle.tesla.model3) 
+WARNING: attempting to unsubscribe from stream but sensor wasn't listening: Actor 2043 (sensor.camera.rgb) 
+100%|██████████| 5/5 [00:16<00:00,  4.17s/it]100%|██████████| 5/5 [00:16<00:00,  3.37s/it]
+2026/09/21 07:57:18 INFO mlflow.tracking._tracking_service.client: 🏃 View run amazing-rat-880 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/e611f0a5a64f44c7b4453ee01914d86f.
+2026/09/21 07:57:18 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+gen = 0 , Best fitness = (0.0,)
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s]WARNING: attempting to destroy an actor that is already dead: Actor 2228 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 2227 (vehicle.tesla.model3) 
+ 20%|██        | 1/5 [00:08<00:32,  8.10s/it] 40%|████      | 2/5 [00:11<00:15,  5.09s/it] 60%|██████    | 3/5 [00:18<00:12,  6.33s/it] 80%|████████  | 4/5 [00:25<00:06,  6.34s/it]100%|██████████| 5/5 [00:28<00:00,  5.19s/it]100%|██████████| 5/5 [00:28<00:00,  5.68s/it]
+2026/09/21 08:00:03 INFO mlflow.tracking._tracking_service.client: 🏃 View run burly-rat-179 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/0efd6e0292a3431991c875f2e441f276.
+2026/09/21 08:00:03 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:03<00:15,  3.85s/it] 40%|████      | 2/5 [00:07<00:10,  3.59s/it] 60%|██████    | 3/5 [00:13<00:09,  4.77s/it] 80%|████████  | 4/5 [00:15<00:03,  3.74s/it]100%|██████████| 5/5 [00:18<00:00,  3.36s/it]100%|██████████| 5/5 [00:18<00:00,  3.66s/it]
+2026/09/21 08:02:42 INFO mlflow.tracking._tracking_service.client: 🏃 View run judicious-goat-710 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/2c67e0d102bf4ce6a40369bc2d72c41e.
+2026/09/21 08:02:42 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s]WARNING: attempting to destroy an actor that is already dead: Actor 2642 (walker.pedestrian.0048) 
+ 20%|██        | 1/5 [00:07<00:31,  7.82s/it] 40%|████      | 2/5 [00:11<00:16,  5.50s/it] 60%|██████    | 3/5 [00:13<00:07,  3.84s/it] 80%|████████  | 4/5 [00:17<00:03,  3.97s/it]100%|██████████| 5/5 [00:23<00:00,  4.55s/it]100%|██████████| 5/5 [00:23<00:00,  4.66s/it]
+2026/09/21 08:05:22 INFO mlflow.tracking._tracking_service.client: 🏃 View run rebellious-chimp-639 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/87410a9f825f4d6bbf9fc8534b1d736f.
+2026/09/21 08:05:22 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:02<00:11,  2.98s/it] 40%|████      | 2/5 [00:09<00:15,  5.13s/it] 60%|██████    | 3/5 [00:12<00:08,  4.11s/it] 80%|████████  | 4/5 [00:18<00:04,  4.82s/it]100%|██████████| 5/5 [00:20<00:00,  3.89s/it]100%|██████████| 5/5 [00:20<00:00,  4.13s/it]
+2026/09/21 08:07:59 INFO mlflow.tracking._tracking_service.client: 🏃 View run mercurial-trout-738 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/1a05989edb0040f0ae5ff7ae39140324.
+2026/09/21 08:07:59 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:05<00:21,  5.27s/it]WARNING: attempting to destroy an actor that is already dead: Actor 3053 (walker.pedestrian.0013) 
+ 40%|████      | 2/5 [00:11<00:17,  5.79s/it] 60%|██████    | 3/5 [00:14<00:08,  4.36s/it] 80%|████████  | 4/5 [00:20<00:05,  5.01s/it]100%|██████████| 5/5 [00:22<00:00,  4.11s/it]100%|██████████| 5/5 [00:22<00:00,  4.52s/it]
+2026/09/21 08:10:41 INFO mlflow.tracking._tracking_service.client: 🏃 View run upbeat-sow-231 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/d766204c04054f2fa9185c5a1243a952.
+2026/09/21 08:10:41 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s]WARNING: attempting to destroy an actor that is already dead: Actor 3246 (walker.pedestrian.0013) 
+ 20%|██        | 1/5 [00:05<00:22,  5.56s/it] 40%|████      | 2/5 [00:07<00:10,  3.65s/it] 60%|██████    | 3/5 [00:10<00:06,  3.04s/it] 80%|████████  | 4/5 [00:12<00:02,  2.62s/it]100%|██████████| 5/5 [00:14<00:00,  2.53s/it]100%|██████████| 5/5 [00:14<00:00,  2.91s/it]
+2026/09/21 08:13:13 INFO mlflow.tracking._tracking_service.client: 🏃 View run wistful-skink-46 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/6cf9b47b9a804770b50cf62d56d66c75.
+2026/09/21 08:13:13 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+gen = 1 , Best fitness = (0.0,) , Number of invalids = 0
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:03<00:13,  3.50s/it] 40%|████      | 2/5 [00:06<00:09,  3.31s/it] 60%|██████    | 3/5 [00:11<00:07,  3.82s/it] 80%|████████  | 4/5 [00:15<00:04,  4.04s/it]WARNING: attempting to destroy an actor that is already dead: Actor 3464 (walker.pedestrian.0013) 
+100%|██████████| 5/5 [00:20<00:00,  4.49s/it]100%|██████████| 5/5 [00:20<00:00,  4.15s/it]
+2026/09/21 08:15:51 INFO mlflow.tracking._tracking_service.client: 🏃 View run inquisitive-croc-641 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/a0b544b82b944852ba895849318f1b89.
+2026/09/21 08:15:51 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s]WARNING: attempting to destroy an actor that is already dead: Actor 3641 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 3640 (vehicle.tesla.model3) 
+WARNING: attempting to destroy an actor that is already dead: Actor 3643 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 3642 (vehicle.tesla.model3) 
+ 20%|██        | 1/5 [00:04<00:18,  4.58s/it] 40%|████      | 2/5 [00:09<00:14,  4.84s/it] 60%|██████    | 3/5 [00:14<00:10,  5.09s/it]WARNING: attempting to destroy an actor that is already dead: Actor 3660 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 3659 (vehicle.tesla.model3) 
+WARNING: attempting to destroy an actor that is already dead: Actor 3662 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 3661 (vehicle.tesla.model3) 
+ 80%|████████  | 4/5 [00:21<00:05,  5.73s/it]100%|██████████| 5/5 [00:29<00:00,  6.60s/it]100%|██████████| 5/5 [00:29<00:00,  5.97s/it]
+2026/09/21 08:18:39 INFO mlflow.tracking._tracking_service.client: 🏃 View run salty-jay-557 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/3a72e5a260974b319c50f58a3821d850.
+2026/09/21 08:18:39 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:04<00:16,  4.18s/it] 40%|████      | 2/5 [00:07<00:11,  3.80s/it] 60%|██████    | 3/5 [00:10<00:06,  3.15s/it] 80%|████████  | 4/5 [00:11<00:02,  2.50s/it]100%|██████████| 5/5 [00:17<00:00,  3.71s/it]100%|██████████| 5/5 [00:17<00:00,  3.49s/it]
+2026/09/21 08:21:15 INFO mlflow.tracking._tracking_service.client: 🏃 View run serious-stag-826 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/d46e6bf2fba348969de5a904c726d7ea.
+2026/09/21 08:21:15 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:02<00:11,  2.77s/it] 40%|████      | 2/5 [00:08<00:13,  4.59s/it] 60%|██████    | 3/5 [00:11<00:07,  3.81s/it] 80%|████████  | 4/5 [00:15<00:03,  3.70s/it]100%|██████████| 5/5 [00:17<00:00,  3.26s/it]100%|██████████| 5/5 [00:17<00:00,  3.51s/it]
+2026/09/21 08:23:51 INFO mlflow.tracking._tracking_service.client: 🏃 View run rumbling-whale-208 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/bdd7b64587f0430a83bd053d9ebf3541.
+2026/09/21 08:23:51 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:03<00:12,  3.14s/it] 40%|████      | 2/5 [00:06<00:10,  3.56s/it] 60%|██████    | 3/5 [00:10<00:07,  3.56s/it]WARNING: attempting to destroy an actor that is already dead: Actor 4273 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 4272 (vehicle.tesla.model3) 
+ 80%|████████  | 4/5 [00:18<00:05,  5.33s/it]100%|██████████| 5/5 [00:22<00:00,  4.79s/it]100%|██████████| 5/5 [00:22<00:00,  4.49s/it]
+2026/09/21 08:26:31 INFO mlflow.tracking._tracking_service.client: 🏃 View run unleashed-stoat-841 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/9b56635f76734bac958896af8a8e6fbe.
+2026/09/21 08:26:31 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s]WARNING: attempting to destroy an actor that is already dead: Actor 4459 (walker.pedestrian.0013) 
+ 20%|██        | 1/5 [00:04<00:18,  4.69s/it]WARNING: attempting to destroy an actor that is already dead: Actor 4464 (walker.pedestrian.0013) 
+ 40%|████      | 2/5 [00:09<00:14,  4.80s/it]WARNING: attempting to destroy an actor that is already dead: Actor 4469 (walker.pedestrian.0013) 
+ 60%|██████    | 3/5 [00:14<00:09,  4.85s/it] 80%|████████  | 4/5 [00:16<00:03,  3.85s/it]100%|██████████| 5/5 [00:19<00:00,  3.46s/it]100%|██████████| 5/5 [00:19<00:00,  3.91s/it]
+2026/09/21 08:29:08 INFO mlflow.tracking._tracking_service.client: 🏃 View run popular-flea-728 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/843fdc2c9eb6449782d7a8b15df0af24.
+2026/09/21 08:29:08 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s]WARNING: attempting to destroy an actor that is already dead: Actor 4661 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 4660 (vehicle.tesla.model3) 
+ 20%|██        | 1/5 [00:04<00:19,  4.88s/it] 40%|████      | 2/5 [00:11<00:18,  6.13s/it] 60%|██████    | 3/5 [00:16<00:10,  5.25s/it] 80%|████████  | 4/5 [00:19<00:04,  4.70s/it]WARNING: attempting to destroy an actor that is already dead: Actor 4694 (walker.pedestrian.0013) 
+100%|██████████| 5/5 [00:28<00:00,  5.91s/it]100%|██████████| 5/5 [00:28<00:00,  5.60s/it]
+2026/09/21 08:31:56 INFO mlflow.tracking._tracking_service.client: 🏃 View run unruly-flea-142 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/7d5a5007c292484698f6a410624f7ebb.
+2026/09/21 08:31:56 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s]WARNING: attempting to destroy an actor that is already dead: Actor 4872 (walker.pedestrian.0013) 
+ 20%|██        | 1/5 [00:05<00:23,  5.87s/it]WARNING: attempting to destroy an actor that is already dead: Actor 4877 (walker.pedestrian.0013) 
+ 40%|████      | 2/5 [00:11<00:16,  5.53s/it] 60%|██████    | 3/5 [00:16<00:10,  5.24s/it] 80%|████████  | 4/5 [00:18<00:04,  4.18s/it]100%|██████████| 5/5 [00:21<00:00,  3.66s/it]100%|██████████| 5/5 [00:21<00:00,  4.27s/it]
+2026/09/21 08:34:37 INFO mlflow.tracking._tracking_service.client: 🏃 View run masked-sow-853 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/8a9a3b6d86e34eacaf3e03b4c96444da.
+2026/09/21 08:34:37 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+gen = 2 , Best fitness = (0.0,) , Number of invalids = 0
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:03<00:00,  3.69s/it]100%|██████████| 1/1 [00:03<00:00,  3.69s/it]check pedestrian detected flag
+check pedestrian detected flag
+check pedestrian detected flag
+INFO:     127.0.0.1:48458 - "GET /get_testcases?requirement=%0AMAINTAIN+%22Pedestrian+Safety%22%0A++++by%0A++++++++%22Pedestrian+Check%22+using+%22Perception+Module%22%0A++++++++++++operationalized+as%0A++++++++++++++++%22Detect+Pedestrian%22+performed+by+%22yolov5s%22%0A++++++++++++++++taking+input+%22image%22+producing+output+%22pedestrian+detection+confidence%22+%26+%22pedestrian+detection+flag%22%0A++++followed+by%0A++++++++%22braking%22+using+%22braking+module%22%0A++++++++++++operationalized+as%0A++++++++++++++++%22Bring+down+throttle%22+%26+%22Apply+Brakes%22+if+%22pedestrian+detection+flag%3DTrue%22+performed+by+%22proportional_braking%22%0A++++++++++++++++taking+input+%22pedestrian+detection+flag%22+producing+output+%22Braking+Status+Flag%22%0A++++in+scenario+where%0A++++++++%22A+pedestrian+trying+to+cross+the+street+in+fog.%22%0A&sample=False&population_size=10&max_generations=2 HTTP/1.1" 200 OK
+{'run_id': '862e8b31b0ba4c2f80778a33a17c5dc1', 'best_phenotype': 'A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 50}', 'STATUS': 'OK'}
+INFO:    Cleaning up image...
+
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2078218]

@@ -1,0 +1,945 @@
+# REAL → real-av: engineering log and next-phase plan
+
+This is the working engineering log for turning REAL (a PhD research prototype for
+AV requirement engineering) into a reusable ICSE tool-paper artifact. It records
+*why* each engineering decision was made, not just what changed — the code and
+git history already show the "what." Fork: `PaulAyobamidele/REAL`, branch
+`fse-tool` (the branch name predates the venue change from FSE to ICSE; the
+2026-10-01 deadline was dropped by the user on 2026-09-23 — quality over speed).
+
+## 1. The target pipeline
+
+The supervisor's target research pipeline has nine stages:
+
+```
+Input DSL → Requirement Parser → Constraint-aware grammar → Testing Generator
+(GRAPE/GE search) → Test Executor → Compute Diagnostic via Obstacle Exploration
+→ Cross-layer mitigation → Requirement Refiner → Requirement Patches
+```
+
+Scope decision (confirmed with the user 2026-09-17): **stages 1-5 must work
+end-to-end** for this artifact, including a real GE search (not just sampling),
+persisted `.scenic`/`.txt` outputs, and a video per run. **Stages 6-9 are future
+work**, documented but not implemented in this phase. This was an explicit,
+deliberate scope cut ("I will make obstacle-clustering secondary for now"), not
+an oversight — see §5 for the plan to pick it back up.
+
+## 2. Phase 1 — packaging + config-driven core
+
+### 2.1 The starting state
+
+Before this phase, the codebase had no config mechanism at all: no
+`real_config`, no `pyproject.toml`, no env-var reads. The README documented
+`MLFLOW_TRACKING_URI`/`CARLA_ROOT`/`REDIS_HOST`/`REDIS_PORT` as if they were
+read from the environment, but nothing actually read them — Redis host/port was
+hardcoded verbatim in 10 files, the MLflow tracking URI in ~8, and the CARLA map
+path was baked into the live scenario-generation template. Worse: the natural
+language requirement was parsed by the DSL but its result was **discarded**
+before test generation — `/get_testcases` only ever sampled a fixed, unrelated
+BNF grammar. The real evolutionary loop (`ge_eaSimpleWithElitism`) existed and
+looked correct, but was never invoked from the API. Generated Scenic code lived
+only in memory; no `.scenic` file was ever written; no video was ever produced.
+
+### 2.2 `real_config.py` — single source of truth for environment-dependent values
+
+[`real_config.py`](real_config.py) is a `pydantic.BaseSettings` (pydantic 1.x —
+already pinned `<2` due to a `mlserver` conflict, see §4.3) with every field
+defaulting to **exactly the previous hardcoded value**, so importing it changes
+zero behavior unless an env var is actually set. This was the deliberate design
+constraint: config-driven refactors are usually low-risk *if and only if* the
+defaults are provably identical to what was there before, so every default was
+checked against the literal it replaced rather than "improved."
+
+Fields: `redis_host`/`redis_port`, `mlflow_tracking_uri`, `api_host`/`api_port`,
+`carla_host`/`carla_port`/`carla_root`/`carla_map_path`/`carla_map_name`,
+`grammar_base_dir`, `artifacts_dir`, `model_dir` — the last three are
+`__file__`-anchored (not CWD-relative) so the package works correctly no matter
+what directory it's invoked from, which turned out to matter in practice: the
+`BNF_GRAMMAR` path bug in [`scripts/evolve/ge.py`](scripts/evolve/ge.py) was a
+real, latent bug (CWD-relative), only exposed once the Slurm container ran
+`api_app.py` from a different working directory than local development ever had.
+
+### 2.3 Wiring the real GE loop end-to-end
+
+[`scripts/evolve/ge.py`](scripts/evolve/ge.py)'s `start_ge()` was extended with
+`constraints`, `run_id`, `requirement`, `scenario_text`, `population_size`,
+`max_generations`, `record_video` parameters. The `sample=True` branch (the
+Streamlit UI's existing "sample" button) was kept byte-for-byte unchanged —
+since `start_ge` was, at the time, only ever called with `sample=True` in
+practice (confirmed via grep before touching anything), changing the
+`sample=False` branch's return shape was zero-risk to existing behavior.
+
+[`api_app.py`](api_app.py)'s `/get_testcases` route now reads the `sample` query
+param the Streamlit UI was already silently sending
+([`pages/1_grammar.py`](pages/1_grammar.py)) instead of hardcoding `True`.
+`sample=False` triggers the real path: extract constraints from the parsed
+requirement (§2.4), generate a `run_id`, call the real GE search, and persist
+its output (§2.5).
+
+New [`scripts/evolve/run_output.py`](scripts/evolve/run_output.py):
+`new_run_id()`, `run_dir()`, `persist_run()` — writes `run_meta.json` (inputs
+and params), `generations.csv` (per-generation logbook stats), and
+`best_phenotype.txt`/`best_scenario.scenic` for the fittest individual, reusing
+the same Scenic-generation code path
+([`scripts/simulations/util.py::get_scenic_script`](scripts/simulations/util.py))
+the live GE loop actually runs through — not the separate, similarly-named
+`scenic_template.py::get_scenic_code` path used by `/validate`, which would have
+silently produced scenarios that didn't match what was actually evaluated.
+
+### 2.4 Constraint-aware grammar v1
+
+New [`scripts/evolve/constraints.py`](scripts/evolve/constraints.py):
+`extract_constraints()` keyword-spots a small controlled vocabulary (fog→
+`fog_density`, adult/child→`pedestrian`, left/right→`direction`, close/far→
+`distance`) against the DSL's free-text scenario description.
+`constrain_population()` takes an **oversampled** population (3×`pop_size`)
+from GRAPE's existing, unmodified `sensible_initialisation`, scores each
+individual's match against the extracted constraints, and returns exactly
+`pop_size` individuals biased toward matches while keeping some non-matching
+individuals for diversity. This only touches population *initialization* — no
+changes to `grape`/DEAP internals. Two alternative designs were considered and
+rejected: mutation-biasing (would require decoding codon-to-terminal mappings
+per grammar position — fragile for a v1) and fitness-penalty (would conflate
+constraint-matching with CARLA-safety fitness in one scalar, confounding the
+GE search's actual falsification objective).
+
+### 2.5 Video capture — reusing an existing, broken-by-path mechanism
+
+The initial assumption was that video capture needed to be built from scratch.
+Reading the vendored Scenic source directly disproved this: a recording
+mechanism already existed and was already invoked live in
+[`scripts/scenarios/scratch.temp`](scripts/scenarios/scratch.temp) — Scenic's
+built-in `RecordingMonitor`
+([`Scenic/src/scenic/domains/driving/model.scenic:478`](Scenic/src/scenic/domains/driving/model.scenic)),
+which periodically calls `car.save_observations(path, frame_number)`, writing
+each `front_rgb` frame to `<path>/front_rgb/{frame_number}_{timestamp}.png`
+(verified directly in
+[`Scenic/src/scenic/simulators/carla/sensors.py`](Scenic/src/scenic/simulators/carla/sensors.py)).
+The only real problems were that `path` was hardcoded to a nonexistent user
+directory (`/home/darkaengl/Project`), and nothing stitched the PNGs into a
+video.
+
+Fix: `scratch.temp`'s hardcoded path became a `<run_frames_dir>` template
+placeholder, injected by `evaluate()` before scenario generation; new
+[`scripts/evolve/video.py::frames_to_mp4()`](scripts/evolve/video.py) globs the
+frames and stitches them via `cv2.VideoWriter`, **sorting by the leading
+integer in the filename, not lexicographically** — frame numbers are unpadded
+(`2_...png`, `10_...png`), so a plain string sort would order frame 10 before
+frame 2. This was caught by writing a unit test with a deliberately
+mixed-digit-count filename set before ever running against real frames.
+
+Video recording is deliberately **off by default** during the bulk GE search
+(`param_dict['recording_statement'] = ''` in
+[`scripts/simulations/util.py::evaluate()`](scripts/simulations/util.py)) —
+recording every one of `population_size × max_generations` individuals would be
+wasteful and slow. Only the best-of-run (via `persist_run()`) and single-test
+`/validate` calls record.
+
+### 2.6 Packaging fixes
+
+[`pyproject.toml`](pyproject.toml): dependency list corrected against what the
+code actually imports (`tqdm` was missing — see §4, obstacle log item 2);
+`antlr4-python3-runtime` removed as unused; `mlserver` deliberately excluded
+(see §4.3); `grammar/kaos`/`grammar/example` dropped from `packages=[...]`
+after confirming via repo-wide grep that nothing imports them — they're
+superseded by the Lark grammar in
+[`scripts/redsl/grammar.py`](scripts/redsl/grammar.py) but left on disk rather
+than deleted, since that's a content decision for the user/supervisor, not a
+packaging one.
+
+New [`tests/`](tests/) directory: 23 tests covering config defaults/overrides,
+constraint extraction, run persistence, video stitching, and a monkeypatched
+(no-CARLA) run through the real GRAPE/DEAP loop. All CARLA-dependent paths were
+explicitly **not** verifiable in the development environment (no `carla`
+package or server available there) — flagged as a known gap in the plan, closed
+only by the real Narval run in §4.
+
+New [`.env.example`](.env.example) lists every `Settings` field with its
+current default — not `infra/config.env`'s real secrets, which stays untouched
+and gitignored per an earlier, separate decision (see §6).
+
+## 3. Why a container, and why Narval
+
+Phase 1's own plan flagged a real gap: nothing in the local development
+environment could run `carla` (no package, no server), so the real
+GE-search-driven-by-actual-CARLA-falsification path was only ever verified
+against mocks. That gap could only be closed by running on hardware with a real
+GPU and a real CARLA server — which meant Narval (Digital Research Alliance of
+Canada HPC), and meant packaging the whole pipeline (CARLA 0.9.13 + this
+project + its Python environment) into a single Apptainer image so a Slurm job
+could run it unattended on a compute node with no interactive access.
+
+### 3.1 Building an amd64 container on an arm64 Mac
+
+Apptainer doesn't run natively on macOS, and Narval/CARLA both need amd64, not
+the Mac's arm64. Sylabs Cloud's remote builder was the first thing tried,
+specifically to avoid emulation — but the installed Apptainer version (1.5.3)
+had already removed the `--remote` build flag from its CLI; only an
+unscriptable web UI remained. The fallback, and what actually shipped: a Lima
+VM running rootful Apptainer, with `qemu-user`/`qemu-user-binfmt` registered so
+the VM can execute amd64 binaries under emulation. Slower, but fully local and
+reliable once a handful of emulation-specific issues (below) were worked
+around.
+
+### 3.2 Build-time fixes, and why each was necessary
+
+All baked into [`infra/hpc/carla.def`](infra/hpc/carla.def) — see that file's
+`README.md` companion
+([`infra/hpc/README.md`](infra/hpc/README.md#build-fixes-baked-into-carladef-found-the-hard-way--keep-these-if-you-edit-the-file))
+for the authoritative, continuously-updated list. In summary:
+
+1. The Lima VM's `/tmp` is a 2GB tmpfs, separate from the 96GB real disk.
+   Apptainer's own build staging redirects via `APPTAINER_TMPDIR`, but pip's
+   *own* download/build temp files ignore that variable and default to `/tmp`
+   regardless — `pip install torch` failed with "No space left on device"
+   despite 80GB+ free, until `%post` set `TMPDIR` itself.
+2. The base `carlasim/carla:0.9.13` image's NVIDIA CUDA apt repo has an expired
+   upstream signing key, which silently skips the entire `apt-get install` step
+   via `&&` short-circuiting. Fixed by removing that repo's `.list` file before
+   `apt-get update`.
+3. `mlserver` cannot be declared in `pyproject.toml` at all: every release
+   through `1.4.0.dev2` pins `fastapi<=0.89.1`, conflicting with this project's
+   `fastapi>=0.109`. The two work fine together in practice (this is exactly
+   what the original `setup_env.sh` does, installing them as separate `pip
+   install` calls that never cross-check each other) — so `mlserver` installs
+   as a separate `pip install --no-deps` step, with a comment in the `.def`
+   file explaining why it's not a normal dependency.
+4. Everything under `%post` runs slower than native amd64 hardware would,
+   purely because of QEMU emulation — expected, not a bug.
+5. **The YOLO perception model needs `torch.hub`'s `ultralytics/yolov5` repo
+   definition cached, and Narval's compute nodes have no internet access.**
+   The original code called `torch.hub.load(..., force_reload=True)`, which
+   *always* re-fetches from GitHub — categorically incompatible with an
+   offline compute node. The fix has three parts, because a single "just cache
+   it" fix doesn't work: (a) `%post` pre-warms the cache at *build* time
+   (the Lima VM has internet) using `torch.hub._get_cache_or_reload()` directly
+   rather than the full `torch.hub.load()` — the latter also *constructs* the
+   model, doing real tensor ops that reliably segfault under this Mac's QEMU
+   emulation; only the pure fetch-and-extract step runs at build time, and
+   actual model construction happens for the first time at runtime on Narval's
+   real (non-emulated) hardware; (b) `%environment` sets
+   `TORCH_HOME=/opt/torch_cache` so that cache is found at runtime; (c) the
+   vendored
+   [`Scenic/src/scenic/domains/driving/model.scenic`](Scenic/src/scenic/domains/driving/model.scenic)
+   was patched to `force_reload=False` (reuse the cache) with a config-driven
+   model path. This patch to vendored, third-party code was only made after
+   explicitly asking the user for approval, given the standing "no unapproved
+   edits" instruction.
+
+### 3.3 Local verification limits
+
+`import real_config`, `numpy`, `scenic`, and `verifai` each import fine
+individually under QEMU emulation. `import api_app` (which pulls in `mlflow` →
+`pyarrow`) reliably segfaults under emulation (`qemu: uncaught target signal
+11`) — a QEMU/TCG limitation with `pyarrow`'s native code, not a defect in the
+image. This meant **the full pipeline could only ever be verified piece by
+piece locally** — true end-to-end verification could only happen natively, on
+Narval. That expectation was stated explicitly before the first real run, so
+that a first-run failure wouldn't be a surprise but a normal part of the plan.
+
+### 3.4 Transfer mechanics
+
+Narval requires mandatory Duo MFA on every fresh SSH connection, and the
+project's SSH key is passphrase-protected — both mean any transfer needs to run
+somewhere that can prompt interactively. Running the transfer via
+`limactl shell → ssh` (nested) was ruled out: `ssh`'s `ControlPath`
+tilde-expansion resolves via the system passwd entry, not `$HOME`, so the VM's
+own `ssh` could never find the Mac-side `~/.ssh` control socket no matter how
+`$HOME`/`-F` were overridden. The reliable path that shipped: `limactl copy`
+the built `.sif` out of the VM onto the Mac's real disk, then `rsync` natively
+from the Mac to Narval — sidestepping the nested-shell problem entirely.
+
+`apptainer exec --nv --unsquash` (not the default FUSE-mounted `.sif`) was
+required, not optional: the default `squashfuse_ll` mount has an idle timeout
+that doesn't play well with long-running backgrounded processes (CARLA +
+`api_app.py`, both launched with `&`) — the mount got torn down mid-run,
+crashing both Python's import machinery and CARLA's own mmap'd binary
+(`Bus error (core dumped)`). `--unsquash` extracts the image to a real temp
+directory instead, avoiding the FUSE mount lifecycle entirely.
+
+## 4. The obstacle log — every bug found running on real Narval hardware
+
+This project's `.gitignore` already documents the philosophy for the *codebase's*
+own obstacle log (committed secrets, treated as compromised, never removed from
+history but never repeated). This section is the same idea applied to the
+Narval deployment: every one of these was found only by actually running on
+real hardware, not by code review or local testing, and every fix is already
+baked into the source (`carla.def`, `run_real_av.slurm`, `api_app.py`, the
+vendored `Scenic/` patches) — re-running the pipeline from scratch needs no
+manual re-patching.
+
+1. **`ConnectionRefusedError` / `Bus error (core dumped)` from CARLA** — the
+   default FUSE-mounted `.sif` idle-timed-out mid-run. Fixed with
+   `apptainer exec --unsquash` (§3.4).
+2. **`No module named 'tqdm'`** — a real gap in `pyproject.toml`:
+   [`scripts/simulations/util.py`](scripts/simulations/util.py) and
+   [`scripts/evolve/util.py`](scripts/evolve/util.py) both import `tqdm`
+   directly, but it was never declared (only worked locally because something
+   else pulled it in transitively). Added as an explicit dependency.
+3. **`AttributeError: 'NoneType' object has no attribute 'iter_subtrees'`** —
+   not a pipeline bug, a smoke-test input bug: the DSL grammar requires a
+   structured KAOS-style requirement string and silently swallows all parse
+   exceptions (returning `None`), so a plain sentence like `"a pedestrian
+   crossing in fog"` fails with no visible error until something tries to use
+   the nonexistent parse tree. Fixed by using a properly structured requirement
+   string in the smoke test, written via a quoted heredoc in the Slurm script
+   to sidestep nested bash/Python quote-escaping.
+4. **MLflow `ConnectionRefused` on `127.0.0.1:5000`** —
+   `evaluate()` unconditionally wraps every CARLA run in
+   `mlflow.start_run()`, which needs a running tracking server, not just the
+   client library. Added an `mlflow server` step (local file-based
+   backend/artifact store under `/artifacts`, so results survive the job's
+   temp sandbox being cleaned up) to the Slurm script.
+5. **YOLO/`torch.hub` needing internet on an offline compute node** — the
+   three-part fix in §3.2 item 5.
+6. **Live-pasted Sylabs access token** — the user accidentally pasted a live
+   API token into chat while debugging an unrelated transfer issue. Treated as
+   compromised immediately: instructed to revoke it at cloud.sylabs.io and
+   generate a fresh one, entered directly at the terminal, never back into
+   chat. Not a pipeline bug, but recorded here because it shaped how every
+   subsequent credential-adjacent step in this log was handled — see §6.
+7. **`signal only works in main thread`** — FastAPI dispatches plain `def`
+   routes to a worker thread; Scenic's per-step simulation timeout uses
+   `signal.alarm()`, main-thread-only. `/get_testcases` became `async def`
+   (FastAPI keeps `async def` routes on the main event-loop thread; no `await`
+   needed inside since the GE/CARLA work is itself synchronous — this
+   intentionally blocks the event loop for the run's duration, which is fine
+   since nothing else needs concurrent serving here).
+8. **DEAP `TypeError: Both weights and assigned values must be a sequence of
+   numbers`** — `evaluate()`'s final `return fitness,` wrapped the *whole*
+   `{total, passed, failed, pct}` dict in a 1-tuple instead of a number.
+   `FitnessMin`'s `weights=(-1.0,)` needs a 1-tuple of numbers. Fixed to
+   `return (fitness['pct'],)` — minimizing `pct` (percent of trials passed) is
+   exactly the falsification objective: search for parameter combinations that
+   make the safety property fail.
+9. **Client-side `ReadTimeout` at 30 minutes** — per-individual overhead (YOLO
+   reload + 2 failed offline auto-update attempts, not just the 5 CARLA
+   simulations) runs ~2-3 min/individual in practice, not the ~25s the
+   simulation-only progress bars suggest. 10 individuals × 2 generations needs
+   well over 30 min. Raised the smoke test's request timeout to 7000s and the
+   Slurm job's `--time` to match, with headroom for CARLA/MLflow
+   startup/shutdown.
+10. **Bash syntax error from an apostrophe in a comment** — a comment
+    containing `yolov5's` inside the Slurm script's single-quoted
+    `bash -c '...'` block terminated the quote early. Fixed by removing the
+    apostrophe and verifying every subsequent edit to that block with
+    `bash -n` before resubmitting — a cheap check that would have caught this
+    immediately.
+11. **Missing `import types`** in vendored
+    [`Scenic/src/scenic/core/utils.py`](Scenic/src/scenic/core/utils.py) — a
+    genuine bug in Scenic's own `get_type_hints` Python-version-compatibility
+    fallback (references `types.ModuleType` without ever importing `types`).
+    Only became visible once `traceback.print_exc()` was added to
+    `api_app.py`'s exception handlers — before that, the same failure surfaced
+    only as an opaque, swallowed exception. This is the kind of bug that
+    justifies "always print the real traceback before optimizing anything
+    else" as a standing debugging practice for this project.
+
+Two further observations, not bugs: pip `AutoUpdate` retry warnings for
+`yolov5`'s optional dependencies (no outbound internet, both retries
+predictably fail, falls back to the cache by design — see fix 5) and CARLA's
+`WARNING: attempting to destroy an actor that is already dead` during
+per-individual cleanup (a benign double-free race in VerifAI/Scenic's own
+teardown) both appear in *every* successful run and need no action — recorded
+here so a future debugging session doesn't waste time on them again.
+
+## 5. First confirmed end-to-end success
+
+**Job 3564897, 2026-09-21.** The full pipeline — structured KAOS requirement →
+Lark parse → constraint extraction (`fog_density=50`) → constrained population
+initialization → 10-individual × 2-generation real GE search, each individual
+evaluated by 5 real CARLA falsification trials with real YOLOv5 perception →
+persisted output — completed successfully on a Narval A100, with every fix in
+§4 holding simultaneously for the first time. Result:
+
+```json
+{"run_id": "862e8b31b0ba4c2f80778a33a17c5dc1",
+ "best_phenotype": "A { pedestrian : Child } wearing a {dress : Dark} dress
+   trying to cross road from { direction : LR } at { distance : Long } distance
+   on a day with fog density {fog_density : 50}",
+ "STATUS": "OK"}
+```
+
+`generations.csv` (pulled back to
+[`artifacts/runs/862e8b31b0ba4c2f80778a33a17c5dc1/generations.csv`](artifacts/runs/862e8b31b0ba4c2f80778a33a17c5dc1/generations.csv))
+shows the search actually converging toward falsifying scenarios, not merely
+completing without crashing: average fitness (percent of trials that *passed*,
+i.e. did not falsify the safety property) dropped 26.0 → 16.0 → 10.0 across the
+3 logged generations, with the minimum already at `0.0` (a fully falsifying
+individual) in generation 0. This is the real signal that GRAPE's
+elitism-based selection pressure is doing what it's supposed to.
+
+Artifacts pulled back from Narval to this repo's own `artifacts/runs/` for
+local review: `best_scenario.scenic` (the winning Scenic program),
+`best_scenario.mp4` (a 355KB stitched video of the CARLA run), 26 raw
+`front_rgb` PNG frames, `best_phenotype.txt`, `run_meta.json`. The full job
+console log is at `artifacts/real-av-carla-3564897.out`.
+
+Stages 1-5 of the target pipeline (§1) are now proven end-to-end against real
+CARLA on real GPU hardware — closing the one gap Phase 1's own plan had flagged
+as unverifiable in the development environment.
+
+## 6. Standing constraints (carry forward, don't re-litigate)
+
+- **No unapproved code edits** — explicit go-ahead required before any
+  Write/Edit or file-mutating command, even "low risk" fixes. Every fix in §4
+  was proposed and confirmed before being applied; the one exception requiring
+  extra care was patching vendored third-party code (`Scenic/`), which got an
+  explicit, separate confirmation after the issue was explained in detail.
+- **Secrets in `infra/`** — `infra/credentials.json` and `infra/config.env`
+  contain real, already-committed secrets. The scoped decision was packaging
+  hygiene only: ship `.env.example` with placeholders, never commit real
+  secrets going forward, but do **not** touch git history and do **not**
+  rotate the already-compromised live credentials — that's a separate,
+  higher-risk decision left to the user. The `.gitignore` itself documents this
+  reasoning inline.
+- **Secrets in chat** — if a real credential is ever pasted into a
+  conversation, treat it as compromised immediately: have the user revoke/
+  rotate it at the source, and enter any replacement only in their own
+  terminal, never back into chat.
+- **React UI** — explicitly deprioritized ("We can put the ReactUI aside for
+  now. I am very interested in the full pipeline run with cleanliness and
+  reproducibility!"). Not started, not planned until the user says otherwise.
+- **Stages 6-9** — explicitly out of scope for this phase ("I will make
+  obstacle-clustering secondary for now"). Planned, not implemented — see §7.
+
+## 7. Next phase: stages 6-9 (failure diagnostics → requirement patches)
+
+The remaining pipeline stages, as specified by the supervisor:
+
+```
+FAILURE MODEL
+      │
+      ▼
+DIAGNOSTICS
+      │
+      ▼
+OBSTACLE MODEL
+      │
+      ▼
+MITIGATION MODEL
+      │
+      ▼
+REQUIREMENT PATCHES
+      │
+      ▼
+    HUMAN
+      │
+      ▼
+REQUIREMENT R₁
+```
+
+This is a closed loop with a human in it, not a fully automated pipeline: the
+system proposes requirement patches, a human reviews/accepts/edits them, and
+the accepted result becomes a revised requirement `R₁` — which can itself be
+fed back into stage 1 (Input DSL) for another iteration. That framing matters
+for scoping: this phase is about generating good *candidate* patches and a
+legible review surface, not  vabout closing the loop autonomously.
+
+### 7.1 What already exists to build on
+
+The stages 1-5 work in §2-§5 was deliberately designed so this phase doesn't
+start from zero:
+
+- **Failure Model input**: every real GE run already produces exactly the raw
+  material a failure model needs — `generations.csv` (per-generation fitness
+  trajectory), the MLflow backing store (per-individual params + fitness,
+  keyed by run), and `best_scenario.scenic` + frames/video for the worst
+  (most-falsifying) individual. A "failure model" for a completed run is
+  substantially a structured read of data that's already being persisted, not
+  new instrumentation.
+- **Constraint vocabulary**: `constraints.py::CONTROLLED_VOCAB` and
+  `parse_phenotype_params()` already establish the mapping between the DSL's
+  free-text scenario description and the grammar's actual terminals
+  (`direction`, `distance`, `fog_density`, `pedestrian`, `dress`). An obstacle
+  model needs the same kind of structured vocabulary, just inverted: from a
+  falsifying phenotype back to a named "obstacle class."
+- **Run identity**: every run has a stable `run_id` and a `run_dir()` layout
+  (§2.3) that a diagnostics/mitigation stage can key off without inventing a
+  new storage scheme.
+
+### 7.2 Stage-by-stage plan (draft — refine before implementation)
+
+1. **Failure Model** — given a completed run's `generations.csv` + MLflow
+   records, characterize *how* it failed: which phenotype parameters
+   (pedestrian age/dress, direction, distance, fog density) correlate with low
+   fitness (falsification) across the population, not just report the single
+   best individual. This is a statistics-over-existing-data problem, not a new
+   simulation capability — feasible to prototype without new CARLA runs, using
+   the already-collected `862e8b31b0ba4c2f80778a33a17c5dc1` run (and future
+   runs) as real test data.
+2. **Diagnostics** — turn the failure model's correlations into a human- and
+   machine-readable diagnosis: e.g. "the perception module's detection
+   confidence degrades sharply when `fog_density=50` combined with
+   `dress=Dark`," tying back to the specific KAOS requirement sub-goals
+   (`"Detect Pedestrian" performed by "yolov5s"`) that the parsed requirement
+   graph already names. This is where the KAOS structure of the input DSL
+   (already parsed in stage 2, currently discarded after constraint
+   extraction) becomes load-bearing again — worth revisiting whether more of
+   the parse tree should be retained through to this stage rather than only
+   the flat `constraints` dict.
+3. **Obstacle Model** — formalize the diagnosed failure condition as a named,
+   reusable "obstacle" (KAOS terminology: a condition that can prevent a goal
+   from being satisfied), distinct from a one-off falsifying scenario. This is
+   the piece the user explicitly deferred as secondary; it's also the piece
+   most directly reusable as a contribution in its own right (a library of
+   named obstacles per requirement class), so it's worth scoping early even if
+   implementation waits.
+4. **Mitigation Model** — given a named obstacle, propose a *class* of fix
+   (e.g. "add a fog-density-conditioned confidence threshold override," "add a
+   redundant sensing modality for low-visibility conditions"), not yet
+   requirement text. Likely the highest-uncertainty stage — needs a small
+   library of mitigation patterns mapped to obstacle classes, probably
+   hand-authored initially rather than learned/generated, given the artifact
+   deadline.
+5. **Requirement Patches** — render a chosen mitigation as an actual textual
+   diff against the original KAOS requirement DSL (stage 1's input format),
+   so the human reviewer is looking at a concrete before/after requirement
+   text, not an abstract recommendation.
+6. **Human** — the review surface. Given the React UI is deprioritized, the
+   first version of this should probably be the lowest-effort thing that lets
+   a human accept/reject/edit a patch and re-trigger stage 1 with the result —
+   plausibly a CLI or a single Streamlit page reusing the existing
+   `pages/*.py` pattern, not new infrastructure.
+7. **Requirement R₁** — the accepted patch becomes a new input DSL string,
+   closing the loop back to stage 1. Whether this triggers a fully automatic
+   re-run or requires an explicit re-submission is a product decision, not yet
+   made.
+
+### 7.3 Open questions to resolve before implementation starts
+
+- How many real GE runs (across varied requirements, not just the pedestrian
+  example) are needed before failure-model correlations are meaningful, versus
+  overfit to one scenario? Worth deciding a minimum run count before trusting
+  any diagnostic output.
+- Is the obstacle vocabulary meant to be closed (a fixed taxonomy the tool
+  ships with) or open (extensible per-project)? Affects whether §7.2 stage 3 is
+  a lookup table or something more general.
+- Does "cross-layer mitigation" (as named in the original pipeline spec) imply
+  mitigations spanning perception + planning + control layers specifically, or
+  is "cross-layer" describing something else the supervisor meant more
+  precisely? Worth a direct clarifying conversation before committing to a
+  design — this document's stage 4 framing is a placeholder pending that.
+
+§7 was written before the 2026-09-23 session; §8 records what of it has now
+been built and what the first real data showed.
+
+## 8. 2026-09-23 — failure analysis (stages 6-7), the grid run, and what it found
+
+### 8.1 Review findings that changed the plan
+
+A fresh read of the whole codebase against the paper surfaced validity
+problems the stages-1-5 work had not caught:
+
+1. **The safety monitor scored distance to *every* object, including the
+   roadside `VendingMachine`** (~3.5 m from the lane centre, ~12 m into the
+   ego's path). Any drive-by tripped the 5 m rule regardless of the
+   pedestrian. Fixed: `MyMonitor` now measures distance to `Pedestrian`
+   objects only (matched by class name so `util.py` never imports the CARLA
+   model). The old run 862e8b31's pass/fail numbers are therefore not usable.
+2. **The requirement's operational content was ignored.** `"performed by
+   "yolov5s""` and `"performed by "proportional_braking""` never reached the
+   simulator; `scratch.temp` always ran the baseline emergency-braking car and
+   the model came from Redis/default. Only the scenario sentence's keywords
+   mattered. Fixed (see 8.4).
+3. **`distance` had no effect in the search template** (position is a fixed
+   random range; `get_pedestrian_angle` depends only on direction). Still
+   true — recorded as a known limitation of `scratch.temp`, to be fixed with
+   the scenario geometry (8.6).
+4. **The "converging" claim in §5 was weak**: 32 possible phenotypes, 5 noisy
+   trials each (scores only in steps of 20%), DEAP never re-scores unchanged
+   individuals, tournament size 7 of 10, `ELITE_SIZE=0`. The drop 26→16→10 is
+   selection keeping lucky noisy scores. For failure *analysis* an exhaustive
+   grid (32 × 5) is both cheaper to reason about and fairer than GE.
+5. **No seed** (`random.seed` was commented out). Fixed: `settings.random_seed`
+   seeds DEAP and, per scenario (`seed + scenario_id`), Scenic's sampling;
+   recorded in `run_meta.json`. CARLA itself is not fully deterministic.
+6. **Φ_valid (admissibility) from the paper did not exist** in code. Built
+   (8.3).
+7. `DSL.get_perception_model()` always returned `None` (walked one nesting
+   level too deep). Fixed; `get_operations()` / `get_module_for(task)` added.
+8. The paper answers §7.3's "cross-layer" question: **data / model / system /
+   requirement** layers (Sec. IV-C, M1–M5), not perception/planning/control.
+
+### 8.2 Telemetry — what every simulation now records
+
+`scripts/analysis/telemetry.py` (plain Python, no Scenic dependency) is
+called from the scenario template and the monitor and writes
+`<run>/simulations.csv` (one row per simulation) plus `traces/<scenario>_<sim>.json`
+(full time series), appended as each simulation ends. Per row: scenario
+settings, blueprint, braking mode, perception model, seed; pass/fail and rho;
+closest distance to the pedestrian and the ego's speed there; steps/duration/
+termination; max/final ego speed and whether it stopped; frames seen,
+frames above the confidence bar, max confidence, first-detection step/
+confidence/distance and ego speed then, mean inference time; first-brake
+step/distance/speed, brake steps, reaction steps. Detection logging lives in
+the template's own `perceive()` (same YOLO call and 0.85 rule as the vendored
+`checkPedestrianDectectedFlag`, cached once per step) — no further vendored
+patches were needed. Two robustness fixes rode along: `falsify()` no longer
+loops forever when Scenic cannot create a simulation (gives up after
+3×`num_test` attempts) and no longer drops rho == 0.
+
+### 8.3 Laptop-side analysis (`python -m scripts.analysis.report <run_dir>`)
+
+- `admissibility.py` + `admissibility_rules.json`: a scenario matching any
+  rule is out of scope; its failures are *spurious*. Default rule matches
+  nothing in old.bnf (the paper treats 50% fog as realistic). Rules also come
+  from the requirement's new `assuming "..."` clause (8.5).
+- `failure_model.py`: failure rate per setting (effect = rate with minus rate
+  without; <15% treated as noise), per scenario, failure types
+  (`never_detected`, `detected_not_braked`, `detected_too_late`,
+  `brake_released`, `braking_insufficient`, `stopped_too_close`), a
+  `no_encounter` outcome (never within 10 m and never detected — excluded
+  from rates, *not* a pass), a `passed_stalled` outcome (safety rule held
+  only because the car stopped short and timed out — counted as a pass,
+  reported separately; added after round 2's first scenario, see 8.8), a
+  timing summary (first-detection distance vs
+  stopping distance v²/2a + margin, a = 8 m/s²), and sanity warnings — the
+  key one: *failures that do not vary with any grammar setting point at the
+  scoring or the fixed scenario, not at the settings*.
+- `obstacles.py`: the paper's three KAOS obstacles keyed on settings, plus
+  behaviour-keyed `DetectionTooLate` and `BrakingNotLatched`, plus unnamed
+  candidates for any other strong effect; each with candidate mitigations per
+  layer (hand-authored from the paper's M1–M5). Verdicts: supported /
+  not supported / insufficient data, with the numbers.
+- `report.py`: writes `analysis_report.md/.json`, ends with a "For the
+  human" checklist (confirm/rename/reject obstacles; keep/drop scope rules;
+  pick a mitigation → requirement change).
+
+### 8.4 The executor now runs the system the requirement describes
+
+`scripts/simulations/util.py`: `configure(braking_mode, yolo_model)` sets
+`RUN_CONTEXT`; `build_scenario()` splices one of `BRAKING_BEHAVIOURS`
+(`emergency_braking` = baseline; `proportional_braking` = paper M4 via the
+vendored `adjust_based_on_confidence`, 30%→85%) into `scratch.temp` at
+`<ego_behavior>`; the perception model name is published to the Redis key
+`model` right before the scenario compiles (that is how the vendored driving
+model picks its weights — same key the Streamlit UI uses), after checking the
+`.pt` exists in `model/`. `api_app.py::system_under_test_from(dsl)` reads
+both from `"performed by"` and passes them to `run_grid` / `start_ge`;
+`run_meta.json` records them. Both modes use the same `EGO_SPEED` (the legacy
+`scenic_template.py` used 10 for proportional vs 8 for emergency — a
+confound). Two Scenic behaviours are unit-tested to parse.
+
+### 8.5 The `assuming` clause
+
+Option chosen by the user over "put it in the scenario sentence": the DSL
+grammar gained an optional `("assuming" assumption ("&" assumption)*)?` after
+the scenario clause. Machine-readable assumptions (`fog_density <= 50`) invert
+into out-of-scope rules (`fog_density > 50`); free text is shown to the human.
+Requirements without the clause parse identically (tested). This is the
+requirement-level mitigation's landing place for the loop: accepting "only
+guaranteed below 50% fog" adds one `assuming` line and the next round's
+analysis applies it with no rules-file edit.
+
+### 8.6 First grid run with telemetry — job 3830258, run `35acc09e8c224fdc953e3bf82ba57e96`
+
+Job 3803335 (first attempt) died in 92 s: `smoke_test.py` called the API
+5 s after starting it, before uvicorn was listening (the source overlay on
+`$SCRATCH` made the first import slower than in the baked-in image). Fixed
+with a readiness poll (every 5 s, up to 10 min). Job 3830258 started
+2026-09-23 ~20:05 local, API ready after 20 s, ~2.7 min per scenario.
+**System under test: emergency braking + yolov5s** (the requirement text said
+`proportional_braking`, but this run predates 8.4 — it is the baseline).
+
+Completed 21:35 local (1 h 30 min, `STATUS: OK`); 160 simulations + 1
+recorded video run; all files pulled to `artifacts/runs/35acc09e…/`
+(`simulations.csv`, 161 traces, `best_scenario.{scenic,mp4}`, 32 frames,
+`analysis_report.md`). Final numbers (`python -m scripts.analysis.report`):
+
+- **120 true encounters, 40 no-encounter** (the random lane/heading sent the
+  car away from the pedestrian — 40 of the 69 "passes" were not passes).
+- **91 of 120 encounters failed (76%)**: `detected_too_late` 70 (77% of
+  failures), `brake_released` 17 (19%), `braking_insufficient` 2,
+  `stopped_too_close` 1, `never_detected` 1.
+- The pedestrian **was detected** (>0.85) in 119 of 120 encounters — children
+  and adults, fog or not. Median first detection at **7.0 m** while doing
+  **7.2 m/s**; stopping needs ~8.2 m at that speed → 65% of detections too
+  late. Braking lasted a median 6 steps (0.6 s) and then, because braking is
+  tied to "currently detected", the car sped up again; still moving at the
+  closest point in 70% of detected encounters. YOLOv5s inference 6.8 ms/frame
+  on the A100.
+- Setting effects on the full, balanced grid: `direction=LR` **+24%**
+  (88% vs 64% — reported as an unnamed candidate obstacle; may be geometry:
+  the `RL` heading of 180° relative to the road is "walking against traffic",
+  which changes when/whether the pedestrian actually crosses), `dress=Dark`
+  **+15%** (borderline), `pedestrian=Child` +8%, `fog=50` −9%, `distance`
+  +7% (expected ~0: it does not move the pedestrian). At the 18/32 preview no
+  setting had reached 15% and the sanity warning fired; on the full grid it
+  did not — a reminder that the preview was LR-only.
+- Verdicts: `DetectionTooLate` **supported** (77% of failures);
+  `PedestrianClothingNotVisible` **supported** (just, +15%);
+  `PedestrianSizeTooSmall` and `AdverseWeather` **not supported**;
+  `BrakingNotLatched` not supported (19% < 25% bar) but present;
+  `Candidate(direction=LR)` supported, for the human to name or reject.
+  A different picture from the paper's E1/E4 (children, fog) — worth stating
+  plainly rather than smoothing over.
+
+Implications: the dominant obstacle is system-level (approach speed vs
+detection distance vs a per-frame braking trigger), and the paper's M4 fix is
+exactly the round-2 experiment: same requirement, now honoured
+(`proportional_braking`), compared against this baseline (8.8). Also to fix
+in the scenario itself: the no-encounter geometry (lane choice / heading —
+25% of simulations wasted) and the dead `distance` parameter (8.1 item 3).
+
+### 8.8 Round 2 — pre-registered prediction (written 2026-09-23 21:35 local, before submission)
+
+**Design.** One variable: round 2 is round 1 with the requirement's
+`performed by "proportional_braking"` honoured (paper M4: brake from 30%
+confidence via `adjust_based_on_confidence`, full above 85%). Same
+requirement text, seed (42), 32 scenarios × 5 trials, grammar (`old.bnf`,
+byte-identical), template except the behaviour block (round 1's template was
+fetched back from Narval and diffed: the only functional change is
+`emergency_braking` → `<ego_behavior>` filled with `proportional_braking`; the
+`perceive()` rewrite is the same YOLO call, cached once per step, which the
+`interrupt when` already evaluated once per step). Template sha256: round 1
+`497527fe36991f67…`, round 2 `89a952d0b417f83d…` (`grid.py` now records
+`template_sha256`/`grammar_sha256` in `run_meta.json` for future rounds).
+Round 1's `run_meta.json` predates the `system_under_test` field; its known value is
+`{braking_mode: emergency_braking, yolo_model: yolov5s}`, to be supplied to
+`scripts/analysis/compare.py --assume-a`. `compare.py` flags any other
+metadata difference.
+
+**Comparable metric.** Failure rate over *true encounters*, with the
+no-encounter count reported separately per round (round 1: 23 of 88 at the
+18/32 preview). Not "passes", not raw pass rate.
+
+**Prediction.**
+1. `DetectionTooLate` should **drop** (count and share): braking now starts
+   at 0.30 confidence, so the first brake comes earlier and at a longer
+   distance than the 0.85 bar allowed; the median first-brake distance should
+   rise from ~6.3 m towards or past the ~8 m stopping distance, and the
+   encounter failure rate should fall from ~83%.
+2. `BrakingNotLatched` (`brake_released`) **may not drop**, and its *share*
+   of the remaining failures may rise: releasing the brake when confidence
+   falls below the trigger is a separate defect that proportional braking
+   does not address (the trigger is still per-frame).
+3. The paper's setting-based obstacles (`PedestrianSizeTooSmall`,
+   `PedestrianClothingNotVisible`, `AdverseWeather`) are expected to stay
+   *not supported*; if proportional braking removes the timing floor, a
+   setting effect could emerge - that would be new evidence, not confirmation.
+4. No-encounter count should be similar to round 1 (same seeds, same
+   geometry); a large change would mean the comparison is not clean.
+
+Submitted as **job 3843349** at 21:37 local, 2026-09-23 (overlay template
+sha256 `89a952d0b417f83d…` verified on Narval before `sbatch`). Started
+21:40, API ready after 15 s, scenario 1/32 at 21:44; run id
+**`882fb2fe00bf4568bdb480a281db9e8b`**; its `run_meta.json` records
+`system_under_test.braking_mode = proportional_braking`, `yolo_model = yolov5s`. Outcome to be
+recorded in 8.9 by
+```
+python -m scripts.analysis.compare artifacts/runs/35acc09e8c224fdc953e3bf82ba57e96 artifacts/runs/882fb2fe00bf4568bdb480a281db9e8b \
+  --assume-a system_under_test.braking_mode=emergency_braking --assume-a system_under_test.yolo_model=yolov5s \
+  --assume-a template_sha256=497527fe36991f675652f5aca5b96c66ec6601ba37b52a2bd82af2ecd89242d9 \
+  --assume-a grammar_sha256=6b9e9a970c6e79c42a8cd3367ec30f745f15913f0976b489e73a39e9c1b3bec4 \
+  --allow "template_sha256=round-1 template fetched from Narval and diffed: only the <ego_behavior> block and the perceive() cache differ"
+```
+(`--assume-a` supplies metadata round 1's `run_meta.json` predates — the
+values are the ones measured in 8.8; `--allow` records the one inspected,
+justified difference so it is listed rather than flagged.)
+
+**Early observation (scenario 0 only, 21:55, not the comparison):** round 1
+scenario 0 (Adult, Light, LR, Short, fog 0): 4/5 failed, first brake at
+5.3–6.5 m, brake value always 1.0, 2–3 brake steps. Round 2 same scenario:
+5/5 passed the safety rule, first brake at **17–22 m**, fractional brake
+values (0.03…0.72, then 1.0), 21–91 brake steps. *But* 3 of the 5 "passes"
+are a new kind of outcome: the car braked to a **standstill 9–14 m from the
+pedestrian and never moved again** (termination "reached time limit",
+final speed 0). The pedestrian's `CrossingBehavior` waits until the car is
+within 8 m before stepping out, so the two wait for each other — a standoff.
+Only 1 of 5 was a genuine pass (stopped at ~8 m, pedestrian crossed, car
+resumed); 1 was geometry (car drove away). This is the paper's own
+observation that a mitigation can *shift* the failure mode (M1: "increasing
+unnecessary braking") — here the soft goal (progress / smooth driving) fails
+where the safety goal now holds. To be reported as a separate outcome
+(`passed_stalled`) alongside no-encounter, not hidden inside "passed"; the
+comparable metric (failure rate over encounters) is unchanged by it.
+Re-running round 1 with the new outcome: 12 of its 29 passes were also
+stalled (emergency braking freezes the car too while the pedestrian stays in
+view), 17 drove on.
+
+**Classification fix forced by round 2 (22:10):** the first partial round-2
+report filed 62 of 85 simulations as `no_encounter` — wrong. With
+proportional braking the car reacts at 0.30 confidence and stops 12–14 m
+away, so the detector never crosses the 0.85 bar that `detection_frames`
+counts, and the old rule ("never detected and never within 10 m") mistook a
+car that had *braked to a halt because of the pedestrian* for one that never
+met it. `no_encounter` now requires **no detection AND no braking**
+(`reacted()`), and the timing summary uses the same notion. Round 1 is
+unaffected (its car only ever braked on a detection). Recorded here because
+it is exactly the kind of oracle/classifier assumption a mitigation round can
+silently break — the "one variable" discipline surfaced it.
+
+Note for reading the comparison: on the full round-1 grid, `direction=LR`
+(+24%) and `dress=Dark` (+15%) did show effects, so prediction 3's "stay not
+supported" is already wrong for clothing at round 1; the relevant question
+for round 2 is whether those effects persist once the timing floor is lifted.
+
+### 8.9 Round 2 — outcome (job 3843349, run `882fb2fe00bf4568bdb480a281db9e8b`, completed 23:24, 1 h 34 min)
+
+`python -m scripts.analysis.compare` (round 1 → round 2; round 1's missing
+metadata supplied with `--assume-a`, the template change allowed with a
+recorded justification — see the command in 8.8):
+
+| | round 1 (emergency) | round 2 (proportional) |
+|---|---|---|
+| simulations | 160 | 160 |
+| no-encounter (excluded) | 40 | 32 |
+| true encounters | 120 | 128 |
+| **failures / failure rate** | **91 / 76%** | **4 / 3%** |
+| passes that drove on | 17 | 11 |
+| **passes that stalled (standoff)** | **12** | **113** (91% of passes) |
+| detected_too_late | 70 | 1 |
+| brake_released | 17 | 1 |
+| stopped_too_close | 1 | 2 |
+| median speed at first brake | 7.2 m/s | 2.0 m/s |
+| median brake steps | 6 | 90 |
+| detections too late | 65% | 1% |
+
+Against the pre-registered prediction (8.8):
+
+1. **`DetectionTooLate` dropped — confirmed** (70 → 1; verdict supported →
+   insufficient data). First brake now comes at 17–22 m on low confidence;
+   the car arrives at ~2 m/s instead of 7.2.
+2. **`BrakingNotLatched` — partly as predicted.** Its *count* fell (17 → 1)
+   because almost nothing fails any more; its *share* of the remaining
+   failures rose (19% → 25%). With 4 failures in total no verdict is possible.
+3. **Setting-based obstacles — as predicted, with the round-1 correction:**
+   `PedestrianClothingNotVisible` went supported → not supported, the
+   `direction=LR` candidate disappeared; child size and fog stay
+   unsupported. Nothing setting-related survived the timing fix.
+4. **No-encounter similar — confirmed** (40 → 32; same seeds, same geometry).
+
+**Not predicted, and the real finding:** the safety failures did not vanish,
+they moved. `StandoffUnnecessaryStop` went from 12 of 29 passes (41%) to
+**113 of 124 (91%)**: the car brakes on 30% confidence from ~20 m, comes to a
+halt 9–14 m short of the pedestrian, and — because the pedestrian's
+`CrossingBehavior` only steps out once the car is within 8 m — the two wait
+for each other until the time limit. The safety goal holds; the soft goal
+(progress / smooth driving) fails; and part of the effect is a defect of the
+test scenario (the 8 m trigger), which makes the soft-goal obstacle partly
+unmeasurable. This is the paper's Sec. IV-C claim ("model adaptation alone
+can shift failure modes rather than eliminate them") reproduced with a
+system-level adaptation, and it is precisely the case the review step is
+for: the requirement text never said the car must keep moving, so the
+mitigation optimised that away. Round 3's requirement change should say it.
+
+Three obstacles for the reviewer, then: `DetectionTooLate` (resolved),
+`StandoffUnnecessaryStop` (persisting, now dominant), and
+`crossing_trigger_8m` (a scenario artefact, not an obstacle). The decision is
+genuinely the human's: accept the standoff as real (system fix: resume when
+clear / timeout), reject it as artefact (fix the template, re-measure), or
+refine the requirement (add the progress soft goal). `decisions.json` records
+whichever is chosen; nothing is applied by the tool.
+
+Caveats: one run per arm, 5 trials per scenario, CARLA not fully
+deterministic; `stopped_too_close` 1 → 2 is noise at these counts; the
+proportional arm spent most of its budget standing still, so its failure
+statistics rest on very few events.
+
+### 8.7a The iteration loop — what is built (22:50, 2026-09-23)
+
+Following the reviewer's plan (file format first, page dumb, keep the CLI as
+fallback):
+
+1. **`scripts/analysis/decisions.py`** — the `decisions.json` schema
+   (v1), `from_analysis()` (fills every tool field, leaves every human field
+   null; computes each obstacle's status vs the previous round: new /
+   persisting / resolved / absent), `validate()`, `is_complete()`,
+   `save()`/`load()`. Verdicts: obstacle → accept / rename / reject; scope
+   item → out_of_scope / in_scope / **scenario_defect** (a fifth category the
+   paper's four layers lack: the test itself is wrong).
+2. **`scripts/analysis/review.py`** — the terminal walk-through that writes
+   it: one card per obstacle in support order (condition, evidence, status,
+   timing medians, a representative trace path, the video), then the
+   mitigation menu for accepted ones, then the scope items. `--answers FILE`
+   replays prepared answers; `input_fn`/`output_fn` make it testable.
+3. **Catalogue**: a `scenario` mitigation layer (DetectionTooLate: fixed
+   approach speed / spawn distance; Standoff: the 8 m crossing trigger), and
+   `SCENARIO_ARTEFACTS` — `crossing_trigger_8m`, `no_encounter_geometry`,
+   `distance_parameter_dead` — offered in the scope section with their
+   evidence metric and a suggested fix.
+
+Dry-run on the real round-2 partial data + round 1 as previous: statuses
+came out `DetectionTooLate: resolved`, `PedestrianClothingNotVisible:
+resolved`, `StandoffUnnecessaryStop: persisting` (not "new": round 1 already
+had 12 of 29 passes stalled = 41%, above the 25% bar; round 2 raises it to
+87% — the mitigation made an existing minor mode dominant), others absent —
+which is exactly the review a human is faced with.
+
+Steps 4–6 (built 23:45, 2026-09-23; 85 tests):
+
+4. **`scripts/analysis/refine.py`** — `decisions.json` → `R0.dsl`, `R1.dsl`,
+   `requirement_diff.md`. `plan_changes()` maps each accepted mitigation to a
+   labelled change: **[S]** a `performed by` swap from the `S_CHANGES` table
+   (paper M1–M4 onto the requirement's module slots; flagged when the
+   executor does not implement the module yet, e.g. `latched_braking`,
+   `proportional_braking_with_resume`); **[R]** an `assuming` (ODD limit) or
+   `ensuring` (soft goal) item from `R_CHANGES`; **[D]** a scenario/scope fix
+   that is not requirement text. Scope verdicts map too (out_of_scope →
+   `assuming` with the rule inverted; in_scope → drop the rule;
+   scenario_defect → the suggested template fix). `apply_changes()` edits the
+   text and the result must parse or nothing is written; a human-edited R1 can
+   be passed as an override (also parse-checked).
+5. **Grammar**: optional `("ensuring" soft_goal ("&" soft_goal)*)?` after
+   `assuming` — the soft-goal slot the round-2 finding showed was missing;
+   `get_soft_goals()`. The stray `print` in `get_scenario()` is gone.
+   **Provenance**: `run_grid()` / `/run_grid` take `parent_run_id`, `round`,
+   `requirement_source`, recorded in `run_meta.json` (volatile for
+   `compare.py`). `decisions.json` gained a `defer` verdict.
+6. **`pages/4_review.py`** — the offline Streamlit page (files only): header
+   with this round vs the previous, obstacle cards with video + verdict /
+   reason / mitigation, scope items, R0/R1 side by side with an edit box;
+   Accept writes the same files as the CLI. Smoke-tested with Streamlit's
+   `AppTest`. The CLI stays the fallback.
+
+### 8.10 The first recorded review — PROPOSED, awaiting the human (23:50)
+
+`python -m scripts.analysis.review` was run on round 2 with round 1 as the
+previous round, reviewer **"Claude (proposed - to be confirmed by Paul)"**,
+from a prepared answers file. The point is that the loop closes on a
+*recorded* decision; these are the tool-operator's proposals, and the human
+owner should confirm, change or overrule each before round 3:
+
+| item | status | proposed verdict | mitigation |
+|---|---|---|---|
+| `StandoffUnnecessaryStop` | persisting (41% → 91% of passes) | **accept** | **requirement**: add the progress soft goal |
+| `DetectionTooLate` | resolved (70/91 → 1/4) | accept (keep the name) | — |
+| `PedestrianClothingNotVisible` | resolved (+15% → 0%) | accept (keep the name) | — |
+| `BrakingNotLatched` | absent (19% → 1 of 4) | **defer** — too few events | — |
+| `PedestrianSizeTooSmall` | absent in both rounds | reject | — |
+| `AdverseWeather` | absent in both rounds | reject | — |
+| `crossing_trigger_8m` | artefact | **scenario defect** | fix the template |
+| `no_encounter_geometry` | artefact | scenario defect | fix the template |
+| `distance_parameter_dead` | artefact | scenario defect | fix the template |
+
+`refine.py` then produced **R1** = R0 plus one line:
+
+```
+    ensuring "vehicle resumes within 10 s once the crossing is clear"
+```
+
+— an **[R]** change only (the system already runs `proportional_braking`),
+plus three **[D]** scenario fixes that are not requirement text. Files:
+`artifacts/runs/882fb2fe…/{decisions.json, R0.dsl, R1.dsl, requirement_diff.md}`.
+
+What round 3 needs before it can be launched: (a) the human's confirmed
+`decisions.json` / R1; (b) the three `scratch.temp` fixes (the 8 m trigger
+above all — without it the soft goal is unmeasurable), which are code
+changes to approve; (c) an executor check for the soft goal (`ensuring` is
+parsed but not yet evaluated — a `passed_stalled` outcome is the current
+proxy, and `resumes within 10 s` can be measured from the traces); then
+`/run_grid?...&parent_run_id=882fb2fe…&round=3&requirement_source=artifacts/runs/882fb2fe…/R1.dsl`.
+
+### 8.7 The iteration loop (stages 7-9) — original design
+
+Per round: requirement R_n → run (grid) → `simulations.csv` → report →
+**human** records decisions in a `decisions.json` (accept/rename/reject each
+obstacle; keep/drop each scope rule; pick a mitigation) → tool proposes R_{n+1}
+as a side-by-side text change (`performed by` module for system/model/data
+fixes; `assuming` line for requirement-level scoping) → human accepts/edits →
+next round, whose report compares against the previous round; every
+`run_meta.json` records `parent_run_id`. Stopping is the human's call; the
+tool shows the signals (no supported obstacles, rate under a threshold, no
+change over two rounds). Still to build: `decisions.json` + review CLI, the
+requirement writer, the round-to-round comparison, run lineage.

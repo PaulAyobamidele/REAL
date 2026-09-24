@@ -16,8 +16,10 @@ import mlflow
 from tqdm import tqdm
 import redis
 
+from real_config import settings
+
 # Connect to Redis
-env = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)
+env = redis.StrictRedis(host=settings.redis_host, port=settings.redis_port, decode_responses=True)
 
 # os.environ["MLFLOW_TRACKING_URI"] = env.get('mlflow_tracking_uri')
 

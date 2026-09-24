@@ -61,7 +61,8 @@ REAL is a requirements engineering platform for adaptive learning that bridges t
 
 3. **Install dependencies**
    ```bash
-   pip install -r requirements.txt
+   pip install -e .
+   cp .env.example .env   # then edit .env if your ports/paths differ
    ```
 
 4. **Start Redis server**
@@ -115,6 +116,87 @@ curl "http://127.0.0.1:7999/get_testcases?requirement=Emergency braking in urban
 curl "http://127.0.0.1:7999/validate?testcase={speed: 50, distance: 25, weather: fog}"
 ```
 
+### 4. Run every scenario (exhaustive grid) with per-simulation telemetry
+
+```bash
+curl "http://127.0.0.1:7999/run_grid?requirement=<KAOS requirement>&trials=5&record_video=true"
+```
+
+Runs all 32 scenarios the grammar (`scripts/templates/old/old.bnf`) can express,
+`trials` times each, and writes to `artifacts/runs/<run_id>/`:
+
+| file | what |
+|---|---|
+| `run_meta.json` | inputs, seed, system under test (braking mode, perception model), status |
+| `scenarios.csv` | one row per scenario: pass/fail counts |
+| `simulations.csv` | one row per simulation: closest distance to the pedestrian, ego speed, when/at what distance the pedestrian was first detected and with what confidence, when braking started, how long it lasted, model inference time, ... |
+| `traces/<scenario>_<sim>.json` | full per-step time series (distance, speed, detections, brake events) |
+| `best_scenario.scenic`, `best_scenario.mp4` | the most-falsifying scenario and a video of one run of it |
+
+The GE search (`/get_testcases?sample=false`) writes the same `simulations.csv`
+plus `generations.csv`. Rows are appended as each simulation ends, so a job that
+is killed halfway still leaves usable data.
+
+### 5. Failure analysis (laptop, no simulator needed)
+
+```bash
+python -m scripts.analysis.report artifacts/runs/<run_id>
+```
+
+Reads `simulations.csv` and writes `analysis_report.md` / `.json` into the run
+folder: scope (admissibility) labelling, failure rate per scenario setting and
+per scenario, how each simulation ended (`never_detected`, `detected_too_late`,
+`brake_released`, `braking_insufficient`, `stopped_too_close`; `passed`;
+`passed_stalled` = the safety rule held only because the car stopped short and
+never moved again - a standoff, reported separately; `no_encounter` runs where
+the car never met the pedestrian are excluded from the rates),
+named obstacles with evidence and candidate mitigations per layer
+(data / model / system / requirement), and sanity warnings about the data
+itself. Scope rules live in `scripts/analysis/admissibility_rules.json` and in
+the requirement's own `assuming` clause (below).
+
+## 📝 Requirement language (KAOS-style DSL)
+
+`scripts/redsl/grammar.py` parses requirements such as:
+
+```
+MAINTAIN "Pedestrian Safety"
+    by
+        "Pedestrian Check" using "Perception Module"
+            operationalized as
+                "Detect Pedestrian" performed by "yolov5s"
+                taking input "image" producing output "pedestrian detection flag"
+    followed by
+        "braking" using "braking module"
+            operationalized as
+                "Apply Brakes" if "pedestrian detection flag=True" performed by "proportional_braking"
+                taking input "pedestrian detection flag" producing output "Braking Status Flag"
+    in scenario where
+        "A pedestrian trying to cross the street in fog."
+    assuming "fog_density <= 50" & "pedestrian is on foot, not cycling"
+```
+
+- The **scenario** sentence is keyword-matched (`scripts/evolve/constraints.py`)
+  to bias the GE population (fog → `fog_density=50`, child → `Child`, ...).
+- The modules named after **`performed by`** define the system under test:
+  `"Detect Pedestrian" performed by "<yolov5s|yolov5m|fine_tune|few_shot>"`
+  selects the perception weights in `model/`; `"Apply Brakes" performed by
+  "<emergency_braking|proportional_braking>"` selects the braking behaviour
+  (baseline full brake while detected, or the paper's M4 proportional braking
+  from 30% confidence). Recorded in `run_meta.json` and every telemetry row.
+- The optional **`assuming`** clause states domain assumptions (KAOS domain
+  properties / ODD limits). Machine-readable ones (`<setting> <op> <value>`)
+  become out-of-scope rules in the analysis - failures outside them are
+  reported as *spurious*, not as requirement violations. Anything else is kept
+  as free text for the human reviewer. Requirements without the clause parse
+  exactly as before.
+- The optional **`ensuring`** clause (after `assuming`) states soft goals -
+  quality attributes such as the paper's *SmoothBraking* / making progress:
+  `ensuring "vehicle resumes within 10 s once the crossing is clear"`. Added
+  when round 2 showed a mitigation satisfying the safety goal by never moving
+  again; the requirement had no place to say the car must keep going. Read by
+  `DSL.get_soft_goals()`; not yet checked automatically by the executor.
+
 ## 📁 Project Structure
 
 ```
@@ -122,13 +204,18 @@ REAL/
 ├── 📄 api_app.py              # FastAPI application server
 ├── 📄 ge.py                   # Grammatical Evolution implementation
 ├── 🎯 app.py                  # Streamlit web interface
+├── 📄 real_config.py          # All environment-dependent settings (pydantic BaseSettings)
 ├── 📁 scripts/
-│   ├── 🧬 evolve/             # Evolutionary algorithms
-│   ├── 🔧 redsl/              # Requirements DSL parser
-│   ├── 🎭 templates/          # Scenario templates
-│   ├── 🚗 simulations/        # CARLA integration
+│   ├── 🧬 evolve/             # GE search (ge.py), exhaustive grid (grid.py), constraints, run persistence, video
+│   ├── 🔬 analysis/           # Failure analysis: telemetry, admissibility, failure_model, obstacles, report
+│   ├── 🔧 redsl/              # Requirements DSL parser (KAOS-style, Lark)
+│   ├── 🎭 templates/          # BNF grammars + legacy Scenic template
+│   ├── 🚗 simulations/        # Scenic/VerifAI/CARLA executor, safety monitor, fitness
 │   ├── 📊 mlops/              # MLflow integration
-│   └── 🏗️ scenarios/          # Test scenarios
+│   └── 🏗️ scenarios/          # scratch.temp - the Scenic scenario template the search runs
+├── 📁 tests/                  # pytest suite (no CARLA needed)
+├── 📁 artifacts/runs/         # Run outputs (see "Run every scenario" above)
+├── 📁 infra/hpc/              # Apptainer image definition + Slurm job for Narval (see infra/hpc/README.md)
 ├── 📁 grammar/                # DSL grammar definitions
 │   ├── 📁 example/            # Example grammars
 │   └── 📁 kaos/               # KAOS methodology support
@@ -155,16 +242,37 @@ REAL/
 - **CARLA simulator** integration for realistic testing
 - **Scenic language** support for probabilistic scenarios
 - **Multi-process execution** with timeout handling
-- **Fitness evaluation** based on simulation outcomes
+- **Fitness evaluation** based on simulation outcomes: the safety requirement is
+  "the ego stays more than 5 m (centre to centre) from the **pedestrian**"; a
+  scenario's fitness is the percentage of its simulations that satisfied it,
+  and the search minimises it (i.e. looks for falsifying scenarios)
+
+### Failure Analysis (REAL stages 6-7)
+- **Per-simulation telemetry** (`scripts/analysis/telemetry.py`) recorded during the run
+- **Admissibility** (valid vs spurious failures) from an editable rules file and the requirement's `assuming` clause
+- **Failure model**: rates per setting/scenario, failure types, timing (first-detection distance vs stopping distance), sanity warnings
+- **Obstacle model**: the paper's KAOS obstacles (`PedestrianSizeTooSmall`, `PedestrianClothingNotVisible`, `AdverseWeather`) plus behaviour-based ones (`DetectionTooLate`, `BrakingNotLatched`), a soft-goal one (`StandoffUnnecessaryStop`) and unnamed candidates, each with candidate mitigations at the data / model / system / requirement layers for a human to choose from
+- **Round comparison** (`python -m scripts.analysis.compare <run_a> <run_b>`): checks that only the system under test differs between two runs, then compares failure rate over true encounters (no-encounter and stalled passes reported separately), failure-type shares, timing and obstacle verdicts
+- **Requirement writer** (`python -m scripts.analysis.refine <run_dir>`): turns `decisions.json` into `R0.dsl` (as run), `R1.dsl` (proposed) and `requirement_diff.md`, with every change labelled **[S]** specification (`performed by` swap - flagged if the executor does not implement the module yet), **[R]** requirement (an `assuming` domain assumption or `ensuring` soft goal added) or **[D]** domain/test fix (not requirement text). R1 is parse-checked; nothing is applied. The next round is launched deliberately with `/run_grid?...&parent_run_id=<run>&round=3&requirement_source=<path to R1.dsl>`, which `run_meta.json` records - so a chain of rounds is traceable from files
+- **Review page** (`streamlit run app.py`, page "review", or set `REAL_REVIEW_RUN_DIR`/`REAL_REVIEW_PREVIOUS_DIR`): the same review offline, in a browser - header with this round vs the previous one, one card per obstacle (evidence, status, timing, the video) with verdict/reason/mitigation, the scope items, and R0 / R1 side by side with an edit box; Accept writes the same `decisions.json` + `R0.dsl`/`R1.dsl`/`requirement_diff.md` as the CLI. Reads files only: no Redis, API or CARLA
+- **Human review** (`python -m scripts.analysis.review <run_dir> --previous <prev_run_dir> --reviewer NAME`): a terminal walk-through, one obstacle at a time (condition, evidence, status vs the previous round - new / persisting / resolved / absent -, timing, a representative trace, the video), asking accept / rename / reject + reason and, for accepted obstacles, a mitigation from the catalogue (data / model / system / requirement / **scenario** - the last for defects of the test itself). Then the scope items (rules that set simulations aside; scenario-artefact candidates such as the 8 m crossing trigger): out of scope / in scope / scenario defect. Writes `decisions.json` into the run folder (schema in `scripts/analysis/decisions.py`). Nothing is applied automatically. `--answers FILE` replays prepared answers
 
 ## 🛠️ Configuration
 
 ### Environment Variables
+All settings are optional - defaults reproduce the previous hardcoded behavior. See `.env.example` and `real_config.py` for the full list.
 ```bash
-export MLFLOW_TRACKING_URI="http://127.0.0.1:5000"
-export CARLA_ROOT="/path/to/carla"
 export REDIS_HOST="localhost"
 export REDIS_PORT="6379"
+export MLFLOW_TRACKING_URI="http://127.0.0.1:5000"
+export API_HOST="127.0.0.1"
+export API_PORT="7999"
+export CARLA_HOST="127.0.0.1"
+export CARLA_PORT="2000"
+export CARLA_ROOT="/opt/carla"
+export CARLA_MAP_PATH="/opt/carla/CarlaUE4/Content/Carla/Maps/OpenDrive/Town01.xodr"
+export CARLA_MAP_NAME="Town01"
+export RANDOM_SEED="42"   # GE search + per-scenario Scenic sampling (CARLA itself is not fully deterministic)
 ```
 
 ### Grammar Configuration

@@ -19,10 +19,12 @@ import os
 
 from ultralytics import YOLO
 
-os.environ["MLFLOW_TRACKING_URI"] = "http://127.0.0.1:5000"
+from real_config import settings
+
+os.environ["MLFLOW_TRACKING_URI"] = settings.mlflow_tracking_uri
 
 # # Set our tracking server uri for logging
-mlflow.set_tracking_uri(uri="http://127.0.0.1:5000")
+mlflow.set_tracking_uri(uri=settings.mlflow_tracking_uri)
 
 # # Create a new MLflow Experiment
 mlflow.set_experiment("YOLO Models")
