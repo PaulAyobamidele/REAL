@@ -9,16 +9,17 @@ import mlflow, re, os
 import hashlib
 from mlflow.tracking import MlflowClient
 
+from real_config import settings
 
 # Set the layout to wide
 st.set_page_config(layout="wide")
 
-env = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)
+env = redis.StrictRedis(host=settings.redis_host, port=settings.redis_port, decode_responses=True)
 # mlflow.set_tracking_uri(uri="http://localhost:5000")
 # os.environ["MLFLOW_TRACKING_URI"] = env.get('mlflow_tracking_uri')
 # st.code(mlflow.get_tracking_uri())
 
-validate_url = "http://127.0.0.1:7999/validate"
+validate_url = f"http://{settings.api_host}:{settings.api_port}/validate"
 
 st.title("Requirements Evolution")
 
@@ -80,7 +81,7 @@ if st.session_state['requirement'] != None:
         cnt = 0
         progress_text = f"Scenarios are being Evaluated. Please wait."
         my_bar = st.progress(0, text=progress_text)
-        client = MlflowClient(tracking_uri="http://localhost:5000")
+        client = MlflowClient(tracking_uri=settings.mlflow_tracking_uri)
         for id,testcase in enumerate(st.session_state['testcases']):
             progress_text = f"Scenario-{id} is being Evaluated. Please wait."
             cnt += 1

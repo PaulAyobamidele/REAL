@@ -13,8 +13,10 @@ import seaborn as sns
 import shap
 import numpy as np
 
+from real_config import settings
+
 st.set_page_config(layout="wide")
-env = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)
+env = redis.StrictRedis(host=settings.redis_host, port=settings.redis_port, decode_responses=True)
 
 def st_shap(plot, height=None):
     shap_html = f"<head>{shap.getjs()}</head><body>{plot.html()}</body>"
@@ -22,9 +24,9 @@ def st_shap(plot, height=None):
 
 st.header("Explore and figure out the variables causing high failure rates")
 
-st.link_button('Go to Experiments Tracking','http://localhost:5000')
+st.link_button('Go to Experiments Tracking', settings.mlflow_tracking_uri)
 
-client = MlflowClient(tracking_uri="http://localhost:5000")
+client = MlflowClient(tracking_uri=settings.mlflow_tracking_uri)
 experiments = client.search_experiments()
 experiments = {exp.name : exp for exp in experiments}
 

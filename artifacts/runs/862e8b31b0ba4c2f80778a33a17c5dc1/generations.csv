@@ -1,0 +1,4 @@
+avg,avg_depth,avg_length,avg_nodes,avg_used_codons,behavioural_diversity,best_ind_depth,best_ind_length,best_ind_nodes,best_ind_used_codons,fitness_diversity,gen,generation_time,invalid,max,min,selection_time,std,structural_diversity
+26.0,3.0,7.0,5.0,5.0,0,3,7,5,5,0,0,1563.652435541153,0,40.0,0.0,0,12.806248474865697,0.9
+16.0,3.0,7.0,5.0,5.0,0,3,7,5,5,0,1,954.9652454853058,0,40.0,0.0,7.700920104980469e-05,14.966629547095765,0.8
+10.0,3.0,7.5,5.0,5.0,0,3,7,5,5,0,2,1284.6255650520325,0,40.0,0.0,7.176399230957031e-05,13.416407864998739,0.5

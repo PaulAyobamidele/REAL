@@ -23,6 +23,8 @@ from mlflow.models.signature import infer_signature
 
 import logging
 
+from real_config import settings
+
 logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger(__name__)
 
@@ -65,7 +67,7 @@ if __name__ == "__main__":
     l1_ratio = float(sys.argv[2]) if len(sys.argv) > 2 else 0.5
 
     # Set our tracking server uri for logging
-    mlflow.set_tracking_uri(uri="http://127.0.0.1:5000")
+    mlflow.set_tracking_uri(uri=settings.mlflow_tracking_uri)
 
     # Create a new MLflow Experiment
     mlflow.set_experiment("ElasticNet-0")

@@ -1,0 +1,78 @@
+Bootstrap: docker
+From: carlasim/carla:0.9.13
+
+# Copies a pre-built staging copy of the local checkout instead of git-cloning
+# a pushed branch/tag - lets you iterate on the container build without a
+# commit+push cycle for every change. Build the staging copy first with the
+# rsync command in README.md (excludes sim_env/, mlruns/, model weights, and
+# other large/irrelevant-in-container content), then update this source path
+# if you build it somewhere other than ~/real-av-build/REAL.
+# Switch this back to a `git clone` of a tagged release once you're cutting a
+# reproducible, citable build for the actual Zenodo artifact.
+%files
+    /Users/ayobamidele/real-av-build/REAL /opt/real-av/REAL
+
+%post
+    set -e
+    # /tmp inside the build environment is a tiny tmpfs (separate from
+    # APPTAINER_TMPDIR, which only controls Apptainer's own build staging) -
+    # pip's download/build temp files for torch/torchvision blow past it.
+    mkdir -p /var/tmp/pip-build-tmp
+    export TMPDIR=/var/tmp/pip-build-tmp
+
+    # The base image's baked-in NVIDIA CUDA apt repo has an expired/invalid
+    # signing setup ("no longer signed") which fails apt-get update entirely -
+    # drop it, since nothing we install here comes from that repo.
+    rm -f /etc/apt/sources.list.d/cuda*.list /etc/apt/sources.list.d/*nvidia*.list
+
+    apt-get update && apt-get install -y --no-install-recommends \
+        python3.8 python3.8-venv python3-pip git redis-server \
+        && rm -rf /var/lib/apt/lists/*
+
+    python3.8 -m pip install --upgrade pip
+    python3.8 -m pip install -e /opt/real-av/REAL/grape
+    python3.8 -m pip install -e /opt/real-av/REAL/VerifAI
+    python3.8 -m pip install -e /opt/real-av/REAL/Scenic
+    python3.8 -m pip install carla==0.9.13
+    python3.8 -m pip install -e "/opt/real-av/REAL[ml,rl]"
+    # mlserver's own metadata declares fastapi<=0.89.1 (every release through
+    # 1.4.0.dev2) which conflicts with real-av's fastapi>=0.109 - a real
+    # declared conflict, but the two work together fine in practice (that's
+    # what setup_env.sh's environment runs). --no-deps installs it without
+    # forcing pip to re-litigate that stale constraint against what's already
+    # installed above.
+    python3.8 -m pip install --no-deps mlserver==1.4.0.dev2
+
+    # Pre-warm torch.hub's cache for the YOLO perception model at build time
+    # (this Lima VM has internet; Narval's compute nodes don't). Baking this
+    # into the image - rather than a one-off manual cache-warming command run
+    # on Narval's login node - means the image is self-contained and
+    # reproducible: nobody has to remember a separate setup step to run this
+    # on a fresh allocation.
+    #
+    # Only fetches+extracts the ultralytics/yolov5 repo zip (pure network/file
+    # I/O via torch.hub's internal _get_cache_or_reload) rather than calling
+    # the full torch.hub.load(), which also constructs the actual model - that
+    # involves real tensor ops that reliably segfault under this Mac's QEMU
+    # emulation (the same class of issue as the pyarrow crash documented in
+    # README.md's local-verification section). The full torch.hub.load(...,
+    # force_reload=False) then runs for the first time at runtime, on
+    # Narval's real amd64 hardware (no emulation there), reusing this cache
+    # instead of re-fetching from GitHub.
+    mkdir -p /opt/torch_cache
+    TORCH_HOME=/opt/torch_cache python3.8 -c "
+import torch.hub
+torch.hub._get_cache_or_reload('ultralytics/yolov5', force_reload=True, trust_repo=True, calling_fn='load')
+"
+
+%environment
+    export CARLA_ROOT=/home/carla
+    export CARLA_MAP_PATH=/home/carla/CarlaUE4/Content/Carla/Maps/OpenDrive/Town01.xodr
+    export CARLA_HOST=127.0.0.1
+    export CARLA_PORT=2000
+    export REDIS_HOST=127.0.0.1
+    export REDIS_PORT=6379
+    export TORCH_HOME=/opt/torch_cache
+
+%runscript
+    echo "Use infra/hpc/run_real_av.slurm to launch CARLA, Redis, and api_app.py together."

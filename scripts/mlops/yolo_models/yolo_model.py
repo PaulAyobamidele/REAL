@@ -9,6 +9,8 @@ import mlflow
 
 import redis
 
+from real_config import settings
+
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
@@ -29,7 +31,7 @@ class MyYOLOModel(MLModel):
         self.models['fine_tune'] = torch.hub.load("ultralytics/yolov5", "custom", path="./models/fine_tune.pt", force_reload=False)
         self.models['yolov5m'] = torch.hub.load("ultralytics/yolov5", "custom", path="./models/yolov5m.pt", force_reload=False)
         self.models['yolov5s'] = torch.hub.load("ultralytics/yolov5", "custom", path="./models/yolov5s.pt", force_reload=False)
-        self.env = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)
+        self.env = redis.StrictRedis(host=settings.redis_host, port=settings.redis_port, decode_responses=True)
 
         # self.model = mlflow.pyfunc.load_model(model_uri=self.model_uri)
         return True

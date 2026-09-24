@@ -1,5 +1,7 @@
 import numpy as np
 
+from real_config import settings
+
 def get_pedestrian(pedestrian,dress):
 
     if pedestrian=='Adult' and dress=='Light':
@@ -96,8 +98,8 @@ weather = {{
 }}
 
 # Apply the weather conditions to the scenario
-param map = localPath('/opt/carla/CarlaUE4/Content/Carla/Maps/OpenDrive/Town01.xodr')
-param carla_map = 'Town01'
+param map = localPath('{settings.carla_map_path}')
+param carla_map = '{settings.carla_map_name}'
 
 model scenic.simulators.carla.model  # Here the definitions of all referenceables are defined (vehicle types, road library, etc) 
 param weather = weather

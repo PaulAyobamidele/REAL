@@ -3,7 +3,9 @@ from scripts.evolve.util import falsifier, get_scenic_script
 from scripts.templates.old.scenic_template import get_scenic_code
 import redis, re
 
-env = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)
+from real_config import settings
+
+env = redis.StrictRedis(host=settings.redis_host, port=settings.redis_port, decode_responses=True)
 env.set('model', 'yolov5s')
 env.set('braking', 'proportional_braking')
 
@@ -136,7 +138,7 @@ code = get_scenic_code(params=param_dict)
 
 # print(code)
 
-f = falsifier(code, 2000)
+f = falsifier(code, settings.carla_port)
 fitness = f.falsify(num_test=2)
 
 print(fitness)

@@ -2,9 +2,11 @@ from scripts.evolve.util import falsifier
 from scripts.templates.old.scenic_template import get_scenic_code
 import redis, re
 
+from real_config import settings
+
 def validate(testcase: str = None):
 
-    env = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)
+    env = redis.StrictRedis(host=settings.redis_host, port=settings.redis_port, decode_responses=True)
 
     def replace_with_value(match):
             return match.group(2)
@@ -23,7 +25,7 @@ def validate(testcase: str = None):
 
     # print(param_dict)
 
-    f = falsifier(code, 2000)
+    f = falsifier(code, settings.carla_port)
     fitness = f.falsify(num_test=2)
 
     return fitness

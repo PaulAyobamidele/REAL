@@ -1,0 +1,176 @@
+{
+  "compared_at": "2026-09-23T22:28:36.078247+00:00",
+  "run_a": "35acc09e8c224fdc953e3bf82ba57e96",
+  "run_b": "882fb2fe00bf4568bdb480a281db9e8b",
+  "meta_diff": {
+    "system_under_test.braking_mode": [
+      "emergency_braking",
+      "proportional_braking"
+    ],
+    "template_sha256": [
+      "497527fe36991f675652f5aca5b96c66ec6601ba37b52a2bd82af2ecd89242d9",
+      "89a952d0b417f83d9da8580ec29483afdd0103b5185d60ecf581719c7da7b53a"
+    ]
+  },
+  "allowed_diff": {
+    "template_sha256": "round-1 template fetched from Narval and diffed 2026-09-23: only the <ego_behavior> block and the perceive() cache differ (Notes.md 8.8)"
+  },
+  "unexpected_diff": {},
+  "one_variable": true,
+  "metric_a": {
+    "n_simulations": 160,
+    "n_encounters": 120,
+    "n_no_encounter": 40,
+    "failures": 91,
+    "failure_rate": 0.7583333333333333,
+    "passes": 29,
+    "passed_clean": 17,
+    "passed_stalled": 12,
+    "failure_types": {
+      "never_detected": {
+        "count": 1,
+        "share": 0.01098901098901099
+      },
+      "detected_not_braked": {
+        "count": 0,
+        "share": 0.0
+      },
+      "detected_too_late": {
+        "count": 70,
+        "share": 0.7692307692307693
+      },
+      "brake_released": {
+        "count": 17,
+        "share": 0.18681318681318682
+      },
+      "braking_insufficient": {
+        "count": 2,
+        "share": 0.02197802197802198
+      },
+      "stopped_too_close": {
+        "count": 1,
+        "share": 0.01098901098901099
+      }
+    },
+    "timing": {
+      "n_detected": 119,
+      "first_detection_distance_m_median": 7.031466085445235,
+      "speed_at_first_brake_mps_median": 7.16867048834431,
+      "stopping_distance_needed_m_median": 8.211864785653667,
+      "share_detected_too_late": 0.6470588235294118,
+      "brake_steps_median": 6.0,
+      "share_still_moving_at_closest": 0.6974789915966386,
+      "mean_inference_ms_median": 6.838083267211914
+    },
+    "obstacles": {
+      "PedestrianSizeTooSmall": "not_supported",
+      "PedestrianClothingNotVisible": "supported",
+      "AdverseWeather": "not_supported",
+      "DetectionTooLate": "supported",
+      "BrakingNotLatched": "not_supported",
+      "StandoffUnnecessaryStop": "supported",
+      "Candidate(direction=LR)": "supported"
+    },
+    "n_spurious": 0
+  },
+  "metric_b": {
+    "n_simulations": 160,
+    "n_encounters": 128,
+    "n_no_encounter": 32,
+    "failures": 4,
+    "failure_rate": 0.03125,
+    "passes": 124,
+    "passed_clean": 11,
+    "passed_stalled": 113,
+    "failure_types": {
+      "never_detected": {
+        "count": 0,
+        "share": 0.0
+      },
+      "detected_not_braked": {
+        "count": 0,
+        "share": 0.0
+      },
+      "detected_too_late": {
+        "count": 1,
+        "share": 0.25
+      },
+      "brake_released": {
+        "count": 1,
+        "share": 0.25
+      },
+      "braking_insufficient": {
+        "count": 0,
+        "share": 0.0
+      },
+      "stopped_too_close": {
+        "count": 2,
+        "share": 0.5
+      }
+    },
+    "timing": {
+      "n_detected": 128,
+      "first_detection_distance_m_median": 7.582974493380009,
+      "speed_at_first_brake_mps_median": 1.960000276565552,
+      "stopping_distance_needed_m_median": 5.240100067758565,
+      "share_detected_too_late": 0.0078125,
+      "brake_steps_median": 90.0,
+      "share_still_moving_at_closest": 0.3125,
+      "mean_inference_ms_median": 7.107260227203369
+    },
+    "obstacles": {
+      "PedestrianSizeTooSmall": "not_supported",
+      "PedestrianClothingNotVisible": "not_supported",
+      "AdverseWeather": "not_supported",
+      "DetectionTooLate": "insufficient_data",
+      "BrakingNotLatched": "insufficient_data",
+      "StandoffUnnecessaryStop": "supported"
+    },
+    "n_spurious": 0
+  },
+  "failure_rate_delta": -0.7270833333333333,
+  "failure_type_deltas": {
+    "never_detected": {
+      "count": -1,
+      "share": -0.01098901098901099
+    },
+    "detected_not_braked": {
+      "count": 0,
+      "share": 0.0
+    },
+    "detected_too_late": {
+      "count": -69,
+      "share": -0.5192307692307693
+    },
+    "brake_released": {
+      "count": -16,
+      "share": 0.06318681318681318
+    },
+    "braking_insufficient": {
+      "count": -2,
+      "share": -0.02197802197802198
+    },
+    "stopped_too_close": {
+      "count": 1,
+      "share": 0.489010989010989
+    }
+  },
+  "obstacle_changes": {
+    "BrakingNotLatched": [
+      "not_supported",
+      "insufficient_data"
+    ],
+    "Candidate(direction=LR)": [
+      "supported",
+      null
+    ],
+    "DetectionTooLate": [
+      "supported",
+      "insufficient_data"
+    ],
+    "PedestrianClothingNotVisible": [
+      "supported",
+      "not_supported"
+    ]
+  }
+}

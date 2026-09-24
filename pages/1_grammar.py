@@ -3,16 +3,18 @@ from streamlit.components.v1 import html
 from scripts.redsl.grammar import DSL
 import requests, redis
 from scenic_utility import validate
+from real_config import settings
 
-env = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)
+env = redis.StrictRedis(host=settings.redis_host, port=settings.redis_port, decode_responses=True)
 
 # Set the layout to wide
 st.set_page_config(layout="wide")
 
 # Define the URL of the endpoint
-verify_url = "http://127.0.0.1:7999/verify_requirement"
-testcases_url = "http://127.0.0.1:7999/get_testcases"
-validate_url = "http://127.0.0.1:7999/validate"
+_api_base = f"http://{settings.api_host}:{settings.api_port}"
+verify_url = f"{_api_base}/verify_requirement"
+testcases_url = f"{_api_base}/get_testcases"
+validate_url = f"{_api_base}/validate"
 
 st.markdown(
     """

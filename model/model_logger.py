@@ -10,10 +10,11 @@ from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision.transforms import ToTensor
 
+from real_config import settings
 
 # Connect to Redis
-env = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)
-env.set("mlflow_tracking_uri", "http://127.0.0.1:5000")
+env = redis.StrictRedis(host=settings.redis_host, port=settings.redis_port, decode_responses=True)
+env.set("mlflow_tracking_uri", settings.mlflow_tracking_uri)
 env.set("experiment_log_yolo", "yolo models")
 
 

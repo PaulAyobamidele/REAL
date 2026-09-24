@@ -12,17 +12,20 @@ Working branch: `fse-tool`. Fork: https://github.com/PaulAyobamidele/REAL.
 - [x] Runtime data no longer tracked (`infra/minio_data`, `mlruns`, caches) — `3ef94c3`
 - [x] `grape` submodule `__pycache__` ignored — `d5b8815`
 
-## Open — blockers for FSE "Reusable" badge
-- [ ] No `pyproject.toml` / `requirements.txt` / `setup.py` — Phase 1.1
-- [ ] Remaining hardcoded absolute paths (grep pending) — Phase 1.2
+## Open — blockers for ICSE "Reusable" badge
+- [x] No `pyproject.toml` / `requirements.txt` / `setup.py` — `pyproject.toml` added (uncommitted, 2026-09)
+- [x] Remaining hardcoded absolute paths — `real_config.py` settings (uncommitted, 2026-09)
 - [ ] `api_app.py`: duplicated `/get_testcases` endpoint — Phase 2.2
 - [ ] `scripts/evolve/ge.py` imports `simulations.util` directly (tight coupling) — Phase 2.1
-- [ ] `scripts/templates/old/scenic_template.py:149` RecordingMonitor commented out — Phase 3.5 (stretch)
-- [ ] No `tests/` directory — Phase 4
+- [x] RecordingMonitor path hardcoded — now injected per run (`build_scenario(frames_dir=...)`)
+- [x] No `tests/` directory — 67 tests, no CARLA needed (uncommitted, 2026-09)
 - [ ] No CI — Phase 4.4
-- [ ] README lacks external install/quickstart — Phase 5.1
-- [ ] No `STATUS` file for FSE artifact — Phase 5.5
+- [ ] README lacks external install/quickstart — partly done (install, API, analysis); needs a clean-machine walkthrough
+- [ ] No `STATUS` file for the ICSE artifact — Phase 5.5
 - [ ] No DOI / Zenodo release — Phase 5.6
+- [ ] Nothing since `b1fd009` is committed — review + commit the 2026-09-17..23 work
+- [ ] `scratch.temp`: `distance` parameter has no effect; random lane choice yields "no encounter" runs — fix geometry
+- [ ] Stages 8-9 (decisions file, requirement writer, round comparison) — Notes.md §8.7
 
 ## Known runtime-environment debts
 - [ ] CARLA 0.9.15 headless setup on compute node — Phase 1.3

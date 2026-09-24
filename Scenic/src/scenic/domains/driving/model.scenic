@@ -38,7 +38,9 @@ import redis
 import warnings
 warnings.filterwarnings("ignore")
 
-env = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)
+from real_config import settings
+
+env = redis.StrictRedis(host=settings.redis_host, port=settings.redis_port, decode_responses=True)
 
 
 # from functools import lru_cache
@@ -52,16 +54,18 @@ env = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)
 # @lru_cache(maxsize=1)
 def load_model_once():
 
-    # Get the model name from environment variable, default to 'yolov5s' if not set
-    # model_name = os.environ.get('YOLO_MODEL', 'yolov5m')
-    model_name = env.get('model')
+    # Redis is only ever populated when a person picks a model in the
+    # Streamlit UI (pages/1_grammar.py) - fall back to a sensible default for
+    # any other caller (the API directly, batch/HPC runs, etc).
+    model_name = env.get('model') or 'yolov5s'
 
-    # Update the model loading code
-    current_dir = os.getcwd()
-    model_path = os.path.join(current_dir, "model", f"{model_name}.pt")
-    # model_path = os.path.join(current_dir, "model", "best.pt")
+    model_path = os.path.join(settings.model_dir, f"{model_name}.pt")
 
-    yolo_model = torch.hub.load("ultralytics/yolov5", "custom", path=model_path, force_reload=True)
+    # force_reload=False: reuse the ultralytics/yolov5 repo definition already
+    # cached under $TORCH_HOME (baked into the container image at build time -
+    # see infra/hpc/carla.def) instead of re-fetching it from GitHub on every
+    # call, which compute nodes without internet access cannot do.
+    yolo_model = torch.hub.load("ultralytics/yolov5", "custom", path=model_path, force_reload=False)
 
     return yolo_model
 

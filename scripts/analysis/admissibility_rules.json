@@ -1,0 +1,12 @@
+{
+  "description": "Operational design domain (ODD) limits. A scenario matching ANY rule is out of scope: its failures are reported as SPURIOUS (a breach of a domain assumption), not as requirement violations. Edit freely; the human owns this file. The default rule matches nothing in old.bnf (max fog there is 50, which the REAL paper treats as realistic) - it is here to show the shape.",
+  "rules": [
+    {
+      "name": "extreme_fog",
+      "param": "fog_density",
+      "op": ">",
+      "value": 80,
+      "reason": "Visibility below what the perception ODD is meant to cover"
+    }
+  ]
+}
