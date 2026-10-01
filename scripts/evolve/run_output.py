@@ -37,6 +37,19 @@ def system_under_test():
         return {}
 
 
+def scene():
+    """Which test scene this run used (scene v2 = roadmap M2, Notes 8.19), for
+    run_meta.json - so runs on different scenes are never compared as if the
+    only change were the car. Lazy import, as above."""
+    try:
+        from scripts.simulations import util
+        return {"version": util.SCENE_VERSION, "max_steps": util.MAX_STEPS,
+                "crossing_trigger_m": util.DEFAULT_CROSSING_TRIGGER_M,
+                "ego_start_m": dict(util.EGO_START_M), "directions": dict(util.DIRECTIONS)}
+    except Exception:
+        return {}
+
+
 def persist_run(run_id, logbook, hof, requirement=None, scenario_text=None, constraints=None,
                  record_video=True):
     """Write a completed GE run's outputs to settings.artifacts_dir/runs/<run_id>/:
@@ -54,6 +67,7 @@ def persist_run(run_id, logbook, hof, requirement=None, scenario_text=None, cons
         "scenario_text": scenario_text,
         "constraints": constraints or {},
         "system_under_test": system_under_test(),
+        "scene": scene(),
         "best_phenotype": best_phenotype,
         "seed": settings.random_seed,
         "created_at": datetime.now(timezone.utc).isoformat(),

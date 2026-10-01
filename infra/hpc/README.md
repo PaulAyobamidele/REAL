@@ -111,6 +111,29 @@ rsync -avP --partial narval:scratch/real_project/artifacts/runs/<run_id>/ artifa
 python -m scripts.analysis.report artifacts/runs/<run_id>
 ```
 
+## Scene v2 smoke run (roadmap M2.7, 2026-10-01)
+
+Scene v2 (Notes §8.19-8.20) changes the template the job re-reads per
+scenario, and `MAX_STEPS` rises from 100 to 250 (25 s), so stalled runs last
+up to 2.5x longer - budget `--time` accordingly for full runs. Before run 2b
+or any GE run, check the new scene with one trial per scenario (32
+simulations, the baseline requirement):
+
+```bash
+# laptop: rebuild the staging copy (section 2), then, with NO job running:
+rsync -avP --partial --delete ~/real-av-build/REAL/ narval:scratch/real_project/REAL/
+scp infra/hpc/run_real_av.slurm narval:scratch/real_project/run_real_av.slurm
+ssh narval "cd scratch/real_project && sbatch --export=ALL,REAL_REQUIREMENT_FILE=docs/examples/R_baseline.dsl,REAL_TRIALS=1 run_real_av.slurm"
+```
+
+Pass when: the `.out` ends with `STATUS: OK` (no Scenic error on `ego.lane`,
+the kerb placement or the termination line); `simulations.csv` has the
+scene-v2 columns filled (`pedestrian_speed_mps`, `peak_jerk_mps3`,
+`resume_within_s`, `ego_start_m`); no-encounter runs near 0 (was ~25 %);
+`initial_separation_m` differs between Short and Long; and
+`best_scenario.mp4` shows the pedestrian crossing the lane. If a check fails,
+fix before any full run.
+
 ## Real run history (read this before re-running - every fix here was found by actually running on Narval, not locally)
 
 1. **`ConnectionRefusedError` / `Bus error (core dumped)` from CARLA itself** - Apptainer's default FUSE-mounted `.sif` (`squashfuse_ll`) has an idle timeout that doesn't play well with long-running backgrounded processes (CARLA + `api_app.py`, both launched with `&`); the mount got torn down mid-run, crashing both the Python import machinery and CARLA's own mmap'd binary. Fixed with `apptainer exec --unsquash`, which extracts the image to a real temp directory instead of a FUSE mount.

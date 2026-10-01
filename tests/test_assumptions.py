@@ -31,10 +31,9 @@ def test_measured_quantity_is_run_assumption():
     assert item["kind"] == "run" and item["message"] == ""
 
 
-def test_unrecorded_quantity_is_flagged_not_measured():
+def test_pedestrian_speed_is_recorded_from_scene_v2():
     item = parse_assumption("pedestrian_speed_mps <= 3")
-    assert item["kind"] == "run"
-    assert "not measured" in item["message"]
+    assert item["kind"] == "run" and item["message"] == ""
 
 
 def test_assumption_about_the_car_is_rejected():
@@ -82,8 +81,9 @@ def test_status_held_broken_not_measured():
     assert admissibility.assumption_status(fog, "50") == "broken"
     assert admissibility.assumption_status(fog, "") == "not_measured"
     assert admissibility.assumption_status(fog, float("nan")) == "not_measured"
-    speed = parse_assumption("pedestrian_speed_mps <= 3")   # not recorded yet
-    assert admissibility.assumption_status(speed, 1.0) == "not_measured"
+    speed = parse_assumption("pedestrian_speed_mps <= 3")
+    assert admissibility.assumption_status(speed, 1.0) == "held"
+    assert admissibility.assumption_status(speed, None) == "not_measured"   # pre-v2 runs
 
 
 def test_only_broken_sets_aside_and_reason_is_named():
@@ -191,7 +191,7 @@ def test_report_shows_verdict_and_soft_goals(tmp_path):
     assert f"-> **{fog['verdict']}**" in md
     assert "A judgement call, not a significance test." in md
     assert analysis["requirement"]["soft_goals"] == ["vehicle resumes within 10 s"]
-    assert '"vehicle resumes within 10 s": not checked automatically yet' in md
+    assert '"vehicle resumes within 10 s": free text, not checked automatically' in md
 
 
 def test_report_says_when_no_soft_goals(tmp_path):

@@ -31,7 +31,11 @@ EGO_SPEED = 7.5
 SAFETY_DISTANCE = 10
 BRAKE_INTENSITY = 1.0
 PEDESTRIAN_MIN_SPEED = 2.0
-THRESHOLD = 8
+# Scene v2 (roadmap M2, Notes 8.19). All four come from util.build_scenario:
+CROSSING_TRIGGER_M = <crossing_trigger_m>   # pedestrian steps out once the car is this close (was a fixed 8 m)
+EGO_START_M = <ego_start_m>                 # car starts this far before the crossing point (grid `distance`)
+PEDESTRIAN_SIDE = <pedestrian_side>         # -1 = starts at the left kerb, +1 = right kerb (driver's view)
+KERB_OFFSET_M = 3.0                         # lateral start, from the lane centre
 DETECTION_CONFIDENCE = 0.85   # full braking above this (baseline / paper MLSv1)
 CAUTION_CONFIDENCE = 0.30     # proportional braking starts here (paper M4)
 
@@ -81,24 +85,23 @@ def brake_now(brake):
 # or proportional_braking (paper M4). See BRAKING_BEHAVIOURS there.
 <ego_behavior>
 
-behavior PedestrianBehavior(min_speed=1, threshold=THRESHOLD):
+behavior PedestrianBehavior(min_speed=1, threshold=CROSSING_TRIGGER_M):
     do CrossingBehavior(ego, min_speed, threshold)
 
-# Define ranges for randomization
-LATERAL_RANGE = Range(-0.5, 3)  # -3 to 3 meters laterally
-FORWARD_RANGE = Range(5, 10)  # 8 to 12 meters ahead
-
-pedestrian = new Pedestrian at (LATERAL_RANGE, FORWARD_RANGE, 0) relative to spot,
+# The pedestrian starts at a kerb and walks straight across the car's lane
+# (heading +-90 deg); `spot` is the crossing point. Small jitter keeps
+# repeats from being identical. (Local frame: x to the right, y forward.)
+pedestrian = new Pedestrian at (PEDESTRIAN_SIDE * (KERB_OFFSET_M + Range(-0.3, 0.3)), Range(-1, 1), 0) relative to spot,
     with heading <pedestrian_angle> deg relative to roadDirection,
     with regionContainedIn None,  # Allow the actor to spawn outside the driving lanes
-    with behavior PedestrianBehavior(PEDESTRIAN_MIN_SPEED, THRESHOLD),
+    with behavior PedestrianBehavior(PEDESTRIAN_MIN_SPEED, CROSSING_TRIGGER_M),
     with blueprint PEDESTRIAN_MODEL
 
 vending_machine = new VendingMachine right of vending_spot by 3,
     with heading 90 deg relative to vending_spot.heading,
     with regionContainedIn None  # Allow the actor to spawn outside the driving lanes
 
-ego = new Car following roadDirection from spot for -15,
+ego = new Car following roadDirection from spot for -EGO_START_M,
     with blueprint EGO_MODEL,
     with sensors {"front_rgb": RGBSensor(offset=(1.6, 0, 1.7), attributes=attrs)}, #(201 -> low) (x-> horizontal front back, y -> horizontal left right, z -> vertical up down)
     with behavior Exp_EgoBehaviour()
@@ -109,6 +112,7 @@ record ego.observations["front_rgb"] as "front_rgb"
 # failure-analysis log.
 record ego.speed as "ego_speed"
 record (distance from ego to pedestrian) as "pedestrian_distance"
+record pedestrian.speed as "pedestrian_speed"
 <recording_statement>
 
 # REQUIREMENTS
@@ -116,6 +120,11 @@ require (distance to intersection) > 30
 require (distance from spot to intersection) > 30
 require always (ego.laneSection._slowerLane is None)
 require always (ego.laneSection._fasterLane is None)
+# The car must start on the pedestrian's lane (round 1-2's no-encounter runs
+# drove away from the pedestrian - Notes 8.19).
+require ego.lane == lane
 
-# TERMINATION CONDITION
-terminate when (distance to spot) > 30
+# TERMINATION CONDITION: the car is 20 m past the crossing point (it started
+# EGO_START_M before it, so "distance to spot" alone would end Long runs at once).
+# Otherwise the run ends at util.MAX_STEPS.
+terminate when (ego.position - spot.position).rotatedBy(-spot.heading).y > 20

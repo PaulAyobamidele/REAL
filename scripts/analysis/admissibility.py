@@ -91,8 +91,9 @@ QUANTITIES = {
     # NB: `distance` does not yet move the pedestrian (scratch.temp, roadmap M2.3).
     "distance":                  {"level": "scenario", "unit": None,  "source": "grid setting",        "available": True},
     "initial_separation_m":      {"level": "run",      "unit": "m",   "source": "trace distance_m[0]", "available": True},
-    "pedestrian_speed_mps":      {"level": "run",      "unit": "m/s", "source": "template recording",  "available": False},
-    "crossing_start_distance_m": {"level": "run",      "unit": "m",   "source": "template recording",  "available": False},
+    # Recorded from scene v2 (roadmap M2); older runs lack the column -> not measured.
+    "pedestrian_speed_mps":      {"level": "run",      "unit": "m/s", "source": "simulations.csv",     "available": True},
+    "crossing_start_distance_m": {"level": "run",      "unit": "m",   "source": "simulations.csv",     "available": True},
 }
 
 

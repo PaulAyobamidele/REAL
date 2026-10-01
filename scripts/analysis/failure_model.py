@@ -43,7 +43,7 @@ import pandas as pd
 
 PARAMS = ["pedestrian", "dress", "direction", "distance", "fog_density"]
 
-BOOL_COLUMNS = ["passed", "stopped"]
+BOOL_COLUMNS = ["passed", "stopped", "resumed"]
 NUMERIC_COLUMNS = [
     "rho", "min_distance_m", "min_distance_step", "ego_speed_at_min_distance",
     "steps", "timestep_s", "duration_s", "ego_speed_max", "ego_speed_final",
@@ -52,6 +52,10 @@ NUMERIC_COLUMNS = [
     "ego_speed_at_first_detection", "mean_inference_ms", "first_brake_step",
     "first_brake_distance_m", "ego_speed_at_first_brake", "brake_steps",
     "reaction_steps", "sim_index",
+    # scene v2
+    "ego_start_m", "crossing_trigger_m", "pedestrian_speed_mps", "crossing_start_distance_m",
+    "peak_decel_mps2", "peak_jerk_mps3", "min_ttc_s", "first_stop_step",
+    "resume_after_s", "resume_within_s",
 ]
 
 # Slower than this (m/s) when closest to the pedestrian counts as "stopped".

@@ -19,7 +19,7 @@ from tqdm import tqdm
 from real_config import settings
 from scripts.analysis import telemetry
 from scripts.evolve.constraints import PHENOTYPE_PARAM_RE, parse_phenotype_params
-from scripts.templates.old.scenic_template import get_pedestrian, get_pedestrian_angle
+from scripts.templates.old.scenic_template import get_pedestrian
 
 os.environ.setdefault("MLFLOW_TRACKING_URI", settings.mlflow_tracking_uri)
 # # Set our tracking server uri for logging
@@ -28,6 +28,33 @@ mlflow.set_tracking_uri(uri=os.environ["MLFLOW_TRACKING_URI"])
 # Safety requirement checked by MyMonitor: the ego must stay more than this
 # many metres (centre to centre) from the pedestrian for the whole simulation.
 SAFETY_MARGIN_M = 5
+
+# Scene v2 (roadmap M2, Notes 8.19): what the grid's `direction` and
+# `distance` settings mean in scratch.temp. Driver's view: LR = starts at the
+# left kerb (side -1) and walks to the right (heading -90 deg); RL the mirror.
+# Rounds 1-2 used scenic_template.get_pedestrian_angle, where RL (180 deg)
+# walked along the road towards the car and `distance` had no effect.
+SCENE_VERSION = 2
+DIRECTIONS = {"LR": {"pedestrian_side": -1, "pedestrian_angle": -90},
+              "RL": {"pedestrian_side": 1, "pedestrian_angle": 90}}
+EGO_START_M = {"Short": 20, "Long": 35}
+# The pedestrian steps out once the car is this close. Large = at once:
+# CrossingBehavior then paces the walk to meet the car (no built-in standoff).
+DEFAULT_CROSSING_TRIGGER_M = 100
+# Steps per simulation (0.1 s each). 250 = 25 s, enough to see whether a car
+# that stopped moves on again within the 10 s soft goal (was 100 = 10 s).
+MAX_STEPS = 250
+
+
+def scene_settings(direction, distance, crossing_trigger_m=None):
+    """The scene-v2 template values for one scenario's grid settings."""
+    if direction not in DIRECTIONS:
+        raise ValueError(f"unknown direction {direction!r} (expected {sorted(DIRECTIONS)})")
+    if distance not in EGO_START_M:
+        raise ValueError(f"unknown distance {distance!r} (expected {sorted(EGO_START_M)})")
+    trigger = DEFAULT_CROSSING_TRIGGER_M if crossing_trigger_m is None else crossing_trigger_m
+    return dict(DIRECTIONS[direction], ego_start_m=EGO_START_M[distance],
+                crossing_trigger_m=trigger)
 
 # ---------------------------------------------------------------------------
 # What the requirement says the system IS. The KAOS requirement names the
@@ -194,7 +221,10 @@ class MyMonitor(specification_monitor):
         # yield no speeds.
         speed_series = result.records.get("ego_speed", [])
         speeds = [v for _, v in speed_series] if isinstance(speed_series, list) else []
+        ped_series = result.records.get("pedestrian_speed", [])
+        pedestrian_speeds = [v for _, v in ped_series] if isinstance(ped_series, list) else []
         telemetry.end_simulation(rho=rho, distances=distances, speeds=speeds,
+                                 pedestrian_speeds=pedestrian_speeds,
                                  timestep=getattr(simulation, "timestep", None),
                                  termination=result.terminationReason)
         return rho
@@ -216,7 +246,7 @@ class falsifier:
                                         # error_table_path='error_table.csv',
                                         # safe_table_path='safe_table.csv'
                                     )
-        self.server_options = DotMap(maxSteps=100, verbosity=0, render=False)
+        self.server_options = DotMap(maxSteps=MAX_STEPS, verbosity=0, render=False)
         # self.server_options = dict(maxSteps=100, verbosity=0, num_workers=5)
 
         self.falsifier = generic_falsifier(sampler=sampler,
@@ -280,11 +310,11 @@ def build_scenario(phenotype, frames_dir=None, braking_mode=None):
                   mode (RUN_CONTEXT), i.e. what the requirement asked for.
     """
     params = parse_phenotype_params(phenotype)
-    # scratch.temp needs a real CARLA walker blueprint and a facing angle,
-    # not the raw phenotype categories - compute them the same way
-    # scenic_template.py::get_scenic_code does (pedestrian/dress -> blueprint,
-    # direction/distance -> angle), overwriting the raw 'pedestrian' value.
-    params['pedestrian_angle'] = get_pedestrian_angle(params['direction'], params['distance'])
+    # scratch.temp needs a real CARLA walker blueprint and the scene-v2
+    # geometry, not the raw phenotype categories (pedestrian/dress ->
+    # blueprint, overwriting the raw 'pedestrian' value; direction/distance ->
+    # side, heading, start distance - see scene_settings).
+    params.update(scene_settings(params['direction'], params['distance']))
     params['pedestrian'] = get_pedestrian(params['pedestrian'], params['dress'])
     params['carla_map_path'] = settings.carla_map_path
     params['carla_map_name'] = settings.carla_map_name
@@ -300,7 +330,7 @@ def build_scenario(phenotype, frames_dir=None, braking_mode=None):
         # No per-individual recording during bulk search - would otherwise
         # attempt to record every one of POPULATION_SIZE x MAX_GENERATIONS runs.
         params['recording_statement'] = ''
-    template_params = {k: v for k, v in params.items() if k != 'braking_mode'}
+    template_params = {k: str(v) for k, v in params.items() if k != 'braking_mode'}
     return get_scenic_script(template_params, SCRATCH_TEMPLATE), params
 
 
@@ -332,6 +362,7 @@ def evaluate_phenotype(phenotype, num_test=5, seed=None, scenario_id=None, log_m
     telemetry.begin_scenario(scenario_id if scenario_id is not None else phenotype,
                              phenotype, raw_params,
                              pedestrian_blueprint=params['pedestrian'],
+                             scene={k: params[k] for k in ("ego_start_m", "crossing_trigger_m")},
                              braking_mode=params['braking_mode'],
                              yolo_model=yolo_model, seed=seed)
 

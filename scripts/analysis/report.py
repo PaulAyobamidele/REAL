@@ -21,7 +21,7 @@ import math
 import os
 from datetime import datetime, timezone
 
-from scripts.analysis import admissibility, failure_model, obstacles
+from scripts.analysis import admissibility, failure_model, obstacles, soft_goals
 
 
 def _load_meta(run_dir):
@@ -59,6 +59,7 @@ def analyse(run_dir, rules_path=None, requirement=None):
     df = failure_model.add_failure_types(df)
     assumption_summary = admissibility.assumption_verdicts(
         df, assumption_summary, failure_model.MIN_EFFECT, failure_model.MIN_N)
+    soft_goal_summary = soft_goals.check_soft_goals(df[df["admissible"]], req.get("soft_goals"))
 
     valid = df[df["admissible"]]
     spurious = df[~df["admissible"]]
@@ -87,6 +88,7 @@ def analyse(run_dir, rules_path=None, requirement=None):
             "n_spurious": int(len(spurious)),
             "spurious": spurious_summary,
         },
+        "soft_goals": soft_goal_summary,
         "failure_model": model,
         "obstacles": obstacle_results,
     }
@@ -180,14 +182,22 @@ def to_markdown(analysis):
         add(f"- Of the {fm['passes']} passes, **{fm['passed_stalled']} were stalled**: the car stopped "
             f"short and never moved again (standoff; counts as a pass for the safety rule, but the "
             f"progress soft goal failed). {fm['passed_clean']} passes drove on normally.")
-    soft_goals = req.get("soft_goals") or []
-    if soft_goals:
-        add("- Soft goals stated in the requirement (`ensuring ...`):")
-        for g in soft_goals:
-            add(f'  - "{g}": not checked automatically yet (roadmap M2.5)')
+    goals = analysis.get("soft_goals") or []
+    if goals:
+        add("- Soft goals stated in the requirement (`ensuring ...`), over in-scope encounters:")
+        for g in goals:
+            if g["kind"] == "checked" and g["met"] + g["missed"]:
+                add(f"  - `{g['text']}`: met {g['met']}, missed {g['missed']}"
+                    + (f", not measured {g['not_measured']}" if g["not_measured"] else ""))
+            elif g["kind"] == "checked":
+                add(f"  - `{g['text']}`: not measured in this run (recorded from scene v2 on)")
+            elif g["kind"] == "rejected":
+                add(f"  - `{g['text']}`: REJECTED - {g['message']}")
+            else:
+                add(f'  - "{g["text"]}": free text, not checked automatically')
         if fm.get("passed_stalled"):
             add(f"  - {fm['passed_stalled']} stalled passes are relevant to any progress / resume goal.")
-    elif req.get("parsed"):
+    elif req.get("parsed") and not req.get("soft_goals"):
         add("- The requirement states no soft goals (`ensuring ...`).")
     types = fm["failure_types"]
     if fm["failures"]:

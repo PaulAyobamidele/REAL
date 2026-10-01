@@ -28,7 +28,7 @@ same runs** on the laptop. Only a change to S (the car: braking, model,
 weights) needs a **new Narval run**, and each such run changes one thing.
 This keeps every comparison attributable.
 
-Order: M0 → M1 → M2 (+ M2b) → M3 → M4 → M4b → M6. M5 runs in parallel,
+Order: M0 → M1 → M2 → M2c (GE) (+ M2b) → M3 → M4 → M4b → M6. M5 runs in parallel,
 mostly while Narval jobs are queued or running. M6.0 starts now.
 
 ---
@@ -54,7 +54,7 @@ Step 1 of [domain_assumptions.md](domain_assumptions.md).
 | 1.6 ✅ | `refine.py` writes `[D]` changes; flags loosening an "untested" assumption | test per row of the design table |
 | 1.7 ✅ | **`docs/examples/R_baseline.dsl`**: R0's system + `assuming` D0 + `ensuring` E0 (baseline soft goals, see M2.5) — the baseline with both slots, as agreed with the supervisor | parse-checked by `test_example_files_parse` |
 | 1.8 ✅ | Re-analyse rounds 1 and 2 against the baseline into `artifacts/runs/<run>/baseline_D0/`, banner "assumptions stated after the run" | both folders exist; originals untouched |
-| 1.9 | Docs + commit + tag `baseline-analysis` | - |
+| 1.9 ✅ | Docs + commit + tag `baseline-analysis` | `da48cc8` |
 
 **M1 complete 2026-10-01** (Notes §8.14-§8.18): under the baseline, every round 1-2 failure
 stays a real violation; the rounds give no evidence for or against any assumption. Assumptions are checked after each
@@ -63,17 +63,31 @@ agreed assumption is deferred (a later per-round choice).
 
 ## M2 - Fix the test scene; measure what is missing
 
-Step 2 of the design. All changes to `scratch.temp` / `telemetry.py` need approval.
+Diagnosis: Notes §8.19. Code done 2026-10-01 (Notes §8.20), Narval check pending.
 
 | # | Task | Done when |
 |---|---|---|
-| 2.1 | Pedestrian crossing trigger as a setting, not a fixed 8 m wait-for-car | trigger distance in `run_meta.json` |
-| 2.2 | Lane / start geometry so car and pedestrian meet (no-encounter near 0, from ~25 %) | local Scenic parse test; smoke run has an encounter |
-| 2.3 | The grid's `distance` setting actually changes the scene | two values give different `initial_separation_m` |
-| 2.4 | Record `pedestrian_speed_mps`, `crossing_start_distance_m` | columns filled |
-| 2.5 | Measured soft goals for `ensuring`: **smoothness** (peak deceleration, peak jerk — the paper's *SmoothBraking*), **minimum time-to-collision** (named in the paper's threats), **resume** (`resume_speed_mps`, `resume_within_s`, `clear_lateral_m`) | a stalled pass breaks the resume goal; an emergency stop shows in jerk |
-| 2.6 | Rebuild `~/real-av-build`, rsync (only when no job runs), smoke job 1 scenario × 1 trial | `.out` ends `STATUS: OK`; new columns filled |
-| 2.7 | Docs + commit + tag `template-v2` | - |
+| 2.1 ✅ | Crossing trigger as a setting (`CROSSING_TRIGGER_M`, default 100 m = "at once"; was a fixed 8 m) | in every row and `run_meta.scene` |
+| 2.2 ✅ | Both directions cross: kerb start, heading ±90° (`util.DIRECTIONS`; RL used to walk along the road) | `test_scene_v2` |
+| 2.3 ✅ | Car must start on the pedestrian's lane (`require ego.lane == lane`); run ends 20 m past the crossing point | smoke run: no-encounter near 0 |
+| 2.4 ✅ | `distance` is real: Short 20 m / Long 35 m car start (`util.EGO_START_M`) | two values give different `initial_separation_m` |
+| 2.5 ✅ | New measures per simulation: pedestrian speed, crossing-start distance, peak deceleration, peak jerk, min time-to-collision, stop / resumed / resume time (`telemetry.motion_metrics`); `clear_lateral_m` dropped (needs more recording); step cap 100 → 250 (25 s) | columns filled on the smoke run |
+| 2.6 ✅ | Soft goals checkable (`scripts/analysis/soft_goals.py`: met / missed / not measured over encounters); `R_baseline.dsl` now `ensuring "resume_within_s <= 10"` + smoothness as text until a jerk threshold is chosen | report lists them |
+| 2.7 | Rebuild `~/real-av-build`, rsync (only when no job runs), short smoke run on Narval; check one video per direction | `.out` ends `STATUS: OK`; no-encounter near 0; both directions cross; new columns filled |
+| 2.8 | Docs + commit + tag `scene-v2` | - |
+
+## M2c - GE as the main search (Paul, 2026-10-01)
+
+GE builds every scenario from the same template, so it needs the scene fixes
+first; and the current grammar has only 32 scenarios, too few for GE to
+search. Agreed order: scene fixes (M2) → GE-ready grammar → GE through the
+Slurm/requirement path → analysis aware of GE's uneven sampling.
+
+| # | Task | Done when |
+|---|---|---|
+| 2c.1 | GE-ready grammar: numeric ranges for the new settings (fog 0-100, car start distance, pedestrian speed, crossing trigger) alongside the categories | grammar parse test; GE sees > 32 distinct scenarios |
+| 2c.2 | Slurm job can run GE (`/get_testcases` with the requirement file, provenance like `/run_grid`) | `run_meta.json` mode `ge` with requirement source, round, parent, scene |
+| 2c.3 | Analysis marks GE samples "not balanced"; setting effects / obstacle support corrected or caveated; a small grid check of GE's worst scenarios | report states sampling; check run planned |
 
 ## M2b - A newer YOLO as a model-layer option (supervisor request)
 
@@ -158,4 +172,4 @@ after round 3 (Narval budget).
 
 ## Next action
 
-M1.9 commit + tag `baseline-analysis` (Paul), then **M2** — fix the test scene and record what is missing (one proposal for the whole milestone).
+M2.7 — Narval smoke run of scene v2 (Paul at the terminal), then M2c (GE-ready grammar).

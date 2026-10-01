@@ -172,8 +172,9 @@ check before it matters, but nothing currently depends on it being fixed.
 - [`scripts/scenarios/scratch.temp`](scripts/scenarios/scratch.temp) — the
   live Scenic template: `perceive()` (YOLO once per step + telemetry),
   `brake_now()`, `<ego_behavior>` placeholder, `record ego.speed` /
-  `pedestrian_distance`. Known limitation: `distance` does not move the
-  pedestrian; lane choice can send the car away (no-encounter runs).
+  `pedestrian_distance` / `pedestrian.speed`. **Scene v2** (2026-10-01, Notes §8.19-8.20):
+  kerb-to-kerb crossing both ways, car on the pedestrian's lane, `distance` = car start
+  20/35 m, crossing trigger setting, `MAX_STEPS` 250; not yet verified in CARLA (M2.7).
 - [`infra/hpc/`](infra/hpc/) — `carla.def` (Apptainer image definition),
   `run_real_av.slurm` (the Slurm job script: now `/run_grid`, a **source
   overlay** bind-mount of `$SCRATCH/real_project/REAL` over the baked-in copy
