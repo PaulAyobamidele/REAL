@@ -194,8 +194,16 @@ MAINTAIN "Pedestrian Safety"
   start positions), never about the car under test - otherwise a failure
   could be defined away by narrowing the car's behaviour; and an assumption
   whose quantity is not recorded in a run is reported as **not measured**,
-  never as held. (Per-assumption checking and verdicts are being built -
-  roadmap M1.) Note that rounds 1-2 stated no assumptions, so their failure
+  never as held. Each assumption is checked per simulation (held /
+  broken / not measured) and listed with its counts in the report's Scope
+  section; only a broken assumption sets a simulation aside as spurious.
+  An assumption about the car is listed as rejected. Each also gets a verdict: does breaking it go
+  with more failures (load-bearing), not (a candidate for loosening), or was
+  it never broken (untested). Soft goals (`ensuring`) are listed in the
+  report; measuring them is roadmap M2.5. In the review (CLI or page) each
+  assumption gets keep / tighten / loosen / drop, new ones can be added, and
+  the requirement writer turns these into `[D]` lines in R1 (loosening an
+  assumption that was never broken is flagged as having no evidence). Note that rounds 1-2 stated no assumptions, so their failure
   rates are rates under no assumptions.
 - Two reference files: `docs/examples/requirement_full_example.dsl` shows every
   clause at once; `docs/examples/R0_rounds1_2.dsl` is the requirement rounds 1–2

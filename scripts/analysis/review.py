@@ -10,7 +10,9 @@ verdict (accept / rename / reject / skip), reason, and - for an accepted
 obstacle - a numbered mitigation menu from the catalogue (data / model /
 system / requirement / scenario). Then the scope items (rules that set
 simulations aside, and scenario-artefact candidates): out of scope / in scope /
-scenario defect. Five minutes per obstacle; no UI.
+scenario defect. Then the domain assumptions (D) the requirement states:
+keep / tighten / loosen / drop, and new ones may be added. Five minutes per
+obstacle; no UI.
 
 Nothing is applied. The result is decisions.json in the run folder (see
 scripts/analysis/decisions.py for the schema); scripts/analysis/refine.py
@@ -18,8 +20,9 @@ turns it into a proposed requirement.
 
 `--answers FILE` runs it non-interactively from a JSON of prepared answers
 (same keys as decisions.json: obstacles -> {verdict, reason, mitigation_layer,
-renamed_to}, scope -> {verdict, reason}); `input_fn`/`output_fn` make it
-testable.
+renamed_to}, scope -> {verdict, reason}, assumptions -> {verdict, new_text,
+reason}, added_assumptions -> [{text, reason}]); `input_fn`/`output_fn` make
+it testable.
 """
 
 import argparse
@@ -34,6 +37,9 @@ VERDICT_KEYS = {"a": "accept", "r": "rename", "j": "reject", "d": "defer", "s": 
 SCOPE_KEYS = {"o": "out_of_scope", "i": "in_scope", "d": "scenario_defect", "s": None,
               "out_of_scope": "out_of_scope", "in_scope": "in_scope",
               "scenario_defect": "scenario_defect", "skip": None}
+
+ASSUMPTION_KEYS = {"k": "keep", "t": "tighten", "l": "loosen", "d": "drop", "s": None,
+                   "keep": "keep", "tighten": "tighten", "loosen": "loosen", "drop": "drop", "skip": None}
 
 ORDER = {"supported": 0, "insufficient_data": 1, "not_supported": 2}
 
@@ -163,6 +169,32 @@ def run_review(run_dir, previous=None, reviewer=None, round_no=None, answers=Non
                                 "Verdict [o]ut of scope / [i]n scope / scenario [d]efect / [s]kip: ", SCOPE_KEYS)
             if s["verdict"] is not None:
                 s["reason"] = input_fn("Reason (one line): ").strip() or None
+
+    if doc["assumptions"]:
+        output_fn("\n" + "=" * 78 + "\nASSUMPTIONS (D) - what the requirement assumes about the world\n" + "-" * 78)
+    for text, a in doc["assumptions"].items():
+        output_fn(f"\n{text}   ({a['kind']})\nEvidence : {a['evidence']}"
+                  + (f"\nTool     : {a['tool_verdict']}" if a.get("tool_verdict") else ""))
+        pre = answers.get("assumptions", {}).get(text)
+        if pre is not None:
+            a["verdict"], a["new_text"], a["reason"] = pre.get("verdict"), pre.get("new_text"), pre.get("reason")
+        else:
+            a["verdict"] = _ask(input_fn, output_fn,
+                                "Verdict [k]eep / [t]ighten / [l]oosen / [d]rop / [s]kip: ", ASSUMPTION_KEYS)
+            if a["verdict"] in ("tighten", "loosen"):
+                if a["verdict"] == "loosen" and a.get("tool_verdict") == "untested":
+                    output_fn("  Note: never broken in this run - loosening it has no evidence behind it.")
+                a["new_text"] = input_fn("New text: ").strip() or None
+            if a["verdict"] is not None:
+                a["reason"] = input_fn("Reason (one line): ").strip() or None
+    if "added_assumptions" in answers:
+        doc["added_assumptions"] = list(answers["added_assumptions"])
+    elif doc["assumptions"]:
+        while True:
+            t = input_fn("Add an assumption (blank to finish): ").strip()
+            if not t:
+                break
+            doc["added_assumptions"].append({"text": t, "reason": input_fn("Reason (one line): ").strip() or None})
 
     problems = decisions.validate(doc)
     if problems:

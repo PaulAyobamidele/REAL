@@ -1071,6 +1071,108 @@ paper's soft goal is *SmoothBraking*. Added to the roadmap: smoothness
 paper outline now. Our findings differ from the paper's (no child effect;
 detection too late dominates) — to be reported, not hidden.
 
+### 8.14 2026-10-01 — M1.1-1.2: assumption vocabulary and classification
+
+`scripts/analysis/admissibility.py` gained `QUANTITIES` (the quantities an
+`assuming` item may name, each with level scenario/run, unit, source and
+whether it is recorded yet) and `parse_assumption()` / `parse_assumptions()`,
+which sort each item into **scenario** (checked against grid settings),
+**run** (checked against per-simulation measurements), **free text** (shown
+to the human) or **rejected** (about the car — any quantity starting with
+`ego` — or unknown, with a message). Unrecorded quantities
+(`pedestrian_speed_mps`, `crossing_start_distance_m`) carry a "will be
+reported as not measured" note. Purely additive: `rules_from_assumptions` and
+the report are unchanged until M1.3, so today the old hole remains —
+`ego_speed <= 5` or `initial_separation_m >= 15` still become rules on
+columns that do not exist and silently count as held. `tests/test_assumptions.py`,
+8 tests; 100 in total.
+
+**Decision (Paul, 2026-10-01):** assumptions are **checked after each run,
+never imposed on the simulator** — exploring outside them is how the loop
+learns whether an assumption matters (the paper keeps scenario exploration
+and Φ_valid apart, §IV-A). Tightening the scenario grammar to an agreed
+assumption is a possible later, deliberate per-round choice ("the grammar is
+an evolving artefact"), deferred. The hand-written `admissibility_rules.json`
+stays as the test-scope (`[T]`) lever, separate from the requirement's D.
+
+### 8.15 2026-10-01 — M1.3: assumptions checked per simulation
+
+`admissibility.py`: `add_run_quantities()` (adds `initial_separation_m` =
+first `distance_m` of each trace; NaN when the trace is missing),
+`assumption_status()` (held / broken / not measured) and
+`check_assumptions()` (one `assumption::<text>` column per checkable item;
+only **broken** sets a simulation aside, with reason `assumption: <text>` —
+the same wording as before, so earlier reports and decisions files still
+line up). `report.analyse()` now uses these instead of
+`rules_from_assumptions` (kept, marked unused). This **closes the hole** noted
+in §8.14: an assumption about the car is listed as REJECTED and sets nothing
+aside; an unrecorded quantity is "not measured" and sets nothing aside. The
+rules file is still applied first, as the separate `[T]` lever. The report's
+Scope section lists every assumption with its counts, and says explicitly
+when the requirement states none. JSON: `admissibility.assumptions`.
+14 tests in `tests/test_assumptions.py`; 106 in total. No saved report was
+regenerated.
+
+Smoke check (in memory, nothing written; R0 + the D0 `assuming` line patched
+into `run_meta` for the call): round 1 `35acc09e…` — `fog_density <= 50`
+held 160 / broken 0; `initial_separation_m >= 15` held 154 / broken 6;
+`pedestrian_speed_mps <= 3` not measured 160. Round 2 `882fb2fe…` — 160/0;
+152/8; not measured 160. Matches the 6 / 8 in the design doc. The saved,
+labelled re-analysis is M1.8.
+
+### 8.16 2026-10-01 — M1.4: per-assumption verdicts, soft goals in the report
+
+`admissibility.assumption_verdicts()` compares, over real encounters only,
+the failure rate when each assumption held vs when it was broken, with the
+analysis' usual bars (`failure_model.MIN_EFFECT` 15 points, `MIN_N` 10 per
+side): load-bearing / not load-bearing / fewer failures when broken /
+insufficient data / untested / not measured. The report's Scope lines carry
+the verdict and both rates, plus a one-line legend ("a judgement call, not a
+significance test"). `requirement_context` now also returns `soft_goals`; the
+Overall section lists each `ensuring` item as "not checked automatically yet
+(roadmap M2.5)", points at stalled passes when there are any, and says so
+when the requirement states none. 19 tests in `tests/test_assumptions.py`;
+111 in total. No saved report regenerated.
+
+Smoke check (in memory, nothing written; R0 + D0 line patched into
+`run_meta`): round 1 — `fog_density <= 50` untested (never broken);
+`initial_separation_m >= 15` **untested over encounters**: all 6 runs that
+started closer than 15 m were no-encounter runs; `pedestrian_speed_mps <= 3`
+not measured. Round 2 — fog untested; separation **insufficient data** (2
+of the 8 close starts were encounters, both passed; held 126 at 3.2 %
+failures); speed not measured. So rounds 1-2 give **no evidence for or
+against any D0 assumption** — another reason the scene fixes (M2) and run 2b
+come before any loosening. The saved, labelled version is M1.8.
+
+### 8.17 2026-10-01 — M1.5-1.6: reviewing assumptions and writing [D] changes
+
+- **decisions.json** gains optional `assumptions` (one item per stated
+  assumption, incl. free text and rejected: verdict keep / tighten / loosen /
+  drop, `new_text`, the tool's verdict, evidence, reason) and
+  `added_assumptions`. Schema version stays 1; older files load unchanged.
+  Spurious groups caused only by broken assumptions are no longer repeated
+  under `scope` — they are reviewed once, as assumption items; rules-file
+  groups stay in scope (`[T]`). `validate` refuses an unknown verdict,
+  tighten/loosen without new text, and new or added text about the car;
+  `is_complete` needs a verdict on every assumption.
+- **refine.py** `assumption_changes()` implements the design table ("in R0"
+  = in the run's own `assuming` clause): keep → nothing / added if stated
+  after the run; tighten, loosen → replaced / new text added; drop → removed /
+  nothing; added → added. `apply_changes` now replaces and removes items.
+  `requirement_diff.md` (and the page) flag loosening an *untested*
+  assumption as "no evidence behind it". `plan_changes(doc, r0)` takes R0.
+- **review.py**: an ASSUMPTIONS (D) section after scope; "Add an assumption"
+  is asked only when the requirement states assumptions (so the existing
+  interactive flow is unchanged); `--answers` takes `assumptions` and
+  `added_assumptions`.
+- **pages/4_review.py**: a "Domain assumptions (D)" box per item on screen 4
+  (verdict, new text, reason, the untested-loosen warning) and a text area
+  to add assumptions; saved choices survive a reload.
+
+`tests/test_assumption_review.py`, 6 tests (incl. every row of the design
+table and an AppTest Accept that writes a `[D]` R1); 117 in total. No saved
+decisions or R1 regenerated.
+
 ### 8.7 The iteration loop (stages 7-9) — original design
 
 Per round: requirement R_n → run (grid) → `simulations.csv` → report →

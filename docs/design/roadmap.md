@@ -2,8 +2,8 @@
 
 Written 2026-10-01; revised the same day after the supervisor meeting and the
 paper comparison ([tool_paper_alignment.md](tool_paper_alignment.md)).
-Status: **agreed in direction by Paul 2026-10-01**; M0 docs done, M0 commit
-pending.
+Status: **agreed in direction by Paul 2026-10-01**; M0 done (commit `6e805c0`, tag
+`post-presentation-2026-09-25`); M1 in progress.
 
 Two goals, pursued together:
 
@@ -37,7 +37,7 @@ mostly while Narval jobs are queued or running. M6.0 starts now.
 
 | # | Task | Done when |
 |---|---|---|
-| 0.1 | Commit the 2026-09-24/25 work (≈30 files, 92 tests) | tag `post-presentation-2026-09-25` — **pending (Paul)** |
+| 0.1 | Commit the 2026-09-24/25 work (≈30 files, 92 tests) | tag `post-presentation-2026-09-25` — **done** (`6e805c0`) |
 | 0.2 | Docs catch-up (Notes §8.12, AGENT_HANDOFF, README `assuming` rules, debt inventory) | **done 2026-10-01** |
 
 ## M1 - The baseline requirement and the admissibility check (laptop only)
@@ -46,15 +46,19 @@ Step 1 of [domain_assumptions.md](domain_assumptions.md).
 
 | # | Task | Done when |
 |---|---|---|
-| 1.1 | Vocabulary `QUANTITIES` in `scripts/analysis/admissibility.py` (name, level scenario/run, unit, source, available) | unit test lists every quantity in the design table |
-| 1.2 | Parse each `assuming` item into: scenario / run / free text / rejected (about the car, or unknown quantity, with a message) | tests: `ego_speed <= 5` rejected, `sun_angle > 3` rejected, `"daylight"` free text |
-| 1.3 | Per-simulation check: held / broken / not measured; `initial_separation_m` from trace `distance_m[0]` | admissible = every assumption held; spurious = some broken (named); not measured kept apart |
-| 1.4 | Report section "Assumptions": per assumption, times broken, failure rate held vs broken, verdict; and a "Soft goals" section listing each `ensuring` item as checked or **not yet measurable** | sections in `analysis_report.md` / `.json` |
-| 1.5 | Review items keep / tighten / loosen / drop / add (D) in `decisions.py`, `review.py`, review page | AppTest clicks one of each |
-| 1.6 | `refine.py` writes `[D]` changes; flags loosening an "untested" assumption | test per row of the design table |
+| 1.1 ✅ | Vocabulary `QUANTITIES` in `scripts/analysis/admissibility.py` (name, level scenario/run, unit, source, available) | unit test lists every quantity in the design table |
+| 1.2 ✅ | Parse each `assuming` item into: scenario / run / free text / rejected (about the car, or unknown quantity, with a message) | tests: `ego_speed <= 5` rejected, `sun_angle > 3` rejected, `"daylight"` free text |
+| 1.3 ✅ | Per-simulation check: held / broken / not measured; `initial_separation_m` from trace `distance_m[0]` | admissible = every assumption held; spurious = some broken (named); not measured kept apart |
+| 1.4 ✅ | Report section "Assumptions": per assumption, times broken, failure rate held vs broken, verdict; and a "Soft goals" section listing each `ensuring` item as checked or **not yet measurable** | sections in `analysis_report.md` / `.json` |
+| 1.5 ✅ | Review items keep / tighten / loosen / drop / add (D) in `decisions.py`, `review.py`, review page | AppTest clicks one of each |
+| 1.6 ✅ | `refine.py` writes `[D]` changes; flags loosening an "untested" assumption | test per row of the design table |
 | 1.7 | **`docs/examples/R_baseline.dsl`**: R0's system + `assuming` D0 + `ensuring` E0 (baseline soft goals, see M2.5) — the baseline with both slots, as agreed with the supervisor | parse-checked by `test_example_files_parse` |
 | 1.8 | Re-analyse rounds 1 and 2 against the baseline into `artifacts/runs/<run>/baseline_D0/`, banner "assumptions stated after the run" | both folders exist; originals untouched |
 | 1.9 | Docs + commit + tag `baseline-analysis` | - |
+
+M1.1-1.6 done 2026-10-01 (Notes §8.14-§8.17). Assumptions are checked after each
+run, never imposed on the simulator; tightening the scenario grammar to an
+agreed assumption is deferred (a later per-round choice).
 
 ## M2 - Fix the test scene; measure what is missing
 
@@ -153,4 +157,4 @@ after round 3 (Narval budget).
 
 ## Next action
 
-M0.1 (Paul commits), then M1.1 — first diff: `QUANTITIES` in `admissibility.py`.
+M1.7 — `docs/examples/R_baseline.dsl` (R0's system + D0 + baseline soft goals), then M1.8 — the labelled re-analysis of rounds 1-2 into `baseline_D0/`.
