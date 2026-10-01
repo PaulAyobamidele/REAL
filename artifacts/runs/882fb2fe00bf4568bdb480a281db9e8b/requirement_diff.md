@@ -1,12 +1,12 @@
 # Proposed requirement change - after run `882fb2fe00bf4568bdb480a281db9e8b`
 
-Labels: **[S]** specification (the system changes: `performed by`), **[R]** requirement (an `assuming` domain assumption or `ensuring` soft goal is added), **[D]** domain/test (a scenario or scope fix - not requirement text). R1 is a proposal: edit or accept; nothing is applied automatically.
+Labels: **[S]** we changed the car (`performed by`), **[R]** we changed the promise (an `ensuring` soft goal added), **[D]** we changed the assumptions (an `assuming` domain assumption added), **[T]** we fix the test (a scenario or scope fix - not requirement text). R1 is a proposal: edit or accept; nothing is applied automatically.
 
 ## Changes
 - [R] from `StandoffUnnecessaryStop` (requirement): ensuring "vehicle resumes within 10 s once the crossing is clear"
-- [D] from `artefact:crossing_trigger_8m` (scenario): scratch.temp: trigger the crossing on a timer or on the pedestrian's own distance to the crossing point, not on proximity to the ego.
-- [D] from `artefact:no_encounter_geometry` (scenario): scratch.temp: choose the lane/spot so the ego approaches the crossing point; or reject such samples with a Scenic `require`.
-- [D] from `artefact:distance_parameter_dead` (scenario): scratch.temp: place the pedestrian from `distance` (as scenic_template.py's get_pedestrian_pos did), or drop the parameter from old.bnf.
+- [T] from `artefact:crossing_trigger_8m` (scenario): scratch.temp: trigger the crossing on a timer or on the pedestrian's own distance to the crossing point, not on proximity to the ego.
+- [T] from `artefact:no_encounter_geometry` (scenario): scratch.temp: choose the lane/spot so the ego approaches the crossing point; or reject such samples with a Scenic `require`.
+- [T] from `artefact:distance_parameter_dead` (scenario): scratch.temp: place the pedestrian from `distance` (as scenic_template.py's get_pedestrian_pos did), or drop the parameter from old.bnf.
 
 ## R0 (as run)
 ```

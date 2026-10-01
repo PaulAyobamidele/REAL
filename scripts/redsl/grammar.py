@@ -39,19 +39,29 @@ class DSL:
         %import common.ESCAPED_STRING   -> STRING
         %import common.WS
         %ignore WS
+        COMMENT        : /#[^\n]*/
+        %ignore COMMENT
         """
 
         # Instantiate the parser
         self.parser = Lark(self.grammar, start="goal")
         self.requirement = req
+        # Why a requirement did not parse (Lark's message: line, column, what
+        # was found, what was expected). None when it parsed. Callers that
+        # only check `parse_tree is None` keep working; api_app.py surfaces
+        # this so a mistyped keyword is no longer a silent failure (it cost a
+        # Narval job once - infra/hpc/README.md, obstacle 3).
+        self.parse_error = None
         self.parse_tree = self.verify_grammar()
 
     def verify_grammar(self):
+        if self.requirement is None:
+            self.parse_error = "no requirement text given"
+            return None
         try:
-            self.requirement = self.requirement
-            sparse_tree = self.parser.parse(self.requirement)
-            return sparse_tree
-        except:
+            return self.parser.parse(self.requirement)
+        except Exception as e:  # lark.exceptions.UnexpectedInput and friends
+            self.parse_error = str(e).strip()
             return None
         
     @staticmethod
@@ -132,8 +142,8 @@ class DSL:
 
     def get_scenario(self):
 
-        # print("I'm in scenario")
-
+        if self.parse_tree is None:
+            return None
         for _st in self.parse_tree.iter_subtrees():
             if isinstance(_st, Tree) and _st.data=='scenario':
                 for _stt in _st.children:

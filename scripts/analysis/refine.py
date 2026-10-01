@@ -9,13 +9,14 @@ from run_meta.json), and writes next to them:
     R1.dsl                the proposed next requirement
     requirement_diff.md   R0 / R1 side by side, a unified diff, and the change
                           list with each change labelled
-        [S]  specification change - a `performed by "<module>"` swap (the system
-             is different: braking mode, detector); flagged if the executor does
-             not yet implement that module
-        [R]  requirement change  - an `assuming "..."` (domain assumption / ODD
-             limit) or `ensuring "..."` (soft goal) clause added
-        [D]  domain / test change - a fix to the scenario itself or the scope
-             rules; NOT part of the requirement text, listed for completeness
+        [S]  we changed the car   - a `performed by "<module>"` swap (braking
+             mode, detector); flagged if the executor does not implement it yet
+        [R]  we changed the promise - an `ensuring "..."` soft goal (or other
+             goal text) added
+        [D]  we changed the assumptions - an `assuming "..."` domain assumption
+             / ODD limit added (the paper's domain revision D'')
+        [T]  we fix the test  - a scenario-template or scope-rule fix; NOT part
+             of the requirement text, listed so nothing is lost
 
 and records the change list in decisions.json under `requirement_changes`.
 
@@ -113,10 +114,11 @@ def plan_changes(doc):
                                 "text": f"{layer}-level change with no requirement slot: {o['mitigation']['action']}"})
         elif layer == "requirement":
             clause, item = R_CHANGES.get(key, ("assuming", o["mitigation"]["action"]))
-            changes.append({"kind": "R", "from": oid, "layer": layer, "clause": clause, "item": item,
+            kind = "D" if clause == "assuming" else "R"
+            changes.append({"kind": kind, "from": oid, "layer": layer, "clause": clause, "item": item,
                             "text": f'{clause} "{item}"'})
         elif layer == "scenario":
-            changes.append({"kind": "D", "from": oid, "layer": layer, "target": "scripts/scenarios/scratch.temp",
+            changes.append({"kind": "T", "from": oid, "layer": layer, "target": "scripts/scenarios/scratch.temp",
                             "text": o["mitigation"]["action"]})
     for sid, s in doc.get("scope", {}).items():
         v = s.get("verdict")
@@ -124,17 +126,17 @@ def plan_changes(doc):
             rule = s.get("rule") or {}
             if rule.get("param") and rule.get("op") in _INVERT:
                 item = f"{rule['param']} {_INVERT[rule['op']]} {rule['value']}"
-                changes.append({"kind": "R", "from": sid, "layer": "requirement", "clause": "assuming",
+                changes.append({"kind": "D", "from": sid, "layer": "requirement", "clause": "assuming",
                                 "item": item, "text": f'assuming "{item}"'})
             else:
-                changes.append({"kind": "R", "from": sid, "layer": "requirement", "clause": "assuming",
+                changes.append({"kind": "D", "from": sid, "layer": "requirement", "clause": "assuming",
                                 "item": s.get("reason") or sid, "text": f'assuming "{s.get("reason") or sid}"'})
         elif v == "in_scope":
-            changes.append({"kind": "D", "from": sid, "layer": "scope",
+            changes.append({"kind": "T", "from": sid, "layer": "scope",
                             "target": "scripts/analysis/admissibility_rules.json",
                             "text": f"drop the rule behind {sid}: the scenario is realistic"})
         elif v == "scenario_defect":
-            changes.append({"kind": "D", "from": sid, "layer": "scenario", "target": "scripts/scenarios/scratch.temp",
+            changes.append({"kind": "T", "from": sid, "layer": "scenario", "target": "scripts/scenarios/scratch.temp",
                             "text": s.get("suggested_fix") or s.get("reason") or "fix the test scenario"})
     return changes
 
@@ -182,7 +184,7 @@ def apply_changes(r0, changes):
             text, _ = _replace_module(text, ch["task"], ch["module"])
     head, assuming, ensuring = _split_clauses(text)
     for ch in changes:
-        if ch["kind"] != "R":
+        if ch["kind"] not in ("R", "D") or not ch.get("clause"):
             continue
         target = assuming if ch["clause"] == "assuming" else ensuring
         if ch["item"] not in target:
@@ -200,9 +202,10 @@ def render_diff(r0, r1, changes, run_id=None):
     add = L.append
     add(f"# Proposed requirement change{f' - after run `{run_id}`' if run_id else ''}")
     add("")
-    add("Labels: **[S]** specification (the system changes: `performed by`), "
-        "**[R]** requirement (an `assuming` domain assumption or `ensuring` soft goal is added), "
-        "**[D]** domain/test (a scenario or scope fix - not requirement text). "
+    add("Labels: **[S]** we changed the car (`performed by`), "
+        "**[R]** we changed the promise (an `ensuring` soft goal added), "
+        "**[D]** we changed the assumptions (an `assuming` domain assumption added), "
+        "**[T]** we fix the test (a scenario or scope fix - not requirement text). "
         "R1 is a proposal: edit or accept; nothing is applied automatically.")
     add("")
     add("## Changes")

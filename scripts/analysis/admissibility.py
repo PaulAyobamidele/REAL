@@ -1,7 +1,7 @@
 """Admissibility rules: which scenarios are inside the operational design
 domain (ODD) at all.
 
-The REAL paper (Sec. IV-A) separates *valid* failures - the car failed in a
+We separate *valid* failures - the car failed in a
 scenario it is supposed to handle - from *spurious* ones, where the scenario
 itself is outside the intended ODD (its example: extreme fog). Spurious
 failures are not thrown away: they are evidence that the ODD was never

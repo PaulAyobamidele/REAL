@@ -1,5 +1,5 @@
 {
-  "compared_at": "2026-09-23T22:28:36.078247+00:00",
+  "compared_at": "2026-09-25T09:30:16.947584+00:00",
   "run_a": "35acc09e8c224fdc953e3bf82ba57e96",
   "run_b": "882fb2fe00bf4568bdb480a281db9e8b",
   "meta_diff": {
@@ -55,6 +55,7 @@
     "timing": {
       "n_detected": 119,
       "first_detection_distance_m_median": 7.031466085445235,
+      "first_brake_distance_m_median": 7.031466085445235,
       "speed_at_first_brake_mps_median": 7.16867048834431,
       "stopping_distance_needed_m_median": 8.211864785653667,
       "share_detected_too_late": 0.6470588235294118,
@@ -111,6 +112,7 @@
     "timing": {
       "n_detected": 128,
       "first_detection_distance_m_median": 7.582974493380009,
+      "first_brake_distance_m_median": 21.171529424485865,
       "speed_at_first_brake_mps_median": 1.960000276565552,
       "stopping_distance_needed_m_median": 5.240100067758565,
       "share_detected_too_late": 0.0078125,

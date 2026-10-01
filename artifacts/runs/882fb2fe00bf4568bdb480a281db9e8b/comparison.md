@@ -34,6 +34,7 @@
 | | round A | round B |
 |---|---|---|
 | first detection distance (m) | 7.0 | 7.6 |
+| first brake distance (m) | 7.0 | 21.2 |
 | speed at first brake (m/s) | 7.2 | 2.0 |
 | stopping distance needed (m) | 8.2 | 5.2 |
 | detections too late | 65% | 1% |

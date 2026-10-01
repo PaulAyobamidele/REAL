@@ -242,6 +242,7 @@ def timing_summary(df):
     return {
         "n_detected": int(len(det)),
         "first_detection_distance_m_median": float(det["first_detection_distance_m"].median()),
+        "first_brake_distance_m_median": float(det["first_brake_distance_m"].median()),
         "speed_at_first_brake_mps_median": float(det["ego_speed_at_first_brake"].median()),
         "stopping_distance_needed_m_median": float(need.median()),
         "share_detected_too_late": float(late.mean()),

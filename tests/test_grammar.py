@@ -86,3 +86,29 @@ def test_unparseable_requirement_is_safe():
     assert dsl.parse_tree is None
     assert dsl.get_operations() == []
     assert dsl.get_perception_model() is None
+    assert dsl.get_scenario() is None                       # used to raise AttributeError
+    assert dsl.parse_error and "line 1" in dsl.parse_error  # Lark says where it stopped
+    assert DSL(None).parse_error == "no requirement text given"
+    good = DSL(REQUIREMENT)
+    assert good.parse_error is None
+
+
+def test_comment_lines_are_ignored():
+    commented = "# what we ran\n" + REQUIREMENT.rstrip() + "\n# trailing note\n"
+    dsl = DSL(commented)
+    assert dsl.parse_tree is not None and dsl.get_perception_model() == "yolov5s"
+
+
+def test_example_files_parse():
+    import os
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    full = DSL(open(os.path.join(root, "docs", "examples", "requirement_full_example.dsl")).read())
+    assert full.parse_tree is not None
+    assert full.get_module_for("Apply Brakes") == "proportional_braking"
+    assert full.get_assumptions() == ["fog_density <= 50", "pedestrian is on foot, not cycling"]
+    assert full.get_soft_goals() == ["vehicle resumes within 10 s once the crossing is clear"]
+    r0 = DSL(open(os.path.join(root, "docs", "examples", "R0_rounds1_2.dsl")).read())
+    assert r0.parse_tree is not None
+    assert r0.get_assumptions() == [] and r0.get_soft_goals() == []
+    assert r0.get_module_for("Apply Brakes") == "proportional_braking"
+    assert r0.get_scenario() == "A pedestrian trying to cross the street in fog."

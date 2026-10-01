@@ -593,7 +593,13 @@ loops forever when Scenic cannot create a simulation (gives up after
   from rates, *not* a pass), a `passed_stalled` outcome (safety rule held
   only because the car stopped short and timed out — counted as a pass,
   reported separately; added after round 2's first scenario, see 8.8), a
-  timing summary (first-detection distance vs
+  timing summary (first-detection and first-brake distance vs stopping
+  distance; the support bars — a ≥15-point effect with ≥10 encounters on each
+  side for setting-based obstacles, ≥25% of the relevant events for
+  behaviour-based ones — are a judgement call set on 2026-09-23, since with
+  5 trials per scenario a single scenario's rate moves in 20-point steps;
+  kept identical across rounds; not from the paper, not a significance test),
+  a timing summary (first-detection distance vs
   stopping distance v²/2a + margin, a = 8 m/s²), and sanity warnings — the
   key one: *failures that do not vary with any grammar setting point at the
   scoring or the fixed scenario, not at the settings*.
@@ -930,6 +936,140 @@ changes to approve; (c) an executor check for the soft goal (`ensuring` is
 parsed but not yet evaluated — a `passed_stalled` outcome is the current
 proxy, and `resumes within 10 s` can be measured from the traces); then
 `/run_grid?...&parent_run_id=882fb2fe…&round=3&requirement_source=artifacts/runs/882fb2fe…/R1.dsl`.
+
+### 8.11 2026-09-25 — requirement files, parse errors, labels (post-review hardening)
+
+Done after the reviewer's notes on the requirement-language write-up:
+
+- **Two reference requirement files** in `docs/examples/`:
+  `requirement_full_example.dsl` (every clause the DSL has: `performed by`,
+  `assuming`, `ensuring`) and `R0_rounds1_2.dsl` (the exact text rounds 1–2
+  ran with, header comment noting it states no assumptions and no soft goals,
+  and that round 1 ignored `performed by`). Both parse-checked by
+  `tests/test_grammar.py::test_example_files_parse`. Side by side they are
+  the honest documentation: the aspirational form and the one that ran.
+- **The grammar ignores `#` comment lines** (`COMMENT: /#[^\n]*/`,
+  `%ignore COMMENT`) so a `.dsl` file can carry a header. `compare.py`
+  compares requirement text modulo comments and whitespace, so a file with a
+  header is still "the same requirement" as the string in `run_meta.json`.
+- **The requirement is no longer a bash string.** `run_real_av.slurm`'s
+  `smoke_test.py` reads `REAL_REQUIREMENT_FILE` (default
+  `docs/examples/R0_rounds1_2.dsl`) and posts it with `requirement_source`;
+  `REAL_PARENT_RUN_ID` / `REAL_ROUND` / `REAL_TRIALS` pass through to
+  `/run_grid`, so round 3 is one `sbatch --export=ALL,…` line and its
+  provenance lands in `run_meta.json` automatically.
+- **No more silent parse failure.** `DSL.parse_error` keeps Lark's message
+  (line, column, what was found, what was expected); `/verify_requirement`,
+  `/get_testcases` and `/run_grid` return
+  `{"error": "requirement does not parse: …", "hint": …, "STATUS": "NOT OK"}`
+  instead of nothing or a `NoneType` crash (`get_scenario()` on an unparsed
+  requirement returns None). This is the defect that cost job 3803335's
+  predecessor a Narval slot (obstacle 3) — closed at the entry point.
+  `tests/test_api_errors.py` exercises the endpoint function directly.
+- **Change labels** now match the talk everywhere: `[S]` we changed the car
+  (`performed by`), `[R]` we changed the promise (`ensuring`), `[D]` we
+  changed the assumptions (`assuming`), `[T]` we fix the test or scope rules
+  (not requirement text). Round 2's `requirement_diff.md` re-generated:
+  one `[R]`, three `[T]`.
+- **Assumptions → scope rules, verified on real data through the clause
+  itself**: round 1 re-analysed with `assuming "fog_density < 50"` added to
+  the requirement text sets aside 80 simulations (16 scenarios, 42 failures)
+  under the rule `assumption: fog_density < 50`. Saved, banner-labelled as a
+  HYPOTHETICAL bound, next to the rules-file variant in
+  `artifacts/runs/35acc09e…/hypothetical_fog_lt_50/`. The honest bound for
+  round 3 remains `fog_density <= 50` (everything in scope).
+- First-brake distance median added to the timing summary, the report and
+  the comparison (7.0 m → 21.2 m) — previously quoted from chat only.
+
+92 tests. Not yet committed at the time of writing (Paul commits; done in
+roadmap M0, 2026-10-01).
+
+### 8.12 2026-09-30 — domain assumptions: the missing third lever
+
+**The gap.** The REAL loop can change three things: the car (`[S]`), the
+promise (`[R]`, `ensuring`) and the domain assumptions (`[D]`, `assuming`).
+Until now only the first two had been exercised. R0, the requirement rounds
+1-2 ran with (`docs/examples/R0_rounds1_2.dsl`), states no assumptions at
+all, so:
+
+- every failure in rounds 1-2 is "valid" by construction — nothing could
+  make it spurious;
+- the paper's valid/spurious split (Φ_valid: "is this failure the car's
+  fault, or did the world break a stated assumption?") has never run on
+  real data;
+- the 76 % (round 1) and 3 % (round 2) failure rates are rates under *no*
+  assumptions, and must be quoted that way.
+
+The only use of `assuming` so far was the fog < 50 % what-if of §8.11 —
+deliberately labelled hypothetical, and a scope cut rather than an
+assumption about how the world behaves.
+
+**Decision (Paul, 2026-09-30)**, written up in
+[docs/design/domain_assumptions.md](docs/design/domain_assumptions.md):
+
+- A domain assumption is about the world (pedestrian, weather, road, start
+  positions), **never about the car**. Assumptions about the car (e.g.
+  `ego_speed`) are rejected with a message, otherwise failures could be
+  defined away by narrowing the car's own behaviour.
+- Each checkable assumption is marked per simulation as held / broken /
+  **not measured**. A quantity that is not recorded is never counted as
+  held.
+- Each assumption gets a verdict from the data (load-bearing, not
+  load-bearing, fewer failures when broken, insufficient data, untested,
+  not measured), with the same 15-point / 10-per-side bars as the rest of
+  the analysis — a stated judgement call, not a significance test.
+- A loose baseline D0 (`fog_density <= 50`, `initial_separation_m >= 15`,
+  `pedestrian_speed_mps <= 3`, plus free text) is added as
+  `R0_with_D0.dsl` (renamed `R_baseline.dsl`, with soft goals too, in §8.13). Rounds 1-2 may be re-analysed against it only in a
+  `baseline_D0/` subfolder labelled "D0 stated after the run"; R0 and the
+  original reports are never rewritten.
+- The reviewer can keep / tighten / loosen / drop / add assumptions;
+  `refine.py` writes them as `[D]` changes. Loosening an assumption that
+  was never broken ("untested") is flagged as having no evidence behind it.
+
+**Steps**: (1) analysis side, laptop only — roadmap M1; (2) record
+`pedestrian_speed_mps` / `crossing_start_distance_m` in the template, with
+the 8 m trigger / no-encounter / dead-`distance` fixes — M2; (3) run 2b
+under D0 — M3; (4) round 3 — M4. See
+[docs/design/roadmap.md](docs/design/roadmap.md).
+
+### 8.13 2026-10-01 — supervisor meeting and comparison with the paper
+
+**From the meeting (Paul and supervisor):**
+
+1. Previous runs had no domain assumptions. The baseline requirement must
+   carry **both** slots — `assuming` (D) and `ensuring` (soft goals) — as in
+   `docs/examples/requirement_full_example.dsl`. → `R_baseline.dsl`
+   (roadmap M1.7), used by run 2b and every round after it.
+2. After a run, that baseline is what separates **admissible** failures
+   (every assumption held) from **spurious** ones (some assumption broken),
+   i.e. Φ_valid computed from the requirement's own text. → M1.
+3. Complete what the paper is about: D, S **and** R adjustable. Only S has
+   been changed so far (round 2). → round 3 must record at least one D, one
+   R and one S decision (M4.2).
+4. Consider the latest YOLO model. → M2b. Today every detector is loaded
+   with `torch.hub.load("ultralytics/yolov5", "custom", ...)` (vendored
+   `Scenic/src/scenic/domains/driving/model.scenic`) and parsed with
+   `results.pandas().xyxy` (`scratch.temp`), which only works for YOLOv5
+   weights; newer models need `ultralytics.YOLO` and a different result
+   format. The laptop venv has `ultralytics` 8.4.137 on Python 3.8; the
+   container still has to be checked, and weights must be shipped in
+   `model/` because Narval compute nodes have no internet.
+
+**Rule adopted:** D and R changes only change how runs are judged, so they
+are evaluated by re-analysing existing runs; only S changes need a new
+Narval run, one change per run.
+
+**Comparison with the paper** (arXiv:2606.31589), in
+[docs/design/tool_paper_alignment.md](docs/design/tool_paper_alignment.md):
+the tool automates what the paper did by hand (obstacle grouping) and adds
+human decisions and provenance, but has so far used only the system layer,
+never D or R, never GE in a round, and measures no smoothness although the
+paper's soft goal is *SmoothBraking*. Added to the roadmap: smoothness
+(jerk) and time-to-collision in M2.5; M4b runs for the model layer
+(`yolov5m`, newer YOLO), the data layer (`fine_tune`) and one GE run; M6.0
+paper outline now. Our findings differ from the paper's (no child effect;
+detection too late dominates) — to be reported, not hidden.
 
 ### 8.7 The iteration loop (stages 7-9) — original design
 

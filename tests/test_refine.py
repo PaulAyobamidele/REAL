@@ -37,22 +37,22 @@ def test_plan_changes_labels(tmp_path):
     kinds = {(c["kind"], c["from"]) for c in changes}
     assert ("R", "StandoffUnnecessaryStop") in kinds
     assert ("S", "BrakingNotLatched") in kinds
-    assert ("D", "artefact:crossing_trigger_8m") in kinds
+    assert ("T", "artefact:crossing_trigger_8m") in kinds
     s = next(c for c in changes if c["kind"] == "S")
     assert s["module"] == "latched_braking" and s["available"] is False   # not in the executor yet
     r = next(c for c in changes if c["kind"] == "R")
     assert r["clause"] == "ensuring" and "resumes within 10 s" in r["item"]
-    d_in_scope = [c for c in changes if c["kind"] == "D" and c["layer"] == "scope"]
-    assert len(d_in_scope) == 2   # the two artefacts marked in_scope -> drop-rule notes
+    t_in_scope = [c for c in changes if c["kind"] == "T" and c["layer"] == "scope"]
+    assert len(t_in_scope) == 2   # the two artefacts marked in_scope -> drop-rule notes
 
 
 def test_apply_changes_edits_text_and_parses():
     changes = [
         {"kind": "S", "task": "Apply Brakes", "module": "latched_braking"},
         {"kind": "R", "clause": "ensuring", "item": "vehicle resumes within 10 s once the crossing is clear"},
-        {"kind": "R", "clause": "assuming", "item": "fog_density <= 50"},
-        {"kind": "R", "clause": "assuming", "item": "fog_density <= 50"},     # duplicate ignored
-        {"kind": "D", "text": "fix the trigger"},
+        {"kind": "D", "clause": "assuming", "item": "fog_density <= 50"},
+        {"kind": "D", "clause": "assuming", "item": "fog_density <= 50"},     # duplicate ignored
+        {"kind": "T", "text": "fix the trigger"},
     ]
     r1 = refine.apply_changes(REQUIREMENT, changes)
     dsl = DSL(r1)
@@ -63,7 +63,7 @@ def test_apply_changes_edits_text_and_parses():
     assert dsl.get_soft_goals() == ["vehicle resumes within 10 s once the crossing is clear"]
     assert 'performed by "proportional_braking"' not in r1
     # applying to an R1 that already has clauses extends them instead of duplicating
-    r2 = refine.apply_changes(r1, [{"kind": "R", "clause": "assuming", "item": "ego_speed <= 5"}])
+    r2 = refine.apply_changes(r1, [{"kind": "D", "clause": "assuming", "item": "ego_speed <= 5"}])
     assert DSL(r2).get_assumptions() == ["fog_density <= 50", "ego_speed <= 5"]
     assert r2.count("assuming") == 1 and r2.count("ensuring") == 1
 
@@ -88,7 +88,7 @@ def test_refine_writes_files_and_records_changes(tmp_path):
     assert "+    ensuring" in diff
     saved = decisions.load(str(run))
     kinds = sorted(c["kind"] for c in saved["requirement_changes"])
-    assert kinds.count("R") == 1 and kinds.count("S") == 1 and kinds.count("D") >= 1
+    assert kinds.count("R") == 1 and kinds.count("S") == 1 and kinds.count("T") >= 1 and kinds.count("D") == 0
     assert out["changes"] and out["paths"]
 
 

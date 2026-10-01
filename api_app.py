@@ -31,11 +31,16 @@ def read_root():
 def verify_requirement(requirement: str = None):
 
     dsl = DSL(requirement)
+    if dsl.parse_tree is None:
+        return {"error": f"requirement does not parse: {dsl.parse_error}",
+                "hint": "see docs/examples/requirement_full_example.dsl for every clause",
+                "STATUS": "NOT OK"}
 
     try:
         return {"parsed_grammar" : dsl.parse_tree.pretty(),
                 "system_under_test": system_under_test_from(dsl),
                 "assumptions": dsl.get_assumptions(),
+                "soft_goals": dsl.get_soft_goals(),
                 "STATUS":"OK"}
     except Exception as e:
         traceback.print_exc()
@@ -65,6 +70,8 @@ async def get_testcases(requirement: str = None, sample: bool = True,
     # nothing else needs to be served concurrently.)
 
     dsl = DSL(requirement)
+    if dsl.parse_tree is None:
+        return {"error": f"requirement does not parse: {dsl.parse_error}", "STATUS": "NOT OK"}
     scenario = dsl.get_scenario()
 
     if sample:
@@ -104,9 +111,10 @@ async def run_grid_endpoint(requirement: str = None, trials: int = 5,
     sut = {"braking_mode": None, "perception_module": None}
     if requirement:
         dsl = DSL(requirement)
-        if dsl.parse_tree is not None:
-            scenario = dsl.get_scenario()
-            sut = system_under_test_from(dsl)
+        if dsl.parse_tree is None:
+            return {"error": f"requirement does not parse: {dsl.parse_error}", "STATUS": "NOT OK"}
+        scenario = dsl.get_scenario()
+        sut = system_under_test_from(dsl)
     constraints = extract_constraints(scenario)
     run_id = new_run_id()
     try:

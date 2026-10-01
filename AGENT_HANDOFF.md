@@ -7,21 +7,33 @@ operational reference). This document is the "what you need to know before
 touching anything" layer — it duplicates as little as possible; where
 something is explained better elsewhere, it points there instead of repeating.
 
-**Status as of 2026-09-23 (evening)**: stages 1-5 proven end-to-end on Narval
-(job 3564897, 2026-09-21; job 3830258, 2026-09-23 — the first run with
-per-simulation telemetry and pedestrian-only scoring, run id
-`35acc09e8c224fdc953e3bf82ba57e96`). Stages 6-7 (telemetry → failure model →
-obstacles, with candidate mitigations) are **built and tested** and have
-produced a first real report; see [Notes.md §8](Notes.md#8-2026-09-23--failure-analysis-stages-6-7-the-grid-run-and-what-it-found)
-for the findings — they differ from the paper's, read them. The executor now
-runs the system the requirement names (`performed by`), and the DSL has an
-optional `assuming` clause for domain assumptions. Stages 8-9 (decisions
-file, requirement writer, round comparison) are designed in Notes.md §8.7,
-not built. Venue is **ICSE** (was FSE; branch name `fse-tool` is historical).
-The user has explicitly dropped the 2026-10-01 deadline. Nothing has been
-committed to git yet — deliberate, pending user review. User style
-preference: short, plain-language replies; docs must be updated with every
-code change (this file, Notes.md, README.md, infra/hpc/README.md).
+**Status as of 2026-10-01**: all nine stages are built and have run on real
+data. Round 1 (emergency braking, job 3830258, run
+`35acc09e8c224fdc953e3bf82ba57e96`) and round 2 (proportional braking, job
+3843349, run `882fb2fe00bf4568bdb480a281db9e8b`) are analysed, compared and
+reviewed; see [Notes.md §8](Notes.md#8-2026-09-23--failure-analysis-stages-6-7-the-grid-run-and-what-it-found)
+— the findings differ from the paper's, read them. Rounds 1-2 are an
+implementation comparison under a fixed requirement R0; the REAL loop proper
+starts at round 3. The work up to 2026-09-23 is committed (`1495e32`, tag
+`round2-2026-09-23`); the 2026-09-24/25 hardening (progressive review page,
+S/R/D/T labels, `.dsl` example files, parse errors, `REAL_REQUIREMENT_FILE`,
+92 tests) is committed in M0 of the roadmap.
+
+**What comes next** is in [docs/design/roadmap.md](docs/design/roadmap.md)
+(milestones M0-M6, agreed in direction 2026-10-01; supervisor points and the paper comparison in Notes.md §8.13 and [docs/design/tool_paper_alignment.md](docs/design/tool_paper_alignment.md)). The immediate one is M1, the
+analysis side of [docs/design/domain_assumptions.md](docs/design/domain_assumptions.md)
+(agreed 2026-09-30): rounds 1-2 stated **no** domain assumptions, so every
+failure was "valid" by construction and the valid/spurious split never ran
+on real data. Before any new Narval run: the staging copy `~/real-av-build`
+is stale — rebuild and rsync first (§4.3), and the template fixes in M2
+(8 m trigger, no-encounter geometry, dead `distance`) are still open.
+
+Venue is **ICSE** (was FSE; branch name `fse-tool` is historical). The user
+has dropped the 2026-10-01 deadline. User style preference: short,
+plain-language replies; every code change is proposed as a diff and approved
+first; docs are updated with every code change (this file, Notes.md,
+README.md, infra/hpc/README.md); every result is saved to a file in the run
+folder, never only in chat.
 
 ## 1. What this project is
 

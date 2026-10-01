@@ -189,7 +189,21 @@ MAINTAIN "Pedestrian Safety"
   become out-of-scope rules in the analysis - failures outside them are
   reported as *spurious*, not as requirement violations. Anything else is kept
   as free text for the human reviewer. Requirements without the clause parse
-  exactly as before.
+  exactly as before. Two rules (design: `docs/design/domain_assumptions.md`):
+  an assumption must be about the **world** (pedestrian, weather, road,
+  start positions), never about the car under test - otherwise a failure
+  could be defined away by narrowing the car's behaviour; and an assumption
+  whose quantity is not recorded in a run is reported as **not measured**,
+  never as held. (Per-assumption checking and verdicts are being built -
+  roadmap M1.) Note that rounds 1-2 stated no assumptions, so their failure
+  rates are rates under no assumptions.
+- Two reference files: `docs/examples/requirement_full_example.dsl` shows every
+  clause at once; `docs/examples/R0_rounds1_2.dsl` is the requirement rounds 1–2
+  actually ran with (no `assuming`, no `ensuring`). Both are parse-checked by the
+  test suite. `#` lines are comments. The Narval job reads its requirement from
+  such a file (`REAL_REQUIREMENT_FILE`, default `R0_rounds1_2.dsl`) and records
+  the path as `requirement_source` in `run_meta.json`. A requirement that does
+  not parse is reported with Lark's line/column message by `/verify_requirement`.
 - The optional **`ensuring`** clause (after `assuming`) states soft goals -
   quality attributes such as the paper's *SmoothBraking* / making progress:
   `ensuring "vehicle resumes within 10 s once the crossing is clear"`. Added

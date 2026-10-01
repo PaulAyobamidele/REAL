@@ -202,19 +202,19 @@
       "layer": "requirement"
     },
     {
-      "kind": "D",
+      "kind": "T",
       "text": "scratch.temp: trigger the crossing on a timer or on the pedestrian's own distance to the crossing point, not on proximity to the ego.",
       "from": "artefact:crossing_trigger_8m",
       "layer": "scenario"
     },
     {
-      "kind": "D",
+      "kind": "T",
       "text": "scratch.temp: choose the lane/spot so the ego approaches the crossing point; or reject such samples with a Scenic `require`.",
       "from": "artefact:no_encounter_geometry",
       "layer": "scenario"
     },
     {
-      "kind": "D",
+      "kind": "T",
       "text": "scratch.temp: place the pedestrian from `distance` (as scenic_template.py's get_pedestrian_pos did), or drop the parameter from old.bnf.",
       "from": "artefact:distance_parameter_dead",
       "layer": "scenario"
