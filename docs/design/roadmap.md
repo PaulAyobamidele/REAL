@@ -52,11 +52,12 @@ Step 1 of [domain_assumptions.md](domain_assumptions.md).
 | 1.4 ✅ | Report section "Assumptions": per assumption, times broken, failure rate held vs broken, verdict; and a "Soft goals" section listing each `ensuring` item as checked or **not yet measurable** | sections in `analysis_report.md` / `.json` |
 | 1.5 ✅ | Review items keep / tighten / loosen / drop / add (D) in `decisions.py`, `review.py`, review page | AppTest clicks one of each |
 | 1.6 ✅ | `refine.py` writes `[D]` changes; flags loosening an "untested" assumption | test per row of the design table |
-| 1.7 | **`docs/examples/R_baseline.dsl`**: R0's system + `assuming` D0 + `ensuring` E0 (baseline soft goals, see M2.5) — the baseline with both slots, as agreed with the supervisor | parse-checked by `test_example_files_parse` |
-| 1.8 | Re-analyse rounds 1 and 2 against the baseline into `artifacts/runs/<run>/baseline_D0/`, banner "assumptions stated after the run" | both folders exist; originals untouched |
+| 1.7 ✅ | **`docs/examples/R_baseline.dsl`**: R0's system + `assuming` D0 + `ensuring` E0 (baseline soft goals, see M2.5) — the baseline with both slots, as agreed with the supervisor | parse-checked by `test_example_files_parse` |
+| 1.8 ✅ | Re-analyse rounds 1 and 2 against the baseline into `artifacts/runs/<run>/baseline_D0/`, banner "assumptions stated after the run" | both folders exist; originals untouched |
 | 1.9 | Docs + commit + tag `baseline-analysis` | - |
 
-M1.1-1.6 done 2026-10-01 (Notes §8.14-§8.17). Assumptions are checked after each
+**M1 complete 2026-10-01** (Notes §8.14-§8.18): under the baseline, every round 1-2 failure
+stays a real violation; the rounds give no evidence for or against any assumption. Assumptions are checked after each
 run, never imposed on the simulator; tightening the scenario grammar to an
 agreed assumption is deferred (a later per-round choice).
 
@@ -157,4 +158,4 @@ after round 3 (Narval budget).
 
 ## Next action
 
-M1.7 — `docs/examples/R_baseline.dsl` (R0's system + D0 + baseline soft goals), then M1.8 — the labelled re-analysis of rounds 1-2 into `baseline_D0/`.
+M1.9 commit + tag `baseline-analysis` (Paul), then **M2** — fix the test scene and record what is missing (one proposal for the whole milestone).

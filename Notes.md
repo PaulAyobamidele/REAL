@@ -1173,6 +1173,48 @@ come before any loosening. The saved, labelled version is M1.8.
 table and an AppTest Accept that writes a `[D]` R1); 117 in total. No saved
 decisions or R1 regenerated.
 
+### 8.18 2026-10-01 — M1.7-1.8: the baseline requirement, rounds 1-2 re-judged (M1 complete)
+
+- `docs/examples/R_baseline.dsl`: R0's system (`yolov5s`, `proportional_braking`)
+  + `assuming "fog_density <= 50" & "initial_separation_m >= 15" &
+  "pedestrian_speed_mps <= 3" & "daylight, dry road" & "pedestrian on foot"`
+  + `ensuring "vehicle resumes within 10 s once the crossing is clear" &
+  "braking is smooth unless an emergency stop is needed"` (text only until
+  M2.5). Parse-checked in `test_example_files_parse`. Used from run 2b on.
+- `report.py` can re-judge a finished run: `--requirement FILE --out DIR
+  --banner TEXT` (`analyse(..., requirement=)`, `write_report(..., out_dir=,
+  banner=)`); it refuses to write into the run folder itself, so an original
+  report is never overwritten; `run_meta.requirement_as_run` keeps the text
+  the run used. 2 tests; 119 in total.
+- Re-judged rounds 1-2 into `artifacts/runs/<run>/baseline_D0/`
+  (`analysis_report.{md,json}` with a banner, and
+  `requirement_judged_against.dsl` = the text each run **actually** ran with
+  + the baseline `assuming`/`ensuring` lines — not `R_baseline.dsl` itself,
+  because round 1 ran emergency braking). Commands:
+  `python -m scripts.analysis.report artifacts/runs/<run> --requirement
+  artifacts/runs/<run>/baseline_D0/requirement_judged_against.dsl --out
+  artifacts/runs/<run>/baseline_D0 --banner "Assumptions stated AFTER the run: …"`.
+
+**Result (from the saved files):**
+
+| | as run (R0, no assumptions) | re-judged with D0 (stated after) |
+|---|---|---|
+| Round 1 `35acc09e…` | 160 sims, 120 encounters, 91 failed (75.8 %), 12 stalled | 154 in scope, 120 encounters, 91 failed (75.8 %), 12 stalled |
+| Round 2 `882fb2fe…` | 160 sims, 128 encounters, 4 failed (3.1 %), 113 stalled | 152 in scope, 126 encounters, 4 failed (3.2 %), 113 stalled |
+
+Set aside: round 1 — 6 simulations (`initial_separation_m >= 15` broken), all
+no-encounter, 0 failed; round 2 — 8 (2 of them encounters, both passed).
+Supported obstacles unchanged in both rounds. Verdicts: fog untested;
+separation untested (round 1) / insufficient data (round 2); walking speed not
+measured.
+
+**Reading:** under the baseline assumptions, **every failure in rounds 1-2
+stays a real requirement violation** — none is explained away by a broken
+assumption. The car's failures are the car's. Equally, the rounds give **no
+evidence** for or against any D0 assumption (none was broken often enough in
+real encounters), so nothing may be loosened on their strength. That needs
+the fixed scene (M2) and run 2b. **M1 is complete.**
+
 ### 8.7 The iteration loop (stages 7-9) — original design
 
 Per round: requirement R_n → run (grid) → `simulations.csv` → report →
