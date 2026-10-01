@@ -134,7 +134,11 @@ check before it matters, but nothing currently depends on it being fixed.
   counterpart to the GE search; writes `scenarios.csv` incrementally.
 - [`scripts/analysis/`](scripts/analysis/) — stages 6-7: `telemetry.py`
   (per-simulation rows + traces, called from the template and the monitor),
-  `admissibility.py` + `admissibility_rules.json` (valid vs spurious),
+  `admissibility.py` + `admissibility_rules.json` (valid vs spurious; `QUANTITIES` +
+  `parse_assumption()` classify `assuming` items as scenario / run / free text /
+  rejected; `check_assumptions()` marks each simulation held / broken / not measured,
+  and only broken sets it aside; `assumption_verdicts()` says whether each one
+  matters (load-bearing / not / untested / ...) — checked after the run, never imposed on the simulator),
   `failure_model.py` (rates, failure types, timing, sanity warnings),
   `obstacles.py` (KAOS obstacles + behaviour/soft-goal ones + candidates +
   per-layer mitigations), `report.py` (`python -m scripts.analysis.report
@@ -149,7 +153,8 @@ check before it matters, but nothing currently depends on it being fixed.
   (excluded from rates) and `passed_stalled` (standoff; counted as pass,
   reported apart). The catalogue has a fifth mitigation layer, `scenario`,
   and `SCENARIO_ARTEFACTS` for defects of the test itself. `refine.py`
-  (`python -m scripts.analysis.refine <run>` → `R0.dsl`, `R1.dsl`,
+  (`python -m scripts.analysis.refine <run>` → `R0.dsl`, `R1.dsl`; assumption verdicts
+  keep/tighten/loosen/drop/added become `[D]` lines,
   `requirement_diff.md` with [S]/[R]/[D] labels; R1 parse-checked; nothing
   applied). Provenance: `/run_grid?...&parent_run_id=&round=&requirement_source=`
   → `run_meta.json`.

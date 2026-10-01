@@ -1,6 +1,10 @@
 # Domain assumptions: baseline, per-assumption failure analysis, revision
 
-Status: agreed 2026-09-30 (Paul). Step 1 (analysis side) in progress; steps 2-4 later.
+Status: agreed 2026-09-30 (Paul). Step 1 (analysis side) in progress — vocabulary and
+classification and per-simulation checks done 2026-10-01 (`QUANTITIES`, `parse_assumption`,
+`check_assumptions`, `assumption_verdicts`, review items and `[D]` changes; baseline file and
+re-analysis next); steps 2-4 later.
+Assumptions are checked after each run, never imposed on the simulator.
 Why: the REAL loop adapts the car (S), the promise (R) **and** the domain
 assumptions (D). Until now D existed only as an empty slot: R0 for rounds 1-2
 stated no assumptions, so every failure was "valid" by construction and the

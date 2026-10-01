@@ -91,10 +91,41 @@ def _is_available(task, module, avail):
     return module in pool
 
 
-def plan_changes(doc):
+def assumption_changes(doc, r0_assumptions):
+    """[D] changes from the reviewer's assumption verdicts
+    (docs/design/domain_assumptions.md, 'Revision'). `r0_assumptions` = the
+    items in the run's own `assuming` clause; anything else was stated after
+    the run (e.g. a baseline re-analysis) and is new to R1 if kept."""
+    changes = []
+    for text, a in (doc.get("assumptions") or {}).items():
+        v = a.get("verdict")
+        in_r0 = text in r0_assumptions
+        sid = f"assumption:{text}"
+        base = {"kind": "D", "from": sid, "layer": "requirement", "clause": "assuming"}
+        if v == "keep" and not in_r0:
+            changes.append(dict(base, item=text, text=f'assuming "{text}" (kept; stated after the run)'))
+        elif v in ("tighten", "loosen"):
+            new = a["new_text"].strip()
+            no_evidence = v == "loosen" and a.get("tool_verdict") == "untested"
+            changes.append(dict(base, item=new, replaces=text if in_r0 else None,
+                                no_evidence=no_evidence,
+                                text=f'assuming "{new}" ({v}ed from "{text}")'))
+        elif v == "drop" and in_r0:
+            changes.append(dict(base, item=text, remove=True, text=f'drop assuming "{text}"'))
+    for added in doc.get("added_assumptions") or []:
+        t = str(added.get("text") or "").strip()
+        if t:
+            changes.append({"kind": "D", "from": "added by reviewer", "layer": "requirement",
+                            "clause": "assuming", "item": t, "text": f'assuming "{t}" (added)'})
+    return changes
+
+
+def plan_changes(doc, r0=None):
     """The list of changes the decisions imply. Each: {kind, from, layer,
     text, ...}; S-changes carry task/module/available, R-changes clause/item,
-    D-changes target/action."""
+    D-changes clause/item (+ replaces / remove / no_evidence for assumption
+    verdicts). `r0` (the requirement as run) tells which assumptions it
+    already states."""
     changes = []
     avail = available_modules()
     for oid, o in doc.get("obstacles", {}).items():
@@ -138,6 +169,8 @@ def plan_changes(doc):
         elif v == "scenario_defect":
             changes.append({"kind": "T", "from": sid, "layer": "scenario", "target": "scripts/scenarios/scratch.temp",
                             "text": s.get("suggested_fix") or s.get("reason") or "fix the test scenario"})
+    r0_assumptions = _split_clauses(r0)[1] if r0 else []
+    changes.extend(assumption_changes(doc, r0_assumptions))
     return changes
 
 
@@ -187,7 +220,13 @@ def apply_changes(r0, changes):
         if ch["kind"] not in ("R", "D") or not ch.get("clause"):
             continue
         target = assuming if ch["clause"] == "assuming" else ensuring
-        if ch["item"] not in target:
+        if ch.get("remove"):
+            if ch["item"] in target:
+                target.remove(ch["item"])
+            continue
+        if ch.get("replaces") in target:
+            target[target.index(ch["replaces"])] = ch["item"]
+        elif ch["item"] not in target:
             target.append(ch["item"])
     return _join(head, assuming, ensuring)
 
@@ -204,7 +243,7 @@ def render_diff(r0, r1, changes, run_id=None):
     add("")
     add("Labels: **[S]** we changed the car (`performed by`), "
         "**[R]** we changed the promise (an `ensuring` soft goal added), "
-        "**[D]** we changed the assumptions (an `assuming` domain assumption added), "
+        "**[D]** we changed the assumptions (an `assuming` domain assumption added, changed or dropped), "
         "**[T]** we fix the test (a scenario or scope fix - not requirement text). "
         "R1 is a proposal: edit or accept; nothing is applied automatically.")
     add("")
@@ -215,6 +254,9 @@ def render_diff(r0, r1, changes, run_id=None):
         note = ""
         if ch["kind"] == "S" and not ch.get("available", True):
             note = "  **(executor does not implement this module yet - round 3 cannot run it until it does)**"
+        if ch.get("no_evidence"):
+            note = ("  **(loosened although the assumption was never broken in this run - "
+                    "no evidence behind it)**")
         add(f"- [{ch['kind']}] from `{ch['from']}` ({ch['layer']}): {ch['text']}{note}")
     add("")
     add("## R0 (as run)")
@@ -254,7 +296,7 @@ def refine(run_dir, doc=None, r0=None, r1_override=None, write=True):
             r0 = json.load(f).get("requirement") or ""
     if not r0.strip():
         raise ValueError("no requirement text (R0) in run_meta.json")
-    changes = plan_changes(doc)
+    changes = plan_changes(doc, r0)
     r1 = r1_override if r1_override is not None else apply_changes(r0, changes)
     if not check_parses(r1):
         raise ValueError("the proposed R1 does not parse with the DSL - not written")

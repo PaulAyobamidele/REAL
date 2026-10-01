@@ -29,8 +29,21 @@ Shape (schema_version 1):
     "<group id>": {"verdict": "out_of_scope" | "in_scope" | "scenario_defect" | null,
                    "kind": "rule" | "artefact", "evidence": "...", "reason": "..."}
   },
+  "assumptions": {            # optional (added 2026-10-01, roadmap M1.5)
+    "<assumption text>": {"verdict": "keep" | "tighten" | "loosen" | "drop" | null,
+                          "new_text": "..." | null,    # required for tighten / loosen
+                          "tool_verdict": "load-bearing" | "untested" | ... | null,
+                          "kind": "scenario" | "run" | "free_text" | "rejected",
+                          "evidence": "...", "reason": "..."}
+  },
+  "added_assumptions": [ {"text": "...", "reason": "..."} ],
   "requirement_changes": [ {"kind": "S"|"R"|"D"|"T", "text": "...", "from": "<obstacle id>"} ]
 }
+
+Assumptions (D): keep = the assumption stays as written; tighten / loosen =
+replace it with new_text (narrower / wider); drop = remove it. An assumption
+may only describe the world, never the car under test - validate() refuses
+new or added text about the car.
 
 Verdict meanings: accept = a real obstacle, act on it; rename = real but the
 tool's name is wrong; reject = noise or not an obstacle; defer = a decision
@@ -52,6 +65,7 @@ OBSTACLE_VERDICTS = ("accept", "rename", "reject", "defer")   # defer = decided:
 SCOPE_VERDICTS = ("out_of_scope", "in_scope", "scenario_defect")
 STATUSES = ("new", "persisting", "resolved", "absent")
 LAYERS = ("data", "model", "system", "requirement", "scenario")
+ASSUMPTION_VERDICTS = ("keep", "tighten", "loosen", "drop")
 CHANGE_KINDS = ("S", "R", "D", "T")   # S: specification (the car) / R: requirement (the promise) / D: domain assumption / T: test or scope fix
 
 
@@ -86,6 +100,26 @@ def _options(o):
             for layer, text in (o.get("mitigations") or {}).items() if text]
 
 
+def _assumption_evidence(a):
+    if a["kind"] == "free_text":
+        return "free text - not checked automatically"
+    if a["kind"] == "rejected":
+        return f"rejected by the tool: {a.get('message')}"
+    text = f"held {a.get('held', 0)}, broken {a.get('broken', 0)}"
+    if a.get("not_measured"):
+        text += f", not measured {a['not_measured']}"
+    rh, rb = a.get("rate_held"), a.get("rate_broken")
+    if rh is not None or rb is not None:
+        fmt = lambda x: "n/a" if x is None else f"{x:.0%}"
+        text += f"; failure rate over encounters held {fmt(rh)} / broken {fmt(rb)}"
+    return text
+
+
+def _assumption_only(reason):
+    parts = [p.strip() for p in str(reason).split(",") if p.strip()]
+    return bool(parts) and all(p.startswith("assumption: ") for p in parts)
+
+
 def from_analysis(analysis, previous_analysis=None, reviewer=None, round_no=None,
                   artefacts=None):
     """A decisions document with every field the tool can fill in and every
@@ -101,6 +135,8 @@ def from_analysis(analysis, previous_analysis=None, reviewer=None, round_no=None
         "decided_at": None,
         "obstacles": {},
         "scope": {},
+        "assumptions": {},
+        "added_assumptions": [],
         "requirement_changes": [],
     }
     for o in analysis["obstacles"]:
@@ -116,12 +152,20 @@ def from_analysis(analysis, previous_analysis=None, reviewer=None, round_no=None
         }
     rules_by_name = {r["name"]: r for r in analysis["admissibility"].get("rules", [])}
     for s in analysis["admissibility"].get("spurious", []):
+        if _assumption_only(s["rule"]):
+            continue   # reviewed once, as assumption items below
         rule = rules_by_name.get(s["rule"], {})
         doc["scope"][f"rule:{s['rule']}"] = {
             "verdict": None, "kind": "rule",
             "evidence": f"{s['n']} simulations set aside ({s['failures']} failed)",
             "rule": {k: rule.get(k) for k in ("param", "op", "value", "source")} if rule else None,
             "reason": None,
+        }
+    for a in analysis["admissibility"].get("assumptions", []):
+        doc["assumptions"][a["text"]] = {
+            "verdict": None, "new_text": None,
+            "tool_verdict": a.get("verdict"), "kind": a["kind"],
+            "evidence": _assumption_evidence(a), "reason": None,
         }
     fm = analysis["failure_model"]
     for a in artefacts or []:
@@ -164,6 +208,26 @@ def validate(doc):
         v = s.get("verdict")
         if v is not None and v not in SCOPE_VERDICTS:
             problems.append(f"scope {sid}: verdict {v!r} not in {SCOPE_VERDICTS}")
+    from scripts.analysis.admissibility import parse_assumption
+
+    def about_the_car(t):
+        item = parse_assumption(t)
+        return item["kind"] == "rejected" and (item["quantity"] or "").startswith("ego")
+
+    for text, a in (doc.get("assumptions") or {}).items():
+        v = a.get("verdict")
+        if v is not None and v not in ASSUMPTION_VERDICTS:
+            problems.append(f"assumption {text!r}: verdict {v!r} not in {ASSUMPTION_VERDICTS}")
+        if v in ("tighten", "loosen") and not a.get("new_text"):
+            problems.append(f"assumption {text!r}: {v} needs new_text")
+        if v in ("tighten", "loosen") and a.get("new_text") and about_the_car(a["new_text"]):
+            problems.append(f"assumption {text!r}: new_text is about the car under test")
+    for i, added in enumerate(doc.get("added_assumptions") or []):
+        t = str(added.get("text") or "").strip()
+        if not t:
+            problems.append(f"added_assumptions[{i}]: text missing")
+        elif about_the_car(t):
+            problems.append(f"added_assumptions[{i}]: {t!r} is about the car under test")
     for i, ch in enumerate(doc.get("requirement_changes") or []):
         if ch.get("kind") not in CHANGE_KINDS:
             problems.append(f"requirement_changes[{i}]: kind {ch.get('kind')!r} not in {CHANGE_KINDS}")
@@ -181,6 +245,8 @@ def is_complete(doc):
         if o["verdict"] in ("accept", "rename") and o.get("tool_verdict") == "supported" \
                 and o.get("status") in ("new", "persisting") and o.get("mitigation") is None:
             return False
+    if not all(a.get("verdict") is not None for a in (doc.get("assumptions") or {}).values()):
+        return False
     return all(s.get("verdict") is not None for s in doc["scope"].values())
 
 

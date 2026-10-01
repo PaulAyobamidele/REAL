@@ -32,17 +32,22 @@ def analyse(run_dir, rules_path=None):
     for rule in rules:
         rule.setdefault("source", "rules file")
 
-    # The requirement's own `assuming "..."` clause adds scope rules too, so a
-    # requirement-level mitigation (stage 8) changes the analysis on the next
-    # round without anyone editing the rules file.
+    # The requirement's own `assuming "..."` clause (domain assumptions, D) is
+    # checked per simulation: held / broken / not measured. Only a broken
+    # assumption sets a simulation aside as spurious; the rules file stays the
+    # separate test-scope lever ([T]). Assumptions are checked after the run,
+    # never imposed on the simulator (docs/design/domain_assumptions.md).
     req = obstacles.requirement_context(meta.get("requirement"))
-    assumption_rules, free_text_assumptions = admissibility.rules_from_assumptions(
-        req.get("assumptions"))
-    rules = rules + assumption_rules
+    items = admissibility.parse_assumptions(req.get("assumptions"))
+    free_text_assumptions = [i["text"] for i in items if i["kind"] == "free_text"]
 
     df = failure_model.load_simulations(run_dir)
+    df = admissibility.add_run_quantities(df, run_dir)
     df = admissibility.label_simulations(df, rules)
+    df, assumption_summary = admissibility.check_assumptions(df, items)
     df = failure_model.add_failure_types(df)
+    assumption_summary = admissibility.assumption_verdicts(
+        df, assumption_summary, failure_model.MIN_EFFECT, failure_model.MIN_N)
 
     valid = df[df["admissible"]]
     spurious = df[~df["admissible"]]
@@ -65,6 +70,7 @@ def analyse(run_dir, rules_path=None):
         "requirement": req,
         "admissibility": {
             "rules": rules,
+            "assumptions": assumption_summary,
             "free_text_assumptions": free_text_assumptions,
             "n_admissible": int(len(valid)),
             "n_spurious": int(len(spurious)),
@@ -107,10 +113,37 @@ def to_markdown(analysis):
     add("")
 
     add("## 1. Scope (admissibility)")
-    req_rules = [r for r in adm["rules"] if r.get("source") == "requirement"]
-    if req_rules:
-        add("- Assumptions stated in the requirement (`assuming ...`): "
-            + "; ".join(r["name"].replace("assumption: ", "") for r in req_rules))
+    checked = [a for a in adm.get("assumptions", []) if a["kind"] in ("scenario", "run")]
+    rejected = [a for a in adm.get("assumptions", []) if a["kind"] == "rejected"]
+    if checked or rejected:
+        add("- Assumptions stated in the requirement (`assuming ...`), checked per simulation:")
+        where = {"scenario": "scenario setting", "run": "measured in each run"}
+        for a in checked:
+            if a["held"] + a["broken"] == 0:
+                add(f"  - `{a['text']}` ({where[a['kind']]}): not measured in this run, "
+                    f"so it set nothing aside")
+            else:
+                line = (f"  - `{a['text']}` ({where[a['kind']]}): held {a['held']}, "
+                        f"broken {a['broken']}")
+                if a["not_measured"]:
+                    line += f", not measured {a['not_measured']}"
+                if a.get("verdict"):
+                    line += f" -> **{a['verdict']}**"
+                    if a.get("rate_held") is not None and a.get("rate_broken") is not None:
+                        line += (f" (failure rate when held {_pct(a['rate_held'])}, "
+                                 f"when broken {_pct(a['rate_broken'])}, over encounters)")
+                add(line)
+        for a in rejected:
+            add(f"  - `{a['text']}`: REJECTED - {a['message']}")
+        if checked:
+            add(f"  - Verdicts: load-bearing = failures at least {failure_model.MIN_EFFECT * 100:.0f} points "
+                f"higher when broken (the requirement depends on it); not load-bearing = within "
+                f"that (a candidate for loosening); untested = never broken (no evidence either "
+                f"way); insufficient data = fewer than {failure_model.MIN_N} encounters on a side. "
+                "A judgement call, not a significance test.")
+    elif not adm.get("free_text_assumptions"):
+        add("- The requirement states no domain assumptions (`assuming ...`): every failure "
+            "counts as a real requirement violation.")
     if adm.get("free_text_assumptions"):
         add("- Free-text assumptions (not checked automatically): "
             + "; ".join(f'"{a}"' for a in adm["free_text_assumptions"]))
@@ -133,6 +166,15 @@ def to_markdown(analysis):
         add(f"- Of the {fm['passes']} passes, **{fm['passed_stalled']} were stalled**: the car stopped "
             f"short and never moved again (standoff; counts as a pass for the safety rule, but the "
             f"progress soft goal failed). {fm['passed_clean']} passes drove on normally.")
+    soft_goals = req.get("soft_goals") or []
+    if soft_goals:
+        add("- Soft goals stated in the requirement (`ensuring ...`):")
+        for g in soft_goals:
+            add(f'  - "{g}": not checked automatically yet (roadmap M2.5)')
+        if fm.get("passed_stalled"):
+            add(f"  - {fm['passed_stalled']} stalled passes are relevant to any progress / resume goal.")
+    elif req.get("parsed"):
+        add("- The requirement states no soft goals (`ensuring ...`).")
     types = fm["failure_types"]
     if fm["failures"]:
         add("- How they failed: " + ", ".join(f"{k} {v}" for k, v in types.items() if v))

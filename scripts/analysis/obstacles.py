@@ -310,6 +310,7 @@ def requirement_context(requirement_text, goal=DETECTION_GOAL):
                 "detection_module": dsl.get_module_for(goal),
                 "operations": dsl.get_operations(),
                 "assumptions": dsl.get_assumptions(),
+                "soft_goals": dsl.get_soft_goals(),
                 "scenario_text": dsl.get_scenario()}
     except Exception as e:  # analysis must never die on the requirement text
         return {"parsed": False, "error": str(e)}

@@ -5,7 +5,7 @@ Five screens, walked through with Next/Back (or the step picker in the sidebar):
     1. What we asked          R0 in full, the system it selected, the scenario space
     2. What happened          raw outcome, this round beside the previous one, one video
     3. What pattern           one obstacle card at a time, in support order
-    4. What you decide        verdict + reason per obstacle; then the scope items
+    4. What you decide        verdict + reason per obstacle; then the scope items, then the assumptions (D)
     5. What the requirement becomes   R0 / R1 side by side, [S]/[R]/[D] labels, Accept
 
 Reads a run folder from disk (analysis via scripts/analysis/report; no Redis,
@@ -42,6 +42,7 @@ STATUS_TEXT = {"new": "new this round", "persisting": "persisting - was present 
                "resolved": "no longer supported this round", "absent": "not supported in either round"}
 VERDICTS = ["accept", "rename", "reject", "defer"]
 SCOPE_VERDICTS = ["out_of_scope", "in_scope", "scenario_defect"]
+ASSUMPTION_VERDICTS = list(decisions.ASSUMPTION_VERDICTS)
 
 
 def _pct(x):
@@ -78,6 +79,11 @@ def _load_or_new(run_dir, analysis, previous, reviewer, round_no):
             for sid, entry in fresh["scope"].items():
                 saved = doc.get("scope", {}).get(sid, {})
                 entry["verdict"], entry["reason"] = saved.get("verdict"), saved.get("reason")
+            for text, entry in fresh["assumptions"].items():
+                saved = doc.get("assumptions", {}).get(text, {})
+                for k in ("verdict", "new_text", "reason"):
+                    entry[k] = saved.get(k)
+            fresh["added_assumptions"] = doc.get("added_assumptions") or []
             fresh["reviewer"] = doc.get("reviewer")
             fresh["proposed_by_tool"] = bool(doc.get("proposed_by_tool")) or "proposed" in (doc.get("reviewer") or "").lower()
             return fresh
@@ -283,12 +289,37 @@ elif step == 3:
                                               "defect in the test scenario - fix it, re-measure"])
             s["reason"] = st.text_input("Reason", value=s.get("reason") or "", key=f"sr:{sid}") or None
 
+    st.subheader("Domain assumptions (D) - what the requirement assumes about the world")
+    if not doc["assumptions"]:
+        st.caption("The requirement states no domain assumptions - every failure counted as the car's.")
+    for text, a in doc["assumptions"].items():
+        with st.container(border=True):
+            st.markdown(f"**`{text}`** ({a['kind']}) - {a['evidence']}"
+                        + (f"; tool: **{a['tool_verdict']}**" if a.get("tool_verdict") else ""))
+            a["verdict"] = st.radio("Assumption verdict", ASSUMPTION_VERDICTS, horizontal=True,
+                                    index=ASSUMPTION_VERDICTS.index(a["verdict"]) if a.get("verdict") in ASSUMPTION_VERDICTS else None,
+                                    key=f"av:{text}",
+                                    captions=["stays as written", "narrower - give the new text",
+                                              "wider - give the new text", "remove it"])
+            if a["verdict"] in ("tighten", "loosen"):
+                a["new_text"] = st.text_input("New text", value=a.get("new_text") or "", key=f"an:{text}") or None
+                if a["verdict"] == "loosen" and a.get("tool_verdict") == "untested":
+                    st.warning("Never broken in this run - loosening it has no evidence behind it.")
+            else:
+                a["new_text"] = None
+            a["reason"] = st.text_input("Reason", value=a.get("reason") or "", key=f"ar:{text}") or None
+    added = st.text_area("Add assumptions (one per line; about the world, never the car)",
+                         value="\n".join(x["text"] for x in doc.get("added_assumptions") or []),
+                         key=f"aa:{analysis['run_id']}")
+    doc["added_assumptions"] = [{"text": line.strip(), "reason": None}
+                                for line in added.splitlines() if line.strip()]
+
 # ---------------------------------------------------------------- 5. what the requirement becomes
 elif step == 4:
     problems = decisions.validate(doc)
     if problems:
         st.error("; ".join(problems))
-    changes = refine.plan_changes(doc)
+    changes = refine.plan_changes(doc, r0)
     try:
         r1_auto = refine.apply_changes(r0, changes) if r0.strip() else ""
     except ValueError as e:
@@ -300,6 +331,8 @@ elif step == 4:
         for ch in changes:
             note = " - **the executor does not implement this module yet**" \
                 if ch["kind"] == "S" and not ch.get("available", True) else ""
+            if ch.get("no_evidence"):
+                note = " - **loosened although never broken: no evidence behind it**"
             st.markdown(f"- {LABELS[ch['kind']]} - from `{ch['from']}`: {ch['text']}{note}")
     else:
         st.caption("The decisions so far imply no change to the requirement.")
@@ -315,7 +348,7 @@ elif step == 4:
 
     complete = decisions.is_complete(doc)
     if not complete:
-        st.info("Every obstacle and scope item needs a verdict (accepted, supported obstacles need a mitigation) before Accept.")
+        st.info("Every obstacle, scope item and assumption needs a verdict (accepted, supported obstacles need a mitigation) before Accept.")
     if not reviewer.strip():
         st.info("Enter your name as reviewer in the sidebar - the decision file records who decided.")
     if st.button("Accept: write decisions.json, R0.dsl, R1.dsl, requirement_diff.md", type="primary",
