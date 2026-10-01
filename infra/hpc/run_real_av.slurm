@@ -18,31 +18,31 @@ RUN_ID="${SLURM_JOB_ID}"
 ARTIFACTS_DIR="$SCRATCH/real_project/artifacts"
 mkdir -p "$ARTIFACTS_DIR"
 
-# Written via a quoted heredoc (no shell interpretation of its contents) to
-# avoid fighting nested bash/Python quote-escaping for a requirement string
-# full of double quotes (scripts/redsl/grammar.py's DSL grammar requires
-# Lark's ESCAPED_STRING tokens, i.e. "..." - a plain sentence like "a
-# pedestrian crossing in fog" silently fails to parse and crashes
-# get_scenario() with a NoneType error, since verify_grammar() swallows all
-# parse exceptions).
+# The requirement is a .dsl FILE, not a bash string: reviewers can find and
+# change it without editing a job script, and the run's provenance
+# (requirement_source in run_meta.json) names the file. Override with
+#   sbatch --export=ALL,REAL_REQUIREMENT_FILE=docs/examples/my_req.dsl,REAL_PARENT_RUN_ID=<run>,REAL_ROUND=3 run_real_av.slurm
+# Paths are relative to the project root inside the container. The default is
+# the requirement rounds 1-2 ran with (docs/examples/R0_rounds1_2.dsl).
+# (Heredoc kept quoted so nothing inside is shell-expanded - see obstacle 10.)
 cat > smoke_test.py <<'PYEOF'
+import os
 import requests
 
-requirement = """
-MAINTAIN "Pedestrian Safety"
-    by
-        "Pedestrian Check" using "Perception Module"
-            operationalized as
-                "Detect Pedestrian" performed by "yolov5s"
-                taking input "image" producing output "pedestrian detection confidence" & "pedestrian detection flag"
-    followed by
-        "braking" using "braking module"
-            operationalized as
-                "Bring down throttle" & "Apply Brakes" if "pedestrian detection flag=True" performed by "proportional_braking"
-                taking input "pedestrian detection flag" producing output "Braking Status Flag"
-    in scenario where
-        "A pedestrian trying to cross the street in fog."
-"""
+req_path = os.environ.get("REAL_REQUIREMENT_FILE", "docs/examples/R0_rounds1_2.dsl")
+with open(req_path) as f:
+    requirement = f.read()
+
+params = {
+    "requirement": requirement,
+    "trials": int(os.environ.get("REAL_TRIALS", "5")),
+    "record_video": True,
+    "requirement_source": req_path,
+}
+if os.environ.get("REAL_PARENT_RUN_ID"):
+    params["parent_run_id"] = os.environ["REAL_PARENT_RUN_ID"]
+if os.environ.get("REAL_ROUND"):
+    params["round"] = int(os.environ["REAL_ROUND"])
 
 # Exhaustive grid (scripts/evolve/grid.py): all 32 scenarios old.bnf can
 # express, 5 simulations each, with per-simulation telemetry for failure
@@ -50,11 +50,7 @@ MAINTAIN "Pedestrian Safety"
 # with population_size/max_generations - see job 3564897 for that shape.)
 resp = requests.get(
     "http://127.0.0.1:7999/run_grid",
-    params={
-        "requirement": requirement,
-        "trials": 5,
-        "record_video": True,
-    },
+    params=params,
     # Per-scenario overhead (Scenic compile + YOLO reload, not just the 5
     # CARLA simulations) ran ~2-3 min/scenario in job 3564897, so 32
     # scenarios need ~1.5-2 h plus one extra recorded run for the video.

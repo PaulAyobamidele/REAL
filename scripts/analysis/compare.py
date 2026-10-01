@@ -38,6 +38,16 @@ VOLATILE_META = {"run_id", "created_at", "finished_at", "status", "worst_phenoty
 ALLOWED_DIFF = {"system_under_test"}
 
 
+def _norm_requirement(text):
+    """Requirement text with `#` comment lines and whitespace differences
+    removed - the same requirement read from a .dsl file with a header comment
+    must not count as a changed variable."""
+    if not isinstance(text, str):
+        return text
+    lines = [l for l in text.splitlines() if not l.strip().startswith("#")]
+    return " ".join(" ".join(lines).split())
+
+
 def _flatten(d, prefix=""):
     out = {}
     for k, v in (d or {}).items():
@@ -70,7 +80,10 @@ def meta_diff(meta_a, meta_b, assume_a=None, assume_b=None):
         top = key.split(".")[0]
         if top in VOLATILE_META:
             continue
-        if fa.get(key) != fb.get(key):
+        va, vb = fa.get(key), fb.get(key)
+        if key == "requirement":
+            va, vb = _norm_requirement(va), _norm_requirement(vb)
+        if va != vb:
             diffs[key] = (fa.get(key), fb.get(key))
     return diffs
 
@@ -193,6 +206,7 @@ def to_markdown(c):
         add("| | round A | round B |")
         add("|---|---|---|")
         for key, label in (("first_detection_distance_m_median", "first detection distance (m)"),
+                           ("first_brake_distance_m_median", "first brake distance (m)"),
                            ("speed_at_first_brake_mps_median", "speed at first brake (m/s)"),
                            ("stopping_distance_needed_m_median", "stopping distance needed (m)"),
                            ("share_detected_too_late", "detections too late"),

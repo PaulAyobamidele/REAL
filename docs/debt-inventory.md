@@ -23,9 +23,10 @@ Working branch: `fse-tool`. Fork: https://github.com/PaulAyobamidele/REAL.
 - [ ] README lacks external install/quickstart — partly done (install, API, analysis); needs a clean-machine walkthrough
 - [ ] No `STATUS` file for the ICSE artifact — Phase 5.5
 - [ ] No DOI / Zenodo release — Phase 5.6
-- [ ] Nothing since `b1fd009` is committed — review + commit the 2026-09-17..23 work
+- [x] Nothing since `b1fd009` is committed — 2026-09-17..23 work committed `1495e32` (tag `round2-2026-09-23`); 2026-09-24/25 work committed in roadmap M0
 - [ ] `scratch.temp`: `distance` parameter has no effect; random lane choice yields "no encounter" runs — fix geometry
-- [ ] Stages 8-9 (decisions file, requirement writer, round comparison) — Notes.md §8.7
+- [x] Stages 8-9 (decisions file, requirement writer, round comparison) — built, Notes.md §8.7a, §8.10
+- [ ] Domain assumptions checked per simulation (valid/spurious split never ran: R0 states none) — roadmap M1, `docs/design/domain_assumptions.md`
 
 ## Known runtime-environment debts
 - [ ] CARLA 0.9.15 headless setup on compute node — Phase 1.3

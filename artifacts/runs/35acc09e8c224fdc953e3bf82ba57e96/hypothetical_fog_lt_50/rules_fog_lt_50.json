@@ -1,0 +1,7 @@
+{
+  "description": "HYPOTHETICAL BOUND for exercising the valid/spurious path on round-1 data only. NOT the project's claim. The honest bound is fog_density <= 50 (everything in scope).",
+  "rules": [
+    {"name": "HYPOTHETICAL: fog_density < 50", "param": "fog_density", "op": ">=", "value": 50,
+     "reason": "hypothetical ODD limit used only to demonstrate the spurious-failure path"}
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "run_id": "882fb2fe00bf4568bdb480a281db9e8b",
-  "analysed_at": "2026-09-23T22:27:02.233650+00:00",
+  "analysed_at": "2026-09-25T09:30:16.374133+00:00",
   "run_meta": {
     "run_id": "882fb2fe00bf4568bdb480a281db9e8b",
     "mode": "grid",
@@ -93,6 +93,7 @@
     "timing": {
       "n_detected": 128,
       "first_detection_distance_m_median": 7.582974493380009,
+      "first_brake_distance_m_median": 21.171529424485865,
       "speed_at_first_brake_mps_median": 1.960000276565552,
       "stopping_distance_needed_m_median": 5.240100067758565,
       "share_detected_too_late": 0.0078125,

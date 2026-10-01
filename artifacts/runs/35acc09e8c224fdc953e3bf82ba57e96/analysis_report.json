@@ -1,6 +1,6 @@
 {
   "run_id": "35acc09e8c224fdc953e3bf82ba57e96",
-  "analysed_at": "2026-09-23T21:33:12.839058+00:00",
+  "analysed_at": "2026-09-25T09:30:15.813303+00:00",
   "run_meta": {
     "run_id": "35acc09e8c224fdc953e3bf82ba57e96",
     "mode": "grid",
@@ -87,6 +87,7 @@
     "timing": {
       "n_detected": 119,
       "first_detection_distance_m_median": 7.031466085445235,
+      "first_brake_distance_m_median": 7.031466085445235,
       "speed_at_first_brake_mps_median": 7.16867048834431,
       "stopping_distance_needed_m_median": 8.211864785653667,
       "share_detected_too_late": 0.6470588235294118,
@@ -1031,7 +1032,8 @@
         "data": "Fine-tune on distant / small pedestrian instances so confidence rises earlier.",
         "model": "A more sensitive detector, or a lower confidence bar with a second cue (risk: unnecessary braking).",
         "system": "Proportional braking from 30% confidence, full braking above 85% (paper M4) - the car starts slowing while the detector is still unsure.",
-        "requirement": "State the approach-speed / minimum detection-distance assumption in the ODD (e.g. assuming \"ego_speed <= 5\"), or specify a time-to-brake bound."
+        "requirement": "State the approach-speed / minimum detection-distance assumption in the ODD (e.g. assuming \"ego_speed <= 5\"), or specify a time-to-brake bound.",
+        "scenario": "The approach speed (EGO_SPEED = 7.5 m/s) and spawn distance are fixed constants of scratch.temp, not grammar parameters - the grid cannot vary them. Consider making speed a scenario parameter."
       },
       "source": "catalogue",
       "verdict": "supported",
@@ -1075,7 +1077,8 @@
         "data": null,
         "model": "Raise the caution threshold only when the pedestrian is stationary and off the road (needs a track, not a per-frame confidence).",
         "system": "Time-box the cautious stop: creep forward / resume when the pedestrian has not moved toward the road for N seconds; distinguish 'pedestrian at kerb' from 'pedestrian crossing'.",
-        "requirement": "Add the soft goal explicitly (e.g. 'resume within N s once the path is clear') and state the domain assumption that pedestrians cross only when the vehicle is within/beyond a given distance."
+        "requirement": "Add the soft goal explicitly (e.g. 'resume within N s once the path is clear') and state the domain assumption that pedestrians cross only when the vehicle is within/beyond a given distance.",
+        "scenario": "Fix the test: let the pedestrian cross on its own schedule (time- or distance-to-crossing-based), not only once the car is within 8 m (CrossingBehavior threshold in scratch.temp) - otherwise a cautious car can never be measured getting past."
       },
       "source": "catalogue",
       "verdict": "supported",

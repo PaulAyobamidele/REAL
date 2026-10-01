@@ -29,7 +29,7 @@ Shape (schema_version 1):
     "<group id>": {"verdict": "out_of_scope" | "in_scope" | "scenario_defect" | null,
                    "kind": "rule" | "artefact", "evidence": "...", "reason": "..."}
   },
-  "requirement_changes": [ {"kind": "S"|"R"|"D", "text": "...", "from": "<obstacle id>"} ]
+  "requirement_changes": [ {"kind": "S"|"R"|"D"|"T", "text": "...", "from": "<obstacle id>"} ]
 }
 
 Verdict meanings: accept = a real obstacle, act on it; rename = real but the
@@ -52,7 +52,7 @@ OBSTACLE_VERDICTS = ("accept", "rename", "reject", "defer")   # defer = decided:
 SCOPE_VERDICTS = ("out_of_scope", "in_scope", "scenario_defect")
 STATUSES = ("new", "persisting", "resolved", "absent")
 LAYERS = ("data", "model", "system", "requirement", "scenario")
-CHANGE_KINDS = ("S", "R", "D")   # specification (system/model/data), requirement, domain/scenario
+CHANGE_KINDS = ("S", "R", "D", "T")   # S: specification (the car) / R: requirement (the promise) / D: domain assumption / T: test or scope fix
 
 
 def obstacle_status(current, previous):

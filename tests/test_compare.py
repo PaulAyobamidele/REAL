@@ -77,6 +77,14 @@ def test_allowed_difference_is_justified_not_flagged(tmp_path):
     assert "(allowed: only the behaviour block differs)" in md and "UNEXPECTED" not in md
 
 
+def test_requirement_compared_modulo_comments_and_whitespace():
+    a = {"run_id": "a", "requirement": "\nMAINTAIN \"x\"\n    by \"y\"\n"}
+    b = {"run_id": "b", "requirement": "# header comment\nMAINTAIN \"x\"   by \"y\"\n"}
+    assert compare.meta_diff(a, b) == {}
+    c = {"run_id": "c", "requirement": "MAINTAIN \"x\" by \"z\""}
+    assert "requirement" in compare.meta_diff(a, c)
+
+
 def test_cli_assume_parsing():
     assert compare._parse_assume(["system_under_test.braking_mode=emergency_braking", "seed=42"]) == {
         "system_under_test": {"braking_mode": "emergency_braking"}, "seed": "42"}

@@ -12,7 +12,7 @@
 - 4 of 128 encounters failed (3%).
 - Of the 124 passes, **113 were stalled**: the car stopped short and never moved again (standoff; counts as a pass for the safety rule, but the progress soft goal failed). 11 passes drove on normally.
 - How they failed: detected_too_late 1, brake_released 1, stopped_too_close 2
-- Timing (medians over 128 detected encounters): pedestrian first seen at 7.6 m while doing 2.0 m/s; stopping needs 5.2 m at that speed, so 1% of detections came too late; braking lasted 90 steps; still moving at the closest point in 31%; model inference 7.1 ms/frame.
+- Timing (medians over 128 detected encounters): pedestrian first seen at 7.6 m, first brake at 21.2 m while doing 2.0 m/s; stopping needs 5.2 m at that speed, so 1% of detections came too late; braking lasted 90 steps; still moving at the closest point in 31%; model inference 7.1 ms/frame.
 
 ## 3. Which settings go with failure
 

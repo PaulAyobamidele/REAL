@@ -139,7 +139,8 @@ def to_markdown(analysis):
     t = fm.get("timing") or {}
     if t:
         add(f"- Timing (medians over {t['n_detected']} detected encounters): pedestrian first seen at "
-            f"{t['first_detection_distance_m_median']:.1f} m while doing "
+            f"{t['first_detection_distance_m_median']:.1f} m, first brake at "
+            f"{t.get('first_brake_distance_m_median', float('nan')):.1f} m while doing "
             f"{t['speed_at_first_brake_mps_median']:.1f} m/s; stopping needs "
             f"{t['stopping_distance_needed_m_median']:.1f} m at that speed, so "
             f"{_pct(t['share_detected_too_late'])} of detections came too late; braking lasted "
