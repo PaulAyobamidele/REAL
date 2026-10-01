@@ -110,5 +110,12 @@ def test_example_files_parse():
     r0 = DSL(open(os.path.join(root, "docs", "examples", "R0_rounds1_2.dsl")).read())
     assert r0.parse_tree is not None
     assert r0.get_assumptions() == [] and r0.get_soft_goals() == []
+    base = DSL(open(os.path.join(root, "docs", "examples", "R_baseline.dsl")).read())
+    assert base.parse_tree is not None
+    assert base.get_module_for("Apply Brakes") == "proportional_braking"
+    assert base.get_assumptions() == ["fog_density <= 50", "initial_separation_m >= 15",
+                                      "pedestrian_speed_mps <= 3", "daylight, dry road",
+                                      "pedestrian on foot"]
+    assert len(base.get_soft_goals()) == 2
     assert r0.get_module_for("Apply Brakes") == "proportional_braking"
     assert r0.get_scenario() == "A pedestrian trying to cross the street in fog."

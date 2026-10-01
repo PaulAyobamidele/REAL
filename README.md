@@ -203,7 +203,11 @@ MAINTAIN "Pedestrian Safety"
   report; measuring them is roadmap M2.5. In the review (CLI or page) each
   assumption gets keep / tighten / loosen / drop, new ones can be added, and
   the requirement writer turns these into `[D]` lines in R1 (loosening an
-  assumption that was never broken is flagged as having no evidence). Note that rounds 1-2 stated no assumptions, so their failure
+  assumption that was never broken is flagged as having no evidence).
+  `docs/examples/R_baseline.dsl` is the baseline requirement with both slots
+  (`assuming` and `ensuring`), used from run 2b on. A finished run can be
+  re-judged against another requirement without touching its own report:
+  `python -m scripts.analysis.report <run> --requirement FILE --out <run>/<subfolder> --banner "..."`. Note that rounds 1-2 stated no assumptions, so their failure
   rates are rates under no assumptions.
 - Two reference files: `docs/examples/requirement_full_example.dsl` shows every
   clause at once; `docs/examples/R0_rounds1_2.dsl` is the requirement rounds 1–2

@@ -20,9 +20,9 @@ S/R/D/T labels, `.dsl` example files, parse errors, `REAL_REQUIREMENT_FILE`,
 92 tests) is committed in M0 of the roadmap.
 
 **What comes next** is in [docs/design/roadmap.md](docs/design/roadmap.md)
-(milestones M0-M6, agreed in direction 2026-10-01; supervisor points and the paper comparison in Notes.md §8.13 and [docs/design/tool_paper_alignment.md](docs/design/tool_paper_alignment.md)). The immediate one is M1, the
-analysis side of [docs/design/domain_assumptions.md](docs/design/domain_assumptions.md)
-(agreed 2026-09-30): rounds 1-2 stated **no** domain assumptions, so every
+(milestones M0-M6, agreed in direction 2026-10-01; supervisor points and the paper comparison in Notes.md §8.13 and [docs/design/tool_paper_alignment.md](docs/design/tool_paper_alignment.md)). M1 (the analysis side of [docs/design/domain_assumptions.md](docs/design/domain_assumptions.md)
+(agreed 2026-09-30)) is **complete** (Notes §8.18; `docs/examples/R_baseline.dsl`; rounds 1-2
+re-judged in `artifacts/runs/<run>/baseline_D0/`). The next is M2. Background: rounds 1-2 stated **no** domain assumptions, so every
 failure was "valid" by construction and the valid/spurious split never ran
 on real data. Before any new Narval run: the staging copy `~/real-av-build`
 is stale — rebuild and rsync first (§4.3), and the template fixes in M2

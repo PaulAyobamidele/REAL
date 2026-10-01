@@ -63,6 +63,7 @@ import json
 import os
 
 import pandas as pd
+import pytest
 
 from scripts.analysis import report
 from test_analysis import write_synthetic_run
@@ -200,3 +201,28 @@ def test_report_says_when_no_soft_goals(tmp_path):
     write_synthetic_run(str(tmp_path), trials=1, requirement=req)
     _, md = report.write_report(str(tmp_path))
     assert "states no soft goals" in md
+
+
+# --- M1.8: re-judging a finished run against another requirement ------------
+
+def test_rejudge_writes_own_folder_with_banner(tmp_path):
+    run = tmp_path / "run"
+    write_synthetic_run(str(run), trials=1)                    # ran with no requirement text
+    req = ('MAINTAIN "Pedestrian Safety" by "Pedestrian Check" using "Perception Module" '
+           'operationalized as "Detect Pedestrian" performed by "yolov5s" taking input "image" '
+           'producing output "flag" in scenario where "fog" assuming "fog_density < 50"')
+    analysis, md = report.write_report(str(run), requirement=req, out_dir=str(run / "baseline_D0"),
+                                       banner="Assumptions stated after the run")
+    assert not (run / "analysis_report.md").exists()           # original untouched
+    assert (run / "baseline_D0" / "analysis_report.md").exists()
+    assert md.splitlines()[2] == "> **Assumptions stated after the run**"
+    assert analysis["run_meta"]["requirement_as_run"] is None
+    assert analysis["admissibility"]["n_spurious"] == 16
+
+
+def test_rejudge_refuses_to_overwrite_original(tmp_path):
+    write_synthetic_run(str(tmp_path), trials=1)
+    with pytest.raises(ValueError, match="own --out folder"):
+        report.write_report(str(tmp_path), requirement="x")
+    with pytest.raises(ValueError):
+        report.write_report(str(tmp_path), requirement="x", out_dir=str(tmp_path))

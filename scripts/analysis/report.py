@@ -1,6 +1,13 @@
 """Run the whole laptop-side failure analysis on one run folder.
 
     python -m scripts.analysis.report artifacts/runs/<run_id> [--rules FILE]
+    python -m scripts.analysis.report artifacts/runs/<run_id> --requirement FILE \
+        --out artifacts/runs/<run_id>/<subfolder> --banner "..."
+
+The second form re-judges a finished run against a different requirement
+(e.g. assumptions stated after the run). It must write to its own folder,
+so the run's original report is never overwritten, and its report carries
+the banner.
 
 Reads simulations.csv (+ run_meta.json if present), applies the admissibility
 rules, builds the failure model on the admissible simulations, assesses the
@@ -25,9 +32,13 @@ def _load_meta(run_dir):
     return {}
 
 
-def analyse(run_dir, rules_path=None):
-    """Return the full analysis as a dict (see write_report for the files)."""
+def analyse(run_dir, rules_path=None, requirement=None):
+    """Return the full analysis as a dict (see write_report for the files).
+    `requirement` = text to judge the run against instead of the one in
+    run_meta.json (the run itself is unchanged)."""
     meta = _load_meta(run_dir)
+    if requirement is not None:
+        meta = dict(meta, requirement=requirement, requirement_as_run=meta.get("requirement"))
     rules = admissibility.load_rules(rules_path)
     for rule in rules:
         rule.setdefault("source", "rules file")
@@ -103,6 +114,9 @@ def to_markdown(analysis):
 
     add(f"# Failure analysis - run `{analysis['run_id']}`")
     add("")
+    if analysis.get("banner"):
+        add(f"> **{analysis['banner']}**")
+        add("")
     meta = analysis.get("run_meta") or {}
     if meta:
         add(f"- Mode: {meta.get('mode', 'ge')} | scenarios: {meta.get('n_scenarios', '?')} | "
@@ -275,10 +289,18 @@ def to_markdown(analysis):
     return "\n".join(lines) + "\n"
 
 
-def write_report(run_dir, rules_path=None):
-    analysis = analyse(run_dir, rules_path)
-    json_path = os.path.join(run_dir, "analysis_report.json")
-    md_path = os.path.join(run_dir, "analysis_report.md")
+def write_report(run_dir, rules_path=None, requirement=None, out_dir=None, banner=None):
+    if requirement is not None and (out_dir is None or
+                                    os.path.abspath(out_dir) == os.path.abspath(run_dir)):
+        raise ValueError("re-judging against another requirement needs its own --out folder "
+                         "(the run's original report is never overwritten)")
+    analysis = analyse(run_dir, rules_path, requirement)
+    if banner:
+        analysis["banner"] = banner
+    out_dir = out_dir or run_dir
+    os.makedirs(out_dir, exist_ok=True)
+    json_path = os.path.join(out_dir, "analysis_report.json")
+    md_path = os.path.join(out_dir, "analysis_report.md")
     with open(json_path, "w") as f:
         json.dump(analysis, f, indent=2, default=str)
     md = to_markdown(analysis)
@@ -291,8 +313,13 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("run_dir", help="artifacts/runs/<run_id> containing simulations.csv")
     parser.add_argument("--rules", default=None, help="admissibility rules JSON (default: built-in)")
+    parser.add_argument("--requirement", default=None,
+                        help="judge the run against this requirement file instead of the one it ran with")
+    parser.add_argument("--out", default=None, help="folder for the report (required with --requirement)")
+    parser.add_argument("--banner", default=None, help="line shown at the top of the report")
     args = parser.parse_args(argv)
-    _, md = write_report(args.run_dir, args.rules)
+    requirement = open(args.requirement).read() if args.requirement else None
+    _, md = write_report(args.run_dir, args.rules, requirement, args.out, args.banner)
     print(md)
 
 
