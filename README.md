@@ -204,6 +204,14 @@ MAINTAIN "Pedestrian Safety"
   assumption gets keep / tighten / loosen / drop, new ones can be added, and
   the requirement writer turns these into `[D]` lines in R1 (loosening an
   assumption that was never broken is flagged as having no evidence).
+  **Scene v2** (from 2026-10-01): the pedestrian starts at a kerb and crosses
+  (both directions), the car starts on the pedestrian's lane 20 m (Short) or
+  35 m (Long) before the crossing point, the pedestrian steps out at once
+  (trigger setting, was a fixed 8 m), and each simulation records pedestrian
+  speed, braking smoothness (peak deceleration / jerk), time-to-collision and
+  whether the car moved on again. Soft goals such as
+  `ensuring "resume_within_s <= 10"` are checked per encounter (met / missed);
+  runs before scene v2 report them as not measured.
   `docs/examples/R_baseline.dsl` is the baseline requirement with both slots
   (`assuming` and `ensuring`), used from run 2b on. A finished run can be
   re-judged against another requirement without touching its own report:

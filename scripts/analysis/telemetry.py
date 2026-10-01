@@ -45,6 +45,12 @@ FIELDS = [
     # braking
     "first_brake_step", "first_brake_distance_m", "ego_speed_at_first_brake",
     "brake_steps", "reaction_steps",
+    # scene v2 (roadmap M2): the scene's settings, the pedestrian, and the
+    # soft-goal measures (smoothness, time-to-collision, moving on again)
+    "ego_start_m", "crossing_trigger_m",
+    "pedestrian_speed_mps", "crossing_start_distance_m",
+    "peak_decel_mps2", "peak_jerk_mps3", "min_ttc_s",
+    "first_stop_step", "resumed", "resume_after_s", "resume_within_s",
     "recorded_at",
 ]
 
@@ -53,6 +59,68 @@ TRACES_DIR = "traces"
 
 # Below this speed (m/s) at the end of the run, the car counts as stopped.
 STOPPED_SPEED = 0.1
+# After a stop, the car counts as having moved on again at this speed (m/s).
+RESUME_SPEED = 2.0
+# The pedestrian counts as walking above this speed (m/s).
+WALKING_SPEED = 0.2
+
+
+def motion_metrics(distances, speeds, pedestrian_speeds, timestep):
+    """Soft-goal and pedestrian measures from the per-step series. Pure
+    function (unit-tested). None where the series do not allow it.
+
+    peak_decel_mps2   largest drop in ego speed per second
+    peak_jerk_mps3    largest change of acceleration per second (smoothness)
+    min_ttc_s         smallest distance / closing speed while closing in
+    first_stop_step   first step the car is below STOPPED_SPEED
+    resumed           after that stop, did it reach RESUME_SPEED again
+    resume_after_s    seconds from the stop to RESUME_SPEED
+    resume_within_s   0 if it never stopped, resume_after_s if it moved on,
+                      inf if it stopped and never moved on (standoff)
+    pedestrian_speed_mps        the pedestrian's top speed
+    crossing_start_distance_m   car-pedestrian distance when the pedestrian started walking
+    """
+    out = dict.fromkeys(("peak_decel_mps2", "peak_jerk_mps3", "min_ttc_s", "first_stop_step",
+                         "resumed", "resume_after_s", "resume_within_s",
+                         "pedestrian_speed_mps", "crossing_start_distance_m"))
+    dt = timestep
+    if pedestrian_speeds:
+        out["pedestrian_speed_mps"] = max(pedestrian_speeds)
+        start = next((i for i, v in enumerate(pedestrian_speeds) if v > WALKING_SPEED), None)
+        if start is not None and start < len(distances):
+            out["crossing_start_distance_m"] = distances[start]
+    if speeds:
+        stop = next((i for i, v in enumerate(speeds) if v < STOPPED_SPEED), None)
+        # a car that is stopped at the very first step has not "stopped" yet
+        if stop == 0:
+            moving = next((i for i, v in enumerate(speeds) if v >= STOPPED_SPEED), None)
+            stop = next((i for i, v in enumerate(speeds) if moving is not None and i > moving
+                         and v < STOPPED_SPEED), None)
+        out["first_stop_step"] = stop
+        if stop is None:
+            out["resumed"], out["resume_within_s"] = False, 0.0
+        else:
+            again = next((i for i in range(stop, len(speeds)) if speeds[i] >= RESUME_SPEED), None)
+            out["resumed"] = again is not None
+            if again is not None and dt:
+                out["resume_after_s"] = (again - stop) * dt
+                out["resume_within_s"] = out["resume_after_s"]
+            elif again is None:
+                out["resume_within_s"] = float("inf")
+    if not dt:
+        return out
+    if len(speeds) >= 2:
+        accel = [(speeds[i + 1] - speeds[i]) / dt for i in range(len(speeds) - 1)]
+        out["peak_decel_mps2"] = max(0.0, -min(accel))
+        if len(accel) >= 2:
+            out["peak_jerk_mps3"] = max(abs(accel[i + 1] - accel[i]) / dt for i in range(len(accel) - 1))
+    ttcs = []
+    for i in range(len(distances) - 1):
+        closing = (distances[i] - distances[i + 1]) / dt
+        if closing > 0.1:
+            ttcs.append(distances[i + 1] / closing)
+    out["min_ttc_s"] = min(ttcs) if ttcs else None
+    return out
 
 _state = {
     "run_id": None,
@@ -80,7 +148,7 @@ def clear():
 
 
 def begin_scenario(scenario_id, phenotype, params, pedestrian_blueprint=None,
-                   braking_mode="emergency", yolo_model=None, seed=None):
+                   braking_mode="emergency", yolo_model=None, seed=None, scene=None):
     """Record which scenario the next simulations belong to.
 
     `params` is the {pedestrian, dress, direction, distance, fog_density}
@@ -98,6 +166,7 @@ def begin_scenario(scenario_id, phenotype, params, pedestrian_blueprint=None,
         "braking_mode": braking_mode,
         "yolo_model": yolo_model,
         "seed": seed,
+        **{k: (scene or {}).get(k) for k in ("ego_start_m", "crossing_trigger_m")},
     }
     _state["sim_index"] = 0
 
@@ -132,12 +201,13 @@ def log_brake(step, brake, ego_speed, dist_m):
 
 
 def end_simulation(rho, distances, speeds, timestep, termination="",
-                   detection_threshold=0.85):
+                   detection_threshold=0.85, pedestrian_speeds=None):
     """Summarise one finished simulation, append it to simulations.csv and
     dump the full trace. Returns the CSV row (or None if no run is active).
 
     distances: distance from the ego to the pedestrian at every step (m)
     speeds:    ego speed at every step (m/s); may be shorter than distances
+    pedestrian_speeds: pedestrian speed at every step (m/s); scene v2 only
     """
     if _state["run_dir"] is None:
         return None
@@ -150,6 +220,7 @@ def end_simulation(rho, distances, speeds, timestep, termination="",
     brakes = _state["brakes"]
     distances = [float(d) for d in distances]
     speeds = [float(s) for s in speeds]
+    pedestrian_speeds = [float(s) for s in pedestrian_speeds or []]
 
     steps = len(distances)
     if distances:
@@ -211,11 +282,14 @@ def end_simulation(rho, distances, speeds, timestep, termination="",
         "ego_speed_at_first_brake": first_brake["ego_speed"] if first_brake else None,
         "brake_steps": len(brakes),
         "reaction_steps": reaction_steps,
+        "ego_start_m": scenario.get("ego_start_m"),
+        "crossing_trigger_m": scenario.get("crossing_trigger_m"),
+        **motion_metrics(distances, speeds, pedestrian_speeds, timestep),
         "recorded_at": datetime.now(timezone.utc).isoformat(),
     }
 
     _append_row(row)
-    _write_trace(row, distances, speeds, detections, brakes)
+    _write_trace(row, distances, speeds, detections, brakes, pedestrian_speeds)
 
     _state["detections"] = []
     _state["brakes"] = []
@@ -236,7 +310,7 @@ def _append_row(row):
         writer.writerow(row)
 
 
-def _write_trace(row, distances, speeds, detections, brakes):
+def _write_trace(row, distances, speeds, detections, brakes, pedestrian_speeds=None):
     name = f"{row['scenario_id']}_{row['sim_index']}.json"
     path = os.path.join(_state["run_dir"], TRACES_DIR, name)
     with open(path, "w") as f:
@@ -244,6 +318,7 @@ def _write_trace(row, distances, speeds, detections, brakes):
             "summary": row,
             "distance_m": distances,
             "ego_speed": speeds,
+            "pedestrian_speed": pedestrian_speeds or [],
             "detections": detections,
             "brakes": brakes,
         }, f, indent=1)

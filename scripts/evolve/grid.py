@@ -26,7 +26,7 @@ from datetime import datetime, timezone
 from real_config import settings
 from scripts.analysis import telemetry
 from scripts.evolve.constraints import parse_phenotype_params
-from scripts.evolve.run_output import _write_best_scenario, run_dir, system_under_test
+from scripts.evolve.run_output import _write_best_scenario, run_dir, scene, system_under_test
 
 
 def grammar_terminals(bnf_path):
@@ -131,6 +131,7 @@ def run_grid(run_id, requirement=None, scenario_text=None, constraints=None,
         "scenario_text": scenario_text,
         "constraints": constraints or {},
         "system_under_test": system_under_test(),
+        "scene": scene(),
         "parent_run_id": parent_run_id,
         "round": round_no,
         "requirement_source": requirement_source,

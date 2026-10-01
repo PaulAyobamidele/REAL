@@ -4,9 +4,11 @@
 #   assuming  - the baseline domain assumptions D0 (docs/design/domain_assumptions.md),
 #               loose on purpose: the whole grid and ordinary walking.
 #               Checked per simulation after the run, never imposed on the simulator.
-#   ensuring  - the baseline soft goals E0. Text only until roadmap M2.5 records
-#               resume / smoothness; the report lists them as "not checked yet".
-# `pedestrian_speed_mps` is not recorded yet (M2.4): reported as not measured.
+#   ensuring  - the baseline soft goals E0: the car moves on again within 10 s of
+#               stopping (checked from scene v2 on); smoothness stays text until a
+#               jerk threshold is chosen (peak_jerk_mps3 is measured).
+# Runs before scene v2 lack pedestrian speed and the soft-goal measures:
+# those are reported as not measured.
 MAINTAIN "Pedestrian Safety"
     by
         "Pedestrian Check" using "Perception Module"
@@ -21,4 +23,4 @@ MAINTAIN "Pedestrian Safety"
     in scenario where
         "A pedestrian trying to cross the street in fog."
     assuming "fog_density <= 50" & "initial_separation_m >= 15" & "pedestrian_speed_mps <= 3" & "daylight, dry road" & "pedestrian on foot"
-    ensuring "vehicle resumes within 10 s once the crossing is clear" & "braking is smooth unless an emergency stop is needed"
+    ensuring "resume_within_s <= 10" & "braking is smooth unless an emergency stop is needed"

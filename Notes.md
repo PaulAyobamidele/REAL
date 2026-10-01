@@ -1215,6 +1215,81 @@ evidence** for or against any D0 assumption (none was broken often enough in
 real encounters), so nothing may be loosened on their strength. That needs
 the fixed scene (M2) and run 2b. **M1 is complete.**
 
+### 8.19 2026-10-01 — M2 diagnosis of the test scene (read-only, before any change)
+
+From `scripts/scenarios/scratch.temp`, `scripts/templates/old/scenic_template.py`
+and the vendored `CrossingBehavior` (`Scenic/src/scenic/simulators/carla/behaviors.scenic`),
+plus the round 1-2 traces:
+
+1. **8 m trigger.** `PedestrianBehavior` → `CrossingBehavior(ego, 2.0, THRESHOLD=8)`:
+   the pedestrian waits until the car is within 8 m, then steps out. At
+   7.5 m/s the car needs ~8 m to stop, so detection-too-late is built into
+   the scene; and once a cautious car stops >8 m away the pedestrian never
+   moves — the round-2 standoff (§8.9).
+2. **`RL` is not a crossing.** `get_pedestrian_angle`: LR → heading 90°, RL →
+   180° relative to the road, i.e. RL walks along the road towards the car,
+   not across it; both start 0.5 m left to 3 m right of the lane centre
+   (`LATERAL_RANGE`). The round-1 `direction=LR` +24 points effect is
+   therefore at least partly a scene artefact, not a perception finding —
+   to be stated in the paper. (Scenic convention assumed: local x to the
+   right, y forward, positive heading = to the left; to be confirmed on the
+   smoke-run video.)
+3. **`distance` does nothing.** It only feeds `get_pedestrian_angle`, where
+   Long and Short give the same angle; it never reaches the template.
+4. **No-encounter runs drive away.** In round 1's 40 no-encounter runs the
+   car-pedestrian distance *grows* from the start (e.g. 21 → 36 m) or the car
+   barely moves; median closest approach 18.6 m (min 13.6). Spread over all
+   direction/distance cells (LR-Long 15, LR-Short 6, RL-Long 8, RL-Short 11),
+   so not a direction effect. Likely cause: the car is placed `following
+   roadDirection from spot for -15` and then follows *its own* lane, which
+   need not be the pedestrian's lane (`lane = Uniform(*network.lanes)`).
+   Cause probable, not proven.
+5. **Not recorded:** pedestrian speed, when the pedestrian starts, braking
+   smoothness, time-to-collision, whether/when the car moves on again.
+
+### 8.20 2026-10-01 — M2: scene v2 (code; Narval check pending)
+
+Fixes for §8.19, all in the template and its filler, recorded per run:
+
+- `scratch.temp`: `CROSSING_TRIGGER_M`, `EGO_START_M`, `PEDESTRIAN_SIDE`
+  placeholders; the pedestrian starts at a kerb (`KERB_OFFSET_M` 3 m ± 0.3,
+  ±1 m along the road) and walks across at ±90°; `require ego.lane == lane`;
+  `record pedestrian.speed`; termination = the car is 20 m past the crossing
+  point (the old `distance to spot > 30` would end Long runs at once).
+- `util.py`: `SCENE_VERSION = 2`, `DIRECTIONS` (LR = left kerb, heading −90°;
+  RL = right kerb, +90°, driver's view), `EGO_START_M` (Short 20 m, Long 35 m),
+  `DEFAULT_CROSSING_TRIGGER_M = 100` (start at once; `CrossingBehavior` paces
+  the walk to meet the car, so no built-in standoff), `MAX_STEPS = 250` (25 s;
+  was 100 = 10 s, too short to observe a 10 s resume goal — runs on average
+  get longer, budget Narval time accordingly), `scene_settings()`; the
+  monitor passes the pedestrian speed series on. `get_pedestrian_angle`
+  (old template module) is no longer used.
+- `telemetry.py`: `motion_metrics()` → `pedestrian_speed_mps`,
+  `crossing_start_distance_m`, `peak_decel_mps2`, `peak_jerk_mps3`,
+  `min_ttc_s`, `first_stop_step`, `resumed`, `resume_after_s`,
+  `resume_within_s` (0 never stopped / seconds / inf = standoff), plus
+  `ego_start_m`, `crossing_trigger_m`; traces gain `pedestrian_speed`.
+  `run_meta.scene` (grid and GE) records version, step cap and geometry, so
+  `compare.py` flags a scene change between rounds.
+- `soft_goals.py`: `ensuring` items checked per in-scope encounter (met /
+  missed / not measured) on `resume_within_s`, `peak_decel_mps2`,
+  `peak_jerk_mps3`, `min_ttc_s`; free text listed. `pedestrian_speed_mps` and
+  `crossing_start_distance_m` are now "available" assumption quantities
+  (older runs: not measured). `R_baseline.dsl` → `ensuring "resume_within_s
+  <= 10" & "braking is smooth unless an emergency stop is needed"` (jerk is
+  measured; the threshold is a requirement decision, left to Paul).
+  `clear_lateral_m` dropped (needs a lateral recording).
+
+`tests/test_scene_v2.py` (9: geometry, the template parses with Scenic,
+motion measures on hand-made series, CSV/trace columns, soft goals); 128 in
+total. **Not yet run in CARLA**: `ego.lane == lane`, the kerb geometry and
+the termination expression are only checked by the Narval smoke run (M2.7),
+including one video per direction.
+
+**Decision (Paul, 2026-10-01): GE is the main search from here on**, after
+the scene fixes — roadmap M2c (GE-ready grammar with numeric ranges, GE via
+Slurm, analysis aware of uneven sampling).
+
 ### 8.7 The iteration loop (stages 7-9) — original design
 
 Per round: requirement R_n → run (grid) → `simulations.csv` → report →
