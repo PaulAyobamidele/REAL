@@ -1,3 +1,4 @@
+import re
 import csv
 import json
 import os
@@ -81,7 +82,7 @@ def test_persist_run_writes_expected_files(tmp_path, monkeypatch):
     # and the resolved CARLA walker blueprint (not the raw "Adult" phenotype
     # value - see the fix in scripts/simulations/util.py::evaluate()).
     assert "walker.pedestrian." in code
-    assert "<" not in code  # no leftover unresolved template placeholders
+    assert not re.search(r"<[a-z_]+>", code)  # no leftover unresolved template placeholders
 
 
 def test_persist_run_handles_empty_hof(tmp_path, monkeypatch):

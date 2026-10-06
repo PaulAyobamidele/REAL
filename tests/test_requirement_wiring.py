@@ -1,3 +1,4 @@
+import re
 """The simulator must run the system the requirement describes: the braking
 module and perception model named after "performed by" reach the Scenic
 program and the run metadata."""
@@ -51,7 +52,7 @@ def test_configure_sets_context():
 def test_build_scenario_emits_each_braking_mode_and_parses(mode):
     code, params = util.build_scenario(PHENOTYPE, braking_mode=mode)
     assert params["braking_mode"] == mode
-    assert "<" not in code                                   # no unresolved placeholders
+    assert not re.search(r"<[a-z_]+>", code)                                   # no unresolved placeholders
     assert "behavior Exp_EgoBehaviour" in code
     if mode == "proportional_braking":
         assert "SetBrakeAction" in code and "CAUTION_CONFIDENCE" in code

@@ -218,7 +218,8 @@ elif step == 2:
             else:
                 st.markdown(f"**Stands for:** `{o['param']} = {o['value']}` - blocks the goal **{o['blocks_goal']}**")
             st.write(o["description"])
-            st.markdown(f"**Support this round:** {entry['evidence']}  ->  tool verdict *{o['verdict']}*")
+            st.markdown(f"**Support this round:** {entry['evidence']}  ->  tool verdict "
+                        f"*{obstacles.verdict_label(o['verdict'], analysis.get('sampling'))}*")
             p = prev_obs.get(o["id"])
             if previous:
                 prev_ev = decisions._evidence_text(p) if p else "not assessed"

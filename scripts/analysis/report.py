@@ -77,6 +77,7 @@ def analyse(run_dir, rules_path=None, requirement=None):
 
     return {
         "run_id": meta.get("run_id") or os.path.basename(os.path.normpath(run_dir)),
+        "sampling": sampling_of(meta),
         "analysed_at": datetime.now(timezone.utc).isoformat(),
         "run_meta": meta,
         "requirement": req,
@@ -92,6 +93,22 @@ def analyse(run_dir, rules_path=None, requirement=None):
         "failure_model": model,
         "obstacles": obstacle_results,
     }
+
+
+def sampling_of(meta):
+    """'grid' (every scenario equally often), 'list' (a chosen set, e.g. the
+    grid check of a GE run, each equally often) or 'ge' (bred towards failure)."""
+    return {"ge": "ge", "list": "list"}.get((meta or {}).get("mode"), "grid")
+
+
+SAMPLING_TEXT = {
+    "grid": "Sampling: balanced grid - every scenario run equally often.",
+    "list": "Sampling: a chosen list of scenarios (e.g. a grid check of a GE run), each run equally often.",
+    "ge": ("Sampling: GE search - scenarios were bred towards failure, not sampled evenly. "
+           "Failure rates are not population rates, and setting effects and supported "
+           "obstacles are leads to confirm on balanced repeats "
+           "(python -m scripts.analysis.grid_check <this run>), not findings."),
+}
 
 
 def _pct(x):
@@ -119,6 +136,14 @@ def to_markdown(analysis):
     if analysis.get("banner"):
         add(f"> **{analysis['banner']}**")
         add("")
+    sampling = analysis.get("sampling", "grid")
+    fm0 = analysis["failure_model"]
+    line = SAMPLING_TEXT[sampling]
+    if sampling == "ge":
+        line += (f" {fm0.get('n_distinct_scenarios', '?')} distinct scenarios; the most repeated ran "
+                 f"{fm0.get('max_repeats_of_a_scenario', '?')} times.")
+    add(f"> {line}")
+    add("")
     meta = analysis.get("run_meta") or {}
     if meta:
         add(f"- Mode: {meta.get('mode', 'ge')} | scenarios: {meta.get('n_scenarios', '?')} | "
@@ -176,8 +201,12 @@ def to_markdown(analysis):
     add("## 2. Overall")
     add(f"- {fm['n_simulations']} simulations across {fm['n_scenarios']} scenarios; "
         f"{fm['n_encounters']} real encounters, {fm['n_no_encounter']} where the car never met the pedestrian "
-        "(not counted as passes).")
-    add(f"- {fm['failures']} of {fm['n_encounters']} encounters failed ({_pct(fm['failure_rate'])}).")
+        "(not counted as passes)"
+        + (f", **{fm['n_left_road']} where the car left the road (a test defect, excluded)**"
+           if fm.get("n_left_road") else "") + ".")
+    add(f"- {fm['failures']} of {fm['n_encounters']} encounters failed ({_pct(fm['failure_rate'])})"
+        + (f"; with every distinct scenario counted once: {_pct(fm.get('failure_rate_scenarios'))}."
+           if analysis.get("sampling") == "ge" else "."))
     if fm.get("passed_stalled"):
         add(f"- Of the {fm['passes']} passes, **{fm['passed_stalled']} were stalled**: the car stopped "
             f"short and never moved again (standoff; counts as a pass for the safety rule, but the "
@@ -216,12 +245,22 @@ def to_markdown(analysis):
 
     add("## 3. Which settings go with failure")
     add("")
-    add("| setting | value | n | failure rate | others | effect |")
-    add("|---|---|---|---|---|---|")
+    ge = analysis.get("sampling") == "ge"
+    if ge:
+        add("| setting | value | n | failure rate | others | effect | effect, each scenario once |")
+        add("|---|---|---|---|---|---|---|")
+    else:
+        add("| setting | value | n | failure rate | others | effect |")
+        add("|---|---|---|---|---|---|")
     for r in fm["by_parameter"]:
         flag = "" if r["enough_data"] else " (few data)"
-        add(f"| {r['param']} | {r['value']} | {r['n']} | {_pct(r['failure_rate'])} | "
-            f"{_pct(r['failure_rate_others'])} | {r['effect']:+.0%}{flag} |")
+        cells = (f"| {r['param']} | {r['value']} | {r['n']} | {_pct(r['failure_rate'])} | "
+                 f"{_pct(r['failure_rate_others'])} | {r['effect']:+.0%}{flag} |")
+        if ge:
+            se = r.get("scenario_effect")
+            cells += (" n/a |" if se is None or (isinstance(se, float) and math.isnan(se))
+                      else f" {se:+.0%} |")
+        add(cells)
     add("")
     add("*effect* = failure rate with this value minus failure rate with the other value(s). "
         f"Effects under {failure_model.MIN_EFFECT:.0%} are treated as noise.")
@@ -247,8 +286,7 @@ def to_markdown(analysis):
     add("")
     for o in analysis["obstacles"]:
         ev = o.get("evidence") or {}
-        verdict = {"supported": "SUPPORTED", "not_supported": "not supported",
-                   "insufficient_data": "insufficient data"}[o["verdict"]]
+        verdict = obstacles.verdict_label(o["verdict"], analysis.get("sampling"))
         add(f"### {o['id']} - {verdict}")
         if o.get("outcome"):
             add(f"- Condition: passes of type `{o['outcome']}`; blocks soft goal **{o['blocks_goal']}**"

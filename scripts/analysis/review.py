@@ -68,7 +68,8 @@ def _representative_trace(run_dir, obstacle):
 
 def _card(o, entry, analysis, run_dir):
     fm = analysis["failure_model"]
-    lines = ["", "=" * 78, f"{o['id']}   [tool: {o['verdict']}]   [vs previous round: {entry['status']}]", "-" * 78]
+    label = obstacles.verdict_label(o["verdict"], analysis.get("sampling"))
+    lines = ["", "=" * 78, f"{o['id']}   [tool: {label}]   [vs previous round: {entry['status']}]", "-" * 78]
     if o.get("outcome"):
         lines.append(f"Condition : passes of type {o['outcome']} - blocks soft goal {o['blocks_goal']}")
     elif o.get("failure_type"):

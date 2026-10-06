@@ -90,6 +90,11 @@ QUANTITIES = {
     "direction":                 {"level": "scenario", "unit": None,  "source": "grid setting",        "available": True},
     # NB: `distance` does not yet move the pedestrian (scratch.temp, roadmap M2.3).
     "distance":                  {"level": "scenario", "unit": None,  "source": "grid setting",        "available": True},
+    # Numeric scene settings (scene v2; GE grammar scripts/templates/v2/scene_v2.bnf).
+    # `approach_distance_m` is where the car starts - part of the scene, not the car's behaviour.
+    "approach_distance_m":       {"level": "scenario", "unit": "m",   "source": "scene setting",       "available": True},
+    "crossing_trigger_m":        {"level": "scenario", "unit": "m",   "source": "scene setting",       "available": True},
+    "pedestrian_min_speed_mps":  {"level": "scenario", "unit": "m/s", "source": "scene setting",       "available": True},
     "initial_separation_m":      {"level": "run",      "unit": "m",   "source": "trace distance_m[0]", "available": True},
     # Recorded from scene v2 (roadmap M2); older runs lack the column -> not measured.
     "pedestrian_speed_mps":      {"level": "run",      "unit": "m/s", "source": "simulations.csv",     "available": True},
@@ -238,7 +243,8 @@ def rules_from_assumptions(assumptions):
     return rules, free_text
 
 
-PARAM_COLUMNS = ["pedestrian", "dress", "direction", "distance", "fog_density"]
+PARAM_COLUMNS = ["pedestrian", "dress", "direction", "distance", "fog_density",
+                 "approach_distance_m", "crossing_trigger_m", "pedestrian_min_speed_mps"]
 
 
 def label_simulations(df, rules):

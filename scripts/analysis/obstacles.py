@@ -217,6 +217,17 @@ def _detection_share(df, param, value):
     return float(sub["failure_type"].isin(["never_detected", "detected_too_late"]).mean())
 
 
+def verdict_label(verdict, sampling=None):
+    """How a tool verdict is shown. On GE data (scenarios bred towards
+    failure, not sampled evenly) a 'supported' obstacle is a lead to confirm
+    on balanced repeats (scripts/analysis/grid_check.py), not a finding."""
+    label = {"supported": "SUPPORTED", "not_supported": "not supported",
+             "insufficient_data": "insufficient data"}.get(verdict, str(verdict))
+    if sampling == "ge" and verdict == "supported":
+        label = "SUPPORTED (GE lead - confirm on grid)"
+    return label
+
+
 def assess_obstacles(df, failure_model, catalogue=None, min_effect=MIN_EFFECT):
     """Return a list of obstacle assessments: catalogue entries with a verdict
     ('supported' | 'not_supported' | 'insufficient_data'), then unnamed

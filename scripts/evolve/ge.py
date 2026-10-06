@@ -15,7 +15,7 @@ import random
 from scripts.simulations.util import falsifier, evaluate
 from scripts.analysis import telemetry
 from scripts.evolve.constraints import constrain_population
-from scripts.evolve.run_output import persist_run, run_dir
+from scripts.evolve.run_output import persist_run, run_dir, scene, system_under_test, write_meta
 import multiprocessing
 
 import os
@@ -28,7 +28,8 @@ from real_config import settings
 def start_ge(sample=False, grammar_file='old/old.bnf', constraints=None,
              run_id=None, requirement=None, scenario_text=None,
              population_size=None, max_generations=None, record_video=True,
-             braking_mode=None, yolo_model=None):
+             braking_mode=None, yolo_model=None, trials=None,
+             parent_run_id=None, round_no=None, requirement_source=None):
 
     # Connect to Redis
     # env = redis.StrictRedis(host='localhost', port=6379, decode_responses=True)
@@ -112,6 +113,30 @@ def start_ge(sample=False, grammar_file='old/old.bnf', constraints=None,
     if sample==True:
         return [ind.phenotype for ind in population]
     else:
+
+        if run_id:
+            # Scene-v2 GE runs (roadmap M2c.2): trials per individual, reuse
+            # of already-simulated scenarios, and run_meta.json written now.
+            from datetime import datetime, timezone
+            from scripts.evolve.grid import _sha256, _template_sha256
+            from scripts.simulations.util import configure_ge
+            ge_settings = configure_ge(trials)
+            write_meta(run_id, {
+                "run_id": run_id, "mode": "ge", "status": "running",
+                "requirement": requirement, "scenario_text": scenario_text,
+                "constraints": constraints or {},
+                "system_under_test": system_under_test(), "scene": scene(),
+                "parent_run_id": parent_run_id, "round": round_no,
+                "requirement_source": requirement_source,
+                "grammar_file": GRAMMAR_FILE,
+                "grammar_sha256": _sha256(os.path.join(settings.grammar_base_dir, GRAMMAR_FILE)),
+                "template_sha256": _template_sha256(),
+                "population_size": POPULATION_SIZE, "max_generations": MAX_GENERATIONS,
+                "trials_per_individual": ge_settings["trials"],
+                "sampling": "GE - scenarios are not sampled evenly; see the analysis caveat",
+                "seed": settings.random_seed,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+            })
 
         if constraints:
             # Oversample and bias the initial population toward phenotypes

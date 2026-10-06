@@ -20,6 +20,9 @@ Three questions are answered:
        no_encounter         the car never came near the pedestrian (never within
                             NO_ENCOUNTER_M and never detected) - NOT a pass;
                             excluded from all rates and reported separately
+       left_road            the car left the drivable area (scene v2 records
+                            it) - a defect of the test, NOT a pass or a
+                            failure; excluded from all rates like no_encounter
        never_detected       the model never reached the confidence bar
        detected_not_braked  detected, but no braking action was ever taken
        detected_too_late    first braked closer than the distance needed to stop
@@ -41,9 +44,27 @@ import os
 
 import pandas as pd
 
-PARAMS = ["pedestrian", "dress", "direction", "distance", "fog_density"]
+PARAMS = ["pedestrian", "dress", "direction", "distance", "fog_density",
+          "approach_distance_m", "pedestrian_min_speed_mps", "crossing_trigger_m"]
+# Numeric settings with more than two values (the GE grammar scene_v2.bnf)
+# are split low / high at the grammar's midpoint for the effects table, so
+# each side has enough simulations. Two-valued settings (old.bnf fog 0/50)
+# keep their values.
+BANDS = {"fog_density": 50, "approach_distance_m": 25,
+         "pedestrian_min_speed_mps": 2.0, "crossing_trigger_m": 20}
 
-BOOL_COLUMNS = ["passed", "stopped", "resumed"]
+
+def _banded(df, param):
+    """The column used for `param` in the effects table: its values, or
+    '<= mid' / '> mid' when it is numeric with more than two values."""
+    col = df[param]
+    if param not in BANDS or col.dropna().nunique() <= 2:
+        return col
+    num = pd.to_numeric(col, errors="coerce")
+    mid = BANDS[param]
+    return num.map(lambda v: None if pd.isna(v) else (f"<= {mid:g}" if v <= mid else f"> {mid:g}"))
+
+BOOL_COLUMNS = ["passed", "stopped", "resumed", "left_road"]
 NUMERIC_COLUMNS = [
     "rho", "min_distance_m", "min_distance_step", "ego_speed_at_min_distance",
     "steps", "timestep_s", "duration_s", "ego_speed_max", "ego_speed_final",
@@ -53,9 +74,9 @@ NUMERIC_COLUMNS = [
     "first_brake_distance_m", "ego_speed_at_first_brake", "brake_steps",
     "reaction_steps", "sim_index",
     # scene v2
-    "ego_start_m", "crossing_trigger_m", "pedestrian_speed_mps", "crossing_start_distance_m",
+    "approach_distance_m", "crossing_trigger_m", "pedestrian_min_speed_mps", "pedestrian_speed_mps", "crossing_start_distance_m",
     "peak_decel_mps2", "peak_jerk_mps3", "min_ttc_s", "first_stop_step",
-    "resume_after_s", "resume_within_s",
+    "resume_after_s", "resume_within_s", "left_road_step",
 ]
 
 # Slower than this (m/s) when closest to the pedestrian counts as "stopped".
@@ -75,7 +96,8 @@ DEFAULT_MARGIN_M = 5.0
 FAILURE_TYPES = ["never_detected", "detected_not_braked", "detected_too_late",
                  "brake_released", "braking_insufficient", "stopped_too_close"]
 PASS_TYPES = ["passed", "passed_stalled"]
-OUTCOMES = PASS_TYPES + ["no_encounter"] + FAILURE_TYPES
+NOT_ENCOUNTERS = ["no_encounter", "left_road"]
+OUTCOMES = PASS_TYPES + NOT_ENCOUNTERS + FAILURE_TYPES
 
 
 def load_simulations(run_dir_or_csv, include_video_rerun=False):
@@ -85,6 +107,9 @@ def load_simulations(run_dir_or_csv, include_video_rerun=False):
     if os.path.isdir(path):
         path = os.path.join(path, "simulations.csv")
     df = pd.read_csv(path, dtype=str, keep_default_na=False)
+    # the scene-v2 smoke run (job 4354082) wrote the car start as ego_start_m
+    if "ego_start_m" in df and "approach_distance_m" not in df:
+        df = df.rename(columns={"ego_start_m": "approach_distance_m"})
     for col in BOOL_COLUMNS:
         if col in df:
             df[col] = df[col].map({"True": True, "False": False}).astype(object)
@@ -136,6 +161,8 @@ def reacted(row):
 
 def classify_failure(row):
     """Name how one simulation ended (see module docstring)."""
+    if row.get("left_road") is True:
+        return "left_road"
     min_d = _num(row.get("min_distance_m"))
     did_react = reacted(row)
 
@@ -171,7 +198,7 @@ def classify_failure(row):
 def add_failure_types(df):
     df = df.copy()
     df["failure_type"] = df.apply(classify_failure, axis=1)
-    df["encounter"] = df["failure_type"] != "no_encounter"
+    df["encounter"] = ~df["failure_type"].isin(NOT_ENCOUNTERS)
     df["reacted"] = df.apply(reacted, axis=1)
     return df
 
@@ -180,16 +207,28 @@ def _rate(sub):
     return float(sub["failed"].mean()) if len(sub) else float("nan")
 
 
+def _scenario_rate(sub):
+    """Failure rate with every distinct scenario counted once (the mean of
+    each scenario's own rate) - GE revisits scenarios it likes, so per
+    simulation one scenario can dominate."""
+    if not len(sub):
+        return float("nan")
+    key = "phenotype" if "phenotype" in sub else "scenario_id"
+    return float(sub.groupby(key)["failed"].mean().mean())
+
+
 def failure_rate_by_parameter(df):
     """For every parameter value: n, failures, failure rate, and the effect
-    (rate with this value minus rate for the other values). Encounters only."""
+    (rate with this value minus rate for the other values), per simulation
+    and with every scenario counted once. Encounters only."""
     rows = []
     for param in PARAMS:
-        if param not in df:
+        if param not in df or df[param].replace("", None).dropna().empty:
             continue
-        for value in sorted(df[param].dropna().unique()):
-            with_v = df[df[param] == value]
-            without = df[df[param] != value]
+        col = _banded(df, param).replace("", None)
+        for value in sorted(col.dropna().unique(), key=str):
+            with_v = df[col == value]
+            without = df[(col != value) & col.notna()]
             rate_with, rate_without = _rate(with_v), _rate(without)
             rows.append({
                 "param": param, "value": value,
@@ -198,6 +237,9 @@ def failure_rate_by_parameter(df):
                 "failure_rate_others": rate_without,
                 "effect": rate_with - rate_without if len(without) else float("nan"),
                 "enough_data": len(with_v) >= MIN_N and len(without) >= MIN_N,
+                "n_distinct_scenarios": int(with_v["phenotype"].nunique()) if "phenotype" in with_v else None,
+                "scenario_effect": (_scenario_rate(with_v) - _scenario_rate(without))
+                                   if len(without) else float("nan"),
             })
     return pd.DataFrame(rows)
 
@@ -207,9 +249,12 @@ def failure_rate_by_scenario(df_all):
     Takes the full frame (incl. no-encounter rows) so those can be counted."""
     if "failure_type" not in df_all:
         df_all = add_failure_types(df_all)
-    keys = ["scenario_id", "phenotype"] + [p for p in PARAMS if p in df_all]
+    # settings a run does not have (e.g. the numeric scene-v2 ones in older
+    # runs) are left out, and empty values are kept (dropna=False)
+    keys = ["scenario_id", "phenotype"] + [p for p in PARAMS if p in df_all
+                                           and df_all[p].replace("", None).notna().any()]
     rows = []
-    for key_values, sub in df_all.groupby(keys, sort=False):
+    for key_values, sub in df_all.groupby(keys, sort=False, dropna=False):
         enc = sub[sub["encounter"]]
         row = dict(zip(keys, key_values))
         row.update(n=int(len(sub)), encounters=int(len(enc)), failures=int(enc["failed"].sum()),
@@ -256,16 +301,21 @@ def timing_summary(df):
     }
 
 
-def sanity_warnings(df, by_param, n_no_encounter=0, n_stalled=0):
+def sanity_warnings(df, by_param, n_no_encounter=0, n_stalled=0, n_left_road=0):
     """Plain-language warnings about the data itself (not about the car)."""
     warnings = []
+    if n_left_road:
+        warnings.append(
+            f"{n_left_road} simulation(s) ended with the car OFF THE ROAD. That is a defect of "
+            "the test scene (placement / lane direction), not a result about the car: they are "
+            "excluded from every rate. Fix the scene before reading anything else in this report.")
     n = len(df)
     if n_stalled:
         n_pass = int((~df["failed"]).sum()) if n else 0
         warnings.append(
             f"{n_stalled} of {n_pass} passes were 'stalled': the car braked to a standstill and "
             "never moved again before the time limit. The safety rule held, but the car did not "
-            "get past the crossing - a standoff (the pedestrian's CrossingBehavior waits for the "
+            "get past the crossing - a standoff (in scene v1 the pedestrian also waited for the "
             "car to come within 8 m). Read the pass rate with this in mind; it is the paper's "
             "'mitigation shifts the failure mode' effect.")
     if n_no_encounter:
@@ -306,15 +356,20 @@ def build_failure_model(df):
     enc = df[df["encounter"]]
     by_param = failure_rate_by_parameter(enc)
     by_scenario = failure_rate_by_scenario(df)
-    n_no_enc = int((~df["encounter"]).sum())
+    n_no_enc = int((df["failure_type"] == "no_encounter").sum())
+    n_left_road = int((df["failure_type"] == "left_road").sum())
     n_stalled = int((df["failure_type"] == "passed_stalled").sum())
     return {
         "n_simulations": int(len(df)),
         "n_no_encounter": n_no_enc,
+        "n_left_road": n_left_road,
         "n_encounters": int(len(enc)),
         "n_scenarios": int(df["scenario_id"].nunique()) if len(df) else 0,
         "failures": int(enc["failed"].sum()),
         "failure_rate": _rate(enc),
+        "failure_rate_scenarios": _scenario_rate(enc),
+        "n_distinct_scenarios": int(df["phenotype"].nunique()) if "phenotype" in df and len(df) else 0,
+        "max_repeats_of_a_scenario": int(df["phenotype"].value_counts().max()) if "phenotype" in df and len(df) else 0,
         "passes": int((~enc["failed"]).sum()),
         "passed_clean": int((df["failure_type"] == "passed").sum()),
         "passed_stalled": n_stalled,
@@ -322,5 +377,5 @@ def build_failure_model(df):
         "timing": timing_summary(enc),
         "by_parameter": by_param.to_dict(orient="records"),
         "by_scenario": by_scenario.to_dict(orient="records"),
-        "warnings": sanity_warnings(enc, by_param, n_no_enc, n_stalled),
+        "warnings": sanity_warnings(enc, by_param, n_no_enc, n_stalled, n_left_road),
     }
