@@ -28,8 +28,11 @@ on real data. Before any new Narval run: the staging copy `~/real-av-build`
 is stale — rebuild and rsync first (§4.3), and the template fixes in M2
 (8 m trigger, no-encounter geometry, dead `distance`) are still open.
 
-Venue is **ICSE** (was FSE; branch name `fse-tool` is historical). The user
-has dropped the 2026-10-01 deadline. User style preference: short,
+Venue is **ICSE** (was FSE; branch name `fse-tool` is historical). **Hard
+deadline: ICSE 2027 Tool Demonstration track, Fri 23 Oct 2026 AoE** - 4 pages
+incl. references, 3-5 min YouTube video, tool runnable without building
+(Docker). Checklist docs/paper/icse27_call.md; dated plan at the top of
+docs/design/roadmap.md. User style preference: short,
 plain-language replies; every code change is proposed as a diff and approved
 first; docs are updated with every code change (this file, Notes.md,
 README.md, infra/hpc/README.md); every result is saved to a file in the run

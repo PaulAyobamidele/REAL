@@ -1,0 +1,17 @@
+# Allow-list: the demo image needs only the laptop-side code and the demo runs.
+*
+!requirements-demo.txt
+!real_config.py
+!README.md
+!LICENSE
+!scripts/__init__.py
+!scripts/demo.py
+!scripts/analysis/
+!scripts/redsl/
+!scripts/evolve/
+!scripts/templates/
+!scripts/scenarios/scratch.temp
+!pages/4_review.py
+!docs/examples/
+!examples/demo_runs/
+**/__pycache__

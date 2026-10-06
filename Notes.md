@@ -1484,6 +1484,47 @@ valid baseline until the placement is fixed and re-smoked.
   4779526** (`R_baseline.dsl`, 1 trial per scenario), submitted 2026-10-06.
   157 tests in total. Rule from now on: run it before every Narval submission.
 
+### 8.29 2026-10-06 — M2b.1: newer YOLO choice (read-only check)
+
+The laptop venv's `ultralytics` 8.4.137 (Python 3.8) ships model configs for
+YOLO26, YOLO12, YOLO11, v10, v9, v8, v5 (+ RT-DETR). `YOLO("yolo26s.pt")`
+downloaded the official weights (v8.4.0 release asset, 19.5 MB) into the
+session scratchpad (not the repo) and ran on three frames of the scene-v2
+smoke run 1 video: ~80-140 ms per frame on the laptop CPU, no person found
+(those frames show the car on the pavement with no pedestrian in view, so
+this is a load-and-run check, not an accuracy result). **Proposed choice:
+YOLO26s** (newest family that runs on our Python 3.8; "s" = same size class
+as yolov5s, so the comparison is like for like). Still open: the
+container's ultralytics version on Narval, and the loader in the vendored
+driving model / `scratch.temp` (today `torch.hub` YOLOv5 only) — roadmap M2b.2-2b.5.
+
+### 8.30 2026-10-06 — demo mode and Docker image (ICSE: "do not expect reviewers to build your code")
+
+- `scripts/demo.py` (`python -m scripts.demo [--page]`, console script
+  `real-demo`): copies `examples/demo_runs/` (rounds 1 and 2 as run on
+  Narval, 9.4 MB: run_meta, simulations/scenarios csv, traces, the video; no
+  raw frames, no analysis outputs) into a fresh output folder (never reused)
+  and runs every laptop-side step: both reports, the round 1 → 2 comparison
+  (round-1 metadata and the inspected template difference as in §8.8),
+  round 2 re-judged against the baseline assumptions, a scripted review
+  (`examples/demo_runs/review_answers.json`, reviewer labelled "demo
+  (scripted review …)"), and the requirement writer. ~6 s. Output matches the
+  published numbers (91/120; 4/128 with 113 standoffs). `--page` serves the
+  review page on the result.
+- `Dockerfile` (python:3.8-slim, 730 MB) + `.dockerignore` (allow-list: only
+  the laptop-side code, the templates, the example requirements and the
+  demo runs) + `requirements-demo.txt` (pandas, numpy, lark, pydantic 1.x,
+  streamlit, pinned as tested). `docker run --rm -p 8501:8501 real-demo` runs
+  the demo and serves the page on 0.0.0.0. Checked: the container prints the
+  loop and `/_stcore/health` answers `ok`; all 5 review screens render inside
+  the container (Streamlit AppTest, no exception).
+- `tests/test_demo.py` (2: the loop's files and numbers, the bundle is left
+  byte-identical, an existing output folder is refused); 159 in total.
+  README "Try it in 5 minutes" at the top. Still to do for the submission:
+  publish the image (GHCR / Docker Hub) and archive it with the Zenodo DOI;
+  once run 2b and round 3 exist, add them to the bundle so the demo shows a
+  D/S/R round.
+
 ### 8.7 The iteration loop (stages 7-9) — original design
 
 Per round: requirement R_n → run (grid) → `simulations.csv` → report →

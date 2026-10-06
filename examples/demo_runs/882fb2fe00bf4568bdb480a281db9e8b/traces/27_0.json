@@ -1,0 +1,232 @@
+{
+ "summary": {
+  "run_id": "882fb2fe00bf4568bdb480a281db9e8b",
+  "scenario_id": 27,
+  "sim_index": 0,
+  "phenotype": "A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 0}",
+  "pedestrian": "Child",
+  "dress": "Dark",
+  "direction": "RL",
+  "distance": "Long",
+  "fog_density": "0",
+  "pedestrian_blueprint": "walker.pedestrian.0013",
+  "braking_mode": "proportional_braking",
+  "yolo_model": "yolov5s",
+  "seed": 69,
+  "passed": true,
+  "rho": 19.502571235486773,
+  "min_distance_m": 24.502571235486773,
+  "min_distance_step": 0,
+  "ego_speed_at_min_distance": 1.9600002765655518,
+  "steps": 21,
+  "timestep_s": 0.1,
+  "duration_s": 2.1,
+  "termination": "termination condition on line 128",
+  "ego_speed_max": 6.67820238103418,
+  "ego_speed_final": 6.464083603578469,
+  "stopped": false,
+  "frames_seen": 20,
+  "detection_frames": 0,
+  "max_confidence": 0.0,
+  "first_detection_step": null,
+  "first_detection_conf": null,
+  "first_detection_distance_m": null,
+  "ego_speed_at_first_detection": null,
+  "mean_inference_ms": 7.080996036529541,
+  "first_brake_step": null,
+  "first_brake_distance_m": null,
+  "ego_speed_at_first_brake": null,
+  "brake_steps": 0,
+  "reaction_steps": null,
+  "recorded_at": "2026-09-23T21:59:46.417480+00:00"
+ },
+ "distance_m": [
+  24.502571235486773,
+  24.514295585361033,
+  24.580529049730213,
+  24.776521373598786,
+  25.0966824433026,
+  25.542234721997914,
+  26.097129015691337,
+  26.758281840725754,
+  27.524064993257777,
+  28.38770901908529,
+  29.342997282481214,
+  30.358932387564355,
+  31.37528175990806,
+  32.43207259773565,
+  33.54602978160215,
+  34.71771641480072,
+  35.93555894753901,
+  37.185709560114034,
+  38.42291895250473,
+  39.513011893238385,
+  40.31452486576291
+ ],
+ "ego_speed": [
+  1.9600002765655518,
+  0.28451695368907404,
+  0.70910594591763,
+  1.2980355620320407,
+  1.8874653612989294,
+  2.499217714799615,
+  3.0200089411933138,
+  3.561063302514207,
+  4.071749100334575,
+  4.548197493167792,
+  4.991517544267999,
+  5.040206049706596,
+  5.144973260208464,
+  5.405403548879449,
+  5.706065616751929,
+  6.004467847899428,
+  6.273738637972071,
+  6.514380164530816,
+  6.67820238103418,
+  6.617091404310241,
+  6.464083603578469
+ ],
+ "detections": [
+  {
+   "step": 0,
+   "confidence": 0.0,
+   "inference_ms": 12.959718704223633,
+   "ego_speed": 1.9600002765655518,
+   "distance": 24.502571235486773
+  },
+  {
+   "step": 1,
+   "confidence": 0.0,
+   "inference_ms": 6.854534149169922,
+   "ego_speed": 0.28451695368907404,
+   "distance": 24.514295585361033
+  },
+  {
+   "step": 2,
+   "confidence": 0.0,
+   "inference_ms": 6.715536117553711,
+   "ego_speed": 0.70910594591763,
+   "distance": 24.580529049730213
+  },
+  {
+   "step": 3,
+   "confidence": 0.0,
+   "inference_ms": 6.411552429199219,
+   "ego_speed": 1.2980355620320407,
+   "distance": 24.776521373598786
+  },
+  {
+   "step": 4,
+   "confidence": 0.0,
+   "inference_ms": 6.477832794189453,
+   "ego_speed": 1.8874653612989294,
+   "distance": 25.0966824433026
+  },
+  {
+   "step": 5,
+   "confidence": 0.0,
+   "inference_ms": 6.308317184448242,
+   "ego_speed": 2.499217714799615,
+   "distance": 25.542234721997914
+  },
+  {
+   "step": 6,
+   "confidence": 0.0,
+   "inference_ms": 6.454944610595703,
+   "ego_speed": 3.0200089411933138,
+   "distance": 26.097129015691337
+  },
+  {
+   "step": 7,
+   "confidence": 0.0,
+   "inference_ms": 6.346225738525391,
+   "ego_speed": 3.561063302514207,
+   "distance": 26.758281840725754
+  },
+  {
+   "step": 8,
+   "confidence": 0.0,
+   "inference_ms": 6.260871887207031,
+   "ego_speed": 4.071749100334575,
+   "distance": 27.524064993257777
+  },
+  {
+   "step": 9,
+   "confidence": 0.0,
+   "inference_ms": 7.091760635375977,
+   "ego_speed": 4.548197493167792,
+   "distance": 28.38770901908529
+  },
+  {
+   "step": 10,
+   "confidence": 0.0,
+   "inference_ms": 6.734609603881836,
+   "ego_speed": 4.991517544267999,
+   "distance": 29.342997282481214
+  },
+  {
+   "step": 11,
+   "confidence": 0.0,
+   "inference_ms": 6.404638290405273,
+   "ego_speed": 5.040206049706596,
+   "distance": 30.358932387564355
+  },
+  {
+   "step": 12,
+   "confidence": 0.0,
+   "inference_ms": 7.361888885498047,
+   "ego_speed": 5.144973260208464,
+   "distance": 31.37528175990806
+  },
+  {
+   "step": 13,
+   "confidence": 0.0,
+   "inference_ms": 6.97636604309082,
+   "ego_speed": 5.405403548879449,
+   "distance": 32.43207259773565
+  },
+  {
+   "step": 14,
+   "confidence": 0.0,
+   "inference_ms": 7.097005844116211,
+   "ego_speed": 5.706065616751929,
+   "distance": 33.54602978160215
+  },
+  {
+   "step": 15,
+   "confidence": 0.0,
+   "inference_ms": 7.3947906494140625,
+   "ego_speed": 6.004467847899428,
+   "distance": 34.71771641480072
+  },
+  {
+   "step": 16,
+   "confidence": 0.0,
+   "inference_ms": 6.667852401733398,
+   "ego_speed": 6.273738637972071,
+   "distance": 35.93555894753901
+  },
+  {
+   "step": 17,
+   "confidence": 0.0,
+   "inference_ms": 7.15947151184082,
+   "ego_speed": 6.514380164530816,
+   "distance": 37.185709560114034
+  },
+  {
+   "step": 18,
+   "confidence": 0.0,
+   "inference_ms": 7.156133651733398,
+   "ego_speed": 6.67820238103418,
+   "distance": 38.42291895250473
+  },
+  {
+   "step": 19,
+   "confidence": 0.0,
+   "inference_ms": 6.785869598388672,
+   "ego_speed": 6.617091404310241,
+   "distance": 39.513011893238385
+  }
+ ],
+ "brakes": []
+}

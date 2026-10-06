@@ -1,0 +1,18 @@
+{
+  "run_id": "35acc09e8c224fdc953e3bf82ba57e96",
+  "mode": "grid",
+  "requirement": "\nMAINTAIN \"Pedestrian Safety\"\n    by\n        \"Pedestrian Check\" using \"Perception Module\"\n            operationalized as\n                \"Detect Pedestrian\" performed by \"yolov5s\"\n                taking input \"image\" producing output \"pedestrian detection confidence\" & \"pedestrian detection flag\"\n    followed by\n        \"braking\" using \"braking module\"\n            operationalized as\n                \"Bring down throttle\" & \"Apply Brakes\" if \"pedestrian detection flag=True\" performed by \"proportional_braking\"\n                taking input \"pedestrian detection flag\" producing output \"Braking Status Flag\"\n    in scenario where\n        \"A pedestrian trying to cross the street in fog.\"\n",
+  "scenario_text": "A pedestrian trying to cross the street in fog.",
+  "constraints": {
+    "fog_density": "50"
+  },
+  "grammar_file": "old/old.bnf",
+  "n_scenarios": 32,
+  "trials_per_scenario": 5,
+  "seed": 42,
+  "status": "complete",
+  "created_at": "2026-09-23T19:06:26.358474+00:00",
+  "worst_phenotype": "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 0}",
+  "worst_pct": 20.0,
+  "finished_at": "2026-09-23T20:35:04.120558+00:00"
+}

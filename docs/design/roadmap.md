@@ -2,8 +2,38 @@
 
 Written 2026-10-01; revised the same day after the supervisor meeting and the
 paper comparison ([tool_paper_alignment.md](tool_paper_alignment.md)).
-Status: **agreed in direction by Paul 2026-10-01**; M0 done (commit `6e805c0`, tag
-`post-presentation-2026-09-25`); M1 in progress.
+Status: **agreed in direction by Paul 2026-10-01**; M0, M1 done; M2/M2c built.
+**Since 2026-10-06 the plan is driven by the ICSE 2027 Tool Demonstration
+deadline, Friday 23 October 2026 (AoE)** — see the section below and
+[docs/paper/icse27_call.md](../paper/icse27_call.md).
+
+## ICSE 2027 submission plan (deadline Fri 23 Oct 2026, AoE)
+
+Deliverables: a 4-page IEEE paper **including references**, a 3-5 min YouTube
+video, and the tool in a form reviewers can run **without building it**.
+
+| Dates | Work | Needs Narval | Done when |
+|---|---|---|---|
+| Oct 6-7 | Smoke run 3 (job 4779526) passes: car on the road in all 32, video shows the crossing, plausible braking. Fix + re-smoke if not. | yes | smoke_check.md says pass |
+| Oct 6-9 ✅ (built Oct 6; publish pending) | **Demo mode** (M5.1) + **Docker image** that runs it and the review page, no CARLA/GPU; README "Try it in 5 minutes" | no | `docker run …` opens the review page on the bundled rounds |
+| Oct 7-10 | **Run 2b** (grid, round-2 car, fixed scene, `R_baseline.dsl`) and **first GE run** (~60 simulations) — submitted back to back | yes | both pulled, reported, prediction pre-registered |
+| Oct 9-11 | GE grid check (24 simulations); review of 2b with the supervisor → **round 3 decisions** (one D, one R, one S) | yes | decisions.json signed by a person |
+| Oct 10-13 | **Round 3** run + comparison 2b → 3 | yes | Table 1 complete |
+| Oct 11-16 | **Paper draft** (4 pages incl. refs): users, challenge, workflow, case study, planned study, carbon footprint; figures: architecture, review page, Table 1 | no | supervisor has v1 by Oct 16 |
+| Oct 14-18 | **Video** (3-5 min): screen recordings of demo + review page + one Narval run, voice-over from docs/voiceover.md trimmed; upload to YouTube (unlisted) | no | URL in the abstract |
+| Oct 16-20 | Public release: tag, Zenodo DOI, Docker image published, repo cleanup | no | DOI and image link in the paper |
+| Oct 19-22 | Supervisor review, polish, page-limit and format check, ORCIDs | no | final PDF |
+| **Oct 23** | **Submit** on HotCRP (abstract ends with the video URL) | — | submitted |
+
+**Cut list if time runs short** (in this order): YOLO26 runs (M2b) → model/data
+layer runs (M4b) → the GE grid check (state GE results as leads only) →
+round 3 (fall back to "design of the planned round" + rounds 1, 2, 2b as
+validation). Never cut: the working demo + Docker image, the video, and an
+honest Table 1.
+
+**Main risk:** Narval queue waits (hours to a day per job). Submit runs as
+soon as each is ready; keep laptop work (demo, Docker, paper, video) moving
+in parallel.
 
 Two goals, pursued together:
 
@@ -93,7 +123,7 @@ Slurm/requirement path → analysis aware of GE's uneven sampling.
 
 | # | Task | Done when |
 |---|---|---|
-| 2b.1 | Choose the model: newest Ultralytics detector that runs on Python 3.8 / the container's torch (candidates YOLO26, YOLO11 — verify, do not assume) | choice + reason in Notes |
+| 2b.1 ✅ | Choose the model (**YOLO26s**, Notes §8.29): newest Ultralytics detector that runs on Python 3.8 / the container's torch (candidates YOLO26, YOLO11 — verify, do not assume) | choice + reason in Notes |
 | 2b.2 | Loader handling both families: `torch.hub` for v5 weights, `ultralytics.YOLO` for newer ones, in the vendored driving model and `scratch.temp` | one function returns "highest person confidence" for both |
 | 2b.3 | Weights downloaded on the laptop and shipped in `model/` (Narval compute nodes have no internet) | `resolve_yolo_model` finds it; `performed by "<name>"` selects it |
 | 2b.4 | Local test on a stored frame: same image, both models, person confidence returned | test passes without CARLA |
@@ -155,7 +185,7 @@ after round 3 (Narval budget).
 
 | # | Task |
 |---|---|
-| 6.0 | **Now**: check the ICSE call (track, page limit, video); outline with each section mapped to the run that supplies its evidence, using [tool_paper_alignment.md](tool_paper_alignment.md) |
+| 6.0 ✅ (outline) | **Now**: check the ICSE call (track, page limit, video); outline with each section mapped to the run that supplies its evidence, using [tool_paper_alignment.md](tool_paper_alignment.md) |
 | 6.1 | Draft: the loop, the tool, the case study (rounds 1 → 2 → 2b → 3 → layer runs), limits stated openly; differences from the research paper reported (alignment §4) |
 | 6.2 | Demo video: requirement → run → review page → revised requirement |
 | 6.3 | Artifact appendix pointing to the DOI and demo mode |
