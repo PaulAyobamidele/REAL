@@ -45,17 +45,35 @@ def scene():
         from scripts.simulations import util
         return {"version": util.SCENE_VERSION, "max_steps": util.MAX_STEPS,
                 "crossing_trigger_m": util.DEFAULT_CROSSING_TRIGGER_M,
-                "ego_start_m": dict(util.EGO_START_M), "directions": dict(util.DIRECTIONS)}
+                "pedestrian_min_speed_mps": util.DEFAULT_PEDESTRIAN_MIN_SPEED_MPS,
+                "approach_distance_m": dict(util.APPROACH_DISTANCE_M), "directions": dict(util.DIRECTIONS)}
     except Exception:
         return {}
+
+
+def write_meta(run_id, meta):
+    """Write run_meta.json now - GE runs call this at the start (status
+    "running"), so a run cut off by the Slurm time limit still records what
+    it was testing."""
+    out_dir = run_dir(run_id)
+    os.makedirs(out_dir, exist_ok=True)
+    with open(os.path.join(out_dir, "run_meta.json"), "w") as f:
+        json.dump(meta, f, indent=2)
+    return out_dir
 
 
 def persist_run(run_id, logbook, hof, requirement=None, scenario_text=None, constraints=None,
                  record_video=True):
     """Write a completed GE run's outputs to settings.artifacts_dir/runs/<run_id>/:
     run_meta.json, generations.csv, best_phenotype.txt, best_scenario.scenic.
+    An early run_meta.json (write_meta) is kept and completed, not replaced.
     """
     out_dir = run_dir(run_id)
+    meta_path = os.path.join(out_dir, "run_meta.json")
+    early = {}
+    if os.path.exists(meta_path):
+        with open(meta_path) as f:
+            early = json.load(f)
 
     best = hof[0] if hof and len(hof) else None
     best_phenotype = best.phenotype if best is not None else None
@@ -72,7 +90,9 @@ def persist_run(run_id, logbook, hof, requirement=None, scenario_text=None, cons
         "seed": settings.random_seed,
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
-    with open(os.path.join(out_dir, "run_meta.json"), "w") as f:
+    meta = dict(early, **{k: v for k, v in meta.items() if k not in early or k == "best_phenotype"},
+                status="complete", completed_at=datetime.now(timezone.utc).isoformat())
+    with open(meta_path, "w") as f:
         json.dump(meta, f, indent=2)
 
     rows = _logbook_rows(logbook)

@@ -8,6 +8,7 @@ from scripts.analysis.admissibility import parse_assumption
 def test_quantities_match_design_table():
     assert set(admissibility.QUANTITIES) == {
         "fog_density", "pedestrian", "dress", "direction", "distance",
+        "approach_distance_m", "crossing_trigger_m", "pedestrian_min_speed_mps",
         "initial_separation_m", "pedestrian_speed_mps", "crossing_start_distance_m",
     }
     for q in admissibility.QUANTITIES.values():

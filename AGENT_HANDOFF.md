@@ -175,6 +175,9 @@ check before it matters, but nothing currently depends on it being fixed.
   `pedestrian_distance` / `pedestrian.speed`. **Scene v2** (2026-10-01, Notes §8.19-8.20):
   kerb-to-kerb crossing both ways, car on the pedestrian's lane, `distance` = car start
   20/35 m, crossing trigger setting, `MAX_STEPS` 250; not yet verified in CARLA (M2.7).
+  GE grammar `scripts/templates/v2/scene_v2.bnf` (21,120 scenarios, numeric settings,
+  Notes §8.22); the grid keeps `old.bnf`. GE via Slurm: `REAL_SEARCH=ge` (Notes §8.23); GE-aware reports and
+  `scripts/analysis/grid_check.py` with `REAL_SEARCH=list` (Notes §8.24).
 - [`infra/hpc/`](infra/hpc/) — `carla.def` (Apptainer image definition),
   `run_real_av.slurm` (the Slurm job script: now `/run_grid`, a **source
   overlay** bind-mount of `$SCRATCH/real_project/REAL` over the baked-in copy

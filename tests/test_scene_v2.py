@@ -24,7 +24,7 @@ def test_scene_settings_both_directions_cross_and_distance_matters():
     assert (lr["pedestrian_side"], lr["pedestrian_angle"]) == (-1, -90)   # left kerb, walks right
     assert (rl["pedestrian_side"], rl["pedestrian_angle"]) == (1, 90)     # right kerb, walks left
     assert abs(lr["pedestrian_angle"]) == abs(rl["pedestrian_angle"]) == 90   # both cross
-    assert (lr["ego_start_m"], rl["ego_start_m"]) == (20, 35)
+    assert (lr["approach_distance_m"], rl["approach_distance_m"]) == (20, 35)
     assert lr["crossing_trigger_m"] == util.DEFAULT_CROSSING_TRIGGER_M
     assert util.scene_settings("LR", "Short", crossing_trigger_m=8)["crossing_trigger_m"] == 8
     with pytest.raises(ValueError):
@@ -35,12 +35,17 @@ def test_scene_settings_both_directions_cross_and_distance_matters():
 
 def test_build_scenario_writes_scene_v2_and_parses():
     code, params = util.build_scenario(PHENOTYPE)
-    assert "CROSSING_TRIGGER_M = 100" in code and "EGO_START_M = 35" in code
-    assert "PEDESTRIAN_SIDE = -1" in code and "with heading -90 deg" in code
+    assert "CROSSING_TRIGGER_M = 100" in code and "APPROACH_DISTANCE_M = 35" in code
+    assert "PEDESTRIAN_SIDE = -1" in code and "with heading (spot.heading + (-90 deg))" in code
+    assert "facing lane.orientation" in code and "following lane.orientation from spot" in code
+    code_lines = [l for l in code.splitlines() if not l.lstrip().startswith("#")]
+    assert not any("roadDirection" in l for l in code_lines)   # the off-road cause (Notes 8.25)
+    assert 'record (ego.position in network.drivableRegion) as "on_road"' in code
+    assert "relative heading of ego from spot" in code
     assert "require ego.lane == lane" in code
     assert 'record pedestrian.speed as "pedestrian_speed"' in code
     assert "THRESHOLD" not in code and "(distance to spot) > 30" not in code
-    assert params["ego_start_m"] == 35 and params["crossing_trigger_m"] == 100
+    assert params["approach_distance_m"] == 35 and params["crossing_trigger_m"] == 100
     parse_string(code, "exec", filename="scratch.temp")
 
 
@@ -87,14 +92,14 @@ def test_standoff_never_resumes_and_no_stop_is_zero():
 def test_end_simulation_writes_new_columns_and_trace(tmp_path):
     telemetry.set_run("r", str(tmp_path))
     telemetry.begin_scenario(0, "p", {"direction": "LR", "distance": "Short"},
-                             scene={"ego_start_m": 20, "crossing_trigger_m": 100})
+                             scene={"approach_distance_m": 20, "crossing_trigger_m": 100})
     telemetry.begin_simulation()
     d, v = _brake_then(resume_after_steps=10)
     telemetry.end_simulation(rho=1.0, distances=d, speeds=v, timestep=DT,
                              pedestrian_speeds=[1.2] * len(v))
     telemetry.clear()
     row = next(csv.DictReader(open(tmp_path / "simulations.csv")))
-    assert row["ego_start_m"] == "20" and row["resumed"] == "True"
+    assert row["approach_distance_m"] == "20" and row["resumed"] == "True"
     assert float(row["pedestrian_speed_mps"]) == 1.2
     assert os.path.exists(tmp_path / "traces" / "0_0.json")
 
@@ -127,3 +132,44 @@ def test_report_on_pre_v2_run_says_not_measured(tmp_path):
     analysis, md = report.write_report(str(tmp_path))
     assert analysis["soft_goals"][0]["kind"] == "checked"
     assert "`resume_within_s <= 10`: not measured in this run" in md
+
+
+# --- the off-road fix (Notes 8.25) -------------------------------------------
+
+def test_leaving_the_road_is_recorded():
+    d, v = _brake_then(resume_after_steps=10)
+    road = [True] * 15 + [False] * (len(v) - 15)
+    m = telemetry.motion_metrics(d, v, [], DT, on_road=road)
+    assert m["left_road"] is True and m["left_road_step"] == 15
+    m = telemetry.motion_metrics(d, v, [], DT, on_road=[True] * len(v))
+    assert m["left_road"] is False and m["left_road_step"] is None
+    assert telemetry.motion_metrics(d, v, [], DT)["left_road"] is None     # not recorded
+
+
+def test_braking_measures_skip_the_settling_second_and_off_road():
+    v = [0.0, 6.0, 0.5, 7.5] + [7.5] * 30                # spawn jolt in the first steps
+    d = [30.0 - 0.5 * i for i in range(len(v))]
+    m = telemetry.motion_metrics(d, v, [], DT)
+    assert m["peak_decel_mps2"] == 0.0                   # the jolt is ignored
+    v2 = [7.5] * 20 + [0.0] * 20                          # "stop" caused by hitting the kerb off road
+    road = [True] * 18 + [False] * 22
+    m = telemetry.motion_metrics([20.0] * 40, v2, [], DT, on_road=road)
+    assert m["peak_decel_mps2"] == 0.0
+
+
+def test_left_road_runs_are_a_test_defect_not_a_pass(tmp_path):
+    from scripts.analysis import failure_model
+    write_synthetic_run(str(tmp_path), trials=1)
+    path = tmp_path / "simulations.csv"
+    rows = list(csv.DictReader(open(path)))
+    for r in rows[:3]:
+        r["left_road"] = "True"
+    with open(path, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+        w.writeheader()
+        w.writerows(rows)
+    model = failure_model.build_failure_model(failure_model.load_simulations(str(tmp_path)))
+    assert model["n_left_road"] == 3 and model["n_encounters"] <= 29
+    assert any("OFF THE ROAD" in w for w in model["warnings"])
+    _, md = report.write_report(str(tmp_path))
+    assert "where the car left the road (a test defect, excluded)" in md

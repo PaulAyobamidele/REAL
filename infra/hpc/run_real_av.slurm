@@ -22,6 +22,8 @@ mkdir -p "$ARTIFACTS_DIR"
 # change it without editing a job script, and the run's provenance
 # (requirement_source in run_meta.json) names the file. Override with
 #   sbatch --export=ALL,REAL_REQUIREMENT_FILE=docs/examples/my_req.dsl,REAL_PARENT_RUN_ID=<run>,REAL_ROUND=3 run_real_av.slurm
+# and for a GE search instead of the grid:
+#   sbatch --export=ALL,REAL_SEARCH=ge,REAL_REQUIREMENT_FILE=docs/examples/R_baseline.dsl,REAL_POPULATION=16,REAL_GENERATIONS=6,REAL_TRIALS=2 run_real_av.slurm
 # Paths are relative to the project root inside the container. The default is
 # the requirement rounds 1-2 ran with (docs/examples/R0_rounds1_2.dsl).
 # (Heredoc kept quoted so nothing inside is shell-expanded - see obstacle 10.)
@@ -33,23 +35,42 @@ req_path = os.environ.get("REAL_REQUIREMENT_FILE", "docs/examples/R0_rounds1_2.d
 with open(req_path) as f:
     requirement = f.read()
 
+# REAL_SEARCH=grid (default): exhaustive grid (scripts/evolve/grid.py), all
+# 32 scenarios old.bnf can express, REAL_TRIALS (5) simulations each.
+# REAL_SEARCH=ge: grammatical evolution (scripts/evolve/ge.py) over
+# REAL_GRAMMAR (v2/scene_v2.bnf, 21,120 scenarios), REAL_POPULATION (16) x
+# REAL_GENERATIONS (6), REAL_TRIALS (2) simulations per new scenario.
+search = os.environ.get("REAL_SEARCH", "grid")
 params = {
     "requirement": requirement,
-    "trials": int(os.environ.get("REAL_TRIALS", "5")),
     "record_video": True,
     "requirement_source": req_path,
 }
+if search == "ge":
+    endpoint = "get_testcases"
+    params.update(sample=False,
+                  grammar_file=os.environ.get("REAL_GRAMMAR", "v2/scene_v2.bnf"),
+                  population_size=int(os.environ.get("REAL_POPULATION", "16")),
+                  max_generations=int(os.environ.get("REAL_GENERATIONS", "6")),
+                  trials=int(os.environ.get("REAL_TRIALS", "2")))
+elif search == "grid":
+    endpoint = "run_grid"
+    params["trials"] = int(os.environ.get("REAL_TRIALS", "5"))
+elif search == "list":
+    # e.g. the grid check of a GE run: REAL_SCENARIOS=artifacts/runs/<ge>/grid_check/scenarios.txt
+    endpoint = "run_grid"
+    params.update(scenario_file=os.environ["REAL_SCENARIOS"],
+                  trials=int(os.environ.get("REAL_TRIALS", "3")))
+else:
+    raise SystemExit(f"REAL_SEARCH must be grid, ge or list, not {search!r}")
 if os.environ.get("REAL_PARENT_RUN_ID"):
     params["parent_run_id"] = os.environ["REAL_PARENT_RUN_ID"]
 if os.environ.get("REAL_ROUND"):
     params["round"] = int(os.environ["REAL_ROUND"])
+print(f"[smoke_test] {endpoint} with " + str({k: v for k, v in params.items() if k != "requirement"}))
 
-# Exhaustive grid (scripts/evolve/grid.py): all 32 scenarios old.bnf can
-# express, 5 simulations each, with per-simulation telemetry for failure
-# analysis. (The GE search is still available via /get_testcases?sample=false
-# with population_size/max_generations - see job 3564897 for that shape.)
 resp = requests.get(
-    "http://127.0.0.1:7999/run_grid",
+    f"http://127.0.0.1:7999/{endpoint}",
     params=params,
     # Per-scenario overhead (Scenic compile + YOLO reload, not just the 5
     # CARLA simulations) ran ~2-3 min/scenario in job 3564897, so 32

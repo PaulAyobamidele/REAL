@@ -85,9 +85,9 @@ Slurm/requirement path → analysis aware of GE's uneven sampling.
 
 | # | Task | Done when |
 |---|---|---|
-| 2c.1 | GE-ready grammar: numeric ranges for the new settings (fog 0-100, car start distance, pedestrian speed, crossing trigger) alongside the categories | grammar parse test; GE sees > 32 distinct scenarios |
-| 2c.2 | Slurm job can run GE (`/get_testcases` with the requirement file, provenance like `/run_grid`) | `run_meta.json` mode `ge` with requirement source, round, parent, scene |
-| 2c.3 | Analysis marks GE samples "not balanced"; setting effects / obstacle support corrected or caveated; a small grid check of GE's worst scenarios | report states sampling; check run planned |
+| 2c.1 ✅ | GE-ready grammar: numeric ranges for the new settings (fog 0-100, car start distance, pedestrian speed, crossing trigger) alongside the categories | grammar parse test; GE sees > 32 distinct scenarios |
+| 2c.2 ✅ | Slurm job can run GE (`/get_testcases` with the requirement file, provenance like `/run_grid`) | `run_meta.json` mode `ge` with requirement source, round, parent, scene |
+| 2c.3 ✅ | Analysis marks GE samples "not balanced"; setting effects / obstacle support corrected or caveated; a small grid check of GE's worst scenarios | report states sampling; check run planned |
 
 ## M2b - A newer YOLO as a model-layer option (supervisor request)
 
@@ -172,4 +172,4 @@ after round 3 (Narval budget).
 
 ## Next action
 
-M2.7 — Narval smoke run of scene v2 (Paul at the terminal), then M2c (GE-ready grammar).
+M2.7 — finish and pull the scene v2 smoke run (job 4354082), check it against the pass criteria; then size and submit the first GE run (M2c done).

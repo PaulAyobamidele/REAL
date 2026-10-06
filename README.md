@@ -211,7 +211,14 @@ MAINTAIN "Pedestrian Safety"
   speed, braking smoothness (peak deceleration / jerk), time-to-collision and
   whether the car moved on again. Soft goals such as
   `ensuring "resume_within_s <= 10"` are checked per encounter (met / missed);
-  runs before scene v2 report them as not measured.
+  runs before scene v2 report them as not measured. GE searches
+  `scripts/templates/v2/scene_v2.bnf` (21,120 scenarios: numeric fog, car
+  approach distance, pedestrian speed and crossing trigger, deliberately
+  beyond the baseline assumptions); the grid keeps `old.bnf` (32). On Narval, `REAL_SEARCH=ge` runs GE
+  instead of the grid (infra/hpc/README.md, "GE runs"). Reports on GE runs say
+  that GE samples unevenly, count each scenario once alongside the raw rates,
+  and mark supported obstacles as leads; `python -m scripts.analysis.grid_check`
+  confirms them on balanced repeats.
   `docs/examples/R_baseline.dsl` is the baseline requirement with both slots
   (`assuming` and `ensuring`), used from run 2b on. A finished run can be
   re-judged against another requirement without touching its own report:

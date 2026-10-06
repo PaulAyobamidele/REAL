@@ -37,24 +37,36 @@ SAFETY_MARGIN_M = 5
 SCENE_VERSION = 2
 DIRECTIONS = {"LR": {"pedestrian_side": -1, "pedestrian_angle": -90},
               "RL": {"pedestrian_side": 1, "pedestrian_angle": 90}}
-EGO_START_M = {"Short": 20, "Long": 35}
+APPROACH_DISTANCE_M = {"Short": 20, "Long": 35}
 # The pedestrian steps out once the car is this close. Large = at once:
 # CrossingBehavior then paces the walk to meet the car (no built-in standoff).
 DEFAULT_CROSSING_TRIGGER_M = 100
+DEFAULT_PEDESTRIAN_MIN_SPEED_MPS = 2.0
+# Settings a scenario may give as numbers (scripts/templates/v2/scene_v2.bnf,
+# the GE grammar); old.bnf scenarios give `distance` and use the defaults.
+NUMERIC_SETTINGS = ("approach_distance_m", "crossing_trigger_m", "pedestrian_min_speed_mps")
 # Steps per simulation (0.1 s each). 250 = 25 s, enough to see whether a car
 # that stopped moves on again within the 10 s soft goal (was 100 = 10 s).
 MAX_STEPS = 250
 
 
-def scene_settings(direction, distance, crossing_trigger_m=None):
-    """The scene-v2 template values for one scenario's grid settings."""
+def scene_settings(direction, distance=None, crossing_trigger_m=None,
+                   approach_distance_m=None, pedestrian_min_speed_mps=None):
+    """The scene-v2 template values for one scenario. Numeric settings (GE
+    grammar) win; otherwise `distance` Short/Long (old.bnf) and the defaults."""
     if direction not in DIRECTIONS:
         raise ValueError(f"unknown direction {direction!r} (expected {sorted(DIRECTIONS)})")
-    if distance not in EGO_START_M:
-        raise ValueError(f"unknown distance {distance!r} (expected {sorted(EGO_START_M)})")
-    trigger = DEFAULT_CROSSING_TRIGGER_M if crossing_trigger_m is None else crossing_trigger_m
-    return dict(DIRECTIONS[direction], ego_start_m=EGO_START_M[distance],
-                crossing_trigger_m=trigger)
+    if approach_distance_m is None:
+        if distance not in APPROACH_DISTANCE_M:
+            raise ValueError(f"unknown distance {distance!r} (expected {sorted(APPROACH_DISTANCE_M)})")
+        approach_distance_m = APPROACH_DISTANCE_M[distance]
+    return dict(DIRECTIONS[direction],
+                approach_distance_m=float(approach_distance_m),
+                crossing_trigger_m=float(DEFAULT_CROSSING_TRIGGER_M if crossing_trigger_m is None
+                                         else crossing_trigger_m),
+                pedestrian_min_speed_mps=float(DEFAULT_PEDESTRIAN_MIN_SPEED_MPS
+                                               if pedestrian_min_speed_mps is None
+                                               else pedestrian_min_speed_mps))
 
 # ---------------------------------------------------------------------------
 # What the requirement says the system IS. The KAOS requirement names the
@@ -223,8 +235,10 @@ class MyMonitor(specification_monitor):
         speeds = [v for _, v in speed_series] if isinstance(speed_series, list) else []
         ped_series = result.records.get("pedestrian_speed", [])
         pedestrian_speeds = [v for _, v in ped_series] if isinstance(ped_series, list) else []
+        road_series = result.records.get("on_road", [])
+        on_road = [bool(v) for _, v in road_series] if isinstance(road_series, list) else []
         telemetry.end_simulation(rho=rho, distances=distances, speeds=speeds,
-                                 pedestrian_speeds=pedestrian_speeds,
+                                 pedestrian_speeds=pedestrian_speeds, on_road=on_road,
                                  timestep=getattr(simulation, "timestep", None),
                                  termination=result.terminationReason)
         return rho
@@ -314,7 +328,8 @@ def build_scenario(phenotype, frames_dir=None, braking_mode=None):
     # geometry, not the raw phenotype categories (pedestrian/dress ->
     # blueprint, overwriting the raw 'pedestrian' value; direction/distance ->
     # side, heading, start distance - see scene_settings).
-    params.update(scene_settings(params['direction'], params['distance']))
+    params.update(scene_settings(params['direction'], params.get('distance'),
+                                 **{k: params[k] for k in NUMERIC_SETTINGS if k in params}))
     params['pedestrian'] = get_pedestrian(params['pedestrian'], params['dress'])
     params['carla_map_path'] = settings.carla_map_path
     params['carla_map_name'] = settings.carla_map_name
@@ -362,7 +377,7 @@ def evaluate_phenotype(phenotype, num_test=5, seed=None, scenario_id=None, log_m
     telemetry.begin_scenario(scenario_id if scenario_id is not None else phenotype,
                              phenotype, raw_params,
                              pedestrian_blueprint=params['pedestrian'],
-                             scene={k: params[k] for k in ("ego_start_m", "crossing_trigger_m")},
+                             scene={k: params[k] for k in NUMERIC_SETTINGS},
                              braking_mode=params['braking_mode'],
                              yolo_model=yolo_model, seed=seed)
 
@@ -387,6 +402,30 @@ def evaluate_phenotype(phenotype, num_test=5, seed=None, scenario_id=None, log_m
     return fitness
 
 
+# GE fitness settings for the current run (set by scripts/evolve/ge.py::start_ge).
+GE_SETTINGS = {"trials": 5}
+# phenotype -> fitness for the current GE run: a scenario GE has already
+# simulated is not simulated again (GE re-visits scenarios across
+# generations; with 2-5 CARLA runs each that would waste most of the budget).
+_GE_CACHE = {}
+
+
+def configure_ge(trials=None):
+    """Start a GE run: set trials per individual and forget earlier results."""
+    if trials is not None:
+        GE_SETTINGS["trials"] = int(trials)
+    _GE_CACHE.clear()
+    return dict(GE_SETTINGS)
+
+
+def scenario_label(phenotype):
+    """Short, file-name-safe label for a GE scenario (phenotypes can contain
+    '/', e.g. "m/s" in scene_v2.bnf, and are too long for trace file names).
+    The full text stays in simulations.csv's `phenotype` column."""
+    import hashlib
+    return "g" + hashlib.sha1(phenotype.encode("utf-8")).hexdigest()[:10]
+
+
 def evaluate(ind, dummy):
     # Live call site: scripts.evolve.ge::start_ge(sample=False), the full DEAP/GRAPE
     # evolutionary loop (toolbox.evaluate). Safety margin here is
@@ -395,10 +434,15 @@ def evaluate(ind, dummy):
     # implementation used by api_app.py's /validate route via its own
     # `falsifier` directly - do not conflate results from the two in MLflow
     # without checking which evaluate() produced them.
-    fitness = evaluate_phenotype(ind.phenotype, num_test=5)
+    phenotype = ind.phenotype
+    if phenotype in _GE_CACHE:
+        return (_GE_CACHE[phenotype],)
+    fitness = evaluate_phenotype(phenotype, num_test=GE_SETTINGS["trials"],
+                                 scenario_id=scenario_label(phenotype))
+    _GE_CACHE[phenotype] = fitness['pct']
 
     # DEAP expects a tuple of numbers matching FitnessMin's weights=(-1.0,)
     # (single-objective minimization), not the whole fitness dict - minimizing
     # pct (percentage of tests passed) is exactly the falsification objective:
     # search for parameter combinations that make the safety property fail.
-    return (fitness['pct'],)
+    return (_GE_CACHE[phenotype],)

@@ -1290,6 +1290,180 @@ including one video per direction.
 the scene fixes — roadmap M2c (GE-ready grammar with numeric ranges, GE via
 Slurm, analysis aware of uneven sampling).
 
+### 8.21 2026-10-01 — scene v2 smoke run submitted (job 4354082)
+
+Job 4353379 (submitted 00:34 the same day) was cancelled by Paul before it
+started: it had been rsynced from the Sep 23 staging copy (no scene v2, no
+`docs/examples/`), so with the new job script it would have failed on the
+missing requirement file. Staging copy rebuilt from commit `c28cdb4`
+(scene v2), rsynced (verified on Narval: `CROSSING_TRIGGER_M` in
+`scratch.temp`, `SCENE_VERSION = 2`, `soft_goals.py`, all three `.dsl`
+files), and the smoke run submitted as **job 4354082**:
+`REAL_REQUIREMENT_FILE=docs/examples/R_baseline.dsl, REAL_TRIALS=1` (32
+scenarios x 1). Pass criteria: infra/hpc/README.md "Scene v2 smoke run".
+
+### 8.22 2026-10-01 — M2c.1: the GE grammar for scene v2
+
+- `scripts/templates/v2/scene_v2.bnf` (old.bnf unchanged, still the grid
+  grammar): pedestrian, dress, direction as before; `fog_density` 0-100 in
+  steps of 10; `approach_distance_m` 10/15/20/25/30/35/40/50;
+  `pedestrian_min_speed_mps` 1.0/1.5/2.0/2.5/3.0/4.0; `crossing_trigger_m`
+  8/15/20/30/100 — **21,120 scenarios** (old.bnf: 32, too few for GE). Ranges
+  agreed with Paul. They go **beyond the baseline assumptions on purpose**
+  (fog > 50, start < 15 m, faster than 3 m/s), so GE runs produce the
+  broken-assumption cases rounds 1-2 never had and the D verdicts get
+  evidence; the old 8 m trigger stays as one value so its effect can be
+  measured.
+- `util.scene_settings()` takes the numeric settings when a scenario gives
+  them, otherwise `distance` Short/Long and the defaults (`NUMERIC_SETTINGS`,
+  `DEFAULT_PEDESTRIAN_MIN_SPEED_MPS = 2.0`), so old.bnf / grid behave as in
+  §8.20. `scratch.temp`: `PEDESTRIAN_MIN_SPEED = <pedestrian_min_speed_mps>`
+  (was fixed 2.0; `CrossingBehavior` walks faster than this to meet the car).
+- **Renamed `ego_start_m` → `approach_distance_m`** everywhere in code (a
+  start position is part of the scene; names starting with `ego` are refused
+  as assumptions). The loader maps the old column name, because the smoke run
+  job 4354082 was rsynced before the rename and writes `ego_start_m`.
+- New scene-level assumption quantities: `approach_distance_m`,
+  `crossing_trigger_m`, `pedestrian_min_speed_mps`; telemetry column
+  `pedestrian_min_speed_mps`; `run_meta.scene` includes its default.
+
+`tests/test_ge_grammar_v2.py` (5: space size and ranges, GRAPE samples v2
+phenotypes that build and parse in Scenic, old.bnf meaning unchanged, the
+settings are checkable assumptions, the smoke-run column alias); 133 in total.
+Next: M2c.2 (GE through the Slurm job), M2c.3 (analysis aware of GE's
+uneven sampling).
+
+### 8.23 2026-10-01 — M2c.2: GE through the Slurm/requirement path
+
+- **Two bugs fixed that would have broken a GE run on scene_v2.bnf:**
+  (1) GE scenarios were labelled with their full phenotype text, which is the
+  trace file name — scene_v2 phenotypes contain "m/s", so the first trace
+  write would fail; now `util.scenario_label()` = `g` + 10 hex of the SHA-1
+  (full text stays in `phenotype`). (2) A GE run wrote `run_meta.json` only at
+  the end, so a run cut off by the time limit recorded nothing about what it
+  tested; now `run_output.write_meta()` at the start (`status: running`) and
+  `persist_run` completes it (`status: complete`, `completed_at`).
+- `util.evaluate` (GE fitness): trials per individual from
+  `GE_SETTINGS` (`configure_ge(trials)`, was a fixed 5) and a per-run cache —
+  a scenario GE already simulated is not simulated again.
+- `ge.start_ge(..., trials, parent_run_id, round_no, requirement_source)`;
+  early meta records mode `ge`, grammar file + sha256, template sha256, scene,
+  system under test, population, generations, trials per individual and a
+  `sampling` caveat ("not sampled evenly").
+- `/get_testcases`: `trials`, `grammar_file` (default `v2/scene_v2.bnf`),
+  `record_video`, `parent_run_id`, `round`, `requirement_source`;
+  `sample=true` unchanged.
+- `run_real_av.slurm`: `REAL_SEARCH=grid` (default, unchanged) or `ge` with
+  `REAL_GRAMMAR` (v2/scene_v2.bnf), `REAL_POPULATION` (16),
+  `REAL_GENERATIONS` (6), `REAL_TRIALS` (2); prints what it requests.
+
+`tests/test_ge_slurm.py` (6, incl. executing the job script's Python block
+with a fake `requests`); 139 in total. Budget: at most population x
+(generations + 1) new scenarios x trials (16 x 7 x 2 = 224 simulations),
+fewer with reuse; the final sizes wait for the smoke run's time per
+simulation. Next: M2c.3 (analysis aware of GE's uneven sampling).
+
+### 8.24 2026-10-01 — M2c.3: analysis aware of GE's uneven sampling; grid check
+
+GE breeds scenarios towards failure, so on GE data failure rates are biased
+upward and settings that travel together look like effects. Now:
+
+- **Sampling banner** at the top of every report (`report.sampling_of`,
+  from `run_meta.mode`): "balanced grid" / "a chosen list" / "GE search -
+  bred towards failure … leads to confirm, not findings", with the number of
+  distinct scenarios and the most repeats of one.
+- **Each scenario counted once** (`failure_model._scenario_rate`):
+  `failure_rate_scenarios` overall and `scenario_effect` per setting, shown
+  next to the per-simulation numbers on GE runs.
+- **Numeric settings in the effects table**, split at the grammar midpoint
+  (`BANDS`: fog 50, approach 25 m, walking speed 2.0 m/s, trigger 20 m) when
+  a setting has more than two values; old.bnf's fog 0/50 keeps its values.
+  Fixed on the way: grouping by scenario dropped every row when a run lacked
+  the new numeric columns (`groupby(..., dropna=False)`, unused settings left
+  out).
+- **Supported obstacles on GE data** are shown as "SUPPORTED (GE lead -
+  confirm on grid)" in the report, the CLI review and the page
+  (`obstacles.verdict_label`); the stored verdict is unchanged.
+- **Grid check** (`scripts/analysis/grid_check.py`): picks GE's worst and
+  safest distinct scenarios (default 4 + 4), writes
+  `<ge_run>/grid_check/scenarios.txt` + `selection.json`; the job runs them
+  equally often with `REAL_SEARCH=list REAL_SCENARIOS=… REAL_TRIALS=3`
+  (`run_grid(phenotypes=…)`, mode `list`, `/run_grid?scenario_file=`); then
+  `--compare <check_run>` writes `grid_check_comparison.md` (GE rate vs
+  repeat rate per scenario, and whether each GE-supported obstacle holds).
+  Size cut from 8 + 8 x 5 to 4 + 4 x 3 = 24 simulations (Paul), because a
+  scene-v2 simulation takes ~3 min on Narval (smoke run, partial).
+- The stalled-pass warning no longer blames the 8 m trigger outside scene v1.
+
+`tests/test_ge_analysis.py` (10); 149 in total. No saved report regenerated.
+
+### 8.25 2026-10-01 — scene v2 smoke run result (job 4354082): not yet a valid scene
+
+Run `130e0c8b8b974f0eac6c4f7c76ee510f`, pulled complete; full write-up in
+`artifacts/runs/130e0c8b…/smoke_check.md`, report in `analysis_report.md`
+there. Passed: STATUS OK, new columns filled, no-encounter 1/32 (was ~25 %),
+`distance` works (initial separation Short 20.0 m / Long 34.9 m). **Failed:
+the video shows the car steering over the kerb and stopping on the pavement**
+(frames 8-14 of the Child/Dark/RL/Short re-run), pedestrian never in view;
+frame 1 has the yellow centre line on the car's right. Probable cause: the
+car's heading (`following roadDirection from spot`) is opposite to its lane's
+direction, and FollowLaneBehavior turns it off the road — possibly also the
+cause of rounds 1-2's no-encounter runs. Also: braking starts at ~20 m (as
+soon as a person is visible above 30 %) and lasts most of the run; 13 stalled
+passes; pedestrian top speed > 3 m/s in 7 runs (CrossingBehavior speeds the
+walker up); deceleration / jerk values implausible (21 m/s^2, 214 m/s^3) —
+kerb impacts or spawn transient. Timing: 1 h 23 min for 32 simulations
+(~2.6 min each). Check script (run from the repo root):
+`failure_model.add_failure_types(load_simulations(run))` +
+`admissibility.add_run_quantities`, grouped by distance / direction. Not a
+valid baseline until the placement is fixed and re-smoked.
+
+### 8.26 2026-10-01 — fix for the off-road car (scene v2.1), second smoke run
+
+- `scratch.temp`: everything placed along the chosen lane's own direction —
+  `spot = new OrientedPoint on lane.centerline, facing lane.orientation`;
+  vending spot and car `following lane.orientation`; pedestrian heading
+  `spot.heading ± 90°` (no `roadDirection` left in the code);
+  `require abs(relative heading of ego from spot) < 20 deg`;
+  `record (ego.position in network.drivableRegion) as "on_road"`.
+- telemetry: `left_road`, `left_road_step`; deceleration / jerk skip the first
+  `SETTLE_STEPS = 10` (1 s, spawn jolt) and any step off the road.
+- analysis: outcome `left_road` = a test defect, excluded from every rate like
+  `no_encounter` (`NOT_ENCOUNTERS`), with a warning ("fix the scene before
+  reading anything else") and a line in the report.
+- 3 new tests in `tests/test_scene_v2.py`; 152 in total. The heading check and
+  `drivableRegion` only parse-checked locally; the second smoke run is the test.
+  Pass now also needs `left_road` False in every row and the video car on the road.
+  Staging copy rebuilt and rsynced (verified on Narval); **second smoke run = job
+  4385790** (`R_baseline.dsl`, 1 trial per scenario).
+
+### 8.27 2026-10-06 — smoke run 2 failed at compile; off-road hypothesis rejected
+
+- **Job 4385790 failed after 4 min** (2026-10-01 10:19-10:23): `/run_grid`
+  returned `facing x with x not a heading or orientation (expected
+  Orientation, got VectorField)` — `spot = new OrientedPoint on
+  lane.centerline, facing lane.orientation` (§8.26) is not valid in this
+  Scenic. The local tests only *parse* the template, which cannot catch it.
+  (My background watcher had reported the job "gone" at 15:01 that day only
+  because the SSH connection had expired; the job had in fact ended at 10:23.)
+- **Local compile check now possible without CARLA**: build the scenario with
+  the repo's map (`Scenic/assets/maps/CARLA/Town01.xodr`) and stand-ins for
+  `carla`, Redis and `torch.hub.load`, then sample scenes. It reproduces the
+  Narval error exactly. Two working alternatives, sampled in both directions
+  (4 scenes each): `crossing = new Point on lane.centerline` then
+  `spot = new OrientedPoint at crossing, facing lane.orientation[crossing.position]`
+  (or `following lane.orientation from crossing for 0.1`) — car aligned with
+  its lane (0°), 20 m before the crossing; LR pedestrian on the left facing
+  −90°, RL on the right facing +90°.
+- **The "car faces against its lane" explanation of the off-road run (§8.25)
+  is rejected**: with the smoke-run-1 placement (`roadDirection`), the car
+  faced along its lane in 40 of 40 sampled scenes. The cause of the car
+  leaving the road is **unknown**; candidates: the lane-following controller
+  itself, the map version on Narval vs the repo copy, or something at the
+  crossing point. It may be the same thing that produced rounds 1-2's
+  "drives away" runs. Scratch scripts: compile_scene.py, try_variants.py,
+  old_placement.py (session scratchpad; to be turned into a test).
+
 ### 8.7 The iteration loop (stages 7-9) — original design
 
 Per round: requirement R_n → run (grid) → `simulations.csv` → report →

@@ -1,3 +1,4 @@
+import re
 import csv
 import json
 import os
@@ -84,5 +85,5 @@ def test_run_grid_persists_everything(tmp_path, monkeypatch):
     assert (out / "best_phenotype.txt").read_text() == meta["worst_phenotype"]
     code = (out / "best_scenario.scenic").read_text()
     assert "walker.pedestrian.0013" in code  # Child + Dark blueprint
-    assert "<" not in code
+    assert not re.search(r"<[a-z_]+>", code)
     assert (out / "traces").is_dir()

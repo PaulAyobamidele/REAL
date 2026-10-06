@@ -1,0 +1,46 @@
+{
+  "run_id": "130e0c8b8b974f0eac6c4f7c76ee510f",
+  "mode": "grid",
+  "requirement": "# R_baseline - the baseline requirement from run 2b on (roadmap M1.7, agreed\n# with the supervisor 2026-10-01): the same car as rounds 1-2 (R0_rounds1_2.dsl)\n# plus BOTH slots the paper's D, S |= R needs:\n#   assuming  - the baseline domain assumptions D0 (docs/design/domain_assumptions.md),\n#               loose on purpose: the whole grid and ordinary walking.\n#               Checked per simulation after the run, never imposed on the simulator.\n#   ensuring  - the baseline soft goals E0: the car moves on again within 10 s of\n#               stopping (checked from scene v2 on); smoothness stays text until a\n#               jerk threshold is chosen (peak_jerk_mps3 is measured).\n# Runs before scene v2 lack pedestrian speed and the soft-goal measures:\n# those are reported as not measured.\nMAINTAIN \"Pedestrian Safety\"\n    by\n        \"Pedestrian Check\" using \"Perception Module\"\n            operationalized as\n                \"Detect Pedestrian\" performed by \"yolov5s\"\n                taking input \"image\" producing output \"pedestrian detection confidence\" & \"pedestrian detection flag\"\n    followed by\n        \"braking\" using \"braking module\"\n            operationalized as\n                \"Bring down throttle\" & \"Apply Brakes\" if \"pedestrian detection flag=True\" performed by \"proportional_braking\"\n                taking input \"pedestrian detection flag\" producing output \"Braking Status Flag\"\n    in scenario where\n        \"A pedestrian trying to cross the street in fog.\"\n    assuming \"fog_density <= 50\" & \"initial_separation_m >= 15\" & \"pedestrian_speed_mps <= 3\" & \"daylight, dry road\" & \"pedestrian on foot\"\n    ensuring \"resume_within_s <= 10\" & \"braking is smooth unless an emergency stop is needed\"\n",
+  "scenario_text": "A pedestrian trying to cross the street in fog.",
+  "constraints": {
+    "fog_density": "50"
+  },
+  "system_under_test": {
+    "braking_mode": "proportional_braking",
+    "yolo_model": "yolov5s"
+  },
+  "scene": {
+    "version": 2,
+    "max_steps": 250,
+    "crossing_trigger_m": 100,
+    "ego_start_m": {
+      "Short": 20,
+      "Long": 35
+    },
+    "directions": {
+      "LR": {
+        "pedestrian_side": -1,
+        "pedestrian_angle": -90
+      },
+      "RL": {
+        "pedestrian_side": 1,
+        "pedestrian_angle": 90
+      }
+    }
+  },
+  "parent_run_id": null,
+  "round": null,
+  "requirement_source": "docs/examples/R_baseline.dsl",
+  "grammar_file": "old/old.bnf",
+  "grammar_sha256": "6b9e9a970c6e79c42a8cd3367ec30f745f15913f0976b489e73a39e9c1b3bec4",
+  "template_sha256": "2fa343b8da241aa433a14e534ee60019d5182f0ceb4a187021b5fa5ea798a24e",
+  "n_scenarios": 32,
+  "trials_per_scenario": 1,
+  "seed": 42,
+  "status": "complete",
+  "created_at": "2026-10-01T06:32:32.868388+00:00",
+  "worst_phenotype": "A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 0}",
+  "worst_pct": 0.0,
+  "finished_at": "2026-10-01T07:54:01.067966+00:00"
+}

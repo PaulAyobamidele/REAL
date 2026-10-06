@@ -71,8 +71,9 @@ def enumerate_phenotypes(bnf_path):
         yield dict(zip(names, values)), phenotype
 
 
-SCENARIO_FIELDS = ["scenario_id", "phenotype", "pedestrian", "dress", "direction",
-                   "distance", "fog_density", "total", "passed", "failed", "pct", "seed"]
+SCENARIO_PARAMS = ["pedestrian", "dress", "direction", "distance", "fog_density",
+                   "approach_distance_m", "pedestrian_min_speed_mps", "crossing_trigger_m"]
+SCENARIO_FIELDS = ["scenario_id", "phenotype"] + SCENARIO_PARAMS + ["total", "passed", "failed", "pct", "seed"]
 
 
 def _sha256(path):
@@ -97,8 +98,13 @@ def _write_meta(out_dir, meta):
 def run_grid(run_id, requirement=None, scenario_text=None, constraints=None,
              trials=5, grammar_file="old/old.bnf", record_video=True, evaluate=None,
              braking_mode=None, yolo_model=None,
-             parent_run_id=None, round_no=None, requirement_source=None):
+             parent_run_id=None, round_no=None, requirement_source=None,
+             phenotypes=None, scenario_source=None):
     """Run every scenario in the grammar `trials` times and persist the results.
+
+    `phenotypes` = run exactly these scenarios instead (mode "list"), e.g. the
+    grid check of a GE run (scripts/analysis/grid_check.py); `scenario_source`
+    records the file they came from.
 
     `evaluate(phenotype, num_test, seed, scenario_id)` -> fitness dict; defaults
     to scripts.simulations.util.evaluate_phenotype (the real CARLA path).
@@ -122,11 +128,15 @@ def run_grid(run_id, requirement=None, scenario_text=None, constraints=None,
     out_dir = run_dir(run_id)
     telemetry.set_run(run_id, out_dir)
     bnf_path = os.path.join(settings.grammar_base_dir, grammar_file)
-    scenarios = list(enumerate_phenotypes(bnf_path))
+    if phenotypes:
+        scenarios = [(parse_phenotype_params(p), p) for p in phenotypes]
+    else:
+        scenarios = list(enumerate_phenotypes(bnf_path))
 
     meta = {
         "run_id": run_id,
-        "mode": "grid",
+        "mode": "list" if phenotypes else "grid",
+        "scenario_source": scenario_source,
         "requirement": requirement,
         "scenario_text": scenario_text,
         "constraints": constraints or {},
@@ -158,8 +168,7 @@ def run_grid(run_id, requirement=None, scenario_text=None, constraints=None,
             print(f"[grid] scenario {scenario_id + 1}/{len(scenarios)}: {phenotype}")
             fitness = evaluate(phenotype, num_test=trials, seed=seed, scenario_id=scenario_id)
             row = {"scenario_id": scenario_id, "phenotype": phenotype, "seed": seed}
-            row.update({k: params.get(k) for k in
-                        ("pedestrian", "dress", "direction", "distance", "fog_density")})
+            row.update({k: params.get(k) for k in SCENARIO_PARAMS})
             row.update({k: fitness.get(k) for k in ("total", "passed", "failed", "pct")})
             rows.append(row)
             writer.writerow(row)

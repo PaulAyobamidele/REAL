@@ -126,13 +126,40 @@ scp infra/hpc/run_real_av.slurm narval:scratch/real_project/run_real_av.slurm
 ssh narval "cd scratch/real_project && sbatch --export=ALL,REAL_REQUIREMENT_FILE=docs/examples/R_baseline.dsl,REAL_TRIALS=1 run_real_av.slurm"
 ```
 
-Pass when: the `.out` ends with `STATUS: OK` (no Scenic error on `ego.lane`,
+Pass when: the `.out` ends with `STATUS: OK` (no Scenic error on `ego.lane`, the heading check, `on_road`,
 the kerb placement or the termination line); `simulations.csv` has the
 scene-v2 columns filled (`pedestrian_speed_mps`, `peak_jerk_mps3`,
 `resume_within_s`, `ego_start_m`); no-encounter runs near 0 (was ~25 %);
 `initial_separation_m` differs between Short and Long; and
-`best_scenario.mp4` shows the pedestrian crossing the lane. If a check fails,
+`best_scenario.mp4` shows the pedestrian crossing the lane **with the car on the road**;
+`left_road` is False in every row (the first smoke run, job 4354082, failed this: the car
+drove over the kerb - Notes §8.25-8.26). If a check fails,
 fix before any full run.
+
+## GE runs (roadmap M2c.2, 2026-10-01)
+
+```bash
+ssh narval "cd scratch/real_project && sbatch --export=ALL,REAL_SEARCH=ge,REAL_REQUIREMENT_FILE=docs/examples/R_baseline.dsl,REAL_POPULATION=16,REAL_GENERATIONS=6,REAL_TRIALS=2 run_real_av.slurm"
+```
+
+GE searches `REAL_GRAMMAR` (default `v2/scene_v2.bnf`, 21,120 scenarios),
+simulating each *new* scenario `REAL_TRIALS` times (a scenario GE revisits is
+not re-simulated). Cost is at most population x (generations + 1) x trials
+simulations. `run_meta.json` is written at the start (`status: running`), so
+a run cut off by `--time` still records what it tested; `simulations.csv` and
+`traces/` grow as it goes. GE samples scenarios unevenly - see the analysis
+caveat in the report. Timing: a scene-v2 simulation took ~3 min in the smoke
+run (runs last up to 25 s), so keep population x (generations + 1) x trials
+near 60 for one 3.5 h job (e.g. 12 x 4 x 1).
+
+To confirm GE's leads on balanced repeats (grid check, 4 worst + 4 safe x 3 = 24 simulations):
+
+```bash
+python -m scripts.analysis.grid_check artifacts/runs/<ge_run>          # writes grid_check/scenarios.txt
+# rebuild the staging copy + rsync (sections 2, 4b), then:
+ssh narval "cd scratch/real_project && sbatch --export=ALL,REAL_SEARCH=list,REAL_SCENARIOS=artifacts/runs/<ge_run>/grid_check/scenarios.txt,REAL_TRIALS=3,REAL_PARENT_RUN_ID=<ge_run>,REAL_REQUIREMENT_FILE=docs/examples/R_baseline.dsl run_real_av.slurm"
+python -m scripts.analysis.grid_check artifacts/runs/<ge_run> --compare artifacts/runs/<check_run>
+```
 
 ## Real run history (read this before re-running - every fix here was found by actually running on Narval, not locally)
 

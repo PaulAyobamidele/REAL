@@ -60,7 +60,10 @@ def system_under_test_from(dsl):
     
 @app.get("/get_testcases")
 async def get_testcases(requirement: str = None, sample: bool = True,
-                         population_size: int = None, max_generations: int = None):
+                         population_size: int = None, max_generations: int = None,
+                         trials: int = None, grammar_file: str = "v2/scene_v2.bnf",
+                         record_video: bool = True, parent_run_id: str = None,
+                         round: int = None, requirement_source: str = None):
     # async, not sync def: FastAPI dispatches plain `def` routes to a worker
     # thread (so slow sync code doesn't block the event loop), but Scenic's
     # per-step simulation timeout uses signal.alarm(), which only works on
@@ -88,7 +91,10 @@ async def get_testcases(requirement: str = None, sample: bool = True,
         result = start_ge(sample=False, constraints=constraints, run_id=run_id,
                            requirement=requirement, scenario_text=scenario,
                            population_size=population_size, max_generations=max_generations,
-                           braking_mode=sut["braking_mode"], yolo_model=sut["perception_module"])
+                           braking_mode=sut["braking_mode"], yolo_model=sut["perception_module"],
+                           grammar_file=grammar_file, trials=trials, record_video=record_video,
+                           parent_run_id=parent_run_id, round_no=round,
+                           requirement_source=requirement_source)
         return {"run_id": run_id, "best_phenotype": result["best_phenotype"],
                 "system_under_test": sut, "STATUS": "OK"}
     except Exception as e:
@@ -100,7 +106,7 @@ async def get_testcases(requirement: str = None, sample: bool = True,
 async def run_grid_endpoint(requirement: str = None, trials: int = 5,
                             record_video: bool = True,
                             parent_run_id: str = None, round: int = None,
-                            requirement_source: str = None):
+                            requirement_source: str = None, scenario_file: str = None):
     # Runs EVERY scenario the grammar can express `trials` times each (32 x 5
     # for old.bnf) and writes per-simulation telemetry for failure analysis.
     # async def for the same signal.alarm()/main-thread reason as
@@ -116,13 +122,24 @@ async def run_grid_endpoint(requirement: str = None, trials: int = 5,
         scenario = dsl.get_scenario()
         sut = system_under_test_from(dsl)
     constraints = extract_constraints(scenario)
+    phenotypes = None
+    if scenario_file:
+        # one scenario per line (scripts/analysis/grid_check.py writes these)
+        try:
+            with open(scenario_file) as f:
+                phenotypes = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+        except OSError as e:
+            return {"error": f"cannot read scenario_file: {e}", "STATUS": "NOT OK"}
+        if not phenotypes:
+            return {"error": f"scenario_file {scenario_file} lists no scenarios", "STATUS": "NOT OK"}
     run_id = new_run_id()
     try:
         result = run_grid(run_id, requirement=requirement, scenario_text=scenario,
                           constraints=constraints, trials=trials, record_video=record_video,
                           braking_mode=sut["braking_mode"], yolo_model=sut["perception_module"],
                           parent_run_id=parent_run_id, round_no=round,
-                          requirement_source=requirement_source)
+                          requirement_source=requirement_source,
+                          phenotypes=phenotypes, scenario_source=scenario_file)
         return {"run_id": run_id, "n_scenarios": len(result["scenarios"]),
                 "worst_phenotype": result["worst_phenotype"],
                 "system_under_test": sut, "STATUS": "OK"}

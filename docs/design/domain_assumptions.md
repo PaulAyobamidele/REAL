@@ -43,9 +43,10 @@ Operators: `<= < >= > == !=`. The vocabulary of quantities
 |---|---|---|---|---|
 | `fog_density` | scenario | % | grid | yes |
 | `pedestrian`, `dress`, `direction`, `distance` | scenario | - | grid | yes |
+| `approach_distance_m`, `crossing_trigger_m`, `pedestrian_min_speed_mps` | scenario | m, m, m/s | scene setting (scene v2; GE grammar `scene_v2.bnf`) | yes, from scene v2 |
 | `initial_separation_m` | run | m | trace `distance_m[0]` | yes (rounds 1-2 traces) |
-| `pedestrian_speed_mps` | run | m/s | template recording | **not yet** (step 2) |
-| `crossing_start_distance_m` | run | m | template recording | **not yet** (step 2) |
+| `pedestrian_speed_mps` | run | m/s | `simulations.csv` (scene v2) | yes, from scene v2 |
+| `crossing_start_distance_m` | run | m | `simulations.csv` (scene v2) | yes, from scene v2 |
 
 An assumption whose quantity is not measured in a run is reported as "not
 measured", never as held.
