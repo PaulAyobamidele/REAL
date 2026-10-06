@@ -211,7 +211,8 @@ MAINTAIN "Pedestrian Safety"
   speed, braking smoothness (peak deceleration / jerk), time-to-collision and
   whether the car moved on again. Soft goals such as
   `ensuring "resume_within_s <= 10"` are checked per encounter (met / missed);
-  runs before scene v2 report them as not measured. GE searches
+  runs before scene v2 report them as not measured. `tests/test_scene_compile.py`
+  builds the real scenes on a laptop (no CARLA) - run it before any Narval job. GE searches
   `scripts/templates/v2/scene_v2.bnf` (21,120 scenarios: numeric fog, car
   approach distance, pedestrian speed and crossing trigger, deliberately
   beyond the baseline assumptions); the grid keeps `old.bnf` (32). On Narval, `REAL_SEARCH=ge` runs GE

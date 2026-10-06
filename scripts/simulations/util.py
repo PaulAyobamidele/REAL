@@ -237,8 +237,15 @@ class MyMonitor(specification_monitor):
         pedestrian_speeds = [v for _, v in ped_series] if isinstance(ped_series, list) else []
         road_series = result.records.get("on_road", [])
         on_road = [bool(v) for _, v in road_series] if isinstance(road_series, list) else []
+
+        def series(name):
+            s = result.records.get(name, [])
+            return [float(v) for _, v in s] if isinstance(s, list) else []
         telemetry.end_simulation(rho=rho, distances=distances, speeds=speeds,
                                  pedestrian_speeds=pedestrian_speeds, on_road=on_road,
+                                 ego_headings=series("ego_heading"),
+                                 lane_headings=series("lane_heading"),
+                                 lane_offsets=series("lane_offset_m"),
                                  timestep=getattr(simulation, "timestep", None),
                                  termination=result.terminationReason)
         return rho

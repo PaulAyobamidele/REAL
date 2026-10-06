@@ -23,6 +23,7 @@ main thread - see api_app.py).
 """
 
 import csv
+import math
 import json
 import os
 from datetime import datetime, timezone
@@ -52,6 +53,7 @@ FIELDS = [
     "peak_decel_mps2", "peak_jerk_mps3", "min_ttc_s",
     "first_stop_step", "resumed", "resume_after_s", "resume_within_s",
     "left_road", "left_road_step",
+    "max_heading_off_lane_deg", "max_lane_offset_m",
     "recorded_at",
 ]
 
@@ -217,8 +219,18 @@ def log_brake(step, brake, ego_speed, dist_m):
     })
 
 
+def heading_off_lane_deg(ego_headings, lane_headings):
+    """Largest angle (degrees, 0-180) between the car's heading and the lane's
+    heading over the run; None if not recorded."""
+    pairs = list(zip(ego_headings or [], lane_headings or []))
+    if not pairs:
+        return None
+    return max(abs(math.degrees((e - l + math.pi) % (2 * math.pi) - math.pi)) for e, l in pairs)
+
+
 def end_simulation(rho, distances, speeds, timestep, termination="",
-                   detection_threshold=0.85, pedestrian_speeds=None, on_road=None):
+                   detection_threshold=0.85, pedestrian_speeds=None, on_road=None,
+                   ego_headings=None, lane_headings=None, lane_offsets=None):
     """Summarise one finished simulation, append it to simulations.csv and
     dump the full trace. Returns the CSV row (or None if no run is active).
 
@@ -303,11 +315,15 @@ def end_simulation(rho, distances, speeds, timestep, termination="",
         "crossing_trigger_m": scenario.get("crossing_trigger_m"),
         "pedestrian_min_speed_mps": scenario.get("pedestrian_min_speed_mps"),
         **motion_metrics(distances, speeds, pedestrian_speeds, timestep, on_road),
+        "max_heading_off_lane_deg": heading_off_lane_deg(ego_headings, lane_headings),
+        "max_lane_offset_m": max(lane_offsets) if lane_offsets else None,
         "recorded_at": datetime.now(timezone.utc).isoformat(),
     }
 
     _append_row(row)
-    _write_trace(row, distances, speeds, detections, brakes, pedestrian_speeds)
+    _write_trace(row, distances, speeds, detections, brakes, pedestrian_speeds,
+                 {"on_road": list(on_road or []), "ego_heading": list(ego_headings or []),
+                  "lane_heading": list(lane_headings or []), "lane_offset_m": list(lane_offsets or [])})
 
     _state["detections"] = []
     _state["brakes"] = []
@@ -328,7 +344,7 @@ def _append_row(row):
         writer.writerow(row)
 
 
-def _write_trace(row, distances, speeds, detections, brakes, pedestrian_speeds=None):
+def _write_trace(row, distances, speeds, detections, brakes, pedestrian_speeds=None, extra=None):
     name = f"{row['scenario_id']}_{row['sim_index']}.json"
     path = os.path.join(_state["run_dir"], TRACES_DIR, name)
     with open(path, "w") as f:
@@ -337,6 +353,7 @@ def _write_trace(row, distances, speeds, detections, brakes, pedestrian_speeds=N
             "distance_m": distances,
             "ego_speed": speeds,
             "pedestrian_speed": pedestrian_speeds or [],
+            **(extra or {}),
             "detections": detections,
             "brakes": brakes,
         }, f, indent=1)
