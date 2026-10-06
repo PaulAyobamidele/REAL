@@ -33,6 +33,9 @@ dependencies = [
     "dotmap>=1.3,<2",
 ]
 
+[project.scripts]
+real-demo = "scripts.demo:main"
+
 [project.optional-dependencies]
 # mlserver is deliberately NOT listed here: every mlserver release up to and
 # including 1.4.0.dev2 declares fastapi<=0.89.1, which conflicts with this

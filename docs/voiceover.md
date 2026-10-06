@@ -1,6 +1,8 @@
 # REAL — voice-over for the envisioned tool
 
-*A narration script for the tool's demo video (about 5 minutes). It describes
+*A narration script for the tool's demo video. **ICSE 2027 demo track: the
+video must be 3-5 minutes and on YouTube** (docs/paper/icse27_call.md); this
+script runs ~5 minutes, so trim to ~4:30 when recording. It describes
 the tool as we intend it to be when finished. Numbers marked **(real)** come
 from rounds 1–2 already run on Narval; everything else describes the target
 behaviour. The table at the end says which parts exist today and which are

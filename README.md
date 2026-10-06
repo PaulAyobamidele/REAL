@@ -7,6 +7,34 @@
 
 > An intelligent system for automated test case generation and requirement validation in autonomous vehicle scenarios using evolutionary computation and domain-specific languages.
 
+## ▶️ Try it in 5 minutes (no simulator, no GPU)
+
+The demo runs the whole REAL loop on two real rounds that were run in CARLA
+on the Narval cluster (`examples/demo_runs/`), then opens the review page:
+
+```bash
+docker build -t real-demo .
+docker run --rm -p 8501:8501 real-demo
+# open http://localhost:8501
+```
+
+To keep the generated files, add `-v "$PWD/demo_output:/work/demo_output"`.
+Without Docker (Python 3.8-3.10): `pip install -r requirements-demo.txt`, then
+`python -m scripts.demo --page`.
+
+What you see, in about a minute:
+1. the failure analysis of each round (round 1: 91 of 120 encounters failed;
+   round 2, with proportional braking: 4 of 128, but 113 passes were standoffs);
+2. the round-to-round comparison, one change at a time;
+3. round 2 re-judged against the baseline domain assumptions (held / broken /
+   not measured, and whether each assumption matters);
+4. a scripted review on the 5-screen review page — change any answer;
+5. the proposed next requirement, every change labelled [S] car, [R] promise,
+   [D] assumptions, [T] test.
+
+The full pipeline (scenario search in CARLA with YOLO on a GPU) runs from the
+Apptainer image on a Slurm cluster: see [infra/hpc/README.md](infra/hpc/README.md).
+
 ## 🌟 Overview
 
 REAL is a requirements engineering platform for adaptive learning that bridges the gap between natural language requirements and executable test scenarios for autonomous systems. By leveraging grammatical evolution, domain-specific languages (DSL), and simulation environments, REAL automatically generates and validates test cases for complex automotive scenarios to improve their requirements specification.
