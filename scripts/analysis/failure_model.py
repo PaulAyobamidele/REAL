@@ -77,6 +77,7 @@ NUMERIC_COLUMNS = [
     "approach_distance_m", "crossing_trigger_m", "pedestrian_min_speed_mps", "pedestrian_speed_mps", "crossing_start_distance_m",
     "peak_decel_mps2", "peak_jerk_mps3", "min_ttc_s", "first_stop_step",
     "resume_after_s", "resume_within_s", "left_road_step",
+    "max_heading_off_lane_deg", "max_lane_offset_m",
 ]
 
 # Slower than this (m/s) when closest to the pedestrian counts as "stopped".

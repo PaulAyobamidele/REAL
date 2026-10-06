@@ -1464,6 +1464,26 @@ valid baseline until the placement is fixed and re-smoked.
   "drives away" runs. Scratch scripts: compile_scene.py, try_variants.py,
   old_placement.py (session scratchpad; to be turned into a test).
 
+### 8.28 2026-10-06 — step 1: working placement, laptop check, off-road recordings
+
+- `scratch.temp`: `crossing = new Point on lane.centerline` +
+  `spot = new OrientedPoint at crossing, facing lane.orientation[crossing.position]`
+  (variant B of §8.27). New per-step records: `ego_heading`, `lane_heading`
+  (= `spot.heading`), `lane_offset_m` (`distance from ego to lane.centerline`),
+  to find why a car leaves the road. These record expressions can only be
+  exercised in a real simulation (smoke run 3).
+- telemetry: `max_heading_off_lane_deg`, `max_lane_offset_m` per row; the
+  traces keep `on_road`, `ego_heading`, `lane_heading`, `lane_offset_m` series.
+- **`tests/test_scene_compile.py` — the laptop check**: compiles the real
+  template against `Scenic/assets/maps/CARLA/Town01.xodr` with stand-ins for
+  `carla` / Redis / `torch.hub.load`, samples 3 scenes for each of LR/RL x
+  Short/Long and checks the car is within 20° of its lane, the pedestrian is
+  ahead at the chosen distance (±2.5 m), at its kerb and facing across. ~6 s.
+  Would have caught smoke run 2's error before submitting.
+  Staging copy rebuilt and rsynced (verified on Narval); **smoke run 3 = job
+  4779526** (`R_baseline.dsl`, 1 trial per scenario), submitted 2026-10-06.
+  157 tests in total. Rule from now on: run it before every Narval submission.
+
 ### 8.7 The iteration loop (stages 7-9) — original design
 
 Per round: requirement R_n → run (grid) → `simulations.csv` → report →

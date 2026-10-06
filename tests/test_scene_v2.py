@@ -173,3 +173,10 @@ def test_left_road_runs_are_a_test_defect_not_a_pass(tmp_path):
     assert any("OFF THE ROAD" in w for w in model["warnings"])
     _, md = report.write_report(str(tmp_path))
     assert "where the car left the road (a test defect, excluded)" in md
+
+
+def test_heading_off_lane_measure():
+    assert telemetry.heading_off_lane_deg([], []) is None
+    assert telemetry.heading_off_lane_deg([0.0, 0.1], [0.0, 0.0]) == pytest.approx(math.degrees(0.1))
+    # wraps around: 359 deg vs 1 deg is 2 deg apart, not 358
+    assert telemetry.heading_off_lane_deg([math.radians(359)], [math.radians(1)]) == pytest.approx(2.0)

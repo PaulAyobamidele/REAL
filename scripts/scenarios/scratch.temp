@@ -45,11 +45,12 @@ attrs = {"image_size_x": 640,
 
 ## DEFINING SPATIAL RELATIONS
 lane = Uniform(*network.lanes)
-# Everything is placed along the chosen lane's OWN direction (lane.orientation),
-# not the road's: in the scene-v2 smoke run (job 4354082) a car given
-# roadDirection could face against its lane, and FollowLaneBehavior turned it
-# over the kerb (Notes 8.25).
-spot = new OrientedPoint on lane.centerline, facing lane.orientation
+# Everything is placed along the chosen lane's OWN direction (lane.orientation).
+# `facing lane.orientation` is rejected by this Scenic (smoke run 2, job
+# 4385790), so the heading is read off the field at the sampled point.
+# Checked on the laptop by tests/test_scene_compile.py (Notes 8.27).
+crossing = new Point on lane.centerline
+spot = new OrientedPoint at crossing, facing lane.orientation[crossing.position]
 vending_spot = new OrientedPoint following lane.orientation from spot for -3
 
 _perception = {"step": -1, "confidence": 0.0}
@@ -119,6 +120,12 @@ record (distance from ego to pedestrian) as "pedestrian_distance"
 record pedestrian.speed as "pedestrian_speed"
 # Did the car stay on the road? A run where it leaves is a test defect, not a pass.
 record (ego.position in network.drivableRegion) as "on_road"
+# To find out why a car leaves the road (smoke run 1, Notes 8.25/8.27): its
+# heading, the lane's heading at the crossing point, and its distance from the
+# lane centre, every step.
+record ego.heading as "ego_heading"
+record spot.heading as "lane_heading"
+record (distance from ego to lane.centerline) as "lane_offset_m"
 <recording_statement>
 
 # REQUIREMENTS

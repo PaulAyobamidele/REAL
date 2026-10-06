@@ -111,6 +111,16 @@ rsync -avP --partial narval:scratch/real_project/artifacts/runs/<run_id>/ artifa
 python -m scripts.analysis.report artifacts/runs/<run_id>
 ```
 
+## Before every submission: the laptop check
+
+```bash
+sim_env/bin/python -m pytest -q tests/test_scene_compile.py   # ~6 s, no CARLA needed
+```
+
+It builds the real scene from the template with the Town01 map in the repo
+and checks the placement. Smoke run 2 (job 4385790) waited in the queue and
+then failed in 4 minutes on an error this catches (Notes §8.27-8.28).
+
 ## Scene v2 smoke run (roadmap M2.7, 2026-10-01)
 
 Scene v2 (Notes §8.19-8.20) changes the template the job re-reads per
