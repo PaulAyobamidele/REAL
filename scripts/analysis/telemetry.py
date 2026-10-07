@@ -54,6 +54,7 @@ FIELDS = [
     "first_stop_step", "resumed", "resume_after_s", "resume_within_s",
     "left_road", "left_road_step",
     "max_heading_off_lane_deg", "max_lane_offset_m",
+    "ped_lateral_start_m", "ped_lateral_end_m", "crossed",
     "recorded_at",
 ]
 
@@ -228,9 +229,28 @@ def heading_off_lane_deg(ego_headings, lane_headings):
     return max(abs(math.degrees((e - l + math.pi) % (2 * math.pi) - math.pi)) for e, l in pairs)
 
 
+# The pedestrian has crossed once it is this far past the lane centre on the
+# side opposite to where it started (m).
+CROSSED_PAST_CENTRE_M = 1.0
+
+
+def crossing(ped_laterals):
+    """(start, end, crossed) from the pedestrian's lateral positions (m from
+    the lane centre). crossed = it reached CROSSED_PAST_CENTRE_M beyond the
+    centre on the far side; None when not recorded (runs before scene v2.2)."""
+    xs = list(ped_laterals or [])
+    if not xs:
+        return None, None, None
+    start = xs[0]
+    side = 1 if start >= 0 else -1
+    crossed = any(x * side <= -CROSSED_PAST_CENTRE_M for x in xs)
+    return start, xs[-1], crossed
+
+
 def end_simulation(rho, distances, speeds, timestep, termination="",
                    detection_threshold=0.85, pedestrian_speeds=None, on_road=None,
-                   ego_headings=None, lane_headings=None, lane_offsets=None):
+                   ego_headings=None, lane_headings=None, lane_offsets=None,
+                   ped_laterals=None):
     """Summarise one finished simulation, append it to simulations.csv and
     dump the full trace. Returns the CSV row (or None if no run is active).
 
@@ -317,13 +337,15 @@ def end_simulation(rho, distances, speeds, timestep, termination="",
         **motion_metrics(distances, speeds, pedestrian_speeds, timestep, on_road),
         "max_heading_off_lane_deg": heading_off_lane_deg(ego_headings, lane_headings),
         "max_lane_offset_m": max(lane_offsets) if lane_offsets else None,
+        **dict(zip(("ped_lateral_start_m", "ped_lateral_end_m", "crossed"), crossing(ped_laterals))),
         "recorded_at": datetime.now(timezone.utc).isoformat(),
     }
 
     _append_row(row)
     _write_trace(row, distances, speeds, detections, brakes, pedestrian_speeds,
                  {"on_road": list(on_road or []), "ego_heading": list(ego_headings or []),
-                  "lane_heading": list(lane_headings or []), "lane_offset_m": list(lane_offsets or [])})
+                  "lane_heading": list(lane_headings or []), "lane_offset_m": list(lane_offsets or []),
+                  "ped_lateral_m": list(ped_laterals or [])})
 
     _state["detections"] = []
     _state["brakes"] = []

@@ -76,6 +76,7 @@ def analyse(run_dir, rules_path=None, requirement=None):
             })
 
     return {
+        "not_simulated": not_simulated(run_dir, df),
         "run_id": meta.get("run_id") or os.path.basename(os.path.normpath(run_dir)),
         "sampling": sampling_of(meta),
         "analysed_at": datetime.now(timezone.utc).isoformat(),
@@ -93,6 +94,23 @@ def analyse(run_dir, rules_path=None, requirement=None):
         "failure_model": model,
         "obstacles": obstacle_results,
     }
+
+
+def not_simulated(run_dir, df):
+    """Scenarios a grid / list run attempted (scenarios.csv) that left no
+    simulation row - e.g. CARLA could not create them (smoke run 3: 'no
+    simulation could be created in 3 attempts'). Never dropped silently."""
+    path = os.path.join(run_dir, "scenarios.csv")
+    if not os.path.exists(path):
+        return []
+    import csv
+    seen = set(df["scenario_id"].astype(str)) if "scenario_id" in df else set()
+    out = []
+    with open(path) as f:
+        for row in csv.DictReader(f):
+            if str(row.get("scenario_id")) not in seen:
+                out.append({"scenario_id": row.get("scenario_id"), "label": _label(row)})
+    return out
 
 
 def sampling_of(meta):
@@ -203,7 +221,13 @@ def to_markdown(analysis):
         f"{fm['n_encounters']} real encounters, {fm['n_no_encounter']} where the car never met the pedestrian "
         "(not counted as passes)"
         + (f", **{fm['n_left_road']} where the car left the road (a test defect, excluded)**"
-           if fm.get("n_left_road") else "") + ".")
+           if fm.get("n_left_road") else "")
+        + (f", **{fm['n_not_crossed']} where the pedestrian never crossed (a test defect, excluded)**"
+           if fm.get("n_not_crossed") else "") + ".")
+    if analysis.get("not_simulated"):
+        add(f"- **{len(analysis['not_simulated'])} scenario(s) could not be simulated** (the simulator "
+            "could not create them) and have no data: "
+            + "; ".join(f"#{s['scenario_id']} {s['label']}" for s in analysis["not_simulated"]) + ".")
     add(f"- {fm['failures']} of {fm['n_encounters']} encounters failed ({_pct(fm['failure_rate'])})"
         + (f"; with every distinct scenario counted once: {_pct(fm.get('failure_rate_scenarios'))}."
            if analysis.get("sampling") == "ge" else "."))
