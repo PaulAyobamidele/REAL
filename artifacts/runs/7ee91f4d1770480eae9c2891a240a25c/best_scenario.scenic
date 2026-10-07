@@ -15,26 +15,26 @@ weather = {
     "precipitation":0,
     "sun_azimuth_angle":80,
     "sun_altitude_angle":60,
-    "fog_density":<fog_density> 
+    "fog_density":0 
 }
 
 # Apply the weather conditions to the scenario
-param map = localPath('<carla_map_path>')
-param carla_map = '<carla_map_name>'
+param map = localPath('/artifacts/maps/Town01.xodr')
+param carla_map = 'Town01'
 model scenic.simulators.carla.model  # Here the definitions of all referenceables are defined (vehicle types, road library, etc) 
 import scenic.simulators.carla as carla_simulator
 param weather = weather
 # SCENARIO CONSTANTS 
 EGO_MODEL = "vehicle.tesla.model3"
-PEDESTRIAN_MODEL = "<pedestrian>"
+PEDESTRIAN_MODEL = "walker.pedestrian.0008"
 EGO_SPEED = 7.5
 SAFETY_DISTANCE = 10
 BRAKE_INTENSITY = 1.0
-PEDESTRIAN_MIN_SPEED = <pedestrian_min_speed_mps>   # CrossingBehavior's floor; it walks faster to meet the car
+PEDESTRIAN_MIN_SPEED = 2.0   # CrossingBehavior's floor; it walks faster to meet the car
 # Scene v2 (roadmap M2, Notes 8.19). All four come from util.build_scenario:
-CROSSING_TRIGGER_M = <crossing_trigger_m>   # pedestrian steps out once the car is this close (was a fixed 8 m)
-APPROACH_DISTANCE_M = <approach_distance_m>   # car starts this far before the crossing point (grid `distance` or GE setting)
-PEDESTRIAN_SIDE = <pedestrian_side>         # -1 = starts at the left kerb, +1 = right kerb (driver's view)
+CROSSING_TRIGGER_M = 100.0   # pedestrian steps out once the car is this close (was a fixed 8 m)
+APPROACH_DISTANCE_M = 20.0   # car starts this far before the crossing point (grid `distance` or GE setting)
+PEDESTRIAN_SIDE = -1         # -1 = starts at the left kerb, +1 = right kerb (driver's view)
 KERB_OFFSET_M = 3.0                         # lateral start, from the lane centre
 DETECTION_CONFIDENCE = 0.85   # full braking above this (baseline / paper MLSv1)
 CAUTION_CONFIDENCE = 0.30     # proportional braking starts here (paper M4)
@@ -88,35 +88,23 @@ def brake_now(brake):
 # Filled by scripts/simulations/util.py::build_scenario from the braking module
 # the requirement names after "performed by": emergency_braking (the baseline)
 # or proportional_braking (paper M4). See BRAKING_BEHAVIOURS there.
-<ego_behavior>
+behavior Exp_EgoBehaviour():
+    try:
+        do FollowLaneBehavior(target_speed = EGO_SPEED)
+    interrupt when perceive(ego.observations["front_rgb"]) > CAUTION_CONFIDENCE:
+        brake = adjust_based_on_confidence(perceive(ego.observations["front_rgb"]))
+        brake_now(brake)
+        take SetThrottleAction(0.0), SetBrakeAction(brake)
 
-# The pedestrian walks TOWARDS a point on the far kerb, steered by position
-# every step. With the stock CrossingBehavior (walk along the pedestrian's own
-# heading) it walked away from the road in CARLA (smoke run 3, job 4779526,
-# Notes 8.31): the heading is mirrored somewhere between Scenic and CARLA,
-# while positions are right. Speed is matched to the car as CrossingBehavior
-# does (it walks faster than min_speed to meet the car), so the two meet.
-behavior CrossToKerb(target, reference_actor, min_speed, threshold):
-    while (distance from self to reference_actor) > threshold:
-        wait
-    while (distance from self to target) > 0.5:
-        rel = (self.position - reference_actor.position).rotatedBy(-reference_actor.heading)
-        walk_speed = min_speed
-        if rel.y > 0 and reference_actor.speed > 0.1:
-            walk_speed = max(min_speed, abs(rel.x) * reference_actor.speed / rel.y)
-        take SetWalkingDirectionAction(angle from self to target), SetWalkingSpeedAction(walk_speed)
-    while True:
-        take SetWalkingSpeedAction(0)
 
 behavior PedestrianBehavior(min_speed=1, threshold=CROSSING_TRIGGER_M):
-    do CrossToKerb(far_kerb, ego, min_speed, threshold)
+    do CrossingBehavior(ego, min_speed, threshold)
 
 # The pedestrian starts at a kerb and walks straight across the car's lane
 # (heading +-90 deg); `spot` is the crossing point. Small jitter keeps
 # repeats from being identical. (Local frame: x to the right, y forward.)
-far_kerb = new Point at (-PEDESTRIAN_SIDE * (KERB_OFFSET_M + 1.0), 0, 0) relative to spot
 pedestrian = new Pedestrian at (PEDESTRIAN_SIDE * (KERB_OFFSET_M + Range(-0.3, 0.3)), Range(-1, 1), 0) relative to spot,
-    with heading (spot.heading + (<pedestrian_angle> deg)),
+    with heading (spot.heading + (-90 deg)),
     with regionContainedIn None,  # Allow the actor to spawn outside the driving lanes
     with behavior PedestrianBehavior(PEDESTRIAN_MIN_SPEED, CROSSING_TRIGGER_M),
     with blueprint PEDESTRIAN_MODEL
@@ -145,10 +133,7 @@ record (ego.position in network.drivableRegion) as "on_road"
 record ego.heading as "ego_heading"
 record spot.heading as "lane_heading"
 record (distance from ego to lane.centerline) as "lane_offset_m"
-# Where the pedestrian is across the road (m from the lane centre; - left, + right
-# in the car's direction): every run says whether it actually crossed.
-record ((pedestrian.position - spot.position).rotatedBy(-spot.heading)).x as "ped_lateral_m"
-<recording_statement>
+require monitor RecordingMonitor(ego, path=localPath(f"/artifacts/runs/7ee91f4d1770480eae9c2891a240a25c/frames"), recording_start=5, subsample=2)
 
 # REQUIREMENTS
 require (distance to intersection) > 30

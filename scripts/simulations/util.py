@@ -246,6 +246,7 @@ class MyMonitor(specification_monitor):
                                  ego_headings=series("ego_heading"),
                                  lane_headings=series("lane_heading"),
                                  lane_offsets=series("lane_offset_m"),
+                                 ped_laterals=series("ped_lateral_m"),
                                  timestep=getattr(simulation, "timestep", None),
                                  termination=result.terminationReason)
         return rho

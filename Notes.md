@@ -1525,6 +1525,48 @@ driving model / `scratch.temp` (today `torch.hub` YOLOv5 only) — roadmap M2b.2
   once run 2b and round 3 exist, add them to the bundle so the demo shows a
   D/S/R round.
 
+### 8.31 2026-10-06 — smoke run 3 (job 4779526): car fixed, pedestrian walks away
+
+Full write-up: `artifacts/runs/7ee91f4d…/smoke_check.md`. Passed: the scene
+builds on Narval, **the car stays on the road in all 30 recorded runs**, no
+no-encounter runs, distance works (20.0 / 35.3 m). Failed: (1) **the
+pedestrian walks away from the road** (video, zoomed frames: starts at the
+left road edge, walks left across the pavement) — so the run's 0 failures
+mean nothing; (2) scenarios 23 and 27 (Child, Dark, RL; #23 Short fog 50, #27 Long fog 0) could not be
+created by CARLA in 3 attempts and were **silently skipped**. Also: braking
+stop-starts with the detector's confidence (the source of 21.6 m/s² median
+deceleration — a lead about the braking rule); one harmless post-crossing
+lane-offset reading. The walking-direction mirror is between Scenic and
+CARLA, cause not pinned down from the code; fix proposed: walk towards a
+far-kerb target by position, record the pedestrian's lateral position and
+mark runs where it did not cross (test defect), and report scenarios that
+could not be simulated.
+
+### 8.32 2026-10-07 — scene v2.2: the pedestrian walks to the far kerb; crossing is measured
+
+- `scratch.temp`: `far_kerb = new Point at (-PEDESTRIAN_SIDE * (KERB_OFFSET_M + 1.0), 0, 0)
+  relative to spot`; new behaviour `CrossToKerb` (waits for the trigger, then
+  each step `SetWalkingDirectionAction(angle from self to target)` + the same
+  speed matching as CrossingBehavior; stops at the kerb) replaces
+  `CrossingBehavior`, which walks along the pedestrian's own heading — the
+  heading is mirrored between Scenic and CARLA, positions are not.
+  New record `ped_lateral_m` (pedestrian's position across the road, m from
+  the lane centre).
+- telemetry: `ped_lateral_start_m`, `ped_lateral_end_m`, `crossed` (reached
+  1.0 m past the lane centre on the far side; `crossing()`).
+- analysis: outcome `not_crossed` = a test defect, excluded from every rate,
+  with a warning; the report lists **scenarios that could not be simulated**
+  (in scenarios.csv but without any simulation row) — on smoke run 3 it lists
+  #23 (Child, Dark, RL, Short, fog 50) and #27 (Child, Dark, RL, Long, fog 0).
+- `infra/hpc/smoke_scenarios.txt`: 4 scenarios (Adult, Light, fog 0; LR/RL x
+  Short/Long) for a quick check with `REAL_SEARCH=list`.
+- 3 new tests; 162 in total; laptop check passes. If the pedestrian still
+  walks the wrong way, `crossed` = False will show it in every row, and the
+  direction gets flipped on that evidence.
+- Laptop check passed (4/4); staging rebuilt, rsynced, verified on Narval;
+  **smoke run 4 = job 4885691** (`REAL_SEARCH=list`, the 4 scenarios above, 1 trial,
+  `R_baseline.dsl`), submitted 2026-10-07.
+
 ### 8.7 The iteration loop (stages 7-9) — original design
 
 Per round: requirement R_n → run (grid) → `simulations.csv` → report →

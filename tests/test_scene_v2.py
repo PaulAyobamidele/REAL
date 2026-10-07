@@ -180,3 +180,47 @@ def test_heading_off_lane_measure():
     assert telemetry.heading_off_lane_deg([0.0, 0.1], [0.0, 0.0]) == pytest.approx(math.degrees(0.1))
     # wraps around: 359 deg vs 1 deg is 2 deg apart, not 358
     assert telemetry.heading_off_lane_deg([math.radians(359)], [math.radians(1)]) == pytest.approx(2.0)
+
+
+# --- scene v2.2: the pedestrian must actually cross (Notes 8.31-8.32) ---------
+
+def test_crossing_measure():
+    assert telemetry.crossing([]) == (None, None, None)
+    assert telemetry.crossing([-3.0, -1.0, 0.5, 2.0])[2] is True      # left kerb -> past centre
+    assert telemetry.crossing([-3.0, -3.5, -5.0])[2] is False         # walked away (smoke run 3)
+    assert telemetry.crossing([3.0, 1.0, -0.5])[2] is False           # only 0.5 m past centre
+    assert telemetry.crossing([3.0, -1.2])[2] is True
+
+
+def test_template_walks_to_the_far_kerb():
+    code, _ = util.build_scenario(PHENOTYPE)
+    assert "behavior CrossToKerb" in code and "do CrossToKerb(far_kerb, ego" in code
+    assert "far_kerb = new Point at (-PEDESTRIAN_SIDE * (KERB_OFFSET_M + 1.0), 0, 0) relative to spot" in code
+    assert "angle from self to target" in code
+    assert 'as "ped_lateral_m"' in code
+    parse_string(code, "exec", filename="scratch.temp")
+
+
+def test_not_crossed_and_not_simulated_are_reported(tmp_path):
+    from scripts.analysis import failure_model
+    write_synthetic_run(str(tmp_path), trials=1)
+    path = tmp_path / "simulations.csv"
+    rows = list(csv.DictReader(open(path)))
+    for r in rows[:2]:
+        r["crossed"] = "False"
+    kept = [r for r in rows if r["scenario_id"] != "5"]              # scenario 5 never ran
+    with open(path, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+        w.writeheader()
+        w.writerows(kept)
+    with open(tmp_path / "scenarios.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=["scenario_id", "pedestrian", "dress", "direction", "distance", "fog_density"])
+        w.writeheader()
+        for r in rows:
+            w.writerow({k: r[k] for k in w.fieldnames})
+    model = failure_model.build_failure_model(failure_model.load_simulations(str(tmp_path)))
+    assert model["n_not_crossed"] == 2
+    assert any("NEVER CROSSED" in x for x in model["warnings"])
+    analysis, md = report.write_report(str(tmp_path))
+    assert [s["scenario_id"] for s in analysis["not_simulated"]] == ["5"]
+    assert "could not be simulated" in md and "where the pedestrian never crossed" in md

@@ -20,6 +20,9 @@ Three questions are answered:
        no_encounter         the car never came near the pedestrian (never within
                             NO_ENCOUNTER_M and never detected) - NOT a pass;
                             excluded from all rates and reported separately
+       not_crossed          the pedestrian never crossed the road (scene v2.2
+                            records it) - a defect of the test, excluded from
+                            all rates like left_road
        left_road            the car left the drivable area (scene v2 records
                             it) - a defect of the test, NOT a pass or a
                             failure; excluded from all rates like no_encounter
@@ -64,7 +67,7 @@ def _banded(df, param):
     mid = BANDS[param]
     return num.map(lambda v: None if pd.isna(v) else (f"<= {mid:g}" if v <= mid else f"> {mid:g}"))
 
-BOOL_COLUMNS = ["passed", "stopped", "resumed", "left_road"]
+BOOL_COLUMNS = ["passed", "stopped", "resumed", "left_road", "crossed"]
 NUMERIC_COLUMNS = [
     "rho", "min_distance_m", "min_distance_step", "ego_speed_at_min_distance",
     "steps", "timestep_s", "duration_s", "ego_speed_max", "ego_speed_final",
@@ -77,7 +80,7 @@ NUMERIC_COLUMNS = [
     "approach_distance_m", "crossing_trigger_m", "pedestrian_min_speed_mps", "pedestrian_speed_mps", "crossing_start_distance_m",
     "peak_decel_mps2", "peak_jerk_mps3", "min_ttc_s", "first_stop_step",
     "resume_after_s", "resume_within_s", "left_road_step",
-    "max_heading_off_lane_deg", "max_lane_offset_m",
+    "max_heading_off_lane_deg", "max_lane_offset_m", "ped_lateral_start_m", "ped_lateral_end_m",
 ]
 
 # Slower than this (m/s) when closest to the pedestrian counts as "stopped".
@@ -97,7 +100,7 @@ DEFAULT_MARGIN_M = 5.0
 FAILURE_TYPES = ["never_detected", "detected_not_braked", "detected_too_late",
                  "brake_released", "braking_insufficient", "stopped_too_close"]
 PASS_TYPES = ["passed", "passed_stalled"]
-NOT_ENCOUNTERS = ["no_encounter", "left_road"]
+NOT_ENCOUNTERS = ["no_encounter", "left_road", "not_crossed"]
 OUTCOMES = PASS_TYPES + NOT_ENCOUNTERS + FAILURE_TYPES
 
 
@@ -164,6 +167,8 @@ def classify_failure(row):
     """Name how one simulation ended (see module docstring)."""
     if row.get("left_road") is True:
         return "left_road"
+    if row.get("crossed") is False:
+        return "not_crossed"
     min_d = _num(row.get("min_distance_m"))
     did_react = reacted(row)
 
@@ -302,9 +307,14 @@ def timing_summary(df):
     }
 
 
-def sanity_warnings(df, by_param, n_no_encounter=0, n_stalled=0, n_left_road=0):
+def sanity_warnings(df, by_param, n_no_encounter=0, n_stalled=0, n_left_road=0, n_not_crossed=0):
     """Plain-language warnings about the data itself (not about the car)."""
     warnings = []
+    if n_not_crossed:
+        warnings.append(
+            f"{n_not_crossed} simulation(s) where the PEDESTRIAN NEVER CROSSED the road. Nobody was "
+            "in the car's path, so these say nothing about the car: excluded from every rate. "
+            "A defect of the test scene - fix it before reading anything else in this report.")
     if n_left_road:
         warnings.append(
             f"{n_left_road} simulation(s) ended with the car OFF THE ROAD. That is a defect of "
@@ -359,11 +369,13 @@ def build_failure_model(df):
     by_scenario = failure_rate_by_scenario(df)
     n_no_enc = int((df["failure_type"] == "no_encounter").sum())
     n_left_road = int((df["failure_type"] == "left_road").sum())
+    n_not_crossed = int((df["failure_type"] == "not_crossed").sum())
     n_stalled = int((df["failure_type"] == "passed_stalled").sum())
     return {
         "n_simulations": int(len(df)),
         "n_no_encounter": n_no_enc,
         "n_left_road": n_left_road,
+        "n_not_crossed": n_not_crossed,
         "n_encounters": int(len(enc)),
         "n_scenarios": int(df["scenario_id"].nunique()) if len(df) else 0,
         "failures": int(enc["failed"].sum()),
@@ -378,5 +390,5 @@ def build_failure_model(df):
         "timing": timing_summary(enc),
         "by_parameter": by_param.to_dict(orient="records"),
         "by_scenario": by_scenario.to_dict(orient="records"),
-        "warnings": sanity_warnings(enc, by_param, n_no_enc, n_stalled, n_left_road),
+        "warnings": sanity_warnings(enc, by_param, n_no_enc, n_stalled, n_left_road, n_not_crossed),
     }
