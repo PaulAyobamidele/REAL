@@ -35,7 +35,7 @@ def test_scene_settings_both_directions_cross_and_distance_matters():
 
 def test_build_scenario_writes_scene_v2_and_parses():
     code, params = util.build_scenario(PHENOTYPE)
-    assert "CROSSING_TRIGGER_M = 100" in code and "APPROACH_DISTANCE_M = 35" in code
+    assert "CROSSING_TRIGGER_M = 0.0" in code and "CROSSING_TIMEOUT_S = 6.0" in code and "APPROACH_DISTANCE_M = 35" in code
     assert "PEDESTRIAN_SIDE = -1" in code and "with heading (spot.heading + (-90 deg))" in code
     assert "facing lane.orientation" in code and "following lane.orientation from spot" in code
     code_lines = [l for l in code.splitlines() if not l.lstrip().startswith("#")]
@@ -45,7 +45,7 @@ def test_build_scenario_writes_scene_v2_and_parses():
     assert "require ego.lane == lane" in code
     assert 'record pedestrian.speed as "pedestrian_speed"' in code
     assert "THRESHOLD" not in code and "(distance to spot) > 30" not in code
-    assert params["approach_distance_m"] == 35 and params["crossing_trigger_m"] == 100
+    assert params["approach_distance_m"] == 35 and params["crossing_trigger_m"] == 0
     parse_string(code, "exec", filename="scratch.temp")
 
 
@@ -198,6 +198,10 @@ def test_template_walks_to_the_far_kerb():
     assert "far_kerb = new Point at (-PEDESTRIAN_SIDE * (KERB_OFFSET_M + 1.0), 0, 0) relative to spot" in code
     assert "angle from self to target" in code
     assert 'as "ped_lateral_m"' in code
+    # step out to meet the car (threshold 0), with a timeout (Notes 8.33)
+    assert "rel.y / max(reference_actor.speed, 0.1) <= abs(rel.x) / min_speed" in code
+    assert "do CrossToKerb(far_kerb, ego, min_speed, threshold, CROSSING_TIMEOUT_S)" in code
+    assert util.scene_settings("LR", "Short")["crossing_timeout_s"] == util.CROSSING_TIMEOUT_S
     parse_string(code, "exec", filename="scratch.temp")
 
 

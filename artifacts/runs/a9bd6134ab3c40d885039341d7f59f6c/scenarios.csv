@@ -1,0 +1,5 @@
+scenario_id,phenotype,pedestrian,dress,direction,distance,fog_density,approach_distance_m,pedestrian_min_speed_mps,crossing_trigger_m,total,passed,failed,pct,seed
+0,A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 0},Adult,Light,LR,Short,0,,,,1,1,0,100.0,42
+1,A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 0},Adult,Light,RL,Short,0,,,,1,1,0,100.0,43
+2,A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 0},Adult,Light,LR,Long,0,,,,1,1,0,100.0,44
+3,A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 0},Adult,Light,RL,Long,0,,,,1,1,0,100.0,45

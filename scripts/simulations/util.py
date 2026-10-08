@@ -38,9 +38,16 @@ SCENE_VERSION = 2
 DIRECTIONS = {"LR": {"pedestrian_side": -1, "pedestrian_angle": -90},
               "RL": {"pedestrian_side": 1, "pedestrian_angle": 90}}
 APPROACH_DISTANCE_M = {"Short": 20, "Long": 35}
-# The pedestrian steps out once the car is this close. Large = at once:
-# CrossingBehavior then paces the walk to meet the car (no built-in standoff).
-DEFAULT_CROSSING_TRIGGER_M = 100
+# When the pedestrian steps out. 0 = "meet the car": as soon as the car will
+# reach the pedestrian's line no sooner than the pedestrian reaches the car's
+# path, so both arrive together (the default; smoke run 4 showed that
+# stepping out at once - the earlier default of 100 m - empties the road
+# before the car arrives, Notes 8.33). > 0 = once the car is that close (m);
+# the GE grammar varies it (8-100 m).
+DEFAULT_CROSSING_TRIGGER_M = 0
+# ... and it steps out after this long anyway (s), so a car that stops far
+# back cannot freeze the scene into a standoff.
+CROSSING_TIMEOUT_S = 6
 DEFAULT_PEDESTRIAN_MIN_SPEED_MPS = 2.0
 # Settings a scenario may give as numbers (scripts/templates/v2/scene_v2.bnf,
 # the GE grammar); old.bnf scenarios give `distance` and use the defaults.
@@ -60,7 +67,7 @@ def scene_settings(direction, distance=None, crossing_trigger_m=None,
         if distance not in APPROACH_DISTANCE_M:
             raise ValueError(f"unknown distance {distance!r} (expected {sorted(APPROACH_DISTANCE_M)})")
         approach_distance_m = APPROACH_DISTANCE_M[distance]
-    return dict(DIRECTIONS[direction],
+    return dict(DIRECTIONS[direction], crossing_timeout_s=float(CROSSING_TIMEOUT_S),
                 approach_distance_m=float(approach_distance_m),
                 crossing_trigger_m=float(DEFAULT_CROSSING_TRIGGER_M if crossing_trigger_m is None
                                          else crossing_trigger_m),

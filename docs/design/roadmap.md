@@ -9,6 +9,8 @@ deadline, Friday 23 October 2026 (AoE)** — see the section below and
 
 ## ICSE 2027 submission plan (deadline Fri 23 Oct 2026, AoE)
 
+**Detailed sub-plans, owners and a day-by-day schedule: [docs/paper/master_plan.md](../paper/master_plan.md) (2026-10-07).**
+
 Deliverables: a 4-page IEEE paper **including references**, a 3-5 min YouTube
 video, and the tool in a form reviewers can run **without building it**.
 
