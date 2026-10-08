@@ -7,7 +7,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
-#SBATCH --time=03:30:00
+#SBATCH --time=05:00:00
 #SBATCH --job-name=real-av-carla
 #SBATCH --output=%x-%j.out
 
@@ -72,12 +72,12 @@ print(f"[smoke_test] {endpoint} with " + str({k: v for k, v in params.items() if
 resp = requests.get(
     f"http://127.0.0.1:7999/{endpoint}",
     params=params,
-    # Per-scenario overhead (Scenic compile + YOLO reload, not just the 5
-    # CARLA simulations) ran ~2-3 min/scenario in job 3564897, so 32
-    # scenarios need ~1.5-2 h plus one extra recorded run for the video.
-    # Match the job's --time budget (3.5 h = 12600 s, leaving ~10 min for
-    # CARLA/MLflow startup and shutdown).
-    timeout=12000,
+    # Per scenario: ~2 min start-up (Scenic compile + YOLO reload) plus
+    # ~0.3-0.6 min per simulation on scene v2 (runs last up to 25 s), so a
+    # 32 x 5 grid needs ~2.5-3 h (Notes 8.34). Match the job's --time budget
+    # (5 h = 18000 s, raised from 3.5 h on 2026-10-08), leaving ~10 min for
+    # CARLA/MLflow startup and shutdown.
+    timeout=17400,
 )
 print(resp.json())
 PYEOF

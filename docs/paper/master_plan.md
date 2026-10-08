@@ -24,14 +24,14 @@ list. Every sub-plan below serves one of these.
 | A1 | Smoke run 4 (job 4885691): 4 scenarios, check `crossed` for each + video frames | N, C | Oct 7 | all 4 cross, car on road; result in its `smoke_check.md` |
 | A2 | If they walk the wrong way: flip the direction (one line), laptop check, re-run A1 | C | Oct 7-8 | as A1 |
 | A3 | Full smoke run (32 x 1): crossed in all, car on road, no silent gaps, braking values plausible | N, C | Oct 8 | `smoke_check.md` says pass |
-| A4 | Investigate the 2 scenarios CARLA could not create (Child/Dark/RL): retry or report as a known limit | C | Oct 8-9 | fixed, or stated in the report and the paper |
+| A4 ✅ (Oct 8: rejected roads, 3-attempt budget at 1 trial; Notes §8.36) | Investigate the 2 scenarios CARLA could not create (Child/Dark/RL): retry or report as a known limit | C | Oct 8-9 | fixed, or stated in the report and the paper |
 | A5 | Tag `scene-v2-valid` | P | Oct 8 | tag pushed |
 
 ## Sub-plan B — The evidence (Table 1 of the paper)
 
 | # | Task | Owner | Date | Done when |
 |---|---|---|---|---|
-| B1 | Pre-register predictions for run 2b and the GE run in Notes | C | Oct 8 | entries dated before the job ids |
+| B1 ✅ (Oct 8, Notes §8.37) | Pre-register predictions for run 2b and the GE run in Notes | C | Oct 8 | entries dated before the job ids |
 | B2 | **Run 2b** — round-2 car, fixed scene, grid 32 x 5, `R_baseline.dsl` | N | submit Oct 8 | pulled, reported, compared with round 2 |
 | B3 | **First GE run** — scene_v2.bnf, ~12 x 4 x 1, `R_baseline.dsl` | N | submit Oct 8-9 | pulled, reported (with the GE caveat) |
 | B4 | GE grid check — 4 worst + 4 safe x 3 | N | Oct 10 | `grid_check_comparison.md` |
@@ -39,7 +39,7 @@ list. Every sub-plan below serves one of these.
 | B6 | **Round 3** — R1 from B5, parent = 2b | N | submit Oct 11 | pulled; compare 2b → 3; each obstacle resolved / masked / shifted |
 | B7 | D and R changes evaluated by re-analysing 2b (no new run) | C | Oct 11 | labelled subfolder in 2b |
 | B8 | Optional, only if B2-B6 are in by Oct 13: YOLO26s run (model layer) | C, N | Oct 13-15 | one extra Table 1 row |
-| B9 | Carbon footprint: GPU-hours of every job x A100 power → kWh, CO2e (Québec grid) | C | Oct 14 | one sentence + numbers in Notes |
+| B9 ✅ (Oct 8, to date: 8.4 GPU-h, ≤ 5.6 kWh; recompute at the end) | Carbon footprint: GPU-hours of every job x A100 power → kWh, CO2e (Québec grid) | C | Oct 14 | one sentence + numbers in Notes |
 | B10 | Freeze the evidence: every number in the paper traced to a file | C | Oct 15 | a "numbers → source" table in docs/paper/ |
 
 ## Sub-plan C — The tool as reviewers will meet it
@@ -61,9 +61,9 @@ list. Every sub-plan below serves one of these.
 | # | Task | Owner | Date | Done when |
 |---|---|---|---|---|
 | D1 | Authors, order, affiliations, ORCIDs | P, S | **Oct 9** | list fixed |
-| D2 | LaTeX skeleton: IEEEtran `10pt,conference`, sections from outline.md, page budget per section | C | Oct 9 | compiles to ≤ 4 pages with placeholders |
+| D2 ✅ (Oct 8; compile on Overleaf) | LaTeX skeleton: IEEEtran `10pt,conference`, sections from outline.md, page budget per section | C | Oct 9 | compiles to ≤ 4 pages with placeholders |
 | D3 | **One-sentence claim** + 3 contributions beyond the research paper (from the 2026-10-07 paragraph) | P, C | Oct 9 | agreed with S |
-| D4 | Fig. 1 architecture / workflow (requirement → search → simulator → validity → obstacles → review → R1 → next round) | C | Oct 10 | vector figure |
+| D4 ✅ (Oct 8; figures/make_fig1.py) | Fig. 1 architecture / workflow (requirement → search → simulator → validity → obstacles → review → R1 → next round) | C | Oct 10 | vector figure |
 | D5 | §1 users + challenge, §2 background, §6 related work (~15 refs) | C draft, P edit | Oct 10-12 | drafted |
 | D6 | §3 tool and workflow, with Fig. 2 review-page screenshot | C draft, P edit | Oct 12 | drafted |
 | D7 | §4 case study + Table 1 (rounds 1, 2, 2b, GE, 3); the failure-shift and scene-defect stories | C draft, P edit | Oct 13-14 | drafted with real numbers |
@@ -96,6 +96,36 @@ list. Every sub-plan below serves one of these.
 | F4 | After submission: freeze the tag; prepare the AE package for after acceptance | P, C | Oct 23+ |
 
 ---
+
+## Experimental timeline (status 2026-10-08)
+
+Timing from the saved runs: a scenario costs ~2 min to start (Scenic compile,
+YOLO load) plus ~0.3-0.6 min per simulation (scene v2 runs last up to 25 s).
+Rounds 1-2 (5 trials per scenario, 10 s cap): 0.55 min per simulation, 1.5 h
+per run. Smoke runs (1 trial per scenario): ~2.5 min per simulation. Narval
+queue waits so far: 1-6 h per job. Job limit 3.5 h.
+
+| # | Run | Size | Est. run time | Status | Purpose |
+|---|---|---|---|---|---|
+| 1 | Round 1 (job 3830258) | 32 x 5 = 160 | 1.5 h | **done** | baseline, scene v1 |
+| 2 | Round 2 (job 3843349) | 160 | 1.5 h | **done** | [S] proportional braking, scene v1 |
+| 3 | Smoke 1 (4354082) | 32 | 1.4 h | done — car left the road | scene v2 check |
+| 4 | Smoke 2 (4385790) | — | 4 min | done — Scenic error | scene v2.1 check |
+| 5 | Smoke 3 (4779526) | 32 | 1.4 h | done — pedestrian walked away | scene v2.1 check |
+| 6 | Smoke 4 (4885691) | 4 | 15 min | done — crosses, but too early | scene v2.2 check |
+| 7 | **Smoke 5 (4966321)** | 4 | 15 min | **queued** | scene v2.3: do they meet? |
+| 8 | Full smoke | 32 x 1 | ~1.4 h | next | scene valid → tag `scene-v2-valid` |
+| 9 | **Run 2b** | 32 x 5 = 160 | ~2.5-3 h (job limit raised to 5 h, Notes §8.34) | planned | round-2 car on the fixed scene |
+| 10 | **GE run** | ~12 x 4 x 1 ≈ 60 new scenarios | ~2.5 h | planned | search beyond the assumptions |
+| 11 | GE grid check | 8 x 3 = 24 | ~30-40 min | planned | confirm GE's leads |
+| 12 | **Round 3** | 160 | ~2.5-3 h | planned (after the review) | [D][R][S] together |
+| 13 | YOLO26 run (optional) | 160 | ~3 h | optional | model layer |
+
+Where we are: the loop has run for real twice (rounds 1-2, scene v1). The
+scene validation is in its last step (runs 3-7; 8 to go). **None of the
+paper's fixed-scene runs (9-12) has started yet.** Critical path:
+7 → 8 → (9 ‖ 10) → 11 + review → 12; with typical queue waits that is
+Oct 8-9 (7-8), Oct 9-10 (9, 10), Oct 10-11 (11, review), Oct 11-13 (12).
 
 ## Day by day
 
