@@ -1583,7 +1583,112 @@ so both arrive together; `> 0` keeps the distance trigger (GE grammar 8-100 m);
 far back cannot freeze the scene (and the resume soft goal gets tested).
 `run_meta.scene` records the meaning and the timeout. 162 tests; laptop
 check passes. `simulation().timestep` / `currentTime` in the behaviour are
-only exercised on Narval.
+only exercised on Narval. Committed `83a8e4b`; laptop check passed; staging
+rsynced and verified; **smoke run 5 = job 4966321** (the 4 quick-check
+scenarios, 1 trial, `R_baseline.dsl`), submitted 2026-10-08.
+  Its estimated start was 2026-10-09 20:38 (3.5 h limit = slower queue tier), so
+  it was cancelled (Paul's go-ahead) and resubmitted with `--time=00:45:00` as
+  **job 4968144** (same scenarios and settings).
+
+### 8.34 2026-10-08 — run times on scene v2; job limit raised to 5 h
+
+From the saved runs: a scenario costs ~2 min to start (Scenic compile, YOLO
+load) plus ~0.3-0.6 min per simulation (scene-v2 runs last up to 25 s; was
+10 s). Rounds 1-2 (5 trials per scenario): 0.55 min per simulation, 1.5 h
+per run; smoke runs (1 trial per scenario): ~2.5 min per simulation. A scene-v2
+32 x 5 grid (run 2b, round 3) therefore needs ~2.5-3 h — too tight for the 3.5 h
+limit. `run_real_av.slurm`: `--time=05:00:00` and the request `timeout`
+12000 → 17400 s. Both old and new limits are above 3 h, so the job stays in
+the same Narval queue tier; Slurm charges elapsed time, not requested time.
+Experimental timeline: docs/paper/master_plan.md.
+
+### 8.35 2026-10-08 — carbon footprint so far (task B9)
+
+Source: `sacct -u paulad -S 2026-08-01 -X` on Narval (Slurm's own accounting,
+elapsed time per job). All REAL GPU jobs to date (2026-09-19 → 2026-10-07):
+**22 jobs (16 completed), 8.41 GPU-hours** on NVIDIA A100-SXM4-40GB (1 GPU,
+8 CPU cores, 32 GB per job).
+
+Energy, as an upper bound: 8.41 h x 0.40 kW (the A100's 400 W power limit) =
+3.4 kWh; with the job's CPU share, ~0.55 kW → 4.6 kWh; with a data-centre
+overhead (PUE) of 1.2 → **≤ 5.6 kWh**. Assumptions to verify before quoting
+in the paper: the PUE of Narval's data centre (1.2 is a placeholder), and the
+carbon intensity of Québec's grid (hydro-dominated, on the order of a few g
+CO2e/kWh — take the figure from Hydro-Québec or Canada's National Inventory
+Report and cite it). At even 10 g/kWh that is **< 0.06 kg CO2e**; at a world
+average of ~475 g/kWh it would be ~2.6 kg. The remaining planned runs (2b, GE,
+grid check, round 3, maybe YOLO26) add roughly 12-15 GPU-hours. The Docker
+demo needs no GPU at all. Recompute with the final job list for the paper.
+
+### 8.36 2026-10-08 — why 2 scenarios "could not be created" (task A4)
+
+`util.falsifier.falsify(num_test, max_attempts=3*num_test)`: every attempt
+calls VerifAI's `run_server()`, which samples a **new** scene; Scenic returns
+no simulation (rho None) when it rejects one — `RejectSimulationException`
+/ `GuardViolation` from a requirement violated *during* the run. The template's
+`require always (ego.laneSection._slowerLane is None)` and `... _fasterLane
+is None` are checked at every step, so a road whose next section gains a lane
+rejects the simulation. With **1 trial per scenario the budget is 3 attempts**:
+scenarios 23 and 27 drew 3 such roads in a row (the per-scenario seed makes the
+sequence repeatable). Real runs use 5 trials = 15 attempts, so giving up is
+much less likely, and the report now lists any scenario without data
+(§8.32). Not a spawn or blueprint problem (the same Child/Dark/RL settings
+ran in other scenarios). Possible improvement, not made: log Scenic's
+rejection reason (verbosity) and count rejected attempts per scenario.
+
+### 8.37 Run 2b and the first GE run — pre-registered predictions (written 2026-10-08, before either is submitted)
+
+Both assume the scene passes its checks (smoke run 5, job 4968144, and the
+full 32-scenario smoke run); if the scene changes again before they run, this
+entry is revised **with a dated note**, not silently.
+
+**Run 2b — design.** Round 2's system (`proportional_braking` + `yolov5s`),
+scene v2.3 ("meet the car", 6 s timeout, car on the pedestrian's lane, real
+crossing both ways), `docs/examples/R_baseline.dsl` (D0 + soft goals),
+`old.bnf`, 32 scenarios x 5 trials, seed 42. Differences from round 2 that
+`compare.py` must list and nothing else: scene / template, step cap (25 s),
+requirement text (the added `assuming` / `ensuring` only change how runs are
+judged). Comparable metric: failure rate over valid encounters, with test
+defects (no encounter, left road, not crossed, not simulated) reported apart.
+
+**Run 2b — predictions.**
+1. Test defects are rare: no-encounter + left-road + not-crossed ≤ 5 % of
+   simulations; no scenario without data.
+2. Failures stay low but rise above round 2's 3 %: between 3 % and 20 % of
+   valid encounters — the car starts braking at first sight (median first
+   brake ≥ 15 m), but the pedestrian now steps into its path when it is due.
+3. The standoff persists: `resume_within_s <= 10` missed in ≥ 30 % of
+   in-scope encounters, because proportional braking holds while a person
+   is visible above 30 % confidence; StandoffUnnecessaryStop stays supported.
+4. **The direction effect disappears**: |LR − RL| < 15 points (round 1's
+   +24 points was a scene artefact, §8.19). This is the key test of that
+   diagnosis.
+5. Distance now matters: Short (20 m) has at least as many failures as Long
+   (35 m).
+6. Assumptions: `fog_density <= 50` and `initial_separation_m >= 15` are
+   **untested** (the grid never breaks them); `pedestrian_speed_mps <= 3` is
+   broken in a minority of runs (speed matching) → insufficient data or not
+   load-bearing.
+7. Braking is not smooth: median peak deceleration > 8 m/s² (the stop-start
+   seen in smoke runs 3-4).
+
+**GE run — design.** Same system and requirement; `v2/scene_v2.bnf`
+(21,120 scenarios, settings beyond D0); population 12, generations 4,
+1 trial per new scenario (≈ 60 simulations); seed 42.
+
+**GE run — predictions.**
+1. GE concentrates on hard settings: among its failing scenarios, approach
+   distance ≤ 15 m and crossing trigger ≤ 15 m are over-represented compared
+   with the grammar's share (2/8 and 2/5).
+2. The best fitness improves: the lowest pass rate found in the last
+   generation is no higher than in generation 0.
+3. Breaking assumptions goes with more failures: `initial_separation_m >= 15`
+   comes out **load-bearing** if both sides have ≥ 10 encounters (otherwise
+   insufficient data); fog > 50 goes with more failures than fog ≤ 50.
+4. Grid check: at least 3 of GE's 4 worst scenarios still fail at least half
+   the time on balanced repeats.
+
+What would falsify the scene work: prediction 1 or 4 of run 2b failing.
 
 ### 8.7 The iteration loop (stages 7-9) — original design
 

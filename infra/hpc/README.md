@@ -102,7 +102,7 @@ If your `~/.ssh/config` has `ControlMaster auto` + `ControlPersist` for `narval`
 sbatch --export=ALL,REAL_REQUIREMENT_FILE=artifacts/runs/<parent>/R1.dsl,REAL_PARENT_RUN_ID=<parent>,REAL_ROUND=3 run_real_av.slurm
 ```
 
-(The file must be present in the source overlay - rebuild the staging copy and rsync it first, section 4b. A requirement that does not parse is now rejected by the API with Lark's line/column message instead of failing silently - see "Real run history", obstacle 3.) The modules the requirement names after `performed by` select the braking behaviour and perception model (see README "Requirement language"). The GE search is still available via `/get_testcases?sample=false&population_size=..&max_generations=..`. It runs `apptainer exec --nv --unsquash` - see "Real run history" for why `--unsquash` is required, not optional. `--time` is 3:30 (Narval's ≤3 h GPU queue tier is faster to schedule; drop to 2:59 if the queue is slow and lower the request `timeout` accordingly).
+(The file must be present in the source overlay - rebuild the staging copy and rsync it first, section 4b. A requirement that does not parse is now rejected by the API with Lark's line/column message instead of failing silently - see "Real run history", obstacle 3.) The modules the requirement names after `performed by` select the braking behaviour and perception model (see README "Requirement language"). The GE search is still available via `/get_testcases?sample=false&population_size=..&max_generations=..`. It runs `apptainer exec --nv --unsquash` - see "Real run history" for why `--unsquash` is required, not optional. `--time` is **5:00** (raised from 3:30 on 2026-10-08: a scene-v2 grid of 32 x 5 needs ~2.5-3 h). Both were already above 3 h, so the job stays in the same Narval queue tier; Slurm charges the time actually used, not the time requested. If you change `--time`, change the request `timeout` in the job script with it (now 17400 s). Only a job of ≤ 3 h would reach the faster tier (drop to 2:59 and lower `timeout` for short runs such as smoke checks).
 
 Output lands in `real-av-carla-<jobid>.out` in the submission directory and under `$SCRATCH/real_project/artifacts/runs/<run_id>/`: `run_meta.json`, `scenarios.csv`, `simulations.csv`, `traces/*.json`, `best_scenario.scenic`, `best_scenario.mp4`. `simulations.csv`/`scenarios.csv` grow as scenarios finish, so partial results can be pulled and analysed while the job runs:
 
@@ -160,7 +160,7 @@ a run cut off by `--time` still records what it tested; `simulations.csv` and
 `traces/` grow as it goes. GE samples scenarios unevenly - see the analysis
 caveat in the report. Timing: a scene-v2 simulation took ~3 min in the smoke
 run (runs last up to 25 s), so keep population x (generations + 1) x trials
-near 60 for one 3.5 h job (e.g. 12 x 4 x 1).
+near 60-80 for one 5 h job (e.g. 12 x 4 x 1).
 
 To confirm GE's leads on balanced repeats (grid check, 4 worst + 4 safe x 3 = 24 simulations):
 
