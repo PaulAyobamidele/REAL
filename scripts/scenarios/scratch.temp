@@ -32,7 +32,8 @@ SAFETY_DISTANCE = 10
 BRAKE_INTENSITY = 1.0
 PEDESTRIAN_MIN_SPEED = <pedestrian_min_speed_mps>   # CrossingBehavior's floor; it walks faster to meet the car
 # Scene v2 (roadmap M2, Notes 8.19). All four come from util.build_scenario:
-CROSSING_TRIGGER_M = <crossing_trigger_m>   # pedestrian steps out once the car is this close (was a fixed 8 m)
+CROSSING_TRIGGER_M = <crossing_trigger_m>   # > 0: step out once the car is this close (m); 0: "meet the car" (see CrossToKerb)
+CROSSING_TIMEOUT_S = <crossing_timeout_s>   # step out after this long anyway, so a stopped car cannot freeze the scene
 APPROACH_DISTANCE_M = <approach_distance_m>   # car starts this far before the crossing point (grid `distance` or GE setting)
 PEDESTRIAN_SIDE = <pedestrian_side>         # -1 = starts at the left kerb, +1 = right kerb (driver's view)
 KERB_OFFSET_M = 3.0                         # lateral start, from the lane centre
@@ -95,9 +96,22 @@ def brake_now(brake):
 # heading) it walked away from the road in CARLA (smoke run 3, job 4779526,
 # Notes 8.31): the heading is mirrored somewhere between Scenic and CARLA,
 # while positions are right. Speed is matched to the car as CrossingBehavior
-# does (it walks faster than min_speed to meet the car), so the two meet.
-behavior CrossToKerb(target, reference_actor, min_speed, threshold):
-    while (distance from self to reference_actor) > threshold:
+# does (it walks faster than min_speed to meet the car).
+# When to step out: threshold > 0 -> once the car is within `threshold` m;
+# threshold == 0 -> "meet the car": once the car's time to reach the
+# pedestrian's line is no more than the pedestrian's time to reach the car's
+# path, so both arrive together (smoke run 4 showed that stepping out at once
+# empties the road before the car arrives, Notes 8.33). Either way, after
+# timeout_s the pedestrian goes anyway.
+behavior CrossToKerb(target, reference_actor, min_speed, threshold, timeout_s):
+    start = simulation().currentTime
+    while (simulation().currentTime - start) * simulation().timestep < timeout_s:
+        rel = (self.position - reference_actor.position).rotatedBy(-reference_actor.heading)
+        if threshold > 0:
+            if (distance from self to reference_actor) <= threshold:
+                break
+        elif rel.y <= 0 or rel.y / max(reference_actor.speed, 0.1) <= abs(rel.x) / min_speed:
+            break
         wait
     while (distance from self to target) > 0.5:
         rel = (self.position - reference_actor.position).rotatedBy(-reference_actor.heading)
@@ -109,7 +123,7 @@ behavior CrossToKerb(target, reference_actor, min_speed, threshold):
         take SetWalkingSpeedAction(0)
 
 behavior PedestrianBehavior(min_speed=1, threshold=CROSSING_TRIGGER_M):
-    do CrossToKerb(far_kerb, ego, min_speed, threshold)
+    do CrossToKerb(far_kerb, ego, min_speed, threshold, CROSSING_TIMEOUT_S)
 
 # The pedestrian starts at a kerb and walks straight across the car's lane
 # (heading +-90 deg); `spot` is the crossing point. Small jitter keeps

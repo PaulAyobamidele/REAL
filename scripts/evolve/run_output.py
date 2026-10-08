@@ -45,6 +45,8 @@ def scene():
         from scripts.simulations import util
         return {"version": util.SCENE_VERSION, "max_steps": util.MAX_STEPS,
                 "crossing_trigger_m": util.DEFAULT_CROSSING_TRIGGER_M,
+                "crossing_trigger_meaning": "0 = meet the car; > 0 = step out when the car is this close (m)",
+                "crossing_timeout_s": util.CROSSING_TIMEOUT_S,
                 "pedestrian_min_speed_mps": util.DEFAULT_PEDESTRIAN_MIN_SPEED_MPS,
                 "approach_distance_m": dict(util.APPROACH_DISTANCE_M), "directions": dict(util.DIRECTIONS)}
     except Exception:

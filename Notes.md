@@ -1567,6 +1567,24 @@ could not be simulated.
   **smoke run 4 = job 4885691** (`REAL_SEARCH=list`, the 4 scenarios above, 1 trial,
   `R_baseline.dsl`), submitted 2026-10-07.
 
+### 8.33 2026-10-07 — smoke run 4 (job 4885691): crossing works; scene v2.3 "meet the car"
+
+Run `a9bd6134…` (4 scenarios, 14.5 min; `smoke_check.md` there): **all 4
+pedestrians crossed** (lateral −2.8 → +3.9, +3.2 → −4.2, −3.1 → +3.9,
++3.3 → −4.1 m), car on the road in all, video agrees. But stepping out at once
+(trigger 100 m) at 2 m/s empties the road ~2 s in, before the car arrives —
+the 4 passes mean nothing. Speed matching only ever speeds the pedestrian up.
+
+Scene v2.3: `CROSSING_TRIGGER_M = 0` = **"meet the car"** (default): the
+pedestrian steps out once the car's time to reach its line (`rel.y / speed`)
+is no more than its own time to reach the car's path (`|rel.x| / min_speed`),
+so both arrive together; `> 0` keeps the distance trigger (GE grammar 8-100 m);
+`CROSSING_TIMEOUT_S = 6` — it steps out after 6 s anyway, so a car that stops
+far back cannot freeze the scene (and the resume soft goal gets tested).
+`run_meta.scene` records the meaning and the timeout. 162 tests; laptop
+check passes. `simulation().timestep` / `currentTime` in the behaviour are
+only exercised on Narval.
+
 ### 8.7 The iteration loop (stages 7-9) — original design
 
 Per round: requirement R_n → run (grid) → `simulations.csv` → report →
