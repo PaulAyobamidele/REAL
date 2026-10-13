@@ -1964,6 +1964,64 @@ Tests: test_monitor_rule (5), test_path_aware_braking (6), test_job_ports
 (3), four older tests updated to the refusal rule; 256 in total. Needs one
 cluster smoke run: path_aware_braking, occlusion, night/wet weather, ports.
 
+### 8.48 2026-10-13 — smoke runs for scene v3, path_aware_braking and per-job ports
+
+Committed `ab2baf7`. Smoke files: `infra/hpc/smoke/R_path_aware.dsl` (the
+baseline requirement with `path_aware_braking`) and
+`infra/hpc/smoke/scenarios_v3.txt` (4 scenarios: control; night + wet + rain
++ parked car; dusk + wet + parked car; fog 70, past the assumed limit).
+Laptop check before submitting: the requirement resolves to
+path_aware_braking + yolov5s; all four scenes build against Town01 (the
+parked car present in the two occluded ones). Staging copy rebuilt (UI
+`node_modules` excluded), synced and verified. Two jobs submitted together
+(45-min limit, 1 trial, `REAL_SEARCH=list`): **A** path_aware_braking,
+**B** proportional_braking (baseline requirement) on the same scenarios —
+a comparison and a test that per-job ports keep parallel jobs apart.
+
+### 8.49 2026-10-13 — smoke results for scene v3; MLflow per job and non-fatal
+
+Both runs pulled (run folders `954c0cd9…` = A path_aware_braking, `0a0c13e6…`
+= B proportional_braking; `smoke_check.md` in each). They ran in parallel on
+different nodes, each with its own ports (logged).
+- **Scene v3 works in CARLA**: B's video shows dusk light, a wet road with
+  reflections and puddles, the parked car on the pedestrian's kerb and the
+  pedestrian crossing in front of it. Car on the road in all 8 runs.
+- **A's job failed after its 4th simulation** on MLflow (`log-batch` → HTTP
+  500; B logged one such error and recovered): both MLflow servers used the
+  one file store `/artifacts/mlflow_backend`. Fixed: each job gets its own
+  store (`/artifacts/mlflow/job_<id>`), and `util.evaluate_phenotype` runs the
+  simulations first and treats MLflow logging as a side record — a logging
+  failure is printed and ignored. 2 tests; 267 in total.
+- Lead (one trial each): **B (proportional) is safe in 3 of 4 but stalls in
+  those 3; A (path_aware) drives on in every run but fails safety in all 4** —
+  late braking by day and at dusk, no braking at all at night and in fog 70
+  (it only reacts to a person it estimates in the lane). The safety-vs-progress
+  trade-off of a mitigation, measured.
+- **Classification problem found**: in A's night and fog-70 runs the car
+  arrived as the pedestrian stepped into the lane (closest in-lane distance
+  2.1 / 1.6 m), so the pedestrian "never crossed" — and the analysis sets
+  such runs aside as test defects. They are dangerous close calls. Proposed
+  fix: `not_crossed` is a test defect only when the pedestrian never entered
+  the lane band.
+
+### 8.50 2026-10-13 — "not crossed" is a test defect only if the pedestrian never entered the lane
+
+`failure_model.classify_failure`: a run whose pedestrian did not finish
+crossing is set aside only if the pedestrian never came within the lane band
+(`path_min_distance_m` absent); a pedestrian stopped short in the lane — the
+car arriving as they step in — is judged as an encounter. Older runs without
+lane data behave as before. Test added; 268 in total.
+- Smoke A (path_aware_braking): all 4 runs are now encounters and all 4
+  failed — night run `never_detected`, fog-70 run `detected_not_braked`
+  (seen, but not estimated in the lane), the two others late / released.
+- **Run 2b, paper numbers updated** (main report and `cluster_map.json`
+  regenerated; the previous ones moved to `superseded_not_crossed_rule/` with
+  a note): 3 of the 4 not-crossed runs had the pedestrian in the lane and now
+  count as encounters (all passed). **158 encounters, 3 failed (1.9 %), 155
+  passed, 147 of them stalled; `resume_within_s <= 10` missed in 105;** 1 run
+  set aside as spurious, 1 not-crossed test defect. Supersedes the 2b numbers
+  in §8.45 (155 / 3 / 145 / 103).
+
 ### 8.7 The iteration loop (stages 7-9) — original design
 
 Per round: requirement R_n → run (grid) → `simulations.csv` → report →

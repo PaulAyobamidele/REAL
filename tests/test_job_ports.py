@@ -38,3 +38,32 @@ def test_scene_connects_to_the_jobs_carla_port(monkeypatch):
                                   "from { direction : LR } at { distance : Short } distance on a day with fog "
                                   "density {fog_density : 0}")
     assert "param port = 20123" in code
+
+
+def test_each_job_has_its_own_mlflow_store():
+    text = open(SCRIPT).read()
+    assert 'MLFLOW_STORE="/artifacts/mlflow/job_${SLURM_JOB_ID:-local}"' in text
+    assert '--backend-store-uri "$MLFLOW_STORE/backend"' in text
+    assert "/artifacts/mlflow_backend" not in text            # the shared store is gone
+
+
+def test_mlflow_failure_does_not_stop_a_run(monkeypatch):
+    from scripts.simulations import util
+
+    class FakeFalsifier:
+        def __init__(self, code):
+            pass
+
+        def falsify(self, num_test=5):
+            return {"total": num_test, "passed": num_test, "failed": 0, "pct": 100.0}
+
+    def broken_run(*a, **k):
+        raise RuntimeError("log-batch: too many 500 error responses")
+
+    monkeypatch.setattr(util, "falsifier", FakeFalsifier)
+    monkeypatch.setattr(util.mlflow, "start_run", broken_run)
+    monkeypatch.setattr(util, "_publish_yolo_model", lambda name: None)
+    phen = ("A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from "
+            "{ direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 0}")
+    fitness = util.evaluate_phenotype(phen, num_test=2, scenario_id="t", log_mlflow=True)
+    assert fitness == {"total": 2, "passed": 2, "failed": 0, "pct": 100.0}

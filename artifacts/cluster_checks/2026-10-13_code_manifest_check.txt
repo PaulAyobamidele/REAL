@@ -1,0 +1,24 @@
+checked at 2026-10-13T13:36:08
+files in the manifest: 606
+RESULT: error
+message: narval did not answer in time; nothing was submitted
+differ (0):
+missing (0):
+blocking_jobs: None
+took 120.0 s
+
+--- follow-up measurements (same day, read-only, two smoke jobs running) ---
+1. The full check timed out at 120 s: all 606 paths on one ssh command line.
+2. One file hashed on the cluster's scratch: under 2 s including ssh.
+3. All 606 paths sent on standard input to md5sum: about 1 file per second
+   (load average ~17-40 on the login node); 143 files after ~4 min. A full
+   per-file check would take ~10 min per Run Test - too slow.
+4. Files in the manifest that do not exist on the cluster: 1
+   REAL/scripts/mlops/mlruns/0/meta.yaml - an MLflow file the sync excludes
+   (not code); the manifest must exclude it too.
+Conclusion: per-file hashing on the cluster is not usable for every submission;
+compare against a manifest written at sync time instead (proposed as diff 1b).
+5. The full per-file hash finished: 605 of 606 files hashed in 965 s (16 min);
+   the one missing is the mlruns file above (xargs exit 123 = one md5sum error).
+   Confirms the design change: CODE_MANIFEST.txt + spot check (7 s, see
+   2026-10-13_manifest_check_before_sync.txt).

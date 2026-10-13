@@ -1,0 +1,6 @@
+checked at 2026-10-13T13:57:27 - real cluster, read-only
+files in this project's manifest: 605
+RESULT: stale_copy
+message: the copy on narval was synced without CODE_MANIFEST.txt: sync it (infra/hpc/README.md, section 4b, and scp the job script) once no job is queued or running, then press Run Test again. Nothing was submitted
+details: {'differ': [], 'missing': ['CODE_MANIFEST.txt'], 'tampered': [], 'blocking_jobs': []}
+took 7.2 s

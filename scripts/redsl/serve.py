@@ -453,7 +453,7 @@ class Handler(BaseHTTPRequestHandler):
         try:
             self._send(200, call())
         except cluster_jobs.ClusterError as e:
-            self._send(409, {"error": str(e)})
+            self._send(409, {"error": str(e), "kind": e.kind, **e.details})
 
     def do_POST(self):
         route = self.path.rstrip("/")

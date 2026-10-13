@@ -228,3 +228,12 @@ def test_not_crossed_and_not_simulated_are_reported(tmp_path):
     analysis, md = report.write_report(str(tmp_path))
     assert [s["scenario_id"] for s in analysis["not_simulated"]] == ["5"]
     assert "could not be simulated" in md and "where the pedestrian never crossed" in md
+
+
+def test_stopped_in_the_lane_is_an_encounter_not_a_test_defect():
+    from scripts.analysis import failure_model as fm
+    base = {"left_road": False, "crossed": False, "passed": False, "min_distance_m": 2.1,
+            "detection_frames": 0, "brake_steps": 0}
+    assert fm.classify_failure(dict(base, path_min_distance_m=2.1)) != "not_crossed"   # entered the lane
+    assert fm.classify_failure(dict(base, path_min_distance_m=float("nan"))) == "not_crossed"
+    assert fm.classify_failure(dict(base)) == "not_crossed"        # no lane data (older runs): as before

@@ -1,0 +1,280 @@
+Using project source overlay: /scratch/paulad/real_project/REAL
+Ports: CARLA 23284 (traffic manager 29284), Redis 33821, MLflow 34821, API 35821
+INFO:    Converting SIF file to temporary sandbox...
+674746:C 13 Oct 08:07:27.773 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+674746:C 13 Oct 08:07:27.773 # Redis version=4.0.9, bits=64, commit=00000000, modified=0, pid=674746, just started
+674746:C 13 Oct 08:07:27.773 # Configuration loaded
+chmod: changing permissions of '/home/carla/CarlaUE4/Binaries/Linux/CarlaUE4-Linux-Shipping': Read-only file system
+sh: 1: xdg-user-dir: not found
+4.26.2-0+++UE4+Release-4.26 522 0
+Disabling core dumps.
+[2026-10-13 08:07:39 -0400] [674796] [INFO] Starting gunicorn 23.0.0
+[2026-10-13 08:07:39 -0400] [674796] [INFO] Listening at: http://127.0.0.1:34821 (674796)
+[2026-10-13 08:07:39 -0400] [674796] [INFO] Using worker: sync
+[2026-10-13 08:07:39 -0400] [674874] [INFO] Booting worker with pid: 674874
+[2026-10-13 08:07:39 -0400] [674875] [INFO] Booting worker with pid: 674875
+[2026-10-13 08:07:39 -0400] [674876] [INFO] Booting worker with pid: 674876
+[2026-10-13 08:07:39 -0400] [674877] [INFO] Booting worker with pid: 674877
+INFO:     Started server process [675639]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:35821 (Press CTRL+C to quit)
+INFO:     127.0.0.1:50426 - "GET / HTTP/1.1" 200 OK
+API ready after 215 s
+[grid] scenario 1/4: A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 20 } m away on a day with fog density {fog_density : 0}, sun altitude {sun_altitude_angle : 60} deg, road wetness {wetness : 0}, rain {precipitation : 0}, cloud {cloudiness : 50}, occlusion {occlusion : 0}, walking at least {pedestrian_min_speed_mps : 2.0} m/s, stepping out at {crossing_trigger_m : 0} m
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:15<00:00, 15.81s/it]100%|██████████| 1/1 [00:15<00:00, 15.81s/it]2026/10/13 08:15:59 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (10708 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/13 08:16:26 INFO mlflow.tracking._tracking_service.client: 🏃 View run sincere-asp-987 at: http://127.0.0.1:34821/#/experiments/0/runs/e20d5ce860f64073a59b234d294432a6.
+2026/10/13 08:16:26 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:34821/#/experiments/0.
+[grid] scenario 2/4: A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : RL } with the car { approach_distance_m : 20 } m away on a day with fog density {fog_density : 40}, sun altitude {sun_altitude_angle : -10} deg, road wetness {wetness : 80}, rain {precipitation : 60}, cloud {cloudiness : 100}, occlusion {occlusion : 1}, walking at least {pedestrian_min_speed_mps : 2.0} m/s, stepping out at {crossing_trigger_m : 0} m
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:09<00:00,  9.58s/it]100%|██████████| 1/1 [00:09<00:00,  9.58s/it]2026/10/13 08:19:17 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (10712 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/13 08:20:09 INFO mlflow.tracking._tracking_service.client: 🏃 View run powerful-foal-588 at: http://127.0.0.1:34821/#/experiments/715733938054195872/runs/6b75bfce0cf8406799822622019b5204.
+2026/10/13 08:20:09 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:34821/#/experiments/715733938054195872.
+[grid] scenario 3/4: A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : RL } with the car { approach_distance_m : 35 } m away on a day with fog density {fog_density : 0}, sun altitude {sun_altitude_angle : 10} deg, road wetness {wetness : 80}, rain {precipitation : 0}, cloud {cloudiness : 50}, occlusion {occlusion : 1}, walking at least {pedestrian_min_speed_mps : 2.0} m/s, stepping out at {crossing_trigger_m : 0} m
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:08<00:00,  8.72s/it]100%|██████████| 1/1 [00:08<00:00,  8.72s/it]2026/10/13 08:22:46 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (10708 characters) is truncated to 6000 characters to meet the length limit.
+[2026-10-13 08:23:22 -0400] [674796] [CRITICAL] WORKER TIMEOUT (pid:674877)
+[2026-10-13 08:23:26 -0400] [674796] [ERROR] Worker (pid:674877) was sent SIGKILL! Perhaps out of memory?
+[2026-10-13 08:23:26 -0400] [680997] [INFO] Booting worker with pid: 680997
+
+2026/10/13 08:23:39 INFO mlflow.tracking._tracking_service.client: 🏃 View run dazzling-snipe-922 at: http://127.0.0.1:34821/#/experiments/715733938054195872/runs/29a85973e6e643fc8ba1f72bbb14c1c2.
+2026/10/13 08:23:39 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:34821/#/experiments/715733938054195872.
+[grid] scenario 4/4: A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 20 } m away on a day with fog density {fog_density : 70}, sun altitude {sun_altitude_angle : 60} deg, road wetness {wetness : 0}, rain {precipitation : 0}, cloud {cloudiness : 50}, occlusion {occlusion : 0}, walking at least {pedestrian_min_speed_mps : 2.0} m/s, stepping out at {crossing_trigger_m : 0} m
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:07<00:00,  7.42s/it]100%|██████████| 1/1 [00:07<00:00,  7.42s/it]2026/10/13 08:26:12 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (10709 characters) is truncated to 6000 characters to meet the length limit.
+[2026-10-13 08:26:45 -0400] [674796] [CRITICAL] WORKER TIMEOUT (pid:674876)
+[2026-10-13 08:26:47 -0400] [674796] [ERROR] Worker (pid:674876) was sent SIGKILL! Perhaps out of memory?
+[2026-10-13 08:26:47 -0400] [681213] [INFO] Booting worker with pid: 681213
+[2026-10-13 08:27:17 -0400] [674796] [CRITICAL] WORKER TIMEOUT (pid:674875)
+[2026-10-13 08:27:20 -0400] [674796] [ERROR] Worker (pid:674875) was sent SIGKILL! Perhaps out of memory?
+[2026-10-13 08:27:20 -0400] [681230] [INFO] Booting worker with pid: 681230
+[2026-10-13 08:27:56 -0400] [674796] [CRITICAL] WORKER TIMEOUT (pid:681230)
+[2026-10-13 08:27:58 -0400] [674796] [ERROR] Worker (pid:681230) was sent SIGKILL! Perhaps out of memory?
+[2026-10-13 08:27:58 -0400] [681262] [INFO] Booting worker with pid: 681262
+[2026-10-13 08:28:37 -0400] [674796] [CRITICAL] WORKER TIMEOUT (pid:681213)
+[2026-10-13 08:28:37 -0400] [681213] [ERROR] Error handling request /api/2.0/mlflow/runs/log-batch
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/gunicorn/workers/sync.py", line 134, in handle
+    self.handle_request(listener, req, client, addr)
+  File "/usr/local/lib/python3.8/dist-packages/gunicorn/workers/sync.py", line 177, in handle_request
+    respiter = self.wsgi(environ, resp.start_response)
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/server/handlers.py", line 574, in wrapper
+    return func(*args, **kwargs)
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/server/handlers.py", line 615, in wrapper
+    return func(*args, **kwargs)
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/server/handlers.py", line 1601, in _log_batch
+    _get_tracking_store().log_batch(
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/store/tracking/file_store.py", line 1103, in log_batch
+    self._log_run_param(run_info, param)
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/store/tracking/file_store.py", line 1012, in _log_run_param
+    write_to(param_path, writeable_param_value)
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/utils/file_utils.py", line 499, in write_to
+    handle.write(data)
+  File "/usr/lib/python3.8/codecs.py", line 751, in __exit__
+    self.stream.close()
+  File "/usr/local/lib/python3.8/dist-packages/gunicorn/workers/base.py", line 204, in handle_abort
+    sys.exit(1)
+SystemExit: 1
+[2026-10-13 08:28:37 -0400] [681213] [INFO] Worker exiting (pid: 681213)
+[2026-10-13 08:28:38 -0400] [681291] [INFO] Booting worker with pid: 681291
+[2026-10-13 08:29:25 -0400] [674796] [CRITICAL] WORKER TIMEOUT (pid:681291)
+[2026-10-13 08:29:27 -0400] [674796] [ERROR] Worker (pid:681291) was sent SIGKILL! Perhaps out of memory?
+[2026-10-13 08:29:27 -0400] [681307] [INFO] Booting worker with pid: 681307
+[2026-10-13 08:30:30 -0400] [674796] [CRITICAL] WORKER TIMEOUT (pid:681307)
+[2026-10-13 08:30:30 -0400] [681307] [ERROR] Error handling request /api/2.0/mlflow/runs/log-batch
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/gunicorn/workers/sync.py", line 134, in handle
+    self.handle_request(listener, req, client, addr)
+  File "/usr/local/lib/python3.8/dist-packages/gunicorn/workers/sync.py", line 177, in handle_request
+    respiter = self.wsgi(environ, resp.start_response)
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/server/handlers.py", line 574, in wrapper
+    return func(*args, **kwargs)
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/server/handlers.py", line 615, in wrapper
+    return func(*args, **kwargs)
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/server/handlers.py", line 1601, in _log_batch
+    _get_tracking_store().log_batch(
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/store/tracking/file_store.py", line 1103, in log_batch
+    self._log_run_param(run_info, param)
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/store/tracking/file_store.py", line 1012, in _log_run_param
+    write_to(param_path, writeable_param_value)
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/utils/file_utils.py", line 499, in write_to
+    handle.write(data)
+  File "/usr/lib/python3.8/codecs.py", line 751, in __exit__
+    self.stream.close()
+  File "/usr/local/lib/python3.8/dist-packages/gunicorn/workers/base.py", line 204, in handle_abort
+    sys.exit(1)
+SystemExit: 1
+[2026-10-13 08:30:30 -0400] [681307] [INFO] Worker exiting (pid: 681307)
+[2026-10-13 08:30:31 -0400] [681347] [INFO] Booting worker with pid: 681347
+
+2026/10/13 08:30:38 INFO mlflow.tracking._tracking_service.client: 🏃 View run rare-rook-430 at: http://127.0.0.1:34821/#/experiments/715733938054195872/runs/17731106c64a47f8be974dc71d1719b6.
+2026/10/13 08:30:38 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:34821/#/experiments/715733938054195872.
+INFO:     127.0.0.1:50438 - "GET /run_grid?requirement=%23+Smoke+check%3A+the+baseline+requirement+with+path_aware_braking+%28study+plan+1a.4%29.%0AMAINTAIN+%22Pedestrian+Safety%22%0A++++by%0A++++++++%22Pedestrian+Check%22+using+%22Perception+Module%22%0A++++++++++++operationalized+as%0A++++++++++++++++%22Detect+Pedestrian%22+performed+by+%22yolov5s%22%0A++++++++++++++++taking+input+%22image%22+producing+output+%22pedestrian+detection+confidence%22+%26+%22pedestrian+detection+flag%22%0A++++followed+by%0A++++++++%22braking%22+using+%22braking+module%22%0A++++++++++++operationalized+as%0A++++++++++++++++%22Bring+down+throttle%22+%26+%22Apply+Brakes%22+if+%22pedestrian+detection+flag%3DTrue%22+performed+by+%22path_aware_braking%22%0A++++++++++++++++taking+input+%22pedestrian+detection+flag%22+producing+output+%22Braking+Status+Flag%22%0A++++in+scenario+where%0A++++++++%22A+pedestrian+trying+to+cross+the+street+in+fog.%22%0A++++assuming+%22fog_density+%3C%3D+50%22+%26+%22initial_separation_m+%3E%3D+15%22+%26+%22pedestrian_speed_mps+%3C%3D+3%22+%26+%22daylight%2C+dry+road%22+%26+%22pedestrian+on+foot%22%0A++++ensuring+%22resume_within_s+%3C%3D+10%22+%26+%22braking+is+smooth+unless+an+emergency+stop+is+needed%22%0A&record_video=True&requirement_source=infra%2Fhpc%2Fsmoke%2FR_path_aware.dsl&scenario_file=infra%2Fhpc%2Fsmoke%2Fscenarios_v3.txt&trials=1 HTTP/1.1" 200 OK
+[smoke_test] run_grid with {'record_video': True, 'requirement_source': 'infra/hpc/smoke/R_path_aware.dsl', 'scenario_file': 'infra/hpc/smoke/scenarios_v3.txt', 'trials': 1}
+{'error': "API request to http://127.0.0.1:34821/api/2.0/mlflow/runs/log-batch failed with exception HTTPConnectionPool(host='127.0.0.1', port=34821): Max retries exceeded with url: /api/2.0/mlflow/runs/log-batch (Caused by ResponseError('too many 500 error responses'))", 'STATUS': 'NOT OK'}
+INFO:    Cleaning up image...
+urllib3.exceptions.ResponseError: too many 500 error responses
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/requests/adapters.py", line 667, in send
+    resp = conn.urlopen(
+  File "/usr/local/lib/python3.8/dist-packages/urllib3/connectionpool.py", line 873, in urlopen
+    return self.urlopen(
+  File "/usr/local/lib/python3.8/dist-packages/urllib3/connectionpool.py", line 873, in urlopen
+    return self.urlopen(
+  File "/usr/local/lib/python3.8/dist-packages/urllib3/connectionpool.py", line 873, in urlopen
+    return self.urlopen(
+  File "/usr/local/lib/python3.8/dist-packages/urllib3/connectionpool.py", line 944, in urlopen
+    return self.urlopen(
+  File "/usr/local/lib/python3.8/dist-packages/urllib3/connectionpool.py", line 873, in urlopen
+    return self.urlopen(
+  File "/usr/local/lib/python3.8/dist-packages/urllib3/connectionpool.py", line 934, in urlopen
+    retries = retries.increment(method, url, response=response, _pool=self)
+  File "/usr/local/lib/python3.8/dist-packages/urllib3/util/retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='127.0.0.1', port=34821): Max retries exceeded with url: /api/2.0/mlflow/runs/log-batch (Caused by ResponseError('too many 500 error responses'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/utils/rest_utils.py", line 189, in http_request
+    return _get_http_response_with_retries(
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/utils/request_utils.py", line 237, in _get_http_response_with_retries
+    return session.request(method, url, allow_redirects=allow_redirects, **kwargs)
+  File "/usr/local/lib/python3.8/dist-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/usr/local/lib/python3.8/dist-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "/usr/local/lib/python3.8/dist-packages/requests/adapters.py", line 691, in send
+    raise RetryError(e, request=request)
+requests.exceptions.RetryError: HTTPConnectionPool(host='127.0.0.1', port=34821): Max retries exceeded with url: /api/2.0/mlflow/runs/log-batch (Caused by ResponseError('too many 500 error responses'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "api_app.py", line 143, in run_grid_endpoint
+    result = run_grid(run_id, requirement=requirement, scenario_text=scenario,
+  File "/opt/real-av/REAL/scripts/evolve/grid.py", line 170, in run_grid
+    fitness = evaluate(phenotype, num_test=trials, seed=seed, scenario_id=scenario_id)
+  File "/opt/real-av/REAL/scripts/simulations/util.py", line 464, in evaluate_phenotype
+    mlflow.log_params({k: v for k, v in params.items() if k != 'ego_behavior'})
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/tracking/fluent.py", line 981, in log_params
+    return MlflowClient().log_batch(
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/tracking/client.py", line 1863, in log_batch
+    return self._tracking_client.log_batch(
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/tracking/_tracking_service/client.py", line 746, in log_batch
+    self.store.log_batch(
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/store/tracking/rest_store.py", line 536, in log_batch
+    self._call_endpoint(LogBatch, req_body)
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/store/tracking/rest_store.py", line 82, in _call_endpoint
+    return call_endpoint(self.get_host_creds(), endpoint, method, json_body, response_proto)
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/utils/rest_utils.py", line 368, in call_endpoint
+    response = http_request(**call_kwargs)
+  File "/usr/local/lib/python3.8/dist-packages/mlflow/utils/rest_utils.py", line 212, in http_request
+    raise MlflowException(f"API request to {url} failed with exception {e}")
+mlflow.exceptions.MlflowException: API request to http://127.0.0.1:34821/api/2.0/mlflow/runs/log-batch failed with exception HTTPConnectionPool(host='127.0.0.1', port=34821): Max retries exceeded with url: /api/2.0/mlflow/runs/log-batch (Caused by ResponseError('too many 500 error responses'))
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [675639]
