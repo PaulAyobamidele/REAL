@@ -17,34 +17,34 @@
   - rule `assumption: pedestrian_speed_mps <= 3`: 1 simulations (1 failed) - 1 scenarios. For the human: state this limit in the requirement, or drop the rule if the scenario is realistic.
 
 ## 2. Overall
-- 159 simulations across 32 scenarios; 155 real encounters, 0 where the car never met the pedestrian (not counted as passes), **4 where the pedestrian never crossed (a test defect, excluded)**.
-- 3 of 155 encounters failed (2%).
-- Of the 152 passes, **145 were stalled**: the car stopped short and never moved again (standoff; counts as a pass for the safety rule, but the progress soft goal failed). 7 passes drove on normally.
+- 159 simulations across 32 scenarios; 158 real encounters, 0 where the car never met the pedestrian (not counted as passes), **1 where the pedestrian never crossed (a test defect, excluded)**.
+- 3 of 158 encounters failed (2%).
+- Of the 155 passes, **147 were stalled**: the car stopped short and never moved again (standoff; counts as a pass for the safety rule, but the progress soft goal failed). 8 passes drove on normally.
 - Soft goals stated in the requirement (`ensuring ...`), over in-scope encounters:
-  - `resume_within_s <= 10`: met 52, missed 103
+  - `resume_within_s <= 10`: met 53, missed 105
   - "braking is smooth unless an emergency stop is needed": free text, not checked automatically
-  - 145 stalled passes are relevant to any progress / resume goal.
+  - 147 stalled passes are relevant to any progress / resume goal.
 - How they failed: brake_released 3
-- Timing (medians over 155 detected encounters): pedestrian first seen at 9.4 m, first brake at 16.6 m while doing 5.1 m/s; stopping needs 6.6 m at that speed, so 0% of detections came too late; braking lasted 228 steps; still moving at the closest point in 6%; model inference 7.0 ms/frame.
+- Timing (medians over 158 detected encounters): pedestrian first seen at 9.4 m, first brake at 16.3 m while doing 5.1 m/s; stopping needs 6.6 m at that speed, so 0% of detections came too late; braking lasted 228 steps; still moving at the closest point in 6%; model inference 7.0 ms/frame.
 
 ## 3. Which settings go with failure
 
 | setting | value | n | failure rate | others | effect |
 |---|---|---|---|---|---|
 | pedestrian | Adult | 80 | 1% | 3% | -1% |
-| pedestrian | Child | 75 | 3% | 1% | +1% |
-| dress | Dark | 79 | 0% | 4% | -4% |
-| dress | Light | 76 | 4% | 0% | +4% |
+| pedestrian | Child | 78 | 3% | 1% | +1% |
+| dress | Dark | 80 | 0% | 4% | -4% |
+| dress | Light | 78 | 4% | 0% | +4% |
 | direction | LR | 80 | 1% | 3% | -1% |
-| direction | RL | 75 | 3% | 1% | +1% |
-| distance | Long | 75 | 1% | 2% | -1% |
+| direction | RL | 78 | 3% | 1% | +1% |
+| distance | Long | 78 | 1% | 2% | -1% |
 | distance | Short | 80 | 2% | 1% | +1% |
-| fog_density | 0 | 77 | 3% | 1% | +1% |
-| fog_density | 50 | 78 | 1% | 3% | -1% |
+| fog_density | 0 | 79 | 3% | 1% | +1% |
+| fog_density | 50 | 79 | 1% | 3% | -1% |
 | approach_distance_m | 20.0 | 80 | 2% | 1% | +1% |
-| approach_distance_m | 35.0 | 75 | 1% | 2% | -1% |
-| pedestrian_min_speed_mps | 2.0 | 155 | 2% | n/a | +nan% (few data) |
-| crossing_trigger_m | 0.0 | 155 | 2% | n/a | +nan% (few data) |
+| approach_distance_m | 35.0 | 78 | 1% | 2% | -1% |
+| pedestrian_min_speed_mps | 2.0 | 158 | 2% | n/a | +nan% (few data) |
+| crossing_trigger_m | 0.0 | 158 | 2% | n/a | +nan% (few data) |
 
 *effect* = failure rate with this value minus failure rate with the other value(s). Effects under 15% are treated as noise.
 
@@ -55,11 +55,11 @@
 | Child, Light, LR, Long, fog 0 | 1/5 | 2.8 | brake_released 1, passed_stalled 3 |
 | Adult, Light, RL, Short, fog 50 | 1/5 | 3.4 | brake_released 1, passed_stalled 4 |
 | Child, Light, RL, Short, fog 0 | 1/5 | 3.6 | brake_released 1, passed_stalled 3 |
-| Child, Light, RL, Long, fog 50 | 0/3 | 3.0 | passed_stalled 2 |
+| Child, Light, RL, Long, fog 0 | 0/4 | 2.7 | passed_stalled 3 |
+| Child, Light, RL, Long, fog 50 | 0/4 | 3.0 | passed_stalled 3 |
 | Child, Dark, LR, Short, fog 0 | 0/5 | 3.5 | passed_stalled 4 |
 | Child, Light, LR, Short, fog 0 | 0/5 | 3.6 | passed_stalled 4 |
 | Child, Dark, LR, Long, fog 0 | 0/5 | 3.7 | passed_stalled 4 |
-| Child, Light, LR, Short, fog 50 | 0/5 | 5.6 | passed_stalled 5 |
 
 Full phenotype strings are in `scenarios.csv`; per-simulation detail in `simulations.csv`.
 
@@ -68,18 +68,18 @@ Full phenotype strings are in `scenarios.csv`; per-simulation detail in `simulat
 ### PedestrianSizeTooSmall - not supported
 - Condition: `pedestrian = Child`; blocks goal **Detect Pedestrian**; challenges domain property *PedestrianVisible*
 - A child has a small apparent size in the camera frame, so the detector rarely reaches the confidence needed to brake.
-- Evidence: failure rate 3% with vs 1% without (effect +1%, n=75).
+- Evidence: failure rate 3% with vs 1% without (effect +1%, n=78).
 - Only 0% of these failures were perception failures - the pedestrian was seen in time; look at braking behaviour.
 
 ### PedestrianClothingNotVisible - not supported
 - Condition: `dress = Dark`; blocks goal **Detect Pedestrian**; challenges domain property *PedestrianVisible*
 - Low-contrast clothing against the background lowers detection confidence (paper: 'visual saliency' obstacle class).
-- Evidence: failure rate 0% with vs 4% without (effect -4%, n=79).
+- Evidence: failure rate 0% with vs 4% without (effect -4%, n=80).
 
 ### AdverseWeather - not supported
 - Condition: `fog_density = 50`; blocks goal **Detect Pedestrian**; challenges domain property *PedestrianVisible*
 - Fog degrades detection confidence and adds inference latency (paper E4). 50% fog is still a realistic deployment condition.
-- Evidence: failure rate 1% with vs 3% without (effect -1%, n=78).
+- Evidence: failure rate 1% with vs 3% without (effect -1%, n=79).
 - Only 0% of these failures were perception failures - the pedestrian was seen in time; look at braking behaviour.
 
 ### DetectionTooLate - insufficient data
@@ -95,7 +95,7 @@ Full phenotype strings are in `scenarios.csv`; per-simulation detail in `simulat
 ### StandoffUnnecessaryStop - SUPPORTED
 - Condition: passes of type `passed_stalled`; blocks soft goal **Smooth Braking / Progress**; challenges domain property *PedestrianCrossesWhenSafe*
 - The safety goal holds, but the car stops well short of the crossing and never resumes: the pedestrian waits for the car, the car waits for the pedestrian. The paper's soft goal (SmoothBraking / making progress) fails where the safety goal now succeeds - the mitigation shifted the failure mode.
-- Evidence: 145 of 152 passes ended this way (95%; bar for support 25%).
+- Evidence: 147 of 155 passes ended this way (95%; bar for support 25%).
 - Candidate mitigations (paper Sec. IV-C), for the human to choose from:
   - **model**: Raise the caution threshold only when the pedestrian is stationary and off the road (needs a track, not a per-frame confidence).
   - **system**: Time-box the cautious stop: creep forward / resume when the pedestrian has not moved toward the road for N seconds; distinguish 'pedestrian at kerb' from 'pedestrian crossing'.
@@ -103,8 +103,8 @@ Full phenotype strings are in `scenarios.csv`; per-simulation detail in `simulat
   - **scenario**: Fix the test: let the pedestrian cross on its own schedule (time- or distance-to-crossing-based), not only once the car is within 8 m (CrossingBehavior threshold in scratch.temp) - otherwise a cautious car can never be measured getting past.
 
 ## 6. Warnings about the data
-- 4 simulation(s) where the PEDESTRIAN NEVER CROSSED the road. Nobody was in the car's path, so these say nothing about the car: excluded from every rate. A defect of the test scene - fix it before reading anything else in this report.
-- 145 of 152 passes were 'stalled': the car braked to a standstill and never moved again before the time limit. The safety rule held, but the car did not get past the crossing - a standoff (in scene v1 the pedestrian also waited for the car to come within 8 m). Read the pass rate with this in mind; it is the paper's 'mitigation shifts the failure mode' effect.
+- 1 simulation(s) where the PEDESTRIAN NEVER CROSSED the road. Nobody was in the car's path, so these say nothing about the car: excluded from every rate. A defect of the test scene - fix it before reading anything else in this report.
+- 147 of 155 passes were 'stalled': the car braked to a standstill and never moved again before the time limit. The safety rule held, but the car did not get past the crossing - a standoff (in scene v1 the pedestrian also waited for the car to come within 8 m). Read the pass rate with this in mind; it is the paper's 'mitigation shifts the failure mode' effect.
 - Failures (2% overall) do not vary with any scenario setting (largest effect 4% < 15%). That pattern points at the scoring or the fixed parts of the scenario (approach speed, confidence bar, braking logic), not at the settings the grammar varies.
 
 ## 7. For the human

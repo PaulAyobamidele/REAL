@@ -452,20 +452,23 @@ def evaluate_phenotype(phenotype, num_test=5, seed=None, scenario_id=None, log_m
     if not log_mlflow:
         return falsifier(code).falsify(num_test=num_test)
 
-    with mlflow.start_run():
-
-        mlflow.set_experiment("simple grammar scenarios")
-        mlflow.set_tag("Trial", "First run of GE pipeline")
-
-        f = falsifier(code)
-        fitness = f.falsify(num_test=num_test)
-
-        mlflow.log_params({'goal': rule, 'code': code})
-        mlflow.log_params({k: v for k, v in params.items() if k != 'ego_behavior'})
-        mlflow.log_metric("Total Test Cases", fitness['total'])
-        mlflow.log_metric("Passed Test Cases", fitness['passed'])
-        mlflow.log_metric("Failed Test Cases", fitness['failed'])
-        mlflow.log_metric("Percentage of testcase passed", fitness['pct'])
+    # The simulations run first; MLflow logging is a side record. A logging
+    # failure (e.g. an unreachable or busy tracking server) is reported and
+    # ignored: results live in simulations.csv / traces, never only in MLflow.
+    f = falsifier(code)
+    fitness = f.falsify(num_test=num_test)
+    try:
+        with mlflow.start_run():
+            mlflow.set_experiment("simple grammar scenarios")
+            mlflow.set_tag("Trial", "First run of GE pipeline")
+            mlflow.log_params({'goal': rule, 'code': code})
+            mlflow.log_params({k: v for k, v in params.items() if k != 'ego_behavior'})
+            mlflow.log_metric("Total Test Cases", fitness['total'])
+            mlflow.log_metric("Passed Test Cases", fitness['passed'])
+            mlflow.log_metric("Failed Test Cases", fitness['failed'])
+            mlflow.log_metric("Percentage of testcase passed", fitness['pct'])
+    except Exception as e:   # noqa: BLE001 - logging must never stop a run
+        print(f"WARNING: MLflow logging failed, results are unaffected: {e}")
 
     return fitness
 

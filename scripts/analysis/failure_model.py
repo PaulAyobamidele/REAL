@@ -20,9 +20,11 @@ Three questions are answered:
        no_encounter         the car never came near the pedestrian (never within
                             NO_ENCOUNTER_M and never detected) - NOT a pass;
                             excluded from all rates and reported separately
-       not_crossed          the pedestrian never crossed the road (scene v2.2
-                            records it) - a defect of the test, excluded from
-                            all rates like left_road
+       not_crossed          the pedestrian never crossed the road AND never
+                            entered the car's lane (scene v2.2 records it) - a
+                            defect of the test, excluded from all rates like
+                            left_road. A pedestrian who entered the lane but
+                            was stopped short is judged as an encounter.
        left_road            the car left the drivable area (scene v2 records
                             it) - a defect of the test, NOT a pass or a
                             failure; excluded from all rates like no_encounter
@@ -172,7 +174,10 @@ def classify_failure(row):
     """Name how one simulation ended (see module docstring)."""
     if row.get("left_road") is True:
         return "left_road"
-    if row.get("crossed") is False:
+    # "Never crossed" is a test defect only if the pedestrian never entered the
+    # car's lane: a pedestrian stopped short because the car arrived as they
+    # stepped in is the most dangerous case, and is judged like any encounter.
+    if row.get("crossed") is False and pd.isna(_num(row.get("path_min_distance_m"))):
         return "not_crossed"
     min_d = _num(row.get("min_distance_m"))
     did_react = reacted(row)

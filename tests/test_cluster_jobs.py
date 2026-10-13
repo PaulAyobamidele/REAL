@@ -1,7 +1,6 @@
 """Run Test's cluster side (scripts/redsl/cluster_jobs.py) against a fake
 cluster: no ssh, no sbatch, no network."""
 
-import hashlib
 import subprocess
 
 import pytest
@@ -20,12 +19,12 @@ def cluster(tmp_path, monkeypatch):
     monkeypatch.setattr(cj, "JOBS_FILE", str(tmp_path / "artifacts" / "jobs.json"))
     monkeypatch.setattr(cj, "RUNS_DIR", str(tmp_path / "artifacts" / "runs"))
     calls = []
-    state = {"session": True, "status": "", "copy": "same"}
-    hashes = {}
-    for local, there in cj.MUST_MATCH.items():
-        (tmp_path / local).parent.mkdir(parents=True, exist_ok=True)
-        (tmp_path / local).write_text(f"# {local}\n")
-        hashes[there] = hashlib.md5(f"# {local}\n".encode()).hexdigest()
+    state = {"session": True, "status": "", "copy": "same", "active": "", "checks": []}
+    for rel in ("api_app.py", "scripts/redsl/grammar.py", "scripts/scenarios/scratch.temp",
+                "scripts/templates/v3/scene_v3.bnf", "Scenic/src/scenic/core.py", "grape/x.py",
+                "scripts/mlops/yolov5s.pt", "infra/hpc/run_real_av.slurm"):
+        (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
+        (tmp_path / rel).write_text(f"# {rel}\n")
 
     def ssh(command, timeout=60):
         calls.append(("ssh", command))
@@ -33,14 +32,26 @@ def cluster(tmp_path, monkeypatch):
             return Done(returncode=255, stderr="Permission denied (keyboard-interactive)")
         if command.startswith("cd ") and "sbatch" in command:
             return Done("4999001\n")
+        if "squeue -h -u" in command:
+            return Done(state["active"])
         if "squeue" in command:
             return Done(state["status"])
         if "md5sum" in command:
+            state["checks"].append(command)
             if state["copy"] == "absent":
                 return Done("NOREAL\n")
-            lines = [f"{'0' * 32 if state['copy'] == 'older' and 'grammar' in there else h}  {there}"
-                     for there, h in hashes.items()]
-            return Done("\n".join(lines) + "\n")
+            files = cj.code_manifest()
+            if state["copy"] == "older":
+                files["REAL/scripts/scenarios/scratch.temp"] = "0" * 32
+            if state["copy"] == "missing":
+                files.pop("REAL/scripts/templates/v3/scene_v3.bnf")
+            listed = ("NOMANIFEST\n" if state["copy"] == "nomanifest" else
+                      "".join(f"{h}  {p}\n" for p, h in files.items() if p.startswith("REAL/")))
+            if state["copy"] == "edited":
+                files["REAL/api_app.py"] = "f" * 32          # changed on the cluster after the sync
+            spot = "".join(f"{h}  {p}\n" for p, h in files.items() if f" {p}" in command
+                           or f"'{p}'" in command)
+            return Done(listed + "SPOT\n" + spot)
         return Done()
 
     def copy(local, remote):
@@ -127,7 +138,7 @@ def test_a_timeout_is_reported_not_raised_as_a_crash(cluster):
 
 def test_older_code_on_the_cluster_refuses_before_anything_is_sent(cluster):
     cluster["state"]["copy"] = "older"
-    with pytest.raises(cj.ClusterError, match="differs from this project in grammar.py"):
+    with pytest.raises(cj.ClusterError, match="differ: REAL/scripts/scenarios/scratch.temp"):
         cj.submit(TEXT, "R_new.dsl")
     assert not any(c[0] == "copy" for c in cluster["calls"])
     assert not any("sbatch" in c[1] or "mkdir" in c[1] for c in cluster["calls"] if c[0] == "ssh")
@@ -145,3 +156,68 @@ def test_the_requirements_folder_is_made_only_inside_an_existing_copy(cluster):
     cj.submit(TEXT, "R_new.dsl")
     mkdir = [c[1] for c in cluster["calls"] if c[0] == "ssh" and "mkdir" in c[1]]
     assert mkdir == [f"test -d {cj.REMOTE_DIR}/REAL && mkdir -p {cj.REMOTE_DIR}/REAL/requirements"]
+
+
+def test_the_manifest_is_every_file_a_job_executes_and_nothing_else(cluster):
+    m = cj.code_manifest()
+    assert {"REAL/api_app.py", "REAL/scripts/scenarios/scratch.temp", "REAL/scripts/templates/v3/scene_v3.bnf",
+            "REAL/Scenic/src/scenic/core.py", "REAL/grape/x.py", "run_real_av.slurm"} <= set(m)
+    assert not any(p.endswith(".pt") for p in m)
+
+
+def test_a_missing_grammar_is_named(cluster):
+    cluster["state"]["copy"] = "missing"
+    with pytest.raises(cj.ClusterError, match="missing there: REAL/scripts/templates/v3/scene_v3.bnf") as e:
+        cj.submit(TEXT, "R_new.dsl")
+    assert e.value.kind == "stale_copy" and e.value.details["missing"]
+
+
+def test_a_stale_copy_with_jobs_running_names_the_jobs_and_says_not_to_sync(cluster):
+    cluster["state"]["copy"] = "older"
+    cluster["state"]["active"] = "5000001 RUNNING\n5000002 PENDING\n"
+    with pytest.raises(cj.ClusterError, match="5000001 \\(running\\), 5000002 \\(pending\\).*do not sync") as e:
+        cj.submit(TEXT, "R_new.dsl")
+    assert [j["job_id"] for j in e.value.details["blocking_jobs"]] == ["5000001", "5000002"]
+    assert not any("sbatch" in c[1] for c in cluster["calls"] if c[0] == "ssh")
+
+
+def test_a_matching_copy_submits_next_to_running_jobs(cluster):
+    cluster["state"]["active"] = "5000001 RUNNING\n"
+    assert cj.submit(TEXT, "R_new.dsl")["job_id"] == "4999001"
+
+
+def test_the_tool_never_cancels_or_syncs(cluster):
+    cj.submit(TEXT, "R_new.dsl")
+    cluster["state"]["status"] = "Q:RUNNING\nA:RUNNING\nP:\nR:\nS:\nM:\n"
+    cj.status("4999001")
+    sent = " ".join(c[1] for c in cluster["calls"] if c[0] == "ssh")
+    assert "scancel" not in sent and "rsync" not in sent
+    assert all(c[0] != "copy" or c[2].endswith(".dsl") for c in cluster["calls"])
+
+
+def test_a_copy_synced_without_a_manifest_is_refused(cluster):
+    cluster["state"]["copy"] = "nomanifest"
+    with pytest.raises(cj.ClusterError, match="synced without CODE_MANIFEST.txt"):
+        cj.submit(TEXT, "R_new.dsl")
+
+
+def test_a_file_changed_on_the_cluster_after_the_sync_is_caught(cluster):
+    cluster["state"]["copy"] = "edited"
+    with pytest.raises(cj.ClusterError, match="changed there after the sync: REAL/api_app.py") as e:
+        cj.submit(TEXT, "R_new.dsl")
+    assert e.value.details["tampered"] == ["REAL/api_app.py"]
+
+
+def test_the_check_is_one_short_command_not_every_path(cluster):
+    cj.submit(TEXT, "R_new.dsl")
+    (check,) = cluster["state"]["checks"]
+    assert "CODE_MANIFEST.txt" in check and check.count("REAL/") < 10
+
+
+def test_write_manifest_lists_the_staging_copy_relative_to_it(cluster, tmp_path):
+    (tmp_path / "scripts" / "mlops" / "mlruns" / "0").mkdir(parents=True)
+    (tmp_path / "scripts" / "mlops" / "mlruns" / "0" / "meta.yaml").write_text("x")
+    n = cj.write_manifest(str(tmp_path))
+    text = (tmp_path / "CODE_MANIFEST.txt").read_text()
+    assert n == len(text.splitlines()) and "  scripts/scenarios/scratch.temp\n" in text
+    assert "REAL/" not in text and "mlruns" not in text and "run_real_av.slurm" not in text

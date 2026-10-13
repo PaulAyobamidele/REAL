@@ -80,7 +80,8 @@ The `rsync` prompts for your key passphrase and then a Duo push/passcode, same a
 The image pip-installs the project in editable mode from `/opt/real-av/REAL`, i.e. by path. `run_real_av.slurm` therefore bind-mounts `$SCRATCH/real_project/REAL` over that path if the directory exists, so a code change only needs the ~280 MB staging copy transferred, not the 13 GB image:
 
 ```bash
-# after rebuilding the staging copy (section 2):
+# after rebuilding the staging copy (section 2): list what it contains, then send it
+sim_env/bin/python -m scripts.redsl.cluster_jobs --manifest ~/real-av-build/REAL
 rsync -avP --partial --delete --exclude='ui' --exclude='artifacts' ~/real-av-build/REAL/ narval:scratch/real_project/REAL/
 ```
 
@@ -88,7 +89,7 @@ rsync -avP --partial --delete --exclude='ui' --exclude='artifacts' ~/real-av-bui
 
 Only the project's own Python/templates change this way; CARLA, torch, the YOLO hub cache and the vendored Scenic/VerifAI/grape installs come from the image (the overlay carries identical copies of the vendored source). If the directory is absent the baked-in copy is used. Two consequences: (1) the first `import api_app` is slower from `$SCRATCH` (no cached `.pyc`, network FS) - hence the API readiness poll in the script; (2) **do not rsync while a job is running** - the job re-reads `scripts/scenarios/scratch.temp` for every scenario. Rebuild the image properly (sections 2-4) for the final, citable artifact.
 
-The review interface's **Run test** (ui/README.md) submits through this overlay: it copies the requirement to `REAL/requirements/` and refuses to submit unless the overlay exists and its `scripts/redsl/grammar.py`, `api_app.py` and `run_real_av.slurm` (next section) are identical to the project's. So after changing any of them, sync before pressing Run test.
+The review interface's **Run test** (ui/README.md) submits through this overlay: it copies the requirement to `REAL/requirements/` and refuses to submit unless the overlay exists and every file a job executes from it (the project's top-level modules, `scripts/`, and the editable Scenic, VerifAI and grape; about 600 files) is identical to the project's, and `run_real_av.slurm` (next section) too. Hashing 600 files on `$SCRATCH` takes about 10 minutes (about one file a second, measured 2026-10-13), so the check reads `REAL/CODE_MANIFEST.txt` - the list the `--manifest` step above writes into the staging copy before the sync - and hashes only the job script and five real files as a spot check. A copy synced without the manifest step is refused. Never sync while one of your jobs is queued or running: the tool names those jobs, and never syncs or cancels anything itself.
 
 ## 5. Submit the job
 
@@ -121,7 +122,9 @@ Since 2026-10-13 the job script derives every port from the job number
 (CARLA 20000 + 4·slot and +1, traffic manager +6000, Redis 33000 + slot,
 MLflow 34000 + slot, API 35000 + slot; slot = job number mod 1000) and prints
 them at the start of the log, so jobs can share a node and run in parallel —
-no `--dependency=singleton` needed.
+no `--dependency=singleton` needed. Each job also gets its own MLflow store
+(`/artifacts/mlflow/job_<job id>`; two servers on one store corrupted it), and
+an MLflow logging failure no longer stops a run.
 
 ## Before every submission: the laptop check
 

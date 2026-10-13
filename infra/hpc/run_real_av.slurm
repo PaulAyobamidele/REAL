@@ -112,6 +112,9 @@ export REDIS_PORT=$(( 33000 + SLOT ))
 export MLFLOW_PORT=$(( 34000 + SLOT ))
 export API_PORT=$(( 35000 + SLOT ))
 export MLFLOW_TRACKING_URI="http://127.0.0.1:${MLFLOW_PORT}"
+# ... and its own MLflow store: two servers writing one file store at the same
+# time corrupt it (HTTP 500 on log-batch in parallel jobs).
+export MLFLOW_STORE="/artifacts/mlflow/job_${SLURM_JOB_ID:-local}"
 echo "Ports: CARLA ${CARLA_PORT} (traffic manager $(( CARLA_PORT + 6000 ))), Redis ${REDIS_PORT}, MLflow ${MLFLOW_PORT}, API ${API_PORT}"
 # --- end per-job ports ---------------------------------------------------
 
@@ -134,9 +137,10 @@ apptainer exec --nv --unsquash \
         # library. Local file-based backend/artifact store under /artifacts
         # so results survive after this jobs temp sandbox is cleaned up.
         cd /opt/real-av/REAL
+        mkdir -p "$MLFLOW_STORE"
         mlflow server --host 127.0.0.1 --port "$MLFLOW_PORT" \
-            --backend-store-uri /artifacts/mlflow_backend \
-            --default-artifact-root /artifacts/mlflow_artifacts &
+            --backend-store-uri "$MLFLOW_STORE/backend" \
+            --default-artifact-root "$MLFLOW_STORE/artifacts" &
         MLFLOW_PID=$!
         sleep 10   # give the mlflow server time to bind
 

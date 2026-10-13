@@ -5,7 +5,7 @@
   "safety_rule": "path",
   "safety_rule_changed": 8,
   "sampling": "grid",
-  "analysed_at": "2026-10-08T21:44:58.941663+00:00",
+  "analysed_at": "2026-10-13T14:07:00.944700+00:00",
   "run_meta": {
     "run_id": "657a1447d0ba43af9c3aa54f3c8698ce",
     "mode": "grid",
@@ -188,9 +188,9 @@
         "held": 160,
         "broken": 0,
         "not_measured": 0,
-        "enc_held": 156,
+        "enc_held": 159,
         "enc_broken": 0,
-        "rate_held": 0.02564102564102564,
+        "rate_held": 0.025157232704402517,
         "rate_broken": null,
         "verdict": "untested"
       },
@@ -202,9 +202,9 @@
         "held": 160,
         "broken": 0,
         "not_measured": 0,
-        "enc_held": 156,
+        "enc_held": 159,
         "enc_broken": 0,
-        "rate_held": 0.02564102564102564,
+        "rate_held": 0.025157232704402517,
         "rate_broken": null,
         "verdict": "untested"
       },
@@ -216,9 +216,9 @@
         "held": 159,
         "broken": 1,
         "not_measured": 0,
-        "enc_held": 155,
+        "enc_held": 158,
         "enc_broken": 1,
-        "rate_held": 0.01935483870967742,
+        "rate_held": 0.0189873417721519,
         "rate_broken": 1.0,
         "verdict": "insufficient data"
       },
@@ -266,8 +266,8 @@
       "kind": "checked",
       "quantity": "resume_within_s",
       "message": "",
-      "met": 52,
-      "missed": 103,
+      "met": 53,
+      "missed": 105,
       "not_measured": 0
     },
     {
@@ -284,17 +284,17 @@
     "n_simulations": 159,
     "n_no_encounter": 0,
     "n_left_road": 0,
-    "n_not_crossed": 4,
-    "n_encounters": 155,
+    "n_not_crossed": 1,
+    "n_encounters": 158,
     "n_scenarios": 32,
     "failures": 3,
-    "failure_rate": 0.01935483870967742,
+    "failure_rate": 0.0189873417721519,
     "failure_rate_scenarios": 0.018750000000000003,
     "n_distinct_scenarios": 32,
     "max_repeats_of_a_scenario": 5,
-    "passes": 152,
-    "passed_clean": 7,
-    "passed_stalled": 145,
+    "passes": 155,
+    "passed_clean": 8,
+    "passed_stalled": 147,
     "failure_types": {
       "never_detected": 0,
       "detected_not_braked": 0,
@@ -304,15 +304,15 @@
       "stopped_too_close": 0
     },
     "timing": {
-      "n_detected": 155,
+      "n_detected": 158,
       "first_detection_distance_m_median": 9.40153246634282,
-      "first_brake_distance_m_median": 16.560182981336002,
-      "speed_at_first_brake_mps_median": 5.13354875292992,
-      "stopping_distance_needed_m_median": 6.647082674919272,
+      "first_brake_distance_m_median": 16.314050460358366,
+      "speed_at_first_brake_mps_median": 5.13614364201471,
+      "stopping_distance_needed_m_median": 6.648748275902452,
       "share_detected_too_late": 0.0,
       "brake_steps_median": 228.0,
-      "share_still_moving_at_closest": 0.05806451612903226,
-      "mean_inference_ms_median": 7.029544830322266
+      "share_still_moving_at_closest": 0.06329113924050633,
+      "mean_inference_ms_median": 7.031931400299072
     },
     "by_parameter": [
       {
@@ -321,8 +321,8 @@
         "n": 80,
         "failures": 1,
         "failure_rate": 0.0125,
-        "failure_rate_others": 0.02666666666666667,
-        "effect": -0.014166666666666668,
+        "failure_rate_others": 0.02564102564102564,
+        "effect": -0.01314102564102564,
         "enough_data": true,
         "n_distinct_scenarios": 16,
         "scenario_effect": -0.0125
@@ -330,11 +330,11 @@
       {
         "param": "pedestrian",
         "value": "Child",
-        "n": 75,
+        "n": 78,
         "failures": 2,
-        "failure_rate": 0.02666666666666667,
+        "failure_rate": 0.02564102564102564,
         "failure_rate_others": 0.0125,
-        "effect": 0.014166666666666668,
+        "effect": 0.01314102564102564,
         "enough_data": true,
         "n_distinct_scenarios": 16,
         "scenario_effect": 0.0125
@@ -342,11 +342,11 @@
       {
         "param": "dress",
         "value": "Dark",
-        "n": 79,
+        "n": 80,
         "failures": 0,
         "failure_rate": 0.0,
-        "failure_rate_others": 0.039473684210526314,
-        "effect": -0.039473684210526314,
+        "failure_rate_others": 0.038461538461538464,
+        "effect": -0.038461538461538464,
         "enough_data": true,
         "n_distinct_scenarios": 16,
         "scenario_effect": -0.037500000000000006
@@ -354,11 +354,11 @@
       {
         "param": "dress",
         "value": "Light",
-        "n": 76,
+        "n": 78,
         "failures": 3,
-        "failure_rate": 0.039473684210526314,
+        "failure_rate": 0.038461538461538464,
         "failure_rate_others": 0.0,
-        "effect": 0.039473684210526314,
+        "effect": 0.038461538461538464,
         "enough_data": true,
         "n_distinct_scenarios": 16,
         "scenario_effect": 0.037500000000000006
@@ -369,8 +369,8 @@
         "n": 80,
         "failures": 1,
         "failure_rate": 0.0125,
-        "failure_rate_others": 0.02666666666666667,
-        "effect": -0.014166666666666668,
+        "failure_rate_others": 0.02564102564102564,
+        "effect": -0.01314102564102564,
         "enough_data": true,
         "n_distinct_scenarios": 16,
         "scenario_effect": -0.0125
@@ -378,11 +378,11 @@
       {
         "param": "direction",
         "value": "RL",
-        "n": 75,
+        "n": 78,
         "failures": 2,
-        "failure_rate": 0.02666666666666667,
+        "failure_rate": 0.02564102564102564,
         "failure_rate_others": 0.0125,
-        "effect": 0.014166666666666668,
+        "effect": 0.01314102564102564,
         "enough_data": true,
         "n_distinct_scenarios": 16,
         "scenario_effect": 0.0125
@@ -390,11 +390,11 @@
       {
         "param": "distance",
         "value": "Long",
-        "n": 75,
+        "n": 78,
         "failures": 1,
-        "failure_rate": 0.013333333333333334,
+        "failure_rate": 0.01282051282051282,
         "failure_rate_others": 0.025,
-        "effect": -0.011666666666666667,
+        "effect": -0.012179487179487181,
         "enough_data": true,
         "n_distinct_scenarios": 16,
         "scenario_effect": -0.0125
@@ -405,8 +405,8 @@
         "n": 80,
         "failures": 2,
         "failure_rate": 0.025,
-        "failure_rate_others": 0.013333333333333334,
-        "effect": 0.011666666666666667,
+        "failure_rate_others": 0.01282051282051282,
+        "effect": 0.012179487179487181,
         "enough_data": true,
         "n_distinct_scenarios": 16,
         "scenario_effect": 0.0125
@@ -414,11 +414,11 @@
       {
         "param": "fog_density",
         "value": "0",
-        "n": 77,
+        "n": 79,
         "failures": 2,
-        "failure_rate": 0.025974025974025976,
-        "failure_rate_others": 0.01282051282051282,
-        "effect": 0.013153513153513156,
+        "failure_rate": 0.02531645569620253,
+        "failure_rate_others": 0.012658227848101266,
+        "effect": 0.012658227848101266,
         "enough_data": true,
         "n_distinct_scenarios": 16,
         "scenario_effect": 0.0125
@@ -426,11 +426,11 @@
       {
         "param": "fog_density",
         "value": "50",
-        "n": 78,
+        "n": 79,
         "failures": 1,
-        "failure_rate": 0.01282051282051282,
-        "failure_rate_others": 0.025974025974025976,
-        "effect": -0.013153513153513156,
+        "failure_rate": 0.012658227848101266,
+        "failure_rate_others": 0.02531645569620253,
+        "effect": -0.012658227848101266,
         "enough_data": true,
         "n_distinct_scenarios": 16,
         "scenario_effect": -0.0125
@@ -441,8 +441,8 @@
         "n": 80,
         "failures": 2,
         "failure_rate": 0.025,
-        "failure_rate_others": 0.013333333333333334,
-        "effect": 0.011666666666666667,
+        "failure_rate_others": 0.01282051282051282,
+        "effect": 0.012179487179487181,
         "enough_data": true,
         "n_distinct_scenarios": 16,
         "scenario_effect": 0.0125
@@ -450,11 +450,11 @@
       {
         "param": "approach_distance_m",
         "value": 35.0,
-        "n": 75,
+        "n": 78,
         "failures": 1,
-        "failure_rate": 0.013333333333333334,
+        "failure_rate": 0.01282051282051282,
         "failure_rate_others": 0.025,
-        "effect": -0.011666666666666667,
+        "effect": -0.012179487179487181,
         "enough_data": true,
         "n_distinct_scenarios": 16,
         "scenario_effect": -0.0125
@@ -462,9 +462,9 @@
       {
         "param": "pedestrian_min_speed_mps",
         "value": 2.0,
-        "n": 155,
+        "n": 158,
         "failures": 3,
-        "failure_rate": 0.01935483870967742,
+        "failure_rate": 0.0189873417721519,
         "failure_rate_others": null,
         "effect": null,
         "enough_data": false,
@@ -474,9 +474,9 @@
       {
         "param": "crossing_trigger_m",
         "value": 0.0,
-        "n": 155,
+        "n": 158,
         "failures": 3,
-        "failure_rate": 0.01935483870967742,
+        "failure_rate": 0.0189873417721519,
         "failure_rate_others": null,
         "effect": null,
         "enough_data": false,
@@ -570,6 +570,34 @@
         "stopped_too_close": 0
       },
       {
+        "scenario_id": "26",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 0}",
+        "pedestrian": "Child",
+        "dress": "Light",
+        "direction": "RL",
+        "distance": "Long",
+        "fog_density": "0",
+        "approach_distance_m": 35.0,
+        "pedestrian_min_speed_mps": 2.0,
+        "crossing_trigger_m": 0.0,
+        "n": 4,
+        "encounters": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 2.682418872954303,
+        "passed": 1,
+        "passed_stalled": 3,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
         "scenario_id": "30",
         "phenotype": "A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 50}",
         "pedestrian": "Child",
@@ -581,15 +609,15 @@
         "pedestrian_min_speed_mps": 2.0,
         "crossing_trigger_m": 0.0,
         "n": 5,
-        "encounters": 3,
+        "encounters": 4,
         "failures": 0,
         "failure_rate": 0.0,
         "min_distance_m": 3.0265344608082554,
         "passed": 1,
-        "passed_stalled": 2,
+        "passed_stalled": 3,
         "no_encounter": 0,
         "left_road": 0,
-        "not_crossed": 2,
+        "not_crossed": 1,
         "never_detected": 0,
         "detected_not_braked": 0,
         "detected_too_late": 0,
@@ -758,34 +786,6 @@
         "no_encounter": 0,
         "left_road": 0,
         "not_crossed": 0,
-        "never_detected": 0,
-        "detected_not_braked": 0,
-        "detected_too_late": 0,
-        "brake_released": 0,
-        "braking_insufficient": 0,
-        "stopped_too_close": 0
-      },
-      {
-        "scenario_id": "26",
-        "phenotype": "A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 0}",
-        "pedestrian": "Child",
-        "dress": "Light",
-        "direction": "RL",
-        "distance": "Long",
-        "fog_density": "0",
-        "approach_distance_m": 35.0,
-        "pedestrian_min_speed_mps": 2.0,
-        "crossing_trigger_m": 0.0,
-        "n": 4,
-        "encounters": 3,
-        "failures": 0,
-        "failure_rate": 0.0,
-        "min_distance_m": 6.337697560090343,
-        "passed": 0,
-        "passed_stalled": 3,
-        "no_encounter": 0,
-        "left_road": 0,
-        "not_crossed": 1,
         "never_detected": 0,
         "detected_not_braked": 0,
         "detected_too_late": 0,
@@ -1281,15 +1281,15 @@
         "pedestrian_min_speed_mps": 2.0,
         "crossing_trigger_m": 0.0,
         "n": 5,
-        "encounters": 4,
+        "encounters": 5,
         "failures": 0,
         "failure_rate": 0.0,
-        "min_distance_m": 9.319311919203903,
+        "min_distance_m": 9.249721729624836,
         "passed": 0,
-        "passed_stalled": 4,
+        "passed_stalled": 5,
         "no_encounter": 0,
         "left_road": 0,
-        "not_crossed": 1,
+        "not_crossed": 0,
         "never_detected": 0,
         "detected_not_braked": 0,
         "detected_too_late": 0,
@@ -1383,8 +1383,8 @@
       }
     ],
     "warnings": [
-      "4 simulation(s) where the PEDESTRIAN NEVER CROSSED the road. Nobody was in the car's path, so these say nothing about the car: excluded from every rate. A defect of the test scene - fix it before reading anything else in this report.",
-      "145 of 152 passes were 'stalled': the car braked to a standstill and never moved again before the time limit. The safety rule held, but the car did not get past the crossing - a standoff (in scene v1 the pedestrian also waited for the car to come within 8 m). Read the pass rate with this in mind; it is the paper's 'mitigation shifts the failure mode' effect.",
+      "1 simulation(s) where the PEDESTRIAN NEVER CROSSED the road. Nobody was in the car's path, so these say nothing about the car: excluded from every rate. A defect of the test scene - fix it before reading anything else in this report.",
+      "147 of 155 passes were 'stalled': the car braked to a standstill and never moved again before the time limit. The safety rule held, but the car did not get past the crossing - a standoff (in scene v1 the pedestrian also waited for the car to come within 8 m). Read the pass rate with this in mind; it is the paper's 'mitigation shifts the failure mode' effect.",
       "Failures (2% overall) do not vary with any scenario setting (largest effect 4% < 15%). That pattern points at the scoring or the fixed parts of the scenario (approach speed, confidence bar, braking logic), not at the settings the grammar varies."
     ]
   },
@@ -1407,11 +1407,11 @@
       "evidence": {
         "param": "pedestrian",
         "value": "Child",
-        "n": 75,
+        "n": 78,
         "failures": 2,
-        "failure_rate": 0.02666666666666667,
+        "failure_rate": 0.02564102564102564,
         "failure_rate_others": 0.0125,
-        "effect": 0.014166666666666668,
+        "effect": 0.01314102564102564,
         "enough_data": true,
         "n_distinct_scenarios": 16,
         "scenario_effect": 0.0125
@@ -1473,11 +1473,11 @@
       "evidence": {
         "param": "dress",
         "value": "Dark",
-        "n": 79,
+        "n": 80,
         "failures": 0,
         "failure_rate": 0.0,
-        "failure_rate_others": 0.039473684210526314,
-        "effect": -0.039473684210526314,
+        "failure_rate_others": 0.038461538461538464,
+        "effect": -0.038461538461538464,
         "enough_data": true,
         "n_distinct_scenarios": 16,
         "scenario_effect": -0.037500000000000006
@@ -1539,11 +1539,11 @@
       "evidence": {
         "param": "fog_density",
         "value": "50",
-        "n": 78,
+        "n": 79,
         "failures": 1,
-        "failure_rate": 0.01282051282051282,
-        "failure_rate_others": 0.025974025974025976,
-        "effect": -0.013153513153513156,
+        "failure_rate": 0.012658227848101266,
+        "failure_rate_others": 0.02531645569620253,
+        "effect": -0.012658227848101266,
         "enough_data": true,
         "n_distinct_scenarios": 16,
         "scenario_effect": -0.0125
@@ -1712,9 +1712,9 @@
       "verdict": "supported",
       "evidence": {
         "outcome": "passed_stalled",
-        "count": 145,
-        "passes": 152,
-        "share": 0.9539473684210527
+        "count": 147,
+        "passes": 155,
+        "share": 0.9483870967741935
       },
       "detection_failure_share": null,
       "changes": {
@@ -1766,7 +1766,7 @@
       "metric": "passed_stalled",
       "description": "The pedestrian's CrossingBehavior only steps out once the car is within THRESHOLD = 8 m (scratch.temp). A car that stops cautiously before that never gets to see the crossing happen: a standoff that is a property of the test, not of the system - it makes StandoffUnnecessaryStop partly unmeasurable.",
       "fix": "scratch.temp: trigger the crossing on a timer or on the pedestrian's own distance to the crossing point, not on proximity to the ego.",
-      "value": 145
+      "value": 147
     },
     {
       "id": "no_encounter_geometry",
@@ -4161,8 +4161,8 @@
     {
       "scenario_id": "26",
       "sim_index": 2,
-      "outcome": "not_crossed",
-      "encounter": false,
+      "outcome": "passed",
+      "encounter": true,
       "failed": false,
       "admissible": true,
       "set_aside_reason": "",
@@ -4171,7 +4171,9 @@
         "initial_separation_m >= 15": "held",
         "pedestrian_speed_mps <= 3": "held"
       },
-      "soft_goals": {},
+      "soft_goals": {
+        "resume_within_s <= 10": "met"
+      },
       "trace": "traces/26_2.json"
     },
     {
@@ -4213,8 +4215,8 @@
     {
       "scenario_id": "27",
       "sim_index": 0,
-      "outcome": "not_crossed",
-      "encounter": false,
+      "outcome": "passed_stalled",
+      "encounter": true,
       "failed": false,
       "admissible": true,
       "set_aside_reason": "",
@@ -4223,7 +4225,9 @@
         "initial_separation_m >= 15": "held",
         "pedestrian_speed_mps <= 3": "held"
       },
-      "soft_goals": {},
+      "soft_goals": {
+        "resume_within_s <= 10": "missed"
+      },
       "trace": "traces/27_0.json"
     },
     {
@@ -4499,8 +4503,8 @@
     {
       "scenario_id": "30",
       "sim_index": 1,
-      "outcome": "not_crossed",
-      "encounter": false,
+      "outcome": "passed_stalled",
+      "encounter": true,
       "failed": false,
       "admissible": true,
       "set_aside_reason": "",
@@ -4509,7 +4513,9 @@
         "initial_separation_m >= 15": "held",
         "pedestrian_speed_mps <= 3": "held"
       },
-      "soft_goals": {},
+      "soft_goals": {
+        "resume_within_s <= 10": "missed"
+      },
       "trace": "traces/30_1.json"
     },
     {
