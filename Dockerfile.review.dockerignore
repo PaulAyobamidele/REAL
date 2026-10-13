@@ -1,0 +1,19 @@
+# Context for Dockerfile.review (BuildKit reads this file for that Dockerfile).
+# Allow-list: the laptop-side Python code, the demo rounds and the interface source.
+*
+!requirements-demo.txt
+!real_config.py
+!scripts/demo.py
+!scripts/analysis/
+!scripts/redsl/
+!scripts/evolve/
+!scripts/templates/
+!scripts/scenarios/scratch.temp
+!docs/examples/
+!examples/demo_runs/
+!ui/
+ui/node_modules
+ui/dist
+ui/coverage
+ui/public/workspace
+**/__pycache__

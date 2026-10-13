@@ -1,0 +1,258 @@
+{
+ "parameters": {
+  "safety_rule": "anywhere",
+  "detection_frames": 3,
+  "lane_half_width_m": 2.5
+ },
+ "setting": {
+  "linkage": "single",
+  "threshold": 0.6,
+  "clusters": 2,
+  "ari": 1.0
+ },
+ "repeats": {
+  "all_encounters": {
+   "simulations": 156,
+   "distinct_sequences": 143,
+   "within_scenario": {
+    "pairs": 305,
+    "median": 0.5909090909090909,
+    "mean": 0.5634200159546692
+   },
+   "between_scenarios": {
+    "pairs": 11785,
+    "median": 0.6666666666666666,
+    "mean": 0.6422552098329951
+   }
+  },
+  "failures": {
+   "simulations": 10,
+   "distinct_sequences": 10,
+   "within_scenario": {
+    "pairs": 2,
+    "median": 0.5465686274509804,
+    "mean": 0.5465686274509804
+   },
+   "between_scenarios": {
+    "pairs": 43,
+    "median": 0.6060606060606061,
+    "mean": 0.6217033789370711
+   }
+  }
+ },
+ "clusters": [
+  {
+   "cluster": 1,
+   "size_scenarios": 7,
+   "size_simulations": 9,
+   "scenarios": [
+    "2",
+    "3",
+    "10",
+    "11",
+    "18",
+    "20",
+    "30"
+   ],
+   "medoid_scenario": "3",
+   "medoid_sequence": [
+    "closing to 20-10 m",
+    "braking begins",
+    "first detected (>0.30)",
+    "ego stops",
+    "pedestrian enters the ego's lane",
+    "pedestrian leaves the ego's lane",
+    "ego resumes",
+    "braking begins + closing to 10-5 m",
+    "detection reaches 0.85",
+    "ego stops",
+    "braking begins",
+    "detection reaches 0.85",
+    "braking begins",
+    "detection lost (<=0.30 after 0.85)",
+    "braking begins + ego resumes",
+    "ego stops",
+    "ego resumes",
+    "safety violated (<5 m)",
+    "closest approach"
+   ],
+   "scenario_labels": {
+    "brake_released": 7
+   },
+   "simulation_type_shares": {
+    "brake_released": 1.0
+   },
+   "over_represented_settings": [],
+   "catalogue": {
+    "obstacle": "BrakingNotLatched",
+    "via": "brake_released (100% of failing simulations)"
+   }
+  },
+  {
+   "cluster": 2,
+   "size_scenarios": 1,
+   "size_simulations": 1,
+   "scenarios": [
+    "26"
+   ],
+   "medoid_scenario": "26",
+   "medoid_sequence": [
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "braking begins + pedestrian enters the ego's lane",
+    "first detected (>0.30) + detection reaches 0.85 + safety violated (<5 m)",
+    "ego stops",
+    "closest approach"
+   ],
+   "scenario_labels": {
+    "detected_too_late": 1
+   },
+   "simulation_type_shares": {
+    "detected_too_late": 1.0
+   },
+   "over_represented_settings": [],
+   "catalogue": {
+    "obstacle": "DetectionTooLate",
+    "via": "detected_too_late (100% of failing simulations)"
+   }
+  }
+ ],
+ "scenarios": [
+  {
+   "scenario_id": "2",
+   "medoid_sim": 3,
+   "label": "brake_released",
+   "types": {
+    "brake_released": 1
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Light",
+    "direction": "LR",
+    "distance": "Short",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.0,
+   "cluster": 1
+  },
+  {
+   "scenario_id": "3",
+   "medoid_sim": 3,
+   "label": "brake_released",
+   "types": {
+    "brake_released": 1
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Dark",
+    "direction": "LR",
+    "distance": "Short",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.0,
+   "cluster": 1
+  },
+  {
+   "scenario_id": "10",
+   "medoid_sim": 0,
+   "label": "brake_released",
+   "types": {
+    "brake_released": 2
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Light",
+    "direction": "LR",
+    "distance": "Long",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.4166666666666667,
+   "cluster": 1
+  },
+  {
+   "scenario_id": "11",
+   "medoid_sim": 0,
+   "label": "brake_released",
+   "types": {
+    "brake_released": 1
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Dark",
+    "direction": "LR",
+    "distance": "Long",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.0,
+   "cluster": 1
+  },
+  {
+   "scenario_id": "18",
+   "medoid_sim": 2,
+   "label": "brake_released",
+   "types": {
+    "brake_released": 2
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Light",
+    "direction": "RL",
+    "distance": "Short",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.6764705882352942,
+   "cluster": 1
+  },
+  {
+   "scenario_id": "20",
+   "medoid_sim": 0,
+   "label": "brake_released",
+   "types": {
+    "brake_released": 1
+   },
+   "settings": {
+    "pedestrian": "Adult",
+    "dress": "Light",
+    "direction": "RL",
+    "distance": "Short",
+    "fog_density": "50"
+   },
+   "max_repeat_distance": 0.0,
+   "cluster": 1
+  },
+  {
+   "scenario_id": "26",
+   "medoid_sim": 0,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 1
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Light",
+    "direction": "RL",
+    "distance": "Long",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.0,
+   "cluster": 2
+  },
+  {
+   "scenario_id": "30",
+   "medoid_sim": 0,
+   "label": "brake_released",
+   "types": {
+    "brake_released": 1
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Light",
+    "direction": "RL",
+    "distance": "Long",
+    "fog_density": "50"
+   },
+   "max_repeat_distance": 0.0,
+   "cluster": 1
+  }
+ ]
+}

@@ -23,3 +23,8 @@ those defects is part of what the tool is for.
 `review_answers.json` is the scripted human review the demo replays for
 round 2. It is labelled as scripted in the decisions it produces; on the
 review page every answer can be changed.
+
+`best_scenario_h264.mp4` (added 2026-10-08) is the same recording re-stitched
+from the saved frames with H.264, which browsers decode; the original
+`best_scenario.mp4` (MPEG-4 part 2) is kept as the run wrote it. The review
+interface (`ui/`) prefers the H.264 file.

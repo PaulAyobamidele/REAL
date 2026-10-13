@@ -1,0 +1,225 @@
+# real-av Review
+
+The human review interface for real-av. A testing round leaves a folder of
+evidence: the requirement it ran with, one row per simulation, traces, a
+video, and an automated analysis that groups failures into named obstacles.
+This interface shows that evidence to a reviewer, records what the reviewer
+decides, and writes the decision as the files the next round is launched
+from. It is a static web application: no server, no database, no network.
+
+It is one of two ways to produce `decisions.json`. The other is the
+command-line review (`python -m scripts.analysis.review`); the Streamlit page
+(`pages/4_review.py`) is the earlier interface and keeps working. All three
+write the same files.
+
+## What a reviewer does
+
+1. **Workspace** — load a folder of rounds. Every file the interface reads is
+   named on this screen; configuration lives here and nowhere in the review.
+2. **Rounds** — the rounds in order, each with its requirement version, the
+   system under test, the search, its headline counts and its state
+   (not analysed, awaiting signature, tool proposal on file, signed). Between
+   rounds, the recorded change with its kind ([S] car, [R] promise, [D]
+   assumptions, [T] test) and who signed it.
+3. **Review**, five steps, one per screen:
+   1. _The requirement under test_ — the requirement with `performed by`, `assuming` and
+      `ensuring` marked; "none stated" for an absent clause.
+   2. _Test Execution Result_ — test cases, runs, passed and failed, which part of the requirement failed, every test case with its runs (downloadable as CSV), the recorded run with an explanation of "best scenario"; the full counts beside the previous round's in a dropdown. No
+      obstacle names.
+   3. _Failure Analysis_ — the requirement shown as **Text, Tree or Diagram**
+      (one switch, remembered per screen; Tree is the default here, Text on
+      screen 1): the diagram draws the goal model in the KAOS notation of the
+      REAL paper (Figs. 2 and 4) with every obstacle beside the node the
+      analysis says it obstructs, and the obstacles with nothing in the
+      requirement to attach to in their own region; clicking one dims all but
+      its chain and filters the evidence. Then the goal model with each obstacle attached to the goal
+      it obstructs (or listed as unattached, with the reason), the simulations
+      behind it, each with its trace, and the candidate mitigations by layer.
+      Below, _Patterns across all encounters_: every valid encounter as a dot
+      on a map of how alike the runs unfolded (their event sequences), shaped
+      by outcome, coloured by cluster, with the runs behind the selected
+      obstacle ringed; a slider moves between coarser and finer cuts, each
+      with its silhouette and what it means; one card per cluster gives its
+      outcomes, over-represented settings and typical run step by step.
+      Clicking a dot opens its trace. Computed in Python
+      (`python -m scripts.analysis.cluster_map <run folder>` writes
+      `cluster_map.json`); without that file the section says how to make it.
+   4. _Obstacle triage_ — obstacles in support order, those below the
+      support bar folded into one line that expands; accept / rename /
+      reject / defer per obstacle, a
+      mitigation per accepted one (a catalogue fix, reworded if wanted, or
+      the reviewer's own: a layer and an action, also where the catalogue
+      has none), verdicts on scope items and domain assumptions, a reason
+      in the reviewer's own words. The change each fix implies is shown as
+      it is typed and follows `refine.change_for`: where refine.py's tables
+      map the obstacle and layer, the table's change stands and the wording
+      is only recorded; otherwise the change is built from the text.
+   5. _Requirement revision_ — R0 and R1 side by side, every change
+      labelled, R1 editable, and the one action that writes the files.
+
+A progress tracker sits above every step: the five steps on one track, each
+with a line of live status (what was stated, cases and runs, obstacles, how
+many verdicts are decided, whether it is signed), done steps ticked and the
+triage step's ring filling as verdicts are made; every step is a link.
+
+Two rules hold everywhere: tool output and human judgement never look alike
+(a pre-filled verdict from a `decisions.json` on disk stays marked as
+unconfirmed until the reviewer confirms or changes it), and every number on
+screen links to the simulations behind it, with the set-aside ones shown as
+their own group and never counted as passes.
+
+## Writing a requirement
+
+_Write a requirement_ (top bar, or the card on the Workspace screen) works
+like Overleaf: the requirement on the left, its KAOS goal model on the
+right, redrawn as you type. The left side is the DSL itself with gaps to
+fill - the fixed words (`MAINTAIN`, `by`, `using`, `operationalized as`, ...)
+are text, free gaps (names, inputs, outputs, the scenario sentence,
+free-text assumptions and soft goals) take suggestions from every
+`docs/examples/*.dsl` and from what is already written (the perception
+outputs as the braking input), and bounded gaps are menus read from the
+code: the temporal operator (the grammar), the module per operation
+(perception: the weights in `model/`; braking: `BRAKING_BEHAVIOURS`), the
+measurable quantities (`admissibility.QUANTITIES`, never `ego*`;
+`soft_goals.QUANTITIES`) and the operators. The tasks "Detect Pedestrian"
+and "Apply Brakes" are fixed, because the executor finds its modules by
+them. Lines are numbered as in the DSL, so a line the parser rejects is
+marked; the goal model then stays on the last version that parsed, dimmed,
+until the text parses again. A free-text item is marked ◌ (not checked
+automatically) as soon as it is added. Save writes nothing unless the
+project's parser accepts the text; _Load a .dsl_ reads a file into the gaps,
+or into _Plain text_ when the gaps cannot hold it (the constructs they lack
+are listed there). _Results for this requirement_ lists the runs in
+`artifacts/runs` that ran exactly it, and _Show these runs in the
+Workspace_ opens them. Screen 5 still edits R1 as text.
+
+**Run test** takes the requirement to its Test Execution Result (review
+screen 2). If a grid run of exactly this requirement exists, it opens the
+latest one at once. Otherwise it asks first, then saves the text as
+`requirements/<name>.dsl`, submits it to the cluster over your own ssh
+session (`sbatch --export=ALL,REAL_REQUIREMENT_FILE=requirements/<name>
+run_real_av.slurm`), follows the job (queue, then test case n of 32; the
+page can be left and reopened), and when it completes pulls the run into
+`artifacts/runs/`, analyses it, and opens its result. Without an open ssh
+session it says so and submits nothing: run `ssh narval` once in a
+terminal first. Before anything is sent it also checks that Narval's project
+copy (`scratch/real_project/REAL`) exists and that its parser
+(`grammar.py`), `api_app.py` and job script are identical to this project's;
+if not, it says to sync first (infra/hpc/README.md, 4b) and submits nothing.
+It never creates that copy. Submitted jobs are listed in `artifacts/jobs.json`.
+
+This screen needs the **authoring helper**, run from the repository root:
+
+```bash
+sim_env/bin/python -m scripts.redsl.serve   # http://127.0.0.1:8765, proxied by npm run dev
+```
+
+Reviewing does not need it. The form round-trips: every `docs/examples/*.dsl`
+goes text -> parser -> form -> text -> parser with the text unchanged apart
+from whitespace and comments and the two goal trees equal
+(`tests/contract/authoring.test.ts`).
+
+## Files
+
+| Read                                                                                                                                                                                                                                 | Written on signing                                          |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| `run_meta.json`, `analysis_report.json`, `simulations.csv`, `traces/*.json`, `R0.dsl` (or the requirement in `run_meta.json`), `decisions.json` if present, `cluster_map.json` if present, `best_scenario_h264.mp4` / `best_scenario.mp4`, `frames/front_rgb/*.png` | `decisions.json`, `R0.dsl`, `R1.dsl`, `requirement_diff.md` |
+
+`analysis_report.json` must be schema version 2 (written by
+`python -m scripts.analysis.report` from 2026-10-08 on) for the full review:
+it carries the goal tree, the per-simulation outcomes and the change each
+mitigation implies. Older reports load in a reduced mode and the interface
+says so. Nothing else in a run folder is modified.
+
+The video a run writes is MPEG-4 part 2, which browsers do not decode;
+`python -m scripts.evolve.video <run folder>` writes a browser-playable
+`best_scenario_h264.mp4` next to it. Without it, the saved frames are shown.
+
+## How a workspace reaches the interface
+
+- **A folder on this computer** (Chrome, Edge): _Open a folder…_ uses the
+  File System Access API, so signing writes into the round folder.
+- **Dropped files** or the folder input (any browser): read-only; signing
+  offers the four files as downloads to copy into the round folder.
+- **A folder served next to the build** at `workspace/`, listed by its
+  `index.json` (a static server cannot list directories). This is how a
+  container demo bundles example data; it is labelled as example data on
+  screen. Build the index with:
+
+  ```bash
+  node scripts/make-workspace-index.mjs <folder of run folders> --out public/workspace --example
+  ```
+
+  `python -m scripts.demo --out <dir>` produces such a folder (`<dir>/runs`).
+
+A draft decision is kept in the browser's session storage while a review is
+in progress, so a reload does not lose it. It is never the signed file.
+
+## Development
+
+```bash
+cd ui
+npm install
+npm run dev          # http://localhost:5173 (and, for Write a requirement: python -m scripts.redsl.serve)
+npm run test         # Vitest + React Testing Library
+npm run lint
+npm run typecheck
+npm run build        # dist/
+npm run preview      # serve dist/ locally
+```
+
+Node 20 or newer. The contract tests (`tests/contract/`) compare the files
+this interface writes with what the Python tools write for the same inputs,
+byte for byte; they run when a Python interpreter with the project's
+packages is found (`../sim_env/bin/python`, `python3`, or `REAL_PYTHON`) and
+are skipped otherwise. The fixtures in `tests/fixtures/workspace/` are two
+real rounds, byte for byte as Python wrote them; `.prettierignore` keeps
+the formatter away from them.
+
+## Structure
+
+```
+src/
+├── domain/        pure functions: the decision document (= decisions.from_analysis),
+│                  change planning and requirement assembly (= refine.py), the goal
+│                  model, evidence selection, lineage, Python-compatible JSON and
+│                  number formatting
+├── services/      file sources (static, folder, dropped files), loaders with
+│                  validated schemas (zod), the CSV reader, signing
+├── state/         workspace context, draft decisions (reducer + session storage), routing
+├── components/    ui, feedback, requirement (DSL block, goal tree, diff), evidence
+│                  (table, trace, video), review (step shell, verdict controls), lineage
+├── pages/         Workspace, Rounds, Review (five steps)
+└── styles/        tokens.css (design tokens) and app.css (base styles, shared treatments)
+```
+
+Design tokens are the only place colours, type and spacing are defined.
+`src/styles/tokens.css` carries the set, in an Apple-like style: cool grey
+neutrals (#F5F5F7 page, white cards, #1D1D1F text), one raspberry accent
+(`human`, #C8175D) used sparingly for the current step, the primary action,
+links and the reviewer's own verdicts; `fail`, `pass`, `set-aside`,
+`caution` and the four change kinds reserved for meaning (`fail` is a warm
+red, #CC2F12, so it never reads as the accent); a desktop-app
+type scale (12 / 13 / 14 px body, 16 px card titles, 26 to 32 px page
+titles); 6 / 10 / 16 px radii; translucent `fill` greys for quiet controls;
+150 / 200 / 280 ms motion; a dark-mode override. The look is calm and
+compact: one frosted top bar (screens, and the five steps inside a review
+as a segmented control), cards lifted by a hairline and a soft shadow
+instead of borders, borderless tinted tags, capsule buttons, verdicts as a
+row of tiles (the chosen one in the `human` colour), explanations folded
+into dropdowns, and two small floating buttons for Back and Next. Step 3 is
+the sketch's sandbox: one card with the goal model on the left and two
+panels on the right, failures with video evidence above the candidate
+fixes. Four treatments in `src/styles/app.css` carry the rules:
+`.tool-output` (sunken surface, 2px left rule), `.refusal` (caution tint
+and rule), `.human-input` (raised surface, hairline border) and `.dsl` (the
+requirement with its three parts marked). Fonts are Poppins (400 to 700) for text and the system monospace (SF Mono on Apple devices, JetBrains Mono elsewhere) for code and numbers, bundled from `@fontsource` packages: nothing is loaded from a CDN.
+
+## Dependencies
+
+React 18, TypeScript, Vite, Tailwind CSS 4, and four runtime libraries each
+doing one job: `zod` (schemas that validate the loaded files and give the
+types), `papaparse` (CSV), `diff` (line diffs for the side-by-side view and
+`requirement_diff.md`), `@radix-ui/react-radio-group` (accessible radio
+groups for verdicts). The goal tree follows the WAI-ARIA tree pattern and is
+implemented here, since Radix has no tree primitive.

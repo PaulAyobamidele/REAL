@@ -26,17 +26,20 @@ def reset_context():
 
 def test_braking_mode_from_module():
     assert util.braking_mode_from_module("proportional_braking") == "proportional_braking"
-    assert util.braking_mode_from_module("Proportional Braking") == "proportional_braking"
+    assert util.braking_mode_from_module("path_aware_braking") == "path_aware_braking"
     assert util.braking_mode_from_module("emergency_braking") == "emergency_braking"
-    assert util.braking_mode_from_module("braking module") == "emergency_braking"
-    assert util.braking_mode_from_module(None) == "emergency_braking"
-    assert util.braking_mode_from_module("hydraulic_thing") == "emergency_braking"  # unknown -> baseline
+    assert util.braking_mode_from_module("braking module") == "emergency_braking"   # explicit legacy name
+    assert util.braking_mode_from_module(None) == "emergency_braking"               # none named: default
+    for name in ("hydraulic_thing", "Proportional Braking", "proportional_braking_with_resume"):
+        with pytest.raises(ValueError, match="unknown braking module"):          # refused, not swapped
+            util.braking_mode_from_module(name)
 
 
 def test_resolve_yolo_model_checks_weights_exist():
     assert util.resolve_yolo_model("yolov5s") == "yolov5s"
     assert util.resolve_yolo_model(None) == "yolov5s"
-    assert util.resolve_yolo_model("no_such_model") == "yolov5s"
+    with pytest.raises(ValueError, match="unknown perception model"):
+        util.resolve_yolo_model("no_such_model")
     if os.path.exists(os.path.join(util.settings.model_dir, "fine_tune.pt")):
         assert util.resolve_yolo_model("fine_tune") == "fine_tune"
 
@@ -44,8 +47,10 @@ def test_resolve_yolo_model_checks_weights_exist():
 def test_configure_sets_context():
     ctx = util.configure(braking_mode="proportional_braking", yolo_model="yolov5s")
     assert ctx == {"braking_mode": "proportional_braking", "yolo_model": "yolov5s"}
-    ctx = util.configure(braking_mode="some braking module")     # raw module name also accepted
+    ctx = util.configure(braking_mode="braking module")          # explicit legacy name
     assert ctx["braking_mode"] == "emergency_braking"
+    with pytest.raises(ValueError):
+        util.configure(braking_mode="some braking module")
 
 
 @pytest.mark.parametrize("mode", sorted(util.BRAKING_BEHAVIOURS))
@@ -56,6 +61,8 @@ def test_build_scenario_emits_each_braking_mode_and_parses(mode):
     assert "behavior Exp_EgoBehaviour" in code
     if mode == "proportional_braking":
         assert "SetBrakeAction" in code and "CAUTION_CONFIDENCE" in code
+    elif mode == "path_aware_braking":
+        assert "perceive_in_path(" in code and "def perceive_in_path" in code
     else:
         assert "YoloEmergencyBraking" in code
     parse_string(code, "exec", filename="scratch.temp")     # Scenic accepts it

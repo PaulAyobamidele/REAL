@@ -1,0 +1,246 @@
+/* Self-hosted fonts (bundled woff2; nothing is fetched from a CDN). */
+@import '@fontsource/poppins/400.css';
+@import '@fontsource/poppins/500.css';
+@import '@fontsource/poppins/600.css';
+@import '@fontsource/poppins/700.css';
+@import '@fontsource-variable/jetbrains-mono';
+@import './tokens.css';
+
+@layer base {
+  html {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  h1 {
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--color-human) 22%, transparent);
+  }
+  code,
+  pre,
+  kbd,
+  textarea.dsl,
+  .font-mono {
+    /* "<=" must read as typed in a DSL, never as a merged symbol */
+    font-variant-ligatures: none;
+    font-feature-settings:
+      'liga' 0,
+      'calt' 0;
+  }
+  code,
+  pre,
+  kbd {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 18px;
+    letter-spacing: 0;
+  }
+  /* the system focus ring: a soft accent halo */
+  :focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-human) 45%, transparent);
+    outline-offset: 1px;
+  }
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+  a {
+    color: var(--color-human);
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  summary {
+    list-style: none;
+    cursor: pointer;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition: none !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .prose-width {
+    max-width: 62ch;
+  }
+
+  /* a card: the raised surface, lifted by a near-invisible hairline and a soft shadow */
+  .card {
+    background: var(--color-surface-raised);
+    border: 1px solid rgb(0 0 0 / 0.04);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+  }
+  @media (prefers-color-scheme: dark) {
+    .card {
+      border-color: transparent;
+    }
+  }
+  /* a panel inside a card: the sunken surface */
+  .panel {
+    background: var(--color-surface-sunken);
+    border-radius: var(--radius-md);
+  }
+  /* tool output: sunken surface with a left rule */
+  .tool-output {
+    background: var(--color-surface-sunken);
+    border-left: 2px solid var(--color-border-strong);
+    border-radius: 4px var(--radius-md) var(--radius-md) 4px;
+  }
+  .refusal {
+    background: var(--color-caution-soft);
+    border-left: 2px solid var(--color-caution);
+    border-radius: 4px var(--radius-md) var(--radius-md) 4px;
+  }
+  .human-input {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+  }
+
+  /* the requirement text, with its three parts marked */
+  .dsl {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 19px;
+    white-space: pre;
+    overflow-x: auto;
+    max-width: 100%;
+    padding: 14px 16px;
+    border-radius: var(--radius-md);
+    background: var(--color-surface-sunken);
+    tab-size: 4;
+  }
+  .dsl-performed {
+    background: var(--color-change-s-soft);
+    color: var(--color-change-s);
+    border-radius: 4px;
+    padding: 0 3px;
+  }
+  .dsl-assuming {
+    background: var(--color-change-d-soft);
+    color: var(--color-change-d);
+    border-radius: 4px;
+    padding: 0 3px;
+  }
+  .dsl-ensuring {
+    background: var(--color-change-r-soft);
+    color: var(--color-change-r);
+    border-radius: 4px;
+    padding: 0 3px;
+  }
+  .dsl-comment {
+    color: var(--color-text-faint);
+  }
+  .dsl-keyword {
+    color: var(--color-text-muted);
+  }
+  .dsl-added {
+    font-weight: 500;
+    box-shadow: inset 3px 0 0 var(--color-pass);
+    background: var(--color-pass-soft);
+  }
+  .dsl-removed {
+    font-weight: 500;
+    box-shadow: inset 3px 0 0 var(--color-fail);
+    background: var(--color-fail-soft);
+    text-decoration: line-through;
+    text-decoration-color: var(--color-text-faint);
+  }
+
+  /* anything quantitative links to its evidence */
+  .count-link {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 3px;
+    color: inherit;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  .count-link:hover {
+    text-decoration-style: solid;
+    background: var(--color-human-soft);
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+  .num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  /* floating round controls (bottom right) */
+  .float-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    box-shadow: var(--shadow-float);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+    transition:
+      transform var(--duration-fast) var(--ease-standard),
+      filter var(--duration-fast) var(--ease-standard);
+  }
+  .float-btn:hover:not(:disabled) {
+    filter: brightness(1.06);
+  }
+  .float-btn:active:not(:disabled) {
+    transform: scale(0.94);
+  }
+
+  /* the requirement editor: gaps with suggestions keep the width of their text
+     (the suggestion list still opens as you type) */
+  .dsl-editor input::-webkit-calendar-picker-indicator {
+    display: none !important;
+  }
+
+  /* frosted chrome: the top bar */
+  .glass {
+    background: color-mix(in srgb, var(--color-surface-raised) 72%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+  }
+}

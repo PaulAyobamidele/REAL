@@ -48,13 +48,15 @@ import os
 import pandas as pd
 
 PARAMS = ["pedestrian", "dress", "direction", "distance", "fog_density",
-          "approach_distance_m", "pedestrian_min_speed_mps", "crossing_trigger_m"]
+          "approach_distance_m", "pedestrian_min_speed_mps", "crossing_trigger_m",
+          "sun_altitude_angle", "wetness", "precipitation", "cloudiness", "occlusion"]
 # Numeric settings with more than two values (the GE grammar scene_v2.bnf)
 # are split low / high at the grammar's midpoint for the effects table, so
 # each side has enough simulations. Two-valued settings (old.bnf fog 0/50)
 # keep their values.
 BANDS = {"fog_density": 50, "approach_distance_m": 25,
-         "pedestrian_min_speed_mps": 2.0, "crossing_trigger_m": 20}
+         "pedestrian_min_speed_mps": 2.0, "crossing_trigger_m": 20,
+         "sun_altitude_angle": 15, "wetness": 50, "precipitation": 50, "cloudiness": 50}
 
 
 def _banded(df, param):
@@ -69,7 +71,7 @@ def _banded(df, param):
 
 BOOL_COLUMNS = ["passed", "stopped", "resumed", "left_road", "crossed"]
 NUMERIC_COLUMNS = [
-    "rho", "min_distance_m", "min_distance_step", "ego_speed_at_min_distance",
+    "rho", "rho_anywhere", "min_distance_m", "min_distance_step", "ego_speed_at_min_distance",
     "steps", "timestep_s", "duration_s", "ego_speed_max", "ego_speed_final",
     "frames_seen", "detection_frames", "max_confidence", "first_detection_step",
     "first_detection_conf", "first_detection_distance_m",
@@ -77,7 +79,8 @@ NUMERIC_COLUMNS = [
     "first_brake_distance_m", "ego_speed_at_first_brake", "brake_steps",
     "reaction_steps", "sim_index",
     # scene v2
-    "approach_distance_m", "crossing_trigger_m", "pedestrian_min_speed_mps", "pedestrian_speed_mps", "crossing_start_distance_m",
+    "approach_distance_m", "crossing_trigger_m", "pedestrian_min_speed_mps", "pedestrian_speed_mps",
+    "cloudiness", "precipitation", "wetness", "sun_azimuth_angle", "sun_altitude_angle", "occlusion", "crossing_start_distance_m",
     "peak_decel_mps2", "peak_jerk_mps3", "min_ttc_s", "first_stop_step",
     "resume_after_s", "resume_within_s", "left_road_step",
     "max_heading_off_lane_deg", "max_lane_offset_m", "ped_lateral_start_m", "ped_lateral_end_m",
@@ -147,7 +150,9 @@ def _num(value):
 
 def _margin(row):
     # rho = min_distance - margin, so the margin the run used is recoverable.
-    d, rho = _num(row.get("min_distance_m")), _num(row.get("rho"))
+    # rho_anywhere = min_distance - margin (newer runs: `rho` follows the path rule)
+    rho_a = _num(row.get("rho_anywhere"))
+    d, rho = _num(row.get("min_distance_m")), (rho_a if pd.notna(rho_a) else _num(row.get("rho")))
     if pd.notna(d) and pd.notna(rho):
         return float(d - rho)
     return DEFAULT_MARGIN_M

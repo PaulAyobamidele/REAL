@@ -28,6 +28,7 @@ The R1 text is checked to parse with the DSL before it is written.
 
 import argparse
 import difflib
+import functools
 import os
 import re
 
@@ -67,12 +68,12 @@ R_CHANGES = {
 # Braking modules the executor can actually run (kept in sync with
 # scripts/simulations/util.py::BRAKING_BEHAVIOURS; imported lazily because
 # util pulls in VerifAI/MLflow, which the offline review page must not need).
-_FALLBACK_BRAKING = ("emergency_braking", "proportional_braking")
+_FALLBACK_BRAKING = ("emergency_braking", "proportional_braking", "path_aware_braking")   # = util.BRAKING_BEHAVIOURS
 _INVERT = {"<=": ">", "<": ">=", ">=": "<", ">": "<=", "==": "!=", "!=": "=="}
 
 
-def available_modules():
-    """{'braking': set(...), 'perception': set(...)} the executor supports today."""
+@functools.lru_cache(maxsize=None)
+def _available_modules():
     try:
         from scripts.simulations.util import BRAKING_BEHAVIOURS
         braking = set(BRAKING_BEHAVIOURS)
@@ -83,12 +84,83 @@ def available_modules():
         perception = {f[:-3] for f in os.listdir(settings.model_dir) if f.endswith(".pt")}
     except Exception:
         perception = {"yolov5s"}
-    return {"braking": braking, "perception": perception}
+    return tuple(sorted(braking)), tuple(sorted(perception))
+
+
+def available_modules():
+    """{'braking': set(...), 'perception': set(...)} the executor supports today.
+    Cached per process: finding out means importing the executor (the
+    simulator stack, seconds), and the answer does not change while running."""
+    braking, perception = _available_modules()
+    return {"braking": set(braking), "perception": set(perception)}
 
 
 def _is_available(task, module, avail):
     pool = avail["braking"] if "brake" in task.lower() else avail["perception"]
     return module in pool
+
+
+def rule_as_assumption(rule):
+    """An out-of-scope rule written as the `assuming` item that states the
+    same limit: {fog_density > 80} -> "fog_density <= 80". None when the
+    rule has no invertible operator (`in` / `not in`)."""
+    rule = rule or {}
+    if rule.get("param") and rule.get("op") in _INVERT:
+        return f"{rule['param']} {_INVERT[rule['op']]} {rule['value']}"
+    return None
+
+
+def change_for(obstacle_id, layer, action, avail=None):
+    """The requirement change one chosen mitigation implies - the single
+    place the (obstacle, layer) tables are read. Returns the change dict
+    plan_changes() records, or None for an unknown layer:
+      system / model / data -> [S] a `performed by` swap (task, module,
+                               available = the executor implements it), or a
+                               change with no requirement slot
+      requirement           -> [D] an `assuming` item or [R] an `ensuring` item
+      scenario              -> [T] a test fix (not requirement text)
+    `action` is the mitigation's text (used where no table entry exists).
+    Also recorded per mitigation in analysis_report.json (obstacles[].changes)
+    so the review interface selects a change instead of re-deriving it."""
+    avail = avail or available_modules()
+    key = (obstacle_id, layer)
+    if layer in ("system", "model", "data"):
+        if key in S_CHANGES:
+            task, module = S_CHANGES[key]
+            return {"kind": "S", "from": obstacle_id, "layer": layer, "task": task, "module": module,
+                    "available": _is_available(task, module, avail),
+                    "text": f'"{task}" performed by "{module}"'}
+        return {"kind": "S", "from": obstacle_id, "layer": layer, "task": None, "module": None,
+                "available": False,
+                "text": f"{layer}-level change with no requirement slot: {action}"}
+    if layer == "requirement":
+        clause, item = R_CHANGES.get(key, ("assuming", action))
+        kind = "D" if clause == "assuming" else "R"
+        return {"kind": kind, "from": obstacle_id, "layer": layer, "clause": clause, "item": item,
+                "text": f'{clause} "{item}"'}
+    if layer == "scenario":
+        return {"kind": "T", "from": obstacle_id, "layer": layer,
+                "target": "scripts/scenarios/scratch.temp", "text": action}
+    return None
+
+
+def scope_change(sid, s):
+    """The change a scope verdict implies (out_of_scope -> [D] state the
+    limit; in_scope -> [T] drop the rule; scenario_defect -> [T] fix the
+    test), or None without a verdict."""
+    v = s.get("verdict")
+    if v == "out_of_scope":
+        item = rule_as_assumption(s.get("rule")) or s.get("reason") or sid
+        return {"kind": "D", "from": sid, "layer": "requirement", "clause": "assuming",
+                "item": item, "text": f'assuming "{item}"'}
+    if v == "in_scope":
+        return {"kind": "T", "from": sid, "layer": "scope",
+                "target": "scripts/analysis/admissibility_rules.json",
+                "text": f"drop the rule behind {sid}: the scenario is realistic"}
+    if v == "scenario_defect":
+        return {"kind": "T", "from": sid, "layer": "scenario", "target": "scripts/scenarios/scratch.temp",
+                "text": s.get("suggested_fix") or s.get("reason") or "fix the test scenario"}
+    return None
 
 
 def assumption_changes(doc, r0_assumptions):
@@ -131,44 +203,13 @@ def plan_changes(doc, r0=None):
     for oid, o in doc.get("obstacles", {}).items():
         if o.get("verdict") not in ("accept", "rename") or not o.get("mitigation"):
             continue
-        layer = o["mitigation"]["layer"]
-        key = (oid, layer)
-        if layer in ("system", "model", "data"):
-            if key in S_CHANGES:
-                task, module = S_CHANGES[key]
-                changes.append({"kind": "S", "from": oid, "layer": layer, "task": task, "module": module,
-                                "available": _is_available(task, module, avail),
-                                "text": f'"{task}" performed by "{module}"'})
-            else:
-                changes.append({"kind": "S", "from": oid, "layer": layer, "task": None, "module": None,
-                                "available": False,
-                                "text": f"{layer}-level change with no requirement slot: {o['mitigation']['action']}"})
-        elif layer == "requirement":
-            clause, item = R_CHANGES.get(key, ("assuming", o["mitigation"]["action"]))
-            kind = "D" if clause == "assuming" else "R"
-            changes.append({"kind": kind, "from": oid, "layer": layer, "clause": clause, "item": item,
-                            "text": f'{clause} "{item}"'})
-        elif layer == "scenario":
-            changes.append({"kind": "T", "from": oid, "layer": layer, "target": "scripts/scenarios/scratch.temp",
-                            "text": o["mitigation"]["action"]})
+        change = change_for(oid, o["mitigation"]["layer"], o["mitigation"].get("action"), avail)
+        if change:
+            changes.append(change)
     for sid, s in doc.get("scope", {}).items():
-        v = s.get("verdict")
-        if v == "out_of_scope":
-            rule = s.get("rule") or {}
-            if rule.get("param") and rule.get("op") in _INVERT:
-                item = f"{rule['param']} {_INVERT[rule['op']]} {rule['value']}"
-                changes.append({"kind": "D", "from": sid, "layer": "requirement", "clause": "assuming",
-                                "item": item, "text": f'assuming "{item}"'})
-            else:
-                changes.append({"kind": "D", "from": sid, "layer": "requirement", "clause": "assuming",
-                                "item": s.get("reason") or sid, "text": f'assuming "{s.get("reason") or sid}"'})
-        elif v == "in_scope":
-            changes.append({"kind": "T", "from": sid, "layer": "scope",
-                            "target": "scripts/analysis/admissibility_rules.json",
-                            "text": f"drop the rule behind {sid}: the scenario is realistic"})
-        elif v == "scenario_defect":
-            changes.append({"kind": "T", "from": sid, "layer": "scenario", "target": "scripts/scenarios/scratch.temp",
-                            "text": s.get("suggested_fix") or s.get("reason") or "fix the test scenario"})
+        change = scope_change(sid, s)
+        if change:
+            changes.append(change)
     r0_assumptions = _split_clauses(r0)[1] if r0 else []
     changes.extend(assumption_changes(doc, r0_assumptions))
     return changes

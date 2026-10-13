@@ -1,0 +1,162 @@
+/*
+ * Design tokens, Apple-style: cool greys, white surfaces lifted by a
+ * hairline and a soft shadow, one raspberry accent (the human's colour) used
+ * sparingly, Poppins at desktop-app sizes (13-14px body).
+ * Semantic colours stay reserved for meaning (fail / pass / set-aside /
+ * caution) and the four change kinds.
+ */
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono:
+    ui-monospace, 'SF Mono', 'JetBrains Mono Variable', 'JetBrains Mono', SFMono-Regular, Menlo,
+    monospace;
+
+  --text-xs: 12px;
+  --text-xs--line-height: 16px;
+  --text-sm: 13px;
+  --text-sm--line-height: 18px;
+  --text-base: 14px;
+  --text-base--line-height: 20px;
+  --text-lg: 16px;
+  --text-lg--line-height: 22px;
+  --text-xl: 20px;
+  --text-xl--line-height: 26px;
+  --text-2xl: 26px;
+  --text-2xl--line-height: 32px;
+  --text-3xl: 32px;
+  --text-3xl--line-height: 38px;
+
+  /* neutrals */
+  --color-surface: #f5f5f7;
+  --color-surface-raised: #ffffff;
+  --color-surface-sunken: #f5f5f7;
+  --color-border: #e5e5ea;
+  --color-border-strong: #d2d2d7;
+  --color-text: #1d1d1f;
+  --color-text-muted: #6e6e73;
+  --color-text-faint: #aeaeb2;
+  /* translucent fill for quiet controls (segmented tracks, gray buttons) */
+  --color-fill: rgb(120 120 128 / 0.12);
+  --color-fill-strong: rgb(120 120 128 / 0.2);
+
+  /* the one accent: the human's colour, used sparingly */
+  --color-human: #c8175d;
+  --color-human-soft: #fce8ef;
+
+  /* semantic: each always paired with a word */
+  --color-fail: #cc2f12;
+  --color-fail-soft: #fdeced;
+  --color-pass: #248a3d;
+  --color-pass-soft: #e9f6ec;
+  --color-set-aside: #6e6e73;
+  --color-set-aside-soft: #f2f2f7;
+  --color-caution: #b25000;
+  --color-caution-soft: #fff4e5;
+
+  /* change kinds */
+  --color-change-s: #00788a;
+  --color-change-s-soft: #e2f4f6;
+  --color-change-r: #8944ab;
+  --color-change-r-soft: #f4ebf8;
+  --color-change-d: #c93400;
+  --color-change-d-soft: #fdeee6;
+  --color-change-t: #6e6e73;
+  --color-change-t-soft: #f2f2f7;
+
+  /* categorical series for scatter views: the dataviz reference palette's
+     first three slots, validated all-pairs (colour-blind safe) in both modes;
+     a fourth group folds into "other" (text-faint), never a new hue */
+  --color-series-1: #2a78d6;
+  --color-series-2: #eb6834;
+  --color-series-3: #1baf7a;
+
+  /* KAOS notation, as the REAL paper draws it (Figs. 2 and 4) */
+  --color-kaos-goal: #dbe7f0;
+  --color-kaos-goal-line: #6f8fa8;
+  --color-code-keyword: #2c5a85;
+  --color-kaos-soft-line: #2a78d6;
+  --color-kaos-domain: #ddd2ec;
+  --color-kaos-domain-line: #8b74b0;
+  --color-kaos-agent: #fbf6d9;
+  --color-kaos-agent-line: #b9a64a;
+  --color-kaos-ref: #f2d33a;
+  --color-kaos-ref-line: #9a7f00;
+  --color-kaos-obstacle: #f4a08a;
+  --color-kaos-obstacle-line: #c0533a;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 4px 16px -4px rgb(0 0 0 / 0.06);
+  --shadow-overlay: 0 8px 24px -8px rgb(0 0 0 / 0.16);
+  --shadow-float: 0 4px 14px -4px rgb(0 0 0 / 0.22), 0 0 0 0.5px rgb(0 0 0 / 0.06);
+
+  --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-step: 280ms;
+
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-surface: #000000;
+    --color-surface-raised: #1c1c1e;
+    --color-surface-sunken: #2c2c2e;
+    --color-border: #38383a;
+    --color-border-strong: #48484a;
+    --color-text: #f5f5f7;
+    --color-text-muted: #98989d;
+    --color-text-faint: #636366;
+    --color-fill: rgb(118 118 128 / 0.24);
+    --color-fill-strong: rgb(118 118 128 / 0.36);
+
+    --color-human: #e0336f;
+    --color-human-soft: #3d0f22;
+
+    --color-fail: #ff6961;
+    --color-fail-soft: #3a1414;
+    --color-pass: #30d158;
+    --color-pass-soft: #0e2c17;
+    --color-set-aside: #98989d;
+    --color-set-aside-soft: #2c2c2e;
+    --color-caution: #ffb340;
+    --color-caution-soft: #3a2a0c;
+
+    --color-change-s: #5ac8d8;
+    --color-change-s-soft: #0d2a2e;
+    --color-change-r: #da8fff;
+    --color-change-r-soft: #2c1638;
+    --color-change-d: #ff9f5a;
+    --color-change-d-soft: #3a1d0b;
+    --color-change-t: #98989d;
+    --color-change-t-soft: #2c2c2e;
+
+    --color-series-1: #3987e5;
+    --color-series-2: #d95926;
+    --color-series-3: #199e70;
+
+    --color-kaos-goal: #1f3346;
+    --color-kaos-goal-line: #5f86a8;
+    --color-code-keyword: #8ab8e0;
+    --color-kaos-soft-line: #3987e5;
+    --color-kaos-domain: #352a4c;
+    --color-kaos-domain-line: #9a86c2;
+    --color-kaos-agent: #35311a;
+    --color-kaos-agent-line: #b9a64a;
+    --color-kaos-ref: #d6b52a;
+    --color-kaos-ref-line: #f2d33a;
+    --color-kaos-obstacle: #6b2c1f;
+    --color-kaos-obstacle-line: #e0745a;
+
+    --shadow-card: 0 0 0 0.5px rgb(255 255 255 / 0.06);
+    --shadow-float: 0 4px 14px -4px rgb(0 0 0 / 0.6), 0 0 0 0.5px rgb(255 255 255 / 0.1);
+  }
+}

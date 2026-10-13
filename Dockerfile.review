@@ -1,0 +1,42 @@
+# real-av Review: the review interface on the bundled example rounds, in one
+# container, no simulator, GPU or network needed at run time.
+#
+#   docker build -f Dockerfile.review -t real-review .
+#   docker run --rm -p 8080:80 real-review          # then open http://localhost:8080
+#
+# Stage 1 runs the laptop-side demo (analysis, comparison, scripted review,
+# proposed requirement) on the two bundled rounds; stage 2 builds the
+# interface and lists that workspace for static serving; stage 3 serves both.
+# Signing inside the container offers the files as downloads (the served
+# folder is read-only); open a local folder in Chrome or Edge to write in place.
+
+FROM python:3.8-slim AS demo
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH=/opt/real
+WORKDIR /opt/real
+COPY requirements-demo.txt .
+RUN pip install --no-cache-dir -r requirements-demo.txt
+COPY real_config.py ./
+COPY scripts/demo.py scripts/demo.py
+COPY scripts/analysis/ scripts/analysis/
+COPY scripts/redsl/ scripts/redsl/
+COPY scripts/evolve/ scripts/evolve/
+COPY scripts/templates/ scripts/templates/
+COPY scripts/scenarios/scratch.temp scripts/scenarios/scratch.temp
+COPY docs/examples/ docs/examples/
+COPY examples/demo_runs/ examples/demo_runs/
+RUN python -m scripts.demo --out /work/demo
+
+FROM node:22-alpine AS build
+WORKDIR /ui
+COPY ui/package.json ui/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY ui/ ./
+COPY --from=demo /work/demo/runs /work/runs
+RUN rm -rf public/workspace \
+ && node scripts/make-workspace-index.mjs /work/runs --out public/workspace --example \
+      --label "Example workspace: rounds 1 and 2 (bundled demo data)" \
+ && npm run build
+
+FROM nginx:alpine
+COPY --from=build /ui/dist /usr/share/nginx/html
+EXPOSE 80

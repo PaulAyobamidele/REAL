@@ -72,7 +72,8 @@ def enumerate_phenotypes(bnf_path):
 
 
 SCENARIO_PARAMS = ["pedestrian", "dress", "direction", "distance", "fog_density",
-                   "approach_distance_m", "pedestrian_min_speed_mps", "crossing_trigger_m"]
+                   "approach_distance_m", "pedestrian_min_speed_mps", "crossing_trigger_m",
+                   "sun_altitude_angle", "wetness", "precipitation", "cloudiness", "occlusion"]
 SCENARIO_FIELDS = ["scenario_id", "phenotype"] + SCENARIO_PARAMS + ["total", "passed", "failed", "pct", "seed"]
 
 

@@ -70,7 +70,7 @@ if os.environ.get("REAL_ROUND"):
 print(f"[smoke_test] {endpoint} with " + str({k: v for k, v in params.items() if k != "requirement"}))
 
 resp = requests.get(
-    f"http://127.0.0.1:7999/{endpoint}",
+    f"http://127.0.0.1:{os.environ.get('API_PORT', '7999')}/{endpoint}",
     params=params,
     # Per scenario: ~2 min start-up (Scenic compile + YOLO reload) plus
     # ~0.3-0.6 min per simulation on scene v2 (runs last up to 25 s), so a
@@ -102,6 +102,19 @@ else
     SOURCE_BIND=(--bind "$(pwd)/smoke_test.py:/opt/real-av/REAL/smoke_test.py")
 fi
 
+# --- per-job ports -------------------------------------------------------
+# Every service gets a port derived from the job number, so several jobs can
+# share a node (the pre-computed study space runs as parallel jobs). CARLA uses
+# CARLA_PORT and CARLA_PORT+1; its traffic manager uses CARLA_PORT+6000.
+SLOT=$(( ${SLURM_JOB_ID:-0} % 1000 ))
+export CARLA_PORT=$(( 20000 + SLOT * 4 ))
+export REDIS_PORT=$(( 33000 + SLOT ))
+export MLFLOW_PORT=$(( 34000 + SLOT ))
+export API_PORT=$(( 35000 + SLOT ))
+export MLFLOW_TRACKING_URI="http://127.0.0.1:${MLFLOW_PORT}"
+echo "Ports: CARLA ${CARLA_PORT} (traffic manager $(( CARLA_PORT + 6000 ))), Redis ${REDIS_PORT}, MLflow ${MLFLOW_PORT}, API ${API_PORT}"
+# --- end per-job ports ---------------------------------------------------
+
 apptainer exec --nv --unsquash \
     --bind "$ARTIFACTS_DIR:/artifacts" \
     "${SOURCE_BIND[@]}" \
@@ -113,7 +126,7 @@ apptainer exec --nv --unsquash \
         # for correctness).
         export YOLOv5_AUTOINSTALL=False
 
-        redis-server --daemonize yes
+        redis-server --port "$REDIS_PORT" --daemonize yes
 
         # evaluate() (scripts/simulations/util.py, the real GE loops fitness
         # function) unconditionally wraps every CARLA run in
@@ -121,14 +134,14 @@ apptainer exec --nv --unsquash \
         # library. Local file-based backend/artifact store under /artifacts
         # so results survive after this jobs temp sandbox is cleaned up.
         cd /opt/real-av/REAL
-        mlflow server --host 127.0.0.1 --port 5000 \
+        mlflow server --host 127.0.0.1 --port "$MLFLOW_PORT" \
             --backend-store-uri /artifacts/mlflow_backend \
             --default-artifact-root /artifacts/mlflow_artifacts &
         MLFLOW_PID=$!
         sleep 10   # give the mlflow server time to bind
 
         # CARLA server, off-screen (no X11/display needed on the compute node).
-        /home/carla/CarlaUE4.sh -RenderOffScreen -nosound -carla-port=2000 &
+        /home/carla/CarlaUE4.sh -RenderOffScreen -nosound -carla-port="$CARLA_PORT" &
         CARLA_PID=$!
         sleep 20   # give the CARLA server time to come up before connecting
 
@@ -151,7 +164,7 @@ apptainer exec --nv --unsquash \
         # up after 10 min, and stop early if the API process itself died.
         # (No single quotes inside this bash -c block - see README obstacle 10.)
         for i in $(seq 1 120); do
-            if python3.8 -c "import sys, urllib.request as u; u.urlopen(sys.argv[1], timeout=2)" http://127.0.0.1:7999/ 2>/dev/null; then
+            if python3.8 -c "import sys, urllib.request as u; u.urlopen(sys.argv[1], timeout=2)" "http://127.0.0.1:${API_PORT}/" 2>/dev/null; then
                 echo "API ready after $((i*5)) s"
                 break
             fi

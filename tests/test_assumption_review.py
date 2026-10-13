@@ -142,10 +142,10 @@ def test_review_page_shows_assumptions_and_accept_writes_d(tmp_path, monkeypatch
 
     at = AppTest.from_file(page, default_timeout=120).run()
     at.sidebar.text_input[2].set_value("Test Reviewer").run()
-    at.sidebar.radio[0].set_value("4. What you decide").run()
+    at.sidebar.radio[0].set_value("4. Obstacle triage").run()
     assert not at.exception, at.exception
     assert any("Domain assumptions (D)" in s.value for s in at.subheader)
-    at.sidebar.radio[0].set_value("5. What the requirement becomes").run()
+    at.sidebar.radio[0].set_value("5. Requirement revision").run()
     accept = [b for b in at.button if b.label.startswith("Accept")][0]
     assert not accept.disabled
     accept.click().run()

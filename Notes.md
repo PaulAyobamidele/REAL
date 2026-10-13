@@ -1690,6 +1690,280 @@ defects (no encounter, left road, not crossed, not simulated) reported apart.
 
 What would falsify the scene work: prediction 1 or 4 of run 2b failing.
 
+### 8.38 2026-10-08 — smoke run 5 (job 4968144): scene mechanics pass; the standoff is real
+
+Run `f21d72c1…` (4 scenarios, 14.6 min; `smoke_check.md` there). All 4
+pedestrians cross both ways, car on the road in all, no defects. Proportional
+braking stops the car 9-13 m short while the pedestrian is still on the kerb
+(any person above 30 % confidence), so "meet the car" never fires and the
+pedestrian goes on the 6 s timeout (step 63 in all 4); then 3 of 4 cars never
+move on while the pedestrian stands on the far kerb — round 2's standoff,
+measured on a valid scene. Design choice to state in the paper: the pedestrian
+stops at the far kerb and stays in view. Scene v2.3 is mechanically valid.
+
+### 8.36 2026-10-08 — the review interface (`ui/`) and report schema 2
+
+**Decision.** The React interface from the original plan is built after all
+(roadmap open question 1), as a static application with no server, because
+the ICSE artifact must run on a laptop that has never seen the project and
+the review is the demonstration's centre piece. The Streamlit page stays as
+the earlier interface; both write the same files.
+
+**What the data lacked** (measured before writing code; design in
+`docs/design/review_ui.md`): the report carried the requirement's leaves
+but not its goal tree; the per-simulation outcome, encounter flag and
+set-aside reason existed only in memory in `failure_model.py` /
+`admissibility.py`; the change each mitigation implies lived only in
+`refine.py`'s tables; every run video is MPEG-4 part 2, which no browser
+decodes; two newer reports contained bare `NaN` tokens, which `JSON.parse`
+rejects. Each was fixed on the Python side rather than re-derived in
+TypeScript (one parser, one set of rules): `DSL.get_goal_tree()`,
+`analysis_report.json` schema version 2 (`requirement.tree`,
+`simulations[]`, `obstacles[].changes`, `rules[].as_assumption`,
+`scenario_artefacts`, `bars`, NaN → null), `refine.change_for()`, and
+`video.py` writing H.264 first with a one-off re-stitch command. A scratch
+regeneration of the committed reports changed no number (only added keys and
+one warning sentence); the committed reports were left as they were, and the
+interface loads version-1 reports in a reduced mode that says so.
+
+**The one guarantee.** A verdict loaded from a `decisions.json` on disk (the
+tool's proposal or an earlier signature) is shown as *pre-filled, not yet
+confirmed* — dashed, in the machine colour, with its provenance written out —
+until the reviewer confirms or changes it; signing is blocked while any
+remains. Every number links to the simulations behind it; set-aside rows are
+a group of their own and never counted; the recording pass of the worst
+scenario is listed, labelled, and never counted. If the rows found in
+`simulations.csv` disagree with the count in the report, the interface says
+so instead of trusting either.
+
+**Writing without a server.** In Chrome and Edge the reviewer opens the
+workspace folder (File System Access API) and signing writes
+`decisions.json`, `R0.dsl`, `R1.dsl`, `requirement_diff.md` into the round
+folder, nothing else. Elsewhere the files are downloaded. The contract is
+tested from both sides: `ui/tests/contract/oracle.py` runs
+`decisions.from_analysis` + `refine.refine` on the fixture rounds and the
+test compares the three files byte for byte with the interface's output,
+including assumption keep / tighten / loosen / drop / add, a rename, and
+non-ASCII text (`json.dump`'s `ensure_ascii` and `.0%` half-to-even rounding
+are reproduced).
+
+**Design system.** The document (v2) arrived later the same day and was
+applied: token names and values, Inter + JetBrains Mono bundled from
+`@fontsource-variable`, tool output as sunken surface + left rule, human input
+on the raised surface, sidebar / footer step controls, obstacle nodes with a
+`fail` left rule, mono tabular numerals. Screenshots at 1440 / 1200 / 900 /
+390 px: no overflow, step controls always in view.
+
+**Restyle (same day, on the user's review).** The first styling read as too
+dense. Reworked to a minimal, airy look on the user's instruction: top bar
+only (the steps sit in it inside a review), no sidebar, large headings with
+one line under them, explanations folded into dropdowns, rounded cards,
+floating round Back / Next buttons, and a sparse rust accent (#8C3A03) in
+place of blue. Step 3 is now visibly the sketch's sandbox: one card, goal
+model left, failures + video evidence top right, fixes bottom right, each
+panel scrolling inside itself on large screens.
+
+**Not done / open.** Radix has no tree primitive, so the goal tree is an in-house
+WAI-ARIA tree. A hand-edited R1 cannot be parse-checked in the browser
+(`refine.py` re-checks it). `StandoffUnnecessaryStop` attaches to nothing on
+every run so far because the requirement states no soft goal of that name;
+the interface shows it unattached with the reason rather than inventing a
+link. `Dockerfile.review` (with `Dockerfile.review.dockerignore`) builds a
+110 MB image that runs the Python demo, builds the interface and serves both
+with nginx (`docker build -f Dockerfile.review -t real-review . && docker run
+--rm -p 8080:80 real-review`); verified 2026-10-08 (index, workspace listing,
+report and H.264 video all served, no page errors). The original `Dockerfile`
+still serves the Streamlit page.
+
+### 8.39 2026-10-08 — run 2b and the first GE run submitted
+
+Run on exactly the code validated by smoke run 5 (already on Narval; only the
+job script was updated, `--time=05:00:00`). Local, uncommitted changes not made
+in this session (`ui/`, `docs/design/review_ui.md`, edits to
+`scripts/analysis/{report,refine,obstacles}.py`, `scripts/evolve/video.py`)
+were deliberately **not** synced. The separate 32-scenario smoke run was
+skipped (Paul's go-ahead): run 2b covers every scenario and the report flags
+every test defect.
+
+- **Run 2b = job 4972493**: `REAL_SEARCH=grid`, 32 x 5, `R_baseline.dsl`,
+  parent `882fb2fe…` (round 2).
+- **GE run = job 4972494**: `REAL_SEARCH=ge`, `v2/scene_v2.bnf`, population
+  12, generations 4, 1 trial per new scenario, `R_baseline.dsl`.
+- Both `--dependency=singleton`: the job script uses fixed ports (API 7999,
+  MLflow 5000, CARLA 2000), so two jobs on one node would collide; they run
+  one after the other. Making the ports per-job would allow parallel runs
+  (not done).
+Predictions: §8.37.
+
+### 8.40 2026-10-08 — run 2b (job 4972493): valid test; three measurement/scoring problems
+
+Run `657a1447…`, complete pull; full reading in `run_check.md` there.
+Valid test: car on the road in all 160, no no-encounter, all scenarios ran,
+4 not-crossed (2.5 %). The report's numbers need three corrections first:
+(1) **9 of 12 "failures" are the car driving past a pedestrian who has already
+crossed and stands on the far kerb** (~3.5 m from the lane centre): the 5 m
+radius safety rule counts it; only 1 genuine near-miss with the pedestrian in
+the road (26_0, 3.1 m); 2 not-crossed. (2) The pedestrian's top speed is
+contaminated by one-step simulator spikes (18 steps in the run), which made
+`pedestrian_speed_mps <= 3` look load-bearing — an artefact. (3) Deceleration /
+jerk medians (33.8 m/s², 309 m/s³) are implausible — step artefacts in the
+speed series. Holds: standoff dominant (145 of 146 stopped at the limit; 103
+missed `resume_within_s <= 10`; first brake ~17 m, braking for any visible
+person). All three fixable offline from the traces; no 2b number goes into the
+paper until re-judged.
+
+**Predictions (§8.37) vs outcome, provisional until the re-judge:** 1 (defects
+≤ 5 %) held — 2.5 %. 2 (failures 3-20 %) **failed** — ~0-1 genuine. 3
+(resume missed ≥ 30 %) held — 71 %. 4 (direction effect < 15 points) held,
+but trivially (no failures). 5 held trivially. 6 fog and separation untested —
+held; speed assumption — not assessable until the spike fix. 7 (deceleration
+> 8 m/s²) — not assessable, measure not trustworthy.
+
+### 8.41 2026-10-08 — glitch-robust measures and a path-aware safety rule; 2b re-judged
+
+New `scripts/analysis/trace_measures.py`: pedestrian top speed and the car's
+peak deceleration / jerk are recomputed from the traces after a 5-step (0.5 s)
+median filter (raw values kept as `*_raw`; a 3-step filter left two-step
+spikes); `path_min_distance_m` = closest distance while the pedestrian is
+within 2.5 m of the lane centre; `apply_safety_rule(df, "anywhere" | "path")`
+(monitor verdict kept as `passed_anywhere`). `report.analyse(...,
+safety_rule=)`, CLI `--safety path` (needs its own `--out`); every report
+states its safety rule. Robust measures always apply; the safety rule
+defaults to `anywhere` — which one the requirement means is an [R] decision
+for the review. Also: the review page lists only folders that contain a
+`simulations.csv` (an early run folder without results became the default
+"previous round" and crashed the page test). 6 tests; 183 in total.
+
+Run 2b re-judged (`robust_measures/`, `path_aware/` in its folder; details in
+its `run_check.md`): spurious 1 (not 10); valid failures 9 of 155 (anywhere)
+vs **3 of 155 (path)** — the 3 are genuine in-path close calls; standoff
+unchanged (145 stalled; resume missed 103). Deceleration / jerk unchanged by
+the filter: simulator stopping dynamics, comparable between rounds only.
+
+### 8.42 2026-10-08 — readiness check: public repos and old credentials; Narval throughput
+
+- Both the fork and the original repository are **public** (GitHub API).
+  `infra/credentials.json` and `infra/config.env` were committed in the
+  original project's history (commit "final working code", 2025-09-24) and
+  untracked later (2026-09-08); they **remain readable in the public history
+  of both repositories**. Contents (names only checked, values not printed):
+  Postgres user/password/database, MinIO access/secret keys and root
+  user/password, MLflow bucket; every host is localhost — credentials for the
+  local docker-compose development stack, not a remote service. Risk: any of
+  those passwords reused elsewhere. Actions for the owners: rotate them if
+  reused; optionally purge from history (git filter-repo + force-push) on the
+  fork; the upstream is the original authors' to decide.
+- Narval throughput 2026-10-06 → 08: queue waits 1 h 20, 1 h 20, 9 min,
+  ~0 min (run 2b), GE started on its dependency; 4 jobs landed in 3 days.
+- Docker demo: built and run only on the development Mac (Apple Silicon);
+  never on a clean machine or x86-64; image not published.
+- No human-signed decisions.json yet (only the tool-proposed round-2 review
+  and the demo's scripted one). Paper: skeleton, Figure 1, Table 1 rows 1-2;
+  no prose yet.
+
+### 8.43 2026-10-08 — first GE run: the search works, and exploited the safety rule
+
+Run `884d6752…` (1 h 16 min; `run_check.md` there). 23 distinct scenarios;
+average pass rate per generation 92 → 75 → 75 → 58 → 42 %; 16 of 23 break at
+least one baseline assumption (fog > 50: 14; sustained pedestrian speed > 3:
+8; start < 15 m: 1) — as designed. But under the path-aware rule **no
+simulation fails**: everything GE scored as a failure was the car within 5 m
+of a pedestrian outside its path. GE optimised the flaw in the 5 m-anywhere
+rule (its fitness is the monitor's rho). Predictions §8.37 for GE: 1-3 not
+assessable on these grounds (the "failures" are not the car's); 4 (grid
+check) — not run, pointless here. Next: the monitor on the cluster must apply
+the safety rule the requirement means (path-aware, if the review agrees),
+so that GE's fitness and every run's pass/fail measure the car.
+
+### 8.44 2026-10-08 — requirement authoring form; three more silent failures
+
+The review interface gained _Write a requirement_: a form whose menus come
+from the code and whose gate is the project's parser, through a local helper
+(`python -m scripts.redsl.serve`); details in docs/design/review_ui.md.
+Reading the code for it found silent failures beyond the three the spec
+named (unknown module, assumption about the car, unmeasured soft goal):
+(1) braking names are fuzzy-matched, so `proportional_braking_with_resume`
+would run as plain `proportional_braking` - the round-3 S lever for the
+standoff needs that module implemented first, or the run measures the old
+car; (2) the detector and braking module are found by the task names
+"Detect Pedestrian" and "Apply Brakes" only, so renaming either task falls
+back to the defaults (yolov5s, emergency_braking) without a word; (3) the
+scenario sentence's vocabulary steers generation more widely than assumed -
+"fog" in R_baseline's "A pedestrian trying to cross the street in fog."
+fixes fog_density = 50 (`constraints` in run_meta.json). The form prevents
+(1) and (2) and shows (3) as it is typed. Round trip text -> form -> text is
+exact (apart from whitespace and comments) for every docs/examples/*.dsl.
+
+### 8.45 2026-10-08 — decision: the safety rule is path-aware; run 2b re-analysed
+
+Decided (Paul, after reading §8.40-8.43): the safety goal is violated only
+when the car comes within 5 m of a pedestrian **who is in its lane**
+(`trace_measures.DEFAULT_SAFETY_RULE = "path"`; lane = within 2.5 m of the
+lane centre). Every analysis command now defaults to it (report, review
+page, clustering, pattern map); the simulator monitor's "anywhere" verdict
+stays available for comparison and, like any non-default rule, writes only
+to its own folder. Runs before scene v2 have no lateral series and keep the
+monitor's verdict, so rounds 1-2 are unchanged.
+
+Run 2b's main report regenerated under it (the first analysis, judged
+"anywhere" and before the glitch-robust measures, moved to
+`superseded_anywhere_rule/` with a note, not deleted): 159 runs counted,
+155 encounters, **3 failed (1.9 %)** - the 3 genuine in-path close calls of
+§8.41 - 152 passed, 145 of them stalled; 1 run set aside (was 10); 8 runs
+change verdict against the monitor. StandoffUnnecessaryStop supported;
+`resume_within_s <= 10` missed in 103 runs. `cluster_map.json` regenerated
+under the same rule. These are the 2b numbers for the paper.
+
+Still to do for the rule: the monitor on the cluster scores runs (and GE's
+fitness) by the "anywhere" rule; until it applies the path rule, GE can
+again optimise near-misses with a pedestrian outside the lane (§8.43).
+
+### 8.46 2026-10-13 — study plan; weather and occlusion exposed end to end (task 1a.2)
+
+Plan in `docs/paper/study_plan.md` (dimension 1a live tool, 1b study mode,
+2 pre-computed space); parameter inventory in `docs/design/parameters.md`.
+Exposed: sun altitude (time of day; below 0 = night), sun azimuth,
+cloudiness, rain, road wetness (also sets puddles), and occlusion (a parked
+car on the pedestrian's kerb, 6 m before the crossing point, 3 m from the lane
+centre). Each has a scene placeholder, a telemetry column, an assumption
+quantity and scenario keywords; defaults reproduce every earlier run. Fixes on
+the way: negative values were not parsed in scenarios or assumptions;
+"dark" and "day" left out as keywords (dark clothing; ordinary sentences).
+New grammar `v3/scene_v3.bnf` for the live tool. `tests/test_world_settings.py`
+(7, incl. compiling the scene with the parked car and a night sky against
+the repo's Town01 and checking the car's placement).
+
+### 8.47 2026-10-13 — tasks 1a.3-1a.5: one safety rule everywhere, exact modules, per-job ports
+
+- **1a.3** `trace_measures.safe_values()` is the per-step robustness the
+  simulator's monitor evaluates (`G safe`): with the path rule, distance -
+  5 m only while the pedestrian is within 2.5 m of the lane centre, the plain
+  distance otherwise. The monitor (`util.MyMonitor`) now uses it with
+  `DEFAULT_SAFETY_RULE`, so every run's pass/fail **and GE's fitness** follow
+  the path rule; `rho_anywhere` and `monitor_safety_rule` are recorded too.
+  Analysis: the "anywhere" verdict comes from `rho_anywhere` where recorded;
+  the margin used to recover distances reads `rho_anywhere`. Monitor and
+  analysis verdicts agree on 200 random traces (test).
+- **1a.4** Module names exact: `braking_mode_from_module` and
+  `resolve_yolo_model` refuse unknown names (ValueError; the API answers
+  "NOT OK" with the list of implemented modules) instead of silently running
+  another car; empty = the default; three legacy spellings mapped explicitly.
+  New braking module **`path_aware_braking`**: proportional braking only for
+  a person the camera estimates to be in the lane, then drives on
+  (`scripts/simulations/path_estimate.py`: lateral = (box centre - image
+  centre) x 1.7 m / box height; a 1.2 m child is estimated further out than
+  they are — a weakness the experiments can expose). Offered by the
+  requirement form automatically; behaviour on the road still to be seen on
+  the cluster.
+- **1a.5** Per-job ports in `run_real_av.slurm` from the job number: CARLA
+  20000 + 4·slot (+1; traffic manager +6000), Redis 33000 + slot, MLflow
+  34000 + slot, API 35000 + slot; the scene connects to the job's CARLA port
+  (`param port`). Two jobs on one node no longer collide (`--dependency=
+  singleton` no longer needed).
+Tests: test_monitor_rule (5), test_path_aware_braking (6), test_job_ports
+(3), four older tests updated to the refusal rule; 256 in total. Needs one
+cluster smoke run: path_aware_braking, occlusion, night/wet weather, ports.
+
 ### 8.7 The iteration loop (stages 7-9) — original design
 
 Per round: requirement R_n → run (grid) → `simulations.csv` → report →

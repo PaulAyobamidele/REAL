@@ -35,6 +35,38 @@ What you see, in about a minute:
 The full pipeline (scenario search in CARLA with YOLO on a GPU) runs from the
 Apptainer image on a Slurm cluster: see [infra/hpc/README.md](infra/hpc/README.md).
 
+## 🖥️ Review interface (`ui/`)
+
+The human step of the loop has a dedicated interface: a static React
+application in [`ui/`](ui/README.md) that reads a workspace of run folders
+and walks a reviewer through five screens — *The requirement under test*, *Test Execution Result*,
+*Failure Analysis* (the requirement as a goal model with each obstacle attached to
+the goal it obstructs, the simulations behind it, the candidate fixes by
+layer), *Obstacle triage*, *Requirement revision* — then writes the
+same `decisions.json`, `R0.dsl`, `R1.dsl` and `requirement_diff.md` as the
+command-line review. No server: it opens a folder in the browser (Chrome and
+Edge can write back into it; other browsers get the files as downloads) or a
+workspace served next to the build. Tool output and human judgement never
+look alike, and every number on screen links to the simulations behind it.
+
+```bash
+cd ui && npm install && npm run dev      # then open http://localhost:5173 and load a folder of run folders
+```
+
+It needs `analysis_report.json` schema version 2 (reports written from
+2026-10-08 on carry the goal tree, per-simulation outcomes and the change
+each mitigation implies) and prefers the browser-playable
+`best_scenario_h264.mp4` that `python -m scripts.evolve.video <run>` writes
+next to the original video. To run it without building anything:
+
+```bash
+docker build -f Dockerfile.review -t real-review . && docker run --rm -p 8080:80 real-review
+# open http://localhost:8080 - the two bundled rounds, analysed, as an example workspace
+```
+
+The Streamlit page (`pages/4_review.py`) remains the earlier interface and
+keeps working; the original `Dockerfile` still serves it.
+
 ## 🌟 Overview
 
 REAL is a requirements engineering platform for adaptive learning that bridges the gap between natural language requirements and executable test scenarios for autonomous systems. By leveraging grammatical evolution, domain-specific languages (DSL), and simulation environments, REAL automatically generates and validates test cases for complex automotive scenarios to improve their requirements specification.

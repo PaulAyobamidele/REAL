@@ -416,3 +416,46 @@ the full obstacle log) → the code itself. The obstacle log in particular
 exists specifically so a new session doesn't have to re-discover the same 11
 bugs by trial and error against a slow (Slurm-queued, MFA-gated) feedback
 loop — check it before assuming something is a new problem.
+
+## 9. The review interface (`ui/`) — 2026-10-08
+
+A static React + TypeScript application (Vite, Tailwind 4, zod, papaparse,
+jsdiff, Radix radio groups) replacing the Streamlit page as the human step of
+the loop for the ICSE artifact; the Streamlit page stays at `pages/4_review.py`
+and keeps working (Docker demo, `scripts/demo.py --page`, tests). Design and
+the data findings that drove it: `docs/design/review_ui.md`. User guide and
+structure: `ui/README.md`.
+
+What changed on the Python side for it (all additive; 177 Python tests green, 57 interface tests green):
+- `scripts/redsl/grammar.py`: `DSL.get_goal_tree()` (top goal, refinement with
+  its combinator, agents, operations with split `tasks`), `!temporal_op`
+  keeps the MAINTAIN/ACHIEVE token, `propagate_positions=True`.
+- `scripts/analysis/report.py`: `analysis_report.json` **schema_version 2**:
+  `requirement.tree`, `simulations[]` (per-row outcome / encounter /
+  admissible / set-aside reason / assumption and soft-goal status / trace),
+  `obstacles[].changes` (the requirement change each mitigation implies),
+  `admissibility.rules[].as_assumption`, `scenario_artefacts`, `bars`; NaN
+  written as null (bare NaN is not JSON). Older reports still load in the
+  interface, reduced, and say so.
+- `scripts/analysis/refine.py`: `change_for()`, `scope_change()`,
+  `rule_as_assumption()` factored out of `plan_changes` (single source of the
+  change tables; the interface selects, never re-derives); `available_modules()`
+  cached (importing the executor costs seconds).
+- `scripts/evolve/video.py`: H.264 (`avc1`) first, `mp4v` fallback;
+  `python -m scripts.evolve.video <run>` re-stitches saved frames into
+  `best_scenario_h264.mp4` next to the original (never over it). Done for the
+  six run folders under `artifacts/runs/` on 2026-10-08; browsers do not
+  decode the original `mp4v` videos.
+- The committed `analysis_report.json` files were **not** regenerated (a
+  scratch regeneration showed no number changes; the decision is the user's).
+
+The shared contract is tested from both sides: `ui/tests/contract/` runs
+`tests/contract/oracle.py` (Python) and compares `decisions.json`, `R1.dsl`
+and `requirement_diff.md` byte for byte with what the interface writes.
+
+Workflow: `cd ui && npm install && npm run dev|test|lint|typecheck|build`;
+CI in `.github/workflows/ui.yml`; container `docker build -f Dockerfile.review
+-t real-review .` (verified 2026-10-08). The design-system document
+(`real-ui-design-system-v2.md`) was applied the same day: `ui/src/styles/tokens.css`
+holds its tokens, `app.css` the four treatments (tool output, refusal, human
+input, DSL block); fonts are bundled, not fetched.

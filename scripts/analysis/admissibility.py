@@ -72,7 +72,7 @@ def classify(params, rules):
 
 
 # "fog_density <= 50", "pedestrian == Adult" ... (the requirement's `assuming` clause)
-ASSUMPTION_RE = re.compile(r"^\s*(\w+)\s*(<=|>=|==|!=|<|>)\s*([\w.]+)\s*$")
+ASSUMPTION_RE = re.compile(r"^\s*(\w+)\s*(<=|>=|==|!=|<|>)\s*(-?[\w.]+)\s*$")
 # An assumption says what IS in scope; a rule says what is OUT - so invert.
 _INVERT = {"<=": ">", "<": ">=", ">=": "<", ">": "<=", "==": "!=", "!=": "=="}
 
@@ -95,6 +95,13 @@ QUANTITIES = {
     "approach_distance_m":       {"level": "scenario", "unit": "m",   "source": "scene setting",       "available": True},
     "crossing_trigger_m":        {"level": "scenario", "unit": "m",   "source": "scene setting",       "available": True},
     "pedestrian_min_speed_mps":  {"level": "scenario", "unit": "m/s", "source": "scene setting",       "available": True},
+    # Weather and occlusion (docs/design/parameters.md); scenario-level, world.
+    "sun_altitude_angle":        {"level": "scenario", "unit": "deg", "source": "scene setting", "available": True},
+    "sun_azimuth_angle":         {"level": "scenario", "unit": "deg", "source": "scene setting", "available": True},
+    "cloudiness":                {"level": "scenario", "unit": "%",   "source": "scene setting", "available": True},
+    "precipitation":             {"level": "scenario", "unit": "%",   "source": "scene setting", "available": True},
+    "wetness":                   {"level": "scenario", "unit": "%",   "source": "scene setting", "available": True},
+    "occlusion":                 {"level": "scenario", "unit": None,  "source": "scene setting", "available": True},
     "initial_separation_m":      {"level": "run",      "unit": "m",   "source": "trace distance_m[0]", "available": True},
     # Recorded from scene v2 (roadmap M2); older runs lack the column -> not measured.
     "pedestrian_speed_mps":      {"level": "run",      "unit": "m/s", "source": "simulations.csv",     "available": True},
@@ -244,7 +251,9 @@ def rules_from_assumptions(assumptions):
 
 
 PARAM_COLUMNS = ["pedestrian", "dress", "direction", "distance", "fog_density",
-                 "approach_distance_m", "crossing_trigger_m", "pedestrian_min_speed_mps"]
+                 "approach_distance_m", "crossing_trigger_m", "pedestrian_min_speed_mps",
+                 "sun_altitude_angle", "sun_azimuth_angle", "cloudiness", "precipitation", "wetness",
+                 "occlusion"]
 
 
 def label_simulations(df, rules):

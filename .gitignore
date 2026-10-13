@@ -257,3 +257,10 @@ __pycache__/
 .ruff_cache/
 .mypy_cache/
 demo_output/
+
+# Review interface (ui/): dependencies, build output, local workspace copy
+ui/node_modules/
+ui/dist/
+ui/coverage/
+ui/public/workspace/
+ui/.vite/

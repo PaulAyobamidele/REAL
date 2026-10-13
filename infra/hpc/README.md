@@ -81,10 +81,14 @@ The image pip-installs the project in editable mode from `/opt/real-av/REAL`, i.
 
 ```bash
 # after rebuilding the staging copy (section 2):
-rsync -avP --partial --delete ~/real-av-build/REAL/ narval:scratch/real_project/REAL/
+rsync -avP --partial --delete --exclude='ui' --exclude='artifacts' ~/real-av-build/REAL/ narval:scratch/real_project/REAL/
 ```
 
+`ui/` (the review interface and its packages) and `artifacts/` (local run results) are not used by the job - it writes to `$SCRATCH/real_project/artifacts` - so they stay on the Mac (about 650 MB less to send).
+
 Only the project's own Python/templates change this way; CARLA, torch, the YOLO hub cache and the vendored Scenic/VerifAI/grape installs come from the image (the overlay carries identical copies of the vendored source). If the directory is absent the baked-in copy is used. Two consequences: (1) the first `import api_app` is slower from `$SCRATCH` (no cached `.pyc`, network FS) - hence the API readiness poll in the script; (2) **do not rsync while a job is running** - the job re-reads `scripts/scenarios/scratch.temp` for every scenario. Rebuild the image properly (sections 2-4) for the final, citable artifact.
+
+The review interface's **Run test** (ui/README.md) submits through this overlay: it copies the requirement to `REAL/requirements/` and refuses to submit unless the overlay exists and its `scripts/redsl/grammar.py`, `api_app.py` and `run_real_av.slurm` (next section) are identical to the project's. So after changing any of them, sync before pressing Run test.
 
 ## 5. Submit the job
 
@@ -110,6 +114,14 @@ Output lands in `real-av-carla-<jobid>.out` in the submission directory and unde
 rsync -avP --partial narval:scratch/real_project/artifacts/runs/<run_id>/ artifacts/runs/<run_id>/
 python -m scripts.analysis.report artifacts/runs/<run_id>
 ```
+
+## Ports: several jobs at once
+
+Since 2026-10-13 the job script derives every port from the job number
+(CARLA 20000 + 4·slot and +1, traffic manager +6000, Redis 33000 + slot,
+MLflow 34000 + slot, API 35000 + slot; slot = job number mod 1000) and prints
+them at the start of the log, so jobs can share a node and run in parallel —
+no `--dependency=singleton` needed.
 
 ## Before every submission: the laptop check
 

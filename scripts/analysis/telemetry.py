@@ -33,7 +33,7 @@ FIELDS = [
     "pedestrian", "dress", "direction", "distance", "fog_density",
     "pedestrian_blueprint", "braking_mode", "yolo_model", "seed",
     # outcome
-    "passed", "rho", "min_distance_m", "min_distance_step",
+    "passed", "rho", "rho_anywhere", "monitor_safety_rule", "min_distance_m", "min_distance_step",
     "ego_speed_at_min_distance", "steps", "timestep_s", "duration_s",
     "termination",
     # ego
@@ -49,6 +49,7 @@ FIELDS = [
     # scene v2 (roadmap M2): the scene's settings, the pedestrian, and the
     # soft-goal measures (smoothness, time-to-collision, moving on again)
     "approach_distance_m", "crossing_trigger_m", "pedestrian_min_speed_mps",
+    "cloudiness", "precipitation", "wetness", "sun_azimuth_angle", "sun_altitude_angle", "occlusion",
     "pedestrian_speed_mps", "crossing_start_distance_m",
     "peak_decel_mps2", "peak_jerk_mps3", "min_ttc_s",
     "first_stop_step", "resumed", "resume_after_s", "resume_within_s",
@@ -57,6 +58,11 @@ FIELDS = [
     "ped_lateral_start_m", "ped_lateral_end_m", "crossed",
     "recorded_at",
 ]
+
+# Scene settings copied from the scenario into every row (scene v2 and later).
+SCENE_COLUMNS = ("approach_distance_m", "crossing_trigger_m", "pedestrian_min_speed_mps",
+                 "cloudiness", "precipitation", "wetness", "sun_azimuth_angle",
+                 "sun_altitude_angle", "occlusion")
 
 CSV_NAME = "simulations.csv"
 TRACES_DIR = "traces"
@@ -185,8 +191,7 @@ def begin_scenario(scenario_id, phenotype, params, pedestrian_blueprint=None,
         "braking_mode": braking_mode,
         "yolo_model": yolo_model,
         "seed": seed,
-        **{k: (scene or {}).get(k) for k in ("approach_distance_m", "crossing_trigger_m",
-                                             "pedestrian_min_speed_mps")},
+        **{k: (scene or {}).get(k) for k in SCENE_COLUMNS},
     }
     _state["sim_index"] = 0
 
@@ -199,11 +204,12 @@ def begin_simulation():
 
 # NB: the keyword is `dist_m`, not `distance` - `distance` is a Scenic operator
 # keyword and these two functions are called from inside a .scenic template.
-def log_detection(step, confidence, inference_ms, ego_speed, dist_m):
+def log_detection(step, confidence, inference_ms, ego_speed, dist_m, in_path_confidence=None):
     """Called from the scenario template on every camera frame the model looks at."""
     _state["detections"].append({
         "step": int(step),
         "confidence": float(confidence),
+        "in_path_confidence": None if in_path_confidence is None else float(in_path_confidence),
         "inference_ms": float(inference_ms),
         "ego_speed": float(ego_speed),
         "distance": float(dist_m),
@@ -250,7 +256,7 @@ def crossing(ped_laterals):
 def end_simulation(rho, distances, speeds, timestep, termination="",
                    detection_threshold=0.85, pedestrian_speeds=None, on_road=None,
                    ego_headings=None, lane_headings=None, lane_offsets=None,
-                   ped_laterals=None):
+                   ped_laterals=None, rho_anywhere=None, safety_rule=None):
     """Summarise one finished simulation, append it to simulations.csv and
     dump the full trace. Returns the CSV row (or None if no run is active).
 
@@ -307,6 +313,8 @@ def end_simulation(rho, distances, speeds, timestep, termination="",
         "seed": scenario.get("seed"),
         "passed": (rho is not None and rho > 0),
         "rho": rho,
+        "rho_anywhere": rho_anywhere,
+        "monitor_safety_rule": safety_rule,
         "min_distance_m": min_distance,
         "min_distance_step": min_distance_step,
         "ego_speed_at_min_distance": speed_at(min_distance_step),
@@ -331,9 +339,7 @@ def end_simulation(rho, distances, speeds, timestep, termination="",
         "ego_speed_at_first_brake": first_brake["ego_speed"] if first_brake else None,
         "brake_steps": len(brakes),
         "reaction_steps": reaction_steps,
-        "approach_distance_m": scenario.get("approach_distance_m"),
-        "crossing_trigger_m": scenario.get("crossing_trigger_m"),
-        "pedestrian_min_speed_mps": scenario.get("pedestrian_min_speed_mps"),
+        **{k: scenario.get(k) for k in SCENE_COLUMNS},
         **motion_metrics(distances, speeds, pedestrian_speeds, timestep, on_road),
         "max_heading_off_lane_deg": heading_off_lane_deg(ego_headings, lane_headings),
         "max_lane_offset_m": max(lane_offsets) if lane_offsets else None,

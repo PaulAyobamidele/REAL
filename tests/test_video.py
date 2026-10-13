@@ -36,3 +36,38 @@ def test_frames_to_mp4_returns_none_when_no_frames(tmp_path):
     result = frames_to_mp4(str(tmp_path), str(tmp_path / "out.mp4"))
     assert result is None
     assert not os.path.exists(str(tmp_path / "out.mp4"))
+
+
+def test_frames_to_mp4_prefers_a_browser_playable_codec(tmp_path):
+    from scripts.evolve import video
+    frames_dir = tmp_path / "front_rgb"
+    for n in (1, 2):
+        _write_frame(str(frames_dir), n, 40)
+    out = str(tmp_path / "out.mp4")
+    assert frames_to_mp4(str(tmp_path), out, fps=5) == out
+    codec = video.video_codec(out)
+    assert codec in ("avc1", "mp4v")
+    if video.h264_available():
+        assert codec == "avc1"
+    # an explicit codec list is honoured (the cluster image may only have mp4v)
+    out2 = str(tmp_path / "out2.mp4")
+    frames_to_mp4(str(tmp_path), out2, fps=5, fourccs=("mp4v",))
+    assert video.video_codec(out2) == "mp4v"
+
+
+def test_restitch_writes_next_to_the_original_and_never_over_it(tmp_path):
+    import pytest
+    from scripts.evolve import video
+    if not video.h264_available():
+        pytest.skip("this OpenCV cannot write H.264")
+    for n in (1, 2, 3):
+        _write_frame(str(tmp_path / "frames" / "front_rgb"), n, 50)
+    (tmp_path / "best_scenario.mp4").write_bytes(b"original")
+    path = video.restitch(str(tmp_path))
+    assert path == str(tmp_path / video.H264_FILENAME)
+    assert video.video_codec(path) == "avc1"
+    assert (tmp_path / "best_scenario.mp4").read_bytes() == b"original"
+    with pytest.raises(SystemExit):
+        video.restitch(str(tmp_path))          # refuses to overwrite
+    with pytest.raises(SystemExit):
+        video.restitch(str(tmp_path / "nowhere"))   # no frames: nothing written

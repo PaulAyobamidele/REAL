@@ -1,0 +1,727 @@
+{
+ "parameters": {
+  "safety_rule": "anywhere",
+  "detection_frames": 3,
+  "lane_half_width_m": 2.5
+ },
+ "setting": {
+  "linkage": "complete",
+  "threshold": 0.7,
+  "clusters": 3,
+  "ari": 0.7291407222914073
+ },
+ "repeats": {
+  "all_encounters": {
+   "simulations": 120,
+   "distinct_sequences": 95,
+   "within_scenario": {
+    "pairs": 176,
+    "median": 0.5555555555555556,
+    "mean": 0.5405533105245497
+   },
+   "between_scenarios": {
+    "pairs": 6964,
+    "median": 0.5625,
+    "mean": 0.5513143158369781
+   }
+  },
+  "failures": {
+   "simulations": 91,
+   "distinct_sequences": 70,
+   "within_scenario": {
+    "pairs": 104,
+    "median": 0.5,
+    "mean": 0.4883179771191895
+   },
+   "between_scenarios": {
+    "pairs": 3991,
+    "median": 0.5277777777777778,
+    "mean": 0.5166771154312496
+   }
+  }
+ },
+ "clusters": [
+  {
+   "cluster": 3,
+   "size_scenarios": 21,
+   "size_simulations": 70,
+   "scenarios": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "17",
+    "22",
+    "23",
+    "24",
+    "26",
+    "27",
+    "31"
+   ],
+   "medoid_scenario": "0",
+   "medoid_sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving",
+    "closest approach"
+   ],
+   "scenario_labels": {
+    "detected_too_late": 21
+   },
+   "simulation_type_shares": {
+    "detected_too_late": 0.871,
+    "brake_released": 0.1,
+    "never_detected": 0.014,
+    "braking_insufficient": 0.014
+   },
+   "over_represented_settings": [],
+   "catalogue": {
+    "obstacle": "DetectionTooLate",
+    "via": "detected_too_late (87% of failing simulations)"
+   }
+  },
+  {
+   "cluster": 2,
+   "size_scenarios": 7,
+   "size_simulations": 17,
+   "scenarios": [
+    "9",
+    "18",
+    "20",
+    "21",
+    "25",
+    "28",
+    "29"
+   ],
+   "medoid_scenario": "20",
+   "medoid_sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops + safety violated (<5 m)",
+    "ego resumes",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ],
+   "scenario_labels": {
+    "detected_too_late": 2,
+    "brake_released": 5
+   },
+   "simulation_type_shares": {
+    "brake_released": 0.529,
+    "detected_too_late": 0.471
+   },
+   "over_represented_settings": [
+    {
+     "setting": "direction=RL",
+     "in_cluster": 0.8571428571428571,
+     "overall": 0.4666666666666667
+    },
+    {
+     "setting": "pedestrian=Adult",
+     "in_cluster": 0.8571428571428571,
+     "overall": 0.5
+    }
+   ],
+   "catalogue": {
+    "obstacle": null,
+    "via": "no rule type covers 60% of the cluster or no catalogue entry - UNNAMED, for a human to name"
+   }
+  },
+  {
+   "cluster": 1,
+   "size_scenarios": 2,
+   "size_simulations": 4,
+   "scenarios": [
+    "15",
+    "19"
+   ],
+   "medoid_scenario": "15",
+   "medoid_sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins + closing to 10-5 m",
+    "ego stops",
+    "detection reaches 0.85 + braking begins",
+    "detection reaches 0.85 + braking begins",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + safety violated (<5 m)",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ],
+   "scenario_labels": {
+    "brake_released": 1,
+    "braking_insufficient": 1
+   },
+   "simulation_type_shares": {
+    "brake_released": 0.25,
+    "stopped_too_close": 0.25,
+    "detected_too_late": 0.25,
+    "braking_insufficient": 0.25
+   },
+   "over_represented_settings": [
+    {
+     "setting": "pedestrian=Child",
+     "in_cluster": 1.0,
+     "overall": 0.5
+    },
+    {
+     "setting": "dress=Dark",
+     "in_cluster": 1.0,
+     "overall": 0.5333333333333333
+    }
+   ],
+   "catalogue": {
+    "obstacle": null,
+    "via": "no rule type covers 60% of the cluster or no catalogue entry - UNNAMED, for a human to name"
+   }
+  }
+ ],
+ "scenarios": [
+  {
+   "scenario_id": "0",
+   "medoid_sim": 2,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 4
+   },
+   "settings": {
+    "pedestrian": "Adult",
+    "dress": "Light",
+    "direction": "LR",
+    "distance": "Short",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.6458333333333334,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "1",
+   "medoid_sim": 3,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 4
+   },
+   "settings": {
+    "pedestrian": "Adult",
+    "dress": "Dark",
+    "direction": "LR",
+    "distance": "Short",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.625,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "2",
+   "medoid_sim": 2,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 4
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Light",
+    "direction": "LR",
+    "distance": "Short",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.6111111111111112,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "3",
+   "medoid_sim": 1,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 2
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Dark",
+    "direction": "LR",
+    "distance": "Short",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.5,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "4",
+   "medoid_sim": 4,
+   "label": "detected_too_late",
+   "types": {
+    "brake_released": 1,
+    "detected_too_late": 2
+   },
+   "settings": {
+    "pedestrian": "Adult",
+    "dress": "Light",
+    "direction": "LR",
+    "distance": "Short",
+    "fog_density": "50"
+   },
+   "max_repeat_distance": 0.5555555555555556,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "5",
+   "medoid_sim": 1,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 4
+   },
+   "settings": {
+    "pedestrian": "Adult",
+    "dress": "Dark",
+    "direction": "LR",
+    "distance": "Short",
+    "fog_density": "50"
+   },
+   "max_repeat_distance": 0.625,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "6",
+   "medoid_sim": 2,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 4
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Light",
+    "direction": "LR",
+    "distance": "Short",
+    "fog_density": "50"
+   },
+   "max_repeat_distance": 0.65,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "7",
+   "medoid_sim": 0,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 3,
+    "brake_released": 1
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Dark",
+    "direction": "LR",
+    "distance": "Short",
+    "fog_density": "50"
+   },
+   "max_repeat_distance": 0.8209876543209875,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "8",
+   "medoid_sim": 1,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 3
+   },
+   "settings": {
+    "pedestrian": "Adult",
+    "dress": "Light",
+    "direction": "LR",
+    "distance": "Long",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.7857142857142857,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "9",
+   "medoid_sim": 4,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 3
+   },
+   "settings": {
+    "pedestrian": "Adult",
+    "dress": "Dark",
+    "direction": "LR",
+    "distance": "Long",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.6818181818181818,
+   "cluster": 2
+  },
+  {
+   "scenario_id": "10",
+   "medoid_sim": 0,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 4
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Light",
+    "direction": "LR",
+    "distance": "Long",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.5925925925925926,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "11",
+   "medoid_sim": 3,
+   "label": "detected_too_late",
+   "types": {
+    "never_detected": 1,
+    "detected_too_late": 3
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Dark",
+    "direction": "LR",
+    "distance": "Long",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.375,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "12",
+   "medoid_sim": 1,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 2,
+    "brake_released": 1
+   },
+   "settings": {
+    "pedestrian": "Adult",
+    "dress": "Light",
+    "direction": "LR",
+    "distance": "Long",
+    "fog_density": "50"
+   },
+   "max_repeat_distance": 0.6,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "13",
+   "medoid_sim": 3,
+   "label": "detected_too_late",
+   "types": {
+    "brake_released": 1,
+    "detected_too_late": 2
+   },
+   "settings": {
+    "pedestrian": "Adult",
+    "dress": "Dark",
+    "direction": "LR",
+    "distance": "Long",
+    "fog_density": "50"
+   },
+   "max_repeat_distance": 0.5714285714285714,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "14",
+   "medoid_sim": 0,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 2
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Light",
+    "direction": "LR",
+    "distance": "Long",
+    "fog_density": "50"
+   },
+   "max_repeat_distance": 0.47619047619047616,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "15",
+   "medoid_sim": 2,
+   "label": "brake_released",
+   "types": {
+    "brake_released": 1
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Dark",
+    "direction": "LR",
+    "distance": "Long",
+    "fog_density": "50"
+   },
+   "max_repeat_distance": 0.0,
+   "cluster": 1
+  },
+  {
+   "scenario_id": "17",
+   "medoid_sim": 4,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 4
+   },
+   "settings": {
+    "pedestrian": "Adult",
+    "dress": "Dark",
+    "direction": "RL",
+    "distance": "Short",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.5666666666666667,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "18",
+   "medoid_sim": 2,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 3
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Light",
+    "direction": "RL",
+    "distance": "Short",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.5555555555555556,
+   "cluster": 2
+  },
+  {
+   "scenario_id": "19",
+   "medoid_sim": 3,
+   "label": "braking_insufficient",
+   "types": {
+    "stopped_too_close": 1,
+    "detected_too_late": 1,
+    "braking_insufficient": 1
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Dark",
+    "direction": "RL",
+    "distance": "Short",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.761904761904762,
+   "cluster": 1
+  },
+  {
+   "scenario_id": "20",
+   "medoid_sim": 1,
+   "label": "brake_released",
+   "types": {
+    "brake_released": 2
+   },
+   "settings": {
+    "pedestrian": "Adult",
+    "dress": "Light",
+    "direction": "RL",
+    "distance": "Short",
+    "fog_density": "50"
+   },
+   "max_repeat_distance": 0.48148148148148145,
+   "cluster": 2
+  },
+  {
+   "scenario_id": "21",
+   "medoid_sim": 3,
+   "label": "brake_released",
+   "types": {
+    "detected_too_late": 1,
+    "brake_released": 2
+   },
+   "settings": {
+    "pedestrian": "Adult",
+    "dress": "Dark",
+    "direction": "RL",
+    "distance": "Short",
+    "fog_density": "50"
+   },
+   "max_repeat_distance": 0.6904761904761906,
+   "cluster": 2
+  },
+  {
+   "scenario_id": "22",
+   "medoid_sim": 2,
+   "label": "detected_too_late",
+   "types": {
+    "brake_released": 1,
+    "detected_too_late": 2
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Light",
+    "direction": "RL",
+    "distance": "Short",
+    "fog_density": "50"
+   },
+   "max_repeat_distance": 0.6111111111111112,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "23",
+   "medoid_sim": 4,
+   "label": "detected_too_late",
+   "types": {
+    "brake_released": 1,
+    "detected_too_late": 2
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Dark",
+    "direction": "RL",
+    "distance": "Short",
+    "fog_density": "50"
+   },
+   "max_repeat_distance": 0.7179487179487178,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "24",
+   "medoid_sim": 1,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 2
+   },
+   "settings": {
+    "pedestrian": "Adult",
+    "dress": "Light",
+    "direction": "RL",
+    "distance": "Long",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.5,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "25",
+   "medoid_sim": 1,
+   "label": "brake_released",
+   "types": {
+    "brake_released": 2
+   },
+   "settings": {
+    "pedestrian": "Adult",
+    "dress": "Dark",
+    "direction": "RL",
+    "distance": "Long",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.4444444444444444,
+   "cluster": 2
+  },
+  {
+   "scenario_id": "26",
+   "medoid_sim": 3,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 3
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Light",
+    "direction": "RL",
+    "distance": "Long",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.5714285714285714,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "27",
+   "medoid_sim": 4,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 3,
+    "braking_insufficient": 1
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Dark",
+    "direction": "RL",
+    "distance": "Long",
+    "fog_density": "0"
+   },
+   "max_repeat_distance": 0.7916666666666666,
+   "cluster": 3
+  },
+  {
+   "scenario_id": "28",
+   "medoid_sim": 4,
+   "label": "brake_released",
+   "types": {
+    "brake_released": 1
+   },
+   "settings": {
+    "pedestrian": "Adult",
+    "dress": "Light",
+    "direction": "RL",
+    "distance": "Long",
+    "fog_density": "50"
+   },
+   "max_repeat_distance": 0.0,
+   "cluster": 2
+  },
+  {
+   "scenario_id": "29",
+   "medoid_sim": 2,
+   "label": "brake_released",
+   "types": {
+    "brake_released": 2,
+    "detected_too_late": 1
+   },
+   "settings": {
+    "pedestrian": "Adult",
+    "dress": "Dark",
+    "direction": "RL",
+    "distance": "Long",
+    "fog_density": "50"
+   },
+   "max_repeat_distance": 0.7692307692307693,
+   "cluster": 2
+  },
+  {
+   "scenario_id": "31",
+   "medoid_sim": 4,
+   "label": "detected_too_late",
+   "types": {
+    "detected_too_late": 2,
+    "brake_released": 1
+   },
+   "settings": {
+    "pedestrian": "Child",
+    "dress": "Dark",
+    "direction": "RL",
+    "distance": "Long",
+    "fog_density": "50"
+   },
+   "max_repeat_distance": 0.7898550724637682,
+   "cluster": 3
+  }
+ ]
+}
