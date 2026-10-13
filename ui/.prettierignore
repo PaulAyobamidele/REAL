@@ -1,0 +1,6 @@
+dist
+coverage
+node_modules
+public/workspace
+package-lock.json
+tests/fixtures

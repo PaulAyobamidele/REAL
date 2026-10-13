@@ -16,9 +16,16 @@ CONTROLLED_VOCAB = {
         "far": "Long", "long": "Long",
     },
     "fog_density": {"fog": "50", "foggy": "50", "clear": "0"},
+    # newer grammars (scripts/templates/v3/scene_v3.bnf)
+    # ("dark" already means dark clothing; "day" occurs in ordinary sentences)
+    "sun_altitude_angle": {"night": "-10", "dusk": "10", "dawn": "10",
+                           "daytime": "60", "sunny": "60"},
+    "wetness": {"wet": "80", "puddle": "80", "dry": "0"},
+    "precipitation": {"rain": "60", "raining": "60"},
+    "occlusion": {"parked": "1", "hidden": "1", "occluded": "1", "behind a car": "1"},
 }
 
-PHENOTYPE_PARAM_RE = re.compile(r"\{\s*(\w+)\s*:\s*([\w.\d]+)\s*\}")
+PHENOTYPE_PARAM_RE = re.compile(r"\{\s*(\w+)\s*:\s*(-?[\w.\d]+)\s*\}")
 
 
 def extract_constraints(scenario_text):

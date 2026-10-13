@@ -1,0 +1,34 @@
+name: review interface
+
+on:
+  push:
+    paths: ['ui/**', 'scripts/analysis/**', 'scripts/redsl/**', '.github/workflows/ui.yml']
+  pull_request:
+    paths: ['ui/**', 'scripts/analysis/**', 'scripts/redsl/**', '.github/workflows/ui.yml']
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ui
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      # the contract tests compare the written files with the Python tools' output
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install the laptop-side Python packages
+        run: pip install -r ../requirements-demo.txt
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+        env:
+          REAL_PYTHON: python
+      - run: npm run build

@@ -1,0 +1,1504 @@
+{
+  "schema_version": 2,
+  "not_simulated": [],
+  "run_id": "884d675262764ed99ce280ea064b72fd",
+  "safety_rule": "path",
+  "safety_rule_changed": 4,
+  "sampling": "ge",
+  "analysed_at": "2026-10-08T11:12:31.779800+00:00",
+  "run_meta": {
+    "run_id": "884d675262764ed99ce280ea064b72fd",
+    "mode": "ge",
+    "status": "complete",
+    "requirement": "# R_baseline - the baseline requirement from run 2b on (roadmap M1.7, agreed\n# with the supervisor 2026-10-01): the same car as rounds 1-2 (R0_rounds1_2.dsl)\n# plus BOTH slots the paper's D, S |= R needs:\n#   assuming  - the baseline domain assumptions D0 (docs/design/domain_assumptions.md),\n#               loose on purpose: the whole grid and ordinary walking.\n#               Checked per simulation after the run, never imposed on the simulator.\n#   ensuring  - the baseline soft goals E0: the car moves on again within 10 s of\n#               stopping (checked from scene v2 on); smoothness stays text until a\n#               jerk threshold is chosen (peak_jerk_mps3 is measured).\n# Runs before scene v2 lack pedestrian speed and the soft-goal measures:\n# those are reported as not measured.\nMAINTAIN \"Pedestrian Safety\"\n    by\n        \"Pedestrian Check\" using \"Perception Module\"\n            operationalized as\n                \"Detect Pedestrian\" performed by \"yolov5s\"\n                taking input \"image\" producing output \"pedestrian detection confidence\" & \"pedestrian detection flag\"\n    followed by\n        \"braking\" using \"braking module\"\n            operationalized as\n                \"Bring down throttle\" & \"Apply Brakes\" if \"pedestrian detection flag=True\" performed by \"proportional_braking\"\n                taking input \"pedestrian detection flag\" producing output \"Braking Status Flag\"\n    in scenario where\n        \"A pedestrian trying to cross the street in fog.\"\n    assuming \"fog_density <= 50\" & \"initial_separation_m >= 15\" & \"pedestrian_speed_mps <= 3\" & \"daylight, dry road\" & \"pedestrian on foot\"\n    ensuring \"resume_within_s <= 10\" & \"braking is smooth unless an emergency stop is needed\"\n",
+    "scenario_text": "A pedestrian trying to cross the street in fog.",
+    "constraints": {
+      "fog_density": "50"
+    },
+    "system_under_test": {
+      "braking_mode": "proportional_braking",
+      "yolo_model": "yolov5s"
+    },
+    "scene": {
+      "version": 2,
+      "max_steps": 250,
+      "crossing_trigger_m": 0,
+      "crossing_trigger_meaning": "0 = meet the car; > 0 = step out when the car is this close (m)",
+      "crossing_timeout_s": 6,
+      "pedestrian_min_speed_mps": 2.0,
+      "approach_distance_m": {
+        "Short": 20,
+        "Long": 35
+      },
+      "directions": {
+        "LR": {
+          "pedestrian_side": -1,
+          "pedestrian_angle": -90
+        },
+        "RL": {
+          "pedestrian_side": 1,
+          "pedestrian_angle": 90
+        }
+      }
+    },
+    "parent_run_id": null,
+    "round": null,
+    "requirement_source": "docs/examples/R_baseline.dsl",
+    "grammar_file": "v2/scene_v2.bnf",
+    "grammar_sha256": "1102e87c6593fd21b84efc516cec441452ef871ee9ba3105d3720ca612175a0c",
+    "template_sha256": "c3983a3df70b2672659f91c305332a35f1da6bd2546caa3bb765fad3d869a939",
+    "population_size": 12,
+    "max_generations": 4,
+    "trials_per_individual": 1,
+    "sampling": "GE - scenarios are not sampled evenly; see the analysis caveat",
+    "seed": 42,
+    "created_at": "2026-10-08T09:47:48.917739+00:00",
+    "best_phenotype": "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 40 } m away on a day with fog density {fog_density : 90}, walking at least {pedestrian_min_speed_mps : 3.0} m/s, stepping out at {crossing_trigger_m : 100} m",
+    "completed_at": "2026-10-08T11:00:01.602561+00:00"
+  },
+  "requirement": {
+    "parsed": true,
+    "detection_module": "yolov5s",
+    "operations": [
+      {
+        "task": "Detect Pedestrian",
+        "tasks": [
+          "Detect Pedestrian"
+        ],
+        "condition": null,
+        "module": "yolov5s",
+        "inputs": [
+          "image"
+        ],
+        "outputs": [
+          "pedestrian detection confidence",
+          "pedestrian detection flag"
+        ]
+      },
+      {
+        "task": "Bring down throttle & Apply Brakes",
+        "tasks": [
+          "Bring down throttle",
+          "Apply Brakes"
+        ],
+        "condition": "pedestrian detection flag=True",
+        "module": "proportional_braking",
+        "inputs": [
+          "pedestrian detection flag"
+        ],
+        "outputs": [
+          "Braking Status Flag"
+        ]
+      }
+    ],
+    "assumptions": [
+      "fog_density <= 50",
+      "initial_separation_m >= 15",
+      "pedestrian_speed_mps <= 3",
+      "daylight, dry road",
+      "pedestrian on foot"
+    ],
+    "soft_goals": [
+      "resume_within_s <= 10",
+      "braking is smooth unless an emergency stop is needed"
+    ],
+    "scenario_text": "A pedestrian trying to cross the street in fog.",
+    "tree": {
+      "temporal": "MAINTAIN",
+      "objective": "Pedestrian Safety",
+      "refinement": {
+        "combinator": "followed by",
+        "goals": [
+          {
+            "objective": "Pedestrian Check",
+            "agent": "Perception Module",
+            "operations": [
+              {
+                "task": "Detect Pedestrian",
+                "tasks": [
+                  "Detect Pedestrian"
+                ],
+                "condition": null,
+                "module": "yolov5s",
+                "inputs": [
+                  "image"
+                ],
+                "outputs": [
+                  "pedestrian detection confidence",
+                  "pedestrian detection flag"
+                ]
+              }
+            ]
+          },
+          {
+            "objective": "braking",
+            "agent": "braking module",
+            "operations": [
+              {
+                "task": "Bring down throttle & Apply Brakes",
+                "tasks": [
+                  "Bring down throttle",
+                  "Apply Brakes"
+                ],
+                "condition": "pedestrian detection flag=True",
+                "module": "proportional_braking",
+                "inputs": [
+                  "pedestrian detection flag"
+                ],
+                "outputs": [
+                  "Braking Status Flag"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "scenario": "A pedestrian trying to cross the street in fog.",
+      "assumptions": [
+        "fog_density <= 50",
+        "initial_separation_m >= 15",
+        "pedestrian_speed_mps <= 3",
+        "daylight, dry road",
+        "pedestrian on foot"
+      ],
+      "soft_goals": [
+        "resume_within_s <= 10",
+        "braking is smooth unless an emergency stop is needed"
+      ]
+    }
+  },
+  "admissibility": {
+    "rules": [
+      {
+        "name": "extreme_fog",
+        "param": "fog_density",
+        "op": ">",
+        "value": 80,
+        "reason": "Visibility below what the perception ODD is meant to cover",
+        "source": "rules file",
+        "as_assumption": "fog_density <= 80"
+      }
+    ],
+    "assumptions": [
+      {
+        "text": "fog_density <= 50",
+        "kind": "scenario",
+        "quantity": "fog_density",
+        "message": "",
+        "held": 9,
+        "broken": 14,
+        "not_measured": 0,
+        "enc_held": 9,
+        "enc_broken": 14,
+        "rate_held": 0.0,
+        "rate_broken": 0.0,
+        "verdict": "insufficient data"
+      },
+      {
+        "text": "initial_separation_m >= 15",
+        "kind": "run",
+        "quantity": "initial_separation_m",
+        "message": "",
+        "held": 22,
+        "broken": 1,
+        "not_measured": 0,
+        "enc_held": 22,
+        "enc_broken": 1,
+        "rate_held": 0.0,
+        "rate_broken": 0.0,
+        "verdict": "insufficient data"
+      },
+      {
+        "text": "pedestrian_speed_mps <= 3",
+        "kind": "run",
+        "quantity": "pedestrian_speed_mps",
+        "message": "",
+        "held": 15,
+        "broken": 8,
+        "not_measured": 0,
+        "enc_held": 15,
+        "enc_broken": 8,
+        "rate_held": 0.0,
+        "rate_broken": 0.0,
+        "verdict": "insufficient data"
+      },
+      {
+        "text": "daylight, dry road",
+        "kind": "free_text",
+        "quantity": null,
+        "message": "",
+        "held": 0,
+        "broken": 0,
+        "not_measured": 0,
+        "verdict": null
+      },
+      {
+        "text": "pedestrian on foot",
+        "kind": "free_text",
+        "quantity": null,
+        "message": "",
+        "held": 0,
+        "broken": 0,
+        "not_measured": 0,
+        "verdict": null
+      }
+    ],
+    "free_text_assumptions": [
+      "daylight, dry road",
+      "pedestrian on foot"
+    ],
+    "n_admissible": 7,
+    "n_spurious": 16,
+    "spurious": [
+      {
+        "rule": "assumption: fog_density <= 50",
+        "n": 3,
+        "failures": 0,
+        "scenarios": [
+          "A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : RL } with the car { approach_distance_m : 35 } m away on a day with fog density {fog_density : 60}, walking at least {pedestrian_min_speed_mps : 2.0} m/s, stepping out at {crossing_trigger_m : 30} m",
+          "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 50 } m away on a day with fog density {fog_density : 80}, walking at least {pedestrian_min_speed_mps : <pedestrian_min_speed_mps>} m/s, stepping out at {crossing_trigger_m : <crossing_trigger_m>} m",
+          "A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 50 } m away on a day with fog density {fog_density : 80}, walking at least {pedestrian_min_speed_mps : <pedestrian_min_speed_mps>} m/s, stepping out at {crossing_trigger_m : <crossing_trigger_m>} m"
+        ]
+      },
+      {
+        "rule": "assumption: fog_density <= 50, assumption: pedestrian_speed_mps <= 3",
+        "n": 4,
+        "failures": 0,
+        "scenarios": [
+          "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 20 } m away on a day with fog density {fog_density : 60}, walking at least {pedestrian_min_speed_mps : 3.0} m/s, stepping out at {crossing_trigger_m : 8} m",
+          "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 30 } m away on a day with fog density {fog_density : 60}, walking at least {pedestrian_min_speed_mps : 3.0} m/s, stepping out at {crossing_trigger_m : 15} m",
+          "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 30 } m away on a day with fog density {fog_density : 60}, walking at least {pedestrian_min_speed_mps : 3.0} m/s, stepping out at {crossing_trigger_m : 8} m",
+          "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 40 } m away on a day with fog density {fog_density : 60}, walking at least {pedestrian_min_speed_mps : 3.0} m/s, stepping out at {crossing_trigger_m : 8} m"
+        ]
+      },
+      {
+        "rule": "assumption: initial_separation_m >= 15",
+        "n": 1,
+        "failures": 0,
+        "scenarios": [
+          "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 10 } m away on a day with fog density {fog_density : 50}, walking at least {pedestrian_min_speed_mps : 1.5} m/s, stepping out at {crossing_trigger_m : 100} m"
+        ]
+      },
+      {
+        "rule": "assumption: pedestrian_speed_mps <= 3",
+        "n": 1,
+        "failures": 0,
+        "scenarios": [
+          "A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 50 } m away on a day with fog density {fog_density : 10}, walking at least {pedestrian_min_speed_mps : 4.0} m/s, stepping out at {crossing_trigger_m : 8} m"
+        ]
+      },
+      {
+        "rule": "extreme_fog, assumption: fog_density <= 50",
+        "n": 4,
+        "failures": 0,
+        "scenarios": [
+          "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 20 } m away on a day with fog density {fog_density : 90}, walking at least {pedestrian_min_speed_mps : 2.5} m/s, stepping out at {crossing_trigger_m : 15} m",
+          "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 40 } m away on a day with fog density {fog_density : 90}, walking at least {pedestrian_min_speed_mps : 2.0} m/s, stepping out at {crossing_trigger_m : 8} m",
+          "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 40 } m away on a day with fog density {fog_density : 90}, walking at least {pedestrian_min_speed_mps : 2.5} m/s, stepping out at {crossing_trigger_m : 30} m",
+          "A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : RL } with the car { approach_distance_m : 20 } m away on a day with fog density {fog_density : 100}, walking at least {pedestrian_min_speed_mps : 1.0} m/s, stepping out at {crossing_trigger_m : 20} m"
+        ]
+      },
+      {
+        "rule": "extreme_fog, assumption: fog_density <= 50, assumption: pedestrian_speed_mps <= 3",
+        "n": 3,
+        "failures": 0,
+        "scenarios": [
+          "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 40 } m away on a day with fog density {fog_density : 90}, walking at least {pedestrian_min_speed_mps : 3.0} m/s, stepping out at {crossing_trigger_m : 100} m",
+          "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 40 } m away on a day with fog density {fog_density : 90}, walking at least {pedestrian_min_speed_mps : 3.0} m/s, stepping out at {crossing_trigger_m : 15} m",
+          "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 40 } m away on a day with fog density {fog_density : 90}, walking at least {pedestrian_min_speed_mps : 3.0} m/s, stepping out at {crossing_trigger_m : 30} m"
+        ]
+      }
+    ]
+  },
+  "soft_goals": [
+    {
+      "text": "resume_within_s <= 10",
+      "kind": "checked",
+      "quantity": "resume_within_s",
+      "message": "",
+      "met": 6,
+      "missed": 1,
+      "not_measured": 0
+    },
+    {
+      "text": "braking is smooth unless an emergency stop is needed",
+      "kind": "free_text",
+      "quantity": null,
+      "message": "",
+      "met": 0,
+      "missed": 0,
+      "not_measured": 0
+    }
+  ],
+  "failure_model": {
+    "n_simulations": 7,
+    "n_no_encounter": 0,
+    "n_left_road": 0,
+    "n_not_crossed": 0,
+    "n_encounters": 7,
+    "n_scenarios": 7,
+    "failures": 0,
+    "failure_rate": 0.0,
+    "failure_rate_scenarios": 0.0,
+    "n_distinct_scenarios": 7,
+    "max_repeats_of_a_scenario": 1,
+    "passes": 7,
+    "passed_clean": 0,
+    "passed_stalled": 7,
+    "failure_types": {
+      "never_detected": 0,
+      "detected_not_braked": 0,
+      "detected_too_late": 0,
+      "brake_released": 0,
+      "braking_insufficient": 0,
+      "stopped_too_close": 0
+    },
+    "timing": {
+      "n_detected": 7,
+      "first_detection_distance_m_median": 8.620084689482054,
+      "first_brake_distance_m_median": 20.077646672285244,
+      "speed_at_first_brake_mps_median": 1.960000276565552,
+      "stopping_distance_needed_m_median": 5.240100067758565,
+      "share_detected_too_late": 0.0,
+      "brake_steps_median": 226.0,
+      "share_still_moving_at_closest": 0.0,
+      "mean_inference_ms_median": 7.247967720031738
+    },
+    "by_parameter": [
+      {
+        "param": "pedestrian",
+        "value": "Adult",
+        "n": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "failure_rate_others": 0.0,
+        "effect": 0.0,
+        "enough_data": false,
+        "n_distinct_scenarios": 4,
+        "scenario_effect": 0.0
+      },
+      {
+        "param": "pedestrian",
+        "value": "Child",
+        "n": 3,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "failure_rate_others": 0.0,
+        "effect": 0.0,
+        "enough_data": false,
+        "n_distinct_scenarios": 3,
+        "scenario_effect": 0.0
+      },
+      {
+        "param": "dress",
+        "value": "Dark",
+        "n": 3,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "failure_rate_others": 0.0,
+        "effect": 0.0,
+        "enough_data": false,
+        "n_distinct_scenarios": 3,
+        "scenario_effect": 0.0
+      },
+      {
+        "param": "dress",
+        "value": "Light",
+        "n": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "failure_rate_others": 0.0,
+        "effect": 0.0,
+        "enough_data": false,
+        "n_distinct_scenarios": 4,
+        "scenario_effect": 0.0
+      },
+      {
+        "param": "direction",
+        "value": "LR",
+        "n": 6,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "failure_rate_others": 0.0,
+        "effect": 0.0,
+        "enough_data": false,
+        "n_distinct_scenarios": 6,
+        "scenario_effect": 0.0
+      },
+      {
+        "param": "direction",
+        "value": "RL",
+        "n": 1,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "failure_rate_others": 0.0,
+        "effect": 0.0,
+        "enough_data": false,
+        "n_distinct_scenarios": 1,
+        "scenario_effect": 0.0
+      },
+      {
+        "param": "fog_density",
+        "value": "<= 50",
+        "n": 7,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "failure_rate_others": null,
+        "effect": null,
+        "enough_data": false,
+        "n_distinct_scenarios": 7,
+        "scenario_effect": null
+      },
+      {
+        "param": "approach_distance_m",
+        "value": "<= 25",
+        "n": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "failure_rate_others": 0.0,
+        "effect": 0.0,
+        "enough_data": false,
+        "n_distinct_scenarios": 4,
+        "scenario_effect": 0.0
+      },
+      {
+        "param": "approach_distance_m",
+        "value": "> 25",
+        "n": 3,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "failure_rate_others": 0.0,
+        "effect": 0.0,
+        "enough_data": false,
+        "n_distinct_scenarios": 3,
+        "scenario_effect": 0.0
+      },
+      {
+        "param": "pedestrian_min_speed_mps",
+        "value": "<= 2",
+        "n": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "failure_rate_others": 0.0,
+        "effect": 0.0,
+        "enough_data": false,
+        "n_distinct_scenarios": 4,
+        "scenario_effect": 0.0
+      },
+      {
+        "param": "pedestrian_min_speed_mps",
+        "value": "> 2",
+        "n": 3,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "failure_rate_others": 0.0,
+        "effect": 0.0,
+        "enough_data": false,
+        "n_distinct_scenarios": 3,
+        "scenario_effect": 0.0
+      },
+      {
+        "param": "crossing_trigger_m",
+        "value": "<= 20",
+        "n": 3,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "failure_rate_others": 0.0,
+        "effect": 0.0,
+        "enough_data": false,
+        "n_distinct_scenarios": 3,
+        "scenario_effect": 0.0
+      },
+      {
+        "param": "crossing_trigger_m",
+        "value": "> 20",
+        "n": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "failure_rate_others": 0.0,
+        "effect": 0.0,
+        "enough_data": false,
+        "n_distinct_scenarios": 4,
+        "scenario_effect": 0.0
+      }
+    ],
+    "by_scenario": [
+      {
+        "scenario_id": "g23dc03e942",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 50 } m away on a day with fog density {fog_density : 30}, walking at least {pedestrian_min_speed_mps : 1.5} m/s, stepping out at {crossing_trigger_m : 30} m",
+        "pedestrian": "Adult",
+        "dress": "Dark",
+        "direction": "LR",
+        "fog_density": "30",
+        "approach_distance_m": 50.0,
+        "pedestrian_min_speed_mps": 1.5,
+        "crossing_trigger_m": 30.0,
+        "n": 1,
+        "encounters": 1,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 7.499140703487343,
+        "passed": 0,
+        "passed_stalled": 1,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "gf5ade2f052",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 20 } m away on a day with fog density {fog_density : 0}, walking at least {pedestrian_min_speed_mps : 2.5} m/s, stepping out at {crossing_trigger_m : 30} m",
+        "pedestrian": "Adult",
+        "dress": "Light",
+        "direction": "LR",
+        "fog_density": "0",
+        "approach_distance_m": 20.0,
+        "pedestrian_min_speed_mps": 2.5,
+        "crossing_trigger_m": 30.0,
+        "n": 1,
+        "encounters": 1,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 7.587939568432533,
+        "passed": 0,
+        "passed_stalled": 1,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "g1e402ac0c4",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 25 } m away on a day with fog density {fog_density : 30}, walking at least {pedestrian_min_speed_mps : 2.0} m/s, stepping out at {crossing_trigger_m : 30} m",
+        "pedestrian": "Adult",
+        "dress": "Light",
+        "direction": "LR",
+        "fog_density": "30",
+        "approach_distance_m": 25.0,
+        "pedestrian_min_speed_mps": 2.0,
+        "crossing_trigger_m": 30.0,
+        "n": 1,
+        "encounters": 1,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 7.649830992174659,
+        "passed": 0,
+        "passed_stalled": 1,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "g1b5e7cde42",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 40 } m away on a day with fog density {fog_density : 20}, walking at least {pedestrian_min_speed_mps : 2.5} m/s, stepping out at {crossing_trigger_m : 30} m",
+        "pedestrian": "Adult",
+        "dress": "Light",
+        "direction": "LR",
+        "fog_density": "20",
+        "approach_distance_m": 40.0,
+        "pedestrian_min_speed_mps": 2.5,
+        "crossing_trigger_m": 30.0,
+        "n": 1,
+        "encounters": 1,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 8.287117796996984,
+        "passed": 0,
+        "passed_stalled": 1,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "g4f77a373b0",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 50 } m away on a day with fog density {fog_density : 10}, walking at least {pedestrian_min_speed_mps : 2.0} m/s, stepping out at {crossing_trigger_m : 20} m",
+        "pedestrian": "Child",
+        "dress": "Dark",
+        "direction": "LR",
+        "fog_density": "10",
+        "approach_distance_m": 50.0,
+        "pedestrian_min_speed_mps": 2.0,
+        "crossing_trigger_m": 20.0,
+        "n": 1,
+        "encounters": 1,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 8.495133540251922,
+        "passed": 0,
+        "passed_stalled": 1,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "ga1b1909dc5",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 15 } m away on a day with fog density {fog_density : 40}, walking at least {pedestrian_min_speed_mps : 2.5} m/s, stepping out at {crossing_trigger_m : 15} m",
+        "pedestrian": "Child",
+        "dress": "Dark",
+        "direction": "LR",
+        "fog_density": "40",
+        "approach_distance_m": 15.0,
+        "pedestrian_min_speed_mps": 2.5,
+        "crossing_trigger_m": 15.0,
+        "n": 1,
+        "encounters": 1,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 9.901893904631931,
+        "passed": 0,
+        "passed_stalled": 1,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "gcfe1d4d675",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : RL } with the car { approach_distance_m : 25 } m away on a day with fog density {fog_density : 40}, walking at least {pedestrian_min_speed_mps : 2.0} m/s, stepping out at {crossing_trigger_m : 20} m",
+        "pedestrian": "Child",
+        "dress": "Light",
+        "direction": "RL",
+        "fog_density": "40",
+        "approach_distance_m": 25.0,
+        "pedestrian_min_speed_mps": 2.0,
+        "crossing_trigger_m": 20.0,
+        "n": 1,
+        "encounters": 1,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 10.497368758522695,
+        "passed": 0,
+        "passed_stalled": 1,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      }
+    ],
+    "warnings": [
+      "7 of 7 passes were 'stalled': the car braked to a standstill and never moved again before the time limit. The safety rule held, but the car did not get past the crossing - a standoff (in scene v1 the pedestrian also waited for the car to come within 8 m). Read the pass rate with this in mind; it is the paper's 'mitigation shifts the failure mode' effect.",
+      "No encounter failed. Either the car handles all scenarios, or the safety margin / detection threshold is too lenient to expose anything.",
+      "Only 7 encounters - treat rates as rough. 5 trials per scenario gives 160 simulations in total; fewer means the job stopped early or many were no-encounter."
+    ]
+  },
+  "obstacles": [
+    {
+      "id": "PedestrianSizeTooSmall",
+      "param": "pedestrian",
+      "value": "Child",
+      "blocks_goal": "Detect Pedestrian",
+      "domain_property": "PedestrianVisible",
+      "description": "A child has a small apparent size in the camera frame, so the detector rarely reaches the confidence needed to brake.",
+      "mitigations": {
+        "data": "Fine-tune the detector on child-pedestrian images (paper M2: collision rate 100% -> 0% in nominal weather).",
+        "model": "Use a larger detector (YOLOv5m) - more accurate but slower; the paper (M1) saw latency-induced late braking at short distance.",
+        "system": "Proportional braking from 30% confidence, full braking above 85% (paper M4: child collisions 100% -> 8%).",
+        "requirement": "State a minimum detectable pedestrian size / distance in the requirement's domain assumptions."
+      },
+      "source": "catalogue",
+      "verdict": "insufficient_data",
+      "evidence": {
+        "param": "pedestrian",
+        "value": "Child",
+        "n": 3,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "failure_rate_others": 0.0,
+        "effect": 0.0,
+        "enough_data": false,
+        "n_distinct_scenarios": 3,
+        "scenario_effect": 0.0
+      },
+      "detection_failure_share": null,
+      "changes": {
+        "data": {
+          "kind": "S",
+          "from": "PedestrianSizeTooSmall",
+          "layer": "data",
+          "task": "Detect Pedestrian",
+          "module": "fine_tune",
+          "available": true,
+          "text": "\"Detect Pedestrian\" performed by \"fine_tune\""
+        },
+        "model": {
+          "kind": "S",
+          "from": "PedestrianSizeTooSmall",
+          "layer": "model",
+          "task": "Detect Pedestrian",
+          "module": "yolov5m",
+          "available": true,
+          "text": "\"Detect Pedestrian\" performed by \"yolov5m\""
+        },
+        "system": {
+          "kind": "S",
+          "from": "PedestrianSizeTooSmall",
+          "layer": "system",
+          "task": "Apply Brakes",
+          "module": "proportional_braking",
+          "available": true,
+          "text": "\"Apply Brakes\" performed by \"proportional_braking\""
+        },
+        "requirement": {
+          "kind": "D",
+          "from": "PedestrianSizeTooSmall",
+          "layer": "requirement",
+          "clause": "assuming",
+          "item": "pedestrian is at least 1.2 m tall",
+          "text": "assuming \"pedestrian is at least 1.2 m tall\""
+        }
+      }
+    },
+    {
+      "id": "PedestrianClothingNotVisible",
+      "param": "dress",
+      "value": "Dark",
+      "blocks_goal": "Detect Pedestrian",
+      "domain_property": "PedestrianVisible",
+      "description": "Low-contrast clothing against the background lowers detection confidence (paper: 'visual saliency' obstacle class).",
+      "mitigations": {
+        "data": "Add low-contrast / cluttered-background pedestrian samples.",
+        "model": "Lower the confidence threshold only when other cues agree (risk: more unnecessary braking).",
+        "system": "Confidence-aware cautious braking (paper M4).",
+        "requirement": "Make the contrast/visibility assumption explicit in the ODD."
+      },
+      "source": "catalogue",
+      "verdict": "insufficient_data",
+      "evidence": {
+        "param": "dress",
+        "value": "Dark",
+        "n": 3,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "failure_rate_others": 0.0,
+        "effect": 0.0,
+        "enough_data": false,
+        "n_distinct_scenarios": 3,
+        "scenario_effect": 0.0
+      },
+      "detection_failure_share": null,
+      "changes": {
+        "data": {
+          "kind": "S",
+          "from": "PedestrianClothingNotVisible",
+          "layer": "data",
+          "task": "Detect Pedestrian",
+          "module": "fine_tune",
+          "available": true,
+          "text": "\"Detect Pedestrian\" performed by \"fine_tune\""
+        },
+        "model": {
+          "kind": "S",
+          "from": "PedestrianClothingNotVisible",
+          "layer": "model",
+          "task": null,
+          "module": null,
+          "available": false,
+          "text": "model-level change with no requirement slot: Lower the confidence threshold only when other cues agree (risk: more unnecessary braking)."
+        },
+        "system": {
+          "kind": "S",
+          "from": "PedestrianClothingNotVisible",
+          "layer": "system",
+          "task": "Apply Brakes",
+          "module": "proportional_braking",
+          "available": true,
+          "text": "\"Apply Brakes\" performed by \"proportional_braking\""
+        },
+        "requirement": {
+          "kind": "D",
+          "from": "PedestrianClothingNotVisible",
+          "layer": "requirement",
+          "clause": "assuming",
+          "item": "pedestrian clothing contrasts with the background",
+          "text": "assuming \"pedestrian clothing contrasts with the background\""
+        }
+      }
+    },
+    {
+      "id": "AdverseWeather",
+      "param": "fog_density",
+      "value": "50",
+      "blocks_goal": "Detect Pedestrian",
+      "domain_property": "PedestrianVisible",
+      "description": "Fog degrades detection confidence and adds inference latency (paper E4). 50% fog is still a realistic deployment condition.",
+      "mitigations": {
+        "data": "Fine-tune with foggy scenes (paper M2: braking success in fog 0% -> 100%).",
+        "model": "Weather-conditioned confidence threshold.",
+        "system": "Redundant sensing (radar/lidar) or speed reduction in low visibility.",
+        "requirement": "Either add 'fog density <= N' to the ODD (scoping) or keep the requirement and demand the data/system fix."
+      },
+      "source": "catalogue",
+      "verdict": "insufficient_data",
+      "evidence": null,
+      "detection_failure_share": null,
+      "changes": {
+        "data": {
+          "kind": "S",
+          "from": "AdverseWeather",
+          "layer": "data",
+          "task": "Detect Pedestrian",
+          "module": "fine_tune",
+          "available": true,
+          "text": "\"Detect Pedestrian\" performed by \"fine_tune\""
+        },
+        "model": {
+          "kind": "S",
+          "from": "AdverseWeather",
+          "layer": "model",
+          "task": null,
+          "module": null,
+          "available": false,
+          "text": "model-level change with no requirement slot: Weather-conditioned confidence threshold."
+        },
+        "system": {
+          "kind": "S",
+          "from": "AdverseWeather",
+          "layer": "system",
+          "task": null,
+          "module": null,
+          "available": false,
+          "text": "system-level change with no requirement slot: Redundant sensing (radar/lidar) or speed reduction in low visibility."
+        },
+        "requirement": {
+          "kind": "D",
+          "from": "AdverseWeather",
+          "layer": "requirement",
+          "clause": "assuming",
+          "item": "fog_density <= 50",
+          "text": "assuming \"fog_density <= 50\""
+        }
+      }
+    },
+    {
+      "id": "DetectionTooLate",
+      "failure_type": "detected_too_late",
+      "blocks_goal": "Detect Pedestrian",
+      "domain_property": "PedestrianVisible",
+      "description": "The detector only reaches the confidence bar when the pedestrian is already closer than the distance needed to stop at the approach speed. The pedestrian is visible for seconds before that; the bar (85%) is reached too late for the braking distance.",
+      "mitigations": {
+        "data": "Fine-tune on distant / small pedestrian instances so confidence rises earlier.",
+        "model": "A more sensitive detector, or a lower confidence bar with a second cue (risk: unnecessary braking).",
+        "system": "Proportional braking from 30% confidence, full braking above 85% (paper M4) - the car starts slowing while the detector is still unsure.",
+        "requirement": "State the approach-speed / minimum detection-distance assumption in the ODD (e.g. assuming \"ego_speed <= 5\"), or specify a time-to-brake bound.",
+        "scenario": "The approach speed (EGO_SPEED = 7.5 m/s) and spawn distance are fixed constants of scratch.temp, not grammar parameters - the grid cannot vary them. Consider making speed a scenario parameter."
+      },
+      "source": "catalogue",
+      "verdict": "insufficient_data",
+      "evidence": {
+        "failure_type": "detected_too_late",
+        "count": 0,
+        "failures": 0,
+        "share": null
+      },
+      "detection_failure_share": null,
+      "changes": {
+        "data": {
+          "kind": "S",
+          "from": "DetectionTooLate",
+          "layer": "data",
+          "task": "Detect Pedestrian",
+          "module": "fine_tune",
+          "available": true,
+          "text": "\"Detect Pedestrian\" performed by \"fine_tune\""
+        },
+        "model": {
+          "kind": "S",
+          "from": "DetectionTooLate",
+          "layer": "model",
+          "task": "Detect Pedestrian",
+          "module": "yolov5m",
+          "available": true,
+          "text": "\"Detect Pedestrian\" performed by \"yolov5m\""
+        },
+        "system": {
+          "kind": "S",
+          "from": "DetectionTooLate",
+          "layer": "system",
+          "task": "Apply Brakes",
+          "module": "proportional_braking",
+          "available": true,
+          "text": "\"Apply Brakes\" performed by \"proportional_braking\""
+        },
+        "requirement": {
+          "kind": "D",
+          "from": "DetectionTooLate",
+          "layer": "requirement",
+          "clause": "assuming",
+          "item": "ego_speed <= 5",
+          "text": "assuming \"ego_speed <= 5\""
+        },
+        "scenario": {
+          "kind": "T",
+          "from": "DetectionTooLate",
+          "layer": "scenario",
+          "target": "scripts/scenarios/scratch.temp",
+          "text": "The approach speed (EGO_SPEED = 7.5 m/s) and spawn distance are fixed constants of scratch.temp, not grammar parameters - the grid cannot vary them. Consider making speed a scenario parameter."
+        }
+      }
+    },
+    {
+      "id": "BrakingNotLatched",
+      "failure_type": "brake_released",
+      "blocks_goal": "Apply Brakes",
+      "domain_property": null,
+      "description": "Braking is applied only while the pedestrian is currently detected. When the pedestrian leaves the camera frame (very close, or passing) the car releases the brake and speeds up again before the closest point.",
+      "mitigations": {
+        "data": null,
+        "model": null,
+        "system": "Latch the brake once triggered until the car has stopped or the pedestrian is confirmed clear; add a short detection memory (tracking).",
+        "requirement": "Specify braking as a state (\"once a pedestrian is detected, keep braking until stopped\"), not as a per-frame reaction."
+      },
+      "source": "catalogue",
+      "verdict": "insufficient_data",
+      "evidence": {
+        "failure_type": "brake_released",
+        "count": 0,
+        "failures": 0,
+        "share": null
+      },
+      "detection_failure_share": null,
+      "changes": {
+        "system": {
+          "kind": "S",
+          "from": "BrakingNotLatched",
+          "layer": "system",
+          "task": "Apply Brakes",
+          "module": "latched_braking",
+          "available": false,
+          "text": "\"Apply Brakes\" performed by \"latched_braking\""
+        },
+        "requirement": {
+          "kind": "R",
+          "from": "BrakingNotLatched",
+          "layer": "requirement",
+          "clause": "ensuring",
+          "item": "once braking has started it continues until the vehicle has stopped or the pedestrian is clear",
+          "text": "ensuring \"once braking has started it continues until the vehicle has stopped or the pedestrian is clear\""
+        }
+      }
+    },
+    {
+      "id": "StandoffUnnecessaryStop",
+      "outcome": "passed_stalled",
+      "blocks_goal": "Smooth Braking / Progress",
+      "domain_property": "PedestrianCrossesWhenSafe",
+      "description": "The safety goal holds, but the car stops well short of the crossing and never resumes: the pedestrian waits for the car, the car waits for the pedestrian. The paper's soft goal (SmoothBraking / making progress) fails where the safety goal now succeeds - the mitigation shifted the failure mode.",
+      "mitigations": {
+        "data": null,
+        "model": "Raise the caution threshold only when the pedestrian is stationary and off the road (needs a track, not a per-frame confidence).",
+        "system": "Time-box the cautious stop: creep forward / resume when the pedestrian has not moved toward the road for N seconds; distinguish 'pedestrian at kerb' from 'pedestrian crossing'.",
+        "requirement": "Add the soft goal explicitly (e.g. 'resume within N s once the path is clear') and state the domain assumption that pedestrians cross only when the vehicle is within/beyond a given distance.",
+        "scenario": "Fix the test: let the pedestrian cross on its own schedule (time- or distance-to-crossing-based), not only once the car is within 8 m (CrossingBehavior threshold in scratch.temp) - otherwise a cautious car can never be measured getting past."
+      },
+      "source": "catalogue",
+      "verdict": "insufficient_data",
+      "evidence": {
+        "outcome": "passed_stalled",
+        "count": 7,
+        "passes": 7,
+        "share": 1.0
+      },
+      "detection_failure_share": null,
+      "changes": {
+        "model": {
+          "kind": "S",
+          "from": "StandoffUnnecessaryStop",
+          "layer": "model",
+          "task": null,
+          "module": null,
+          "available": false,
+          "text": "model-level change with no requirement slot: Raise the caution threshold only when the pedestrian is stationary and off the road (needs a track, not a per-frame confidence)."
+        },
+        "system": {
+          "kind": "S",
+          "from": "StandoffUnnecessaryStop",
+          "layer": "system",
+          "task": "Apply Brakes",
+          "module": "proportional_braking_with_resume",
+          "available": false,
+          "text": "\"Apply Brakes\" performed by \"proportional_braking_with_resume\""
+        },
+        "requirement": {
+          "kind": "R",
+          "from": "StandoffUnnecessaryStop",
+          "layer": "requirement",
+          "clause": "ensuring",
+          "item": "vehicle resumes within 10 s once the crossing is clear",
+          "text": "ensuring \"vehicle resumes within 10 s once the crossing is clear\""
+        },
+        "scenario": {
+          "kind": "T",
+          "from": "StandoffUnnecessaryStop",
+          "layer": "scenario",
+          "target": "scripts/scenarios/scratch.temp",
+          "text": "Fix the test: let the pedestrian cross on its own schedule (time- or distance-to-crossing-based), not only once the car is within 8 m (CrossingBehavior threshold in scratch.temp) - otherwise a cautious car can never be measured getting past."
+        }
+      }
+    }
+  ],
+  "bars": {
+    "min_share": 0.25,
+    "min_effect": 0.15,
+    "min_n": 10,
+    "min_n_failures": 10
+  },
+  "scenario_artefacts": [
+    {
+      "id": "crossing_trigger_8m",
+      "metric": "passed_stalled",
+      "description": "The pedestrian's CrossingBehavior only steps out once the car is within THRESHOLD = 8 m (scratch.temp). A car that stops cautiously before that never gets to see the crossing happen: a standoff that is a property of the test, not of the system - it makes StandoffUnnecessaryStop partly unmeasurable.",
+      "fix": "scratch.temp: trigger the crossing on a timer or on the pedestrian's own distance to the crossing point, not on proximity to the ego.",
+      "value": 7
+    },
+    {
+      "id": "no_encounter_geometry",
+      "metric": "n_no_encounter",
+      "description": "Uniform lane choice + heading can place the ego driving away from the pedestrian, so the two never meet. These runs are excluded from the rates, but they waste ~25% of the simulation budget.",
+      "fix": "scratch.temp: choose the lane/spot so the ego approaches the crossing point; or reject such samples with a Scenic `require`.",
+      "value": 0
+    },
+    {
+      "id": "distance_parameter_dead",
+      "metric": "n_scenarios",
+      "description": "The grammar's `distance` (Short/Long) does not move the pedestrian in scratch.temp (position is a fixed random range; the angle depends only on direction). Its measured effect should be ~0 and any effect is noise.",
+      "fix": "scratch.temp: place the pedestrian from `distance` (as scenic_template.py's get_pedestrian_pos did), or drop the parameter from old.bnf.",
+      "value": 7
+    }
+  ],
+  "simulations": [
+    {
+      "scenario_id": "gd3d5e3b510",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "assumption: initial_separation_m >= 15",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "broken",
+        "pedestrian_speed_mps <= 3": "held"
+      },
+      "soft_goals": {},
+      "trace": "traces/gd3d5e3b510_0.json"
+    },
+    {
+      "scenario_id": "gc4d7bacf4e",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "extreme_fog, assumption: fog_density <= 50",
+      "assumptions": {
+        "fog_density <= 50": "broken",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "held"
+      },
+      "soft_goals": {},
+      "trace": "traces/gc4d7bacf4e_0.json"
+    },
+    {
+      "scenario_id": "gcfe1d4d675",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "held"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "missed"
+      },
+      "trace": "traces/gcfe1d4d675_0.json"
+    },
+    {
+      "scenario_id": "g23dc03e942",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "held"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "met"
+      },
+      "trace": "traces/g23dc03e942_0.json"
+    },
+    {
+      "scenario_id": "gf5ade2f052",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "held"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "met"
+      },
+      "trace": "traces/gf5ade2f052_0.json"
+    },
+    {
+      "scenario_id": "gf63bb6d36a",
+      "sim_index": 0,
+      "outcome": "passed",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "extreme_fog, assumption: fog_density <= 50, assumption: pedestrian_speed_mps <= 3",
+      "assumptions": {
+        "fog_density <= 50": "broken",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "broken"
+      },
+      "soft_goals": {},
+      "trace": "traces/gf63bb6d36a_0.json"
+    },
+    {
+      "scenario_id": "g6956ac8524",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "assumption: fog_density <= 50",
+      "assumptions": {
+        "fog_density <= 50": "broken",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "held"
+      },
+      "soft_goals": {},
+      "trace": "traces/g6956ac8524_0.json"
+    },
+    {
+      "scenario_id": "g4f77a373b0",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "held"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "met"
+      },
+      "trace": "traces/g4f77a373b0_0.json"
+    },
+    {
+      "scenario_id": "ga1b1909dc5",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "held"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "met"
+      },
+      "trace": "traces/ga1b1909dc5_0.json"
+    },
+    {
+      "scenario_id": "gf66b93018c",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "assumption: pedestrian_speed_mps <= 3",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "broken"
+      },
+      "soft_goals": {},
+      "trace": "traces/gf66b93018c_0.json"
+    },
+    {
+      "scenario_id": "g31e10be85b",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "assumption: fog_density <= 50",
+      "assumptions": {
+        "fog_density <= 50": "broken",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "held"
+      },
+      "soft_goals": {},
+      "trace": "traces/g31e10be85b_0.json"
+    },
+    {
+      "scenario_id": "gaec20677dc",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "extreme_fog, assumption: fog_density <= 50, assumption: pedestrian_speed_mps <= 3",
+      "assumptions": {
+        "fog_density <= 50": "broken",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "broken"
+      },
+      "soft_goals": {},
+      "trace": "traces/gaec20677dc_0.json"
+    },
+    {
+      "scenario_id": "gffbb2fba0d",
+      "sim_index": 0,
+      "outcome": "passed",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "assumption: fog_density <= 50",
+      "assumptions": {
+        "fog_density <= 50": "broken",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "held"
+      },
+      "soft_goals": {},
+      "trace": "traces/gffbb2fba0d_0.json"
+    },
+    {
+      "scenario_id": "gb6f03e784a",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "assumption: fog_density <= 50, assumption: pedestrian_speed_mps <= 3",
+      "assumptions": {
+        "fog_density <= 50": "broken",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "broken"
+      },
+      "soft_goals": {},
+      "trace": "traces/gb6f03e784a_0.json"
+    },
+    {
+      "scenario_id": "g6e3db74724",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "extreme_fog, assumption: fog_density <= 50",
+      "assumptions": {
+        "fog_density <= 50": "broken",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "held"
+      },
+      "soft_goals": {},
+      "trace": "traces/g6e3db74724_0.json"
+    },
+    {
+      "scenario_id": "g1321250ca0",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "assumption: fog_density <= 50, assumption: pedestrian_speed_mps <= 3",
+      "assumptions": {
+        "fog_density <= 50": "broken",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "broken"
+      },
+      "soft_goals": {},
+      "trace": "traces/g1321250ca0_0.json"
+    },
+    {
+      "scenario_id": "g473bcaae1c",
+      "sim_index": 0,
+      "outcome": "passed",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "extreme_fog, assumption: fog_density <= 50, assumption: pedestrian_speed_mps <= 3",
+      "assumptions": {
+        "fog_density <= 50": "broken",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "broken"
+      },
+      "soft_goals": {},
+      "trace": "traces/g473bcaae1c_0.json"
+    },
+    {
+      "scenario_id": "g1e402ac0c4",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "held"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "met"
+      },
+      "trace": "traces/g1e402ac0c4_0.json"
+    },
+    {
+      "scenario_id": "g36c2f6d50a",
+      "sim_index": 0,
+      "outcome": "passed",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "assumption: fog_density <= 50, assumption: pedestrian_speed_mps <= 3",
+      "assumptions": {
+        "fog_density <= 50": "broken",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "broken"
+      },
+      "soft_goals": {},
+      "trace": "traces/g36c2f6d50a_0.json"
+    },
+    {
+      "scenario_id": "g90f855c61e",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "extreme_fog, assumption: fog_density <= 50",
+      "assumptions": {
+        "fog_density <= 50": "broken",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "held"
+      },
+      "soft_goals": {},
+      "trace": "traces/g90f855c61e_0.json"
+    },
+    {
+      "scenario_id": "gdbf0e7603e",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "extreme_fog, assumption: fog_density <= 50",
+      "assumptions": {
+        "fog_density <= 50": "broken",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "held"
+      },
+      "soft_goals": {},
+      "trace": "traces/gdbf0e7603e_0.json"
+    },
+    {
+      "scenario_id": "g1b5e7cde42",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "held"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "met"
+      },
+      "trace": "traces/g1b5e7cde42_0.json"
+    },
+    {
+      "scenario_id": "ga6e10d0d54",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "assumption: fog_density <= 50, assumption: pedestrian_speed_mps <= 3",
+      "assumptions": {
+        "fog_density <= 50": "broken",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "broken"
+      },
+      "soft_goals": {},
+      "trace": "traces/ga6e10d0d54_0.json"
+    },
+    {
+      "scenario_id": "best_video",
+      "sim_index": 0,
+      "recording_pass": true,
+      "outcome": null,
+      "encounter": false,
+      "failed": null,
+      "admissible": null,
+      "set_aside_reason": "recording pass of the worst scenario (not a sample)",
+      "assumptions": {},
+      "soft_goals": {},
+      "trace": "traces/best_video_0.json"
+    }
+  ],
+  "banner": "Path-aware safety rule (5 m margin only while the pedestrian is in the car's path); the run folder's own report uses the margin anywhere. Which rule the requirement means is a decision for the review ([R])."
+}

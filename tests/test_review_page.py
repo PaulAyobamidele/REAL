@@ -11,8 +11,8 @@ pytest.importorskip("streamlit")
 from streamlit.testing.v1 import AppTest  # noqa: E402
 
 PAGE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "pages", "4_review.py")
-STEPS = ["1. What we asked", "2. What happened", "3. What pattern",
-         "4. What you decide", "5. What the requirement becomes"]
+STEPS = ["1. The requirement under test", "2. Test Execution Result", "3. Failure Analysis",
+         "4. Obstacle triage", "5. Requirement revision"]
 
 
 def _rounds(tmp_path):

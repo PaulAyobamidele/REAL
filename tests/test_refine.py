@@ -99,3 +99,24 @@ def test_refine_rejects_unparseable_override(tmp_path):
     # and a valid override is used verbatim
     ok = refine.refine(str(run), r1_override=REQUIREMENT.rstrip() + '\n    ensuring "keep moving"\n', write=False)
     assert DSL(ok["r1"]).get_soft_goals() == ["keep moving"]
+
+
+def test_change_for_is_the_single_source_of_plan_changes(tmp_path):
+    run, doc = _decided_run(tmp_path)
+    changes = refine.plan_changes(doc)
+    for oid, o in doc["obstacles"].items():
+        if o["verdict"] in ("accept", "rename") and o.get("mitigation"):
+            assert refine.change_for(oid, o["mitigation"]["layer"], o["mitigation"]["action"]) in changes
+    for sid, s in doc["scope"].items():
+        assert refine.scope_change(sid, s) in changes
+    assert refine.change_for("X", "scenario", "fix it") == {
+        "kind": "T", "from": "X", "layer": "scenario", "target": "scripts/scenarios/scratch.temp", "text": "fix it"}
+    assert refine.change_for("X", "requirement", "free text")["kind"] == "D"   # unknown pair -> assuming
+    assert refine.change_for("X", "model", "bigger")["available"] is False      # no requirement slot
+    assert refine.change_for("X", "weird", "x") is None
+    assert refine.rule_as_assumption({"param": "fog_density", "op": ">", "value": 80}) == "fog_density <= 80"
+    assert refine.rule_as_assumption({"param": "pedestrian", "op": "in", "value": ["Child"]}) is None
+    assert refine.rule_as_assumption(None) is None
+    assert refine.scope_change("rule:x", {"verdict": "in_scope"})["layer"] == "scope"
+    assert refine.scope_change("rule:x", {"verdict": "out_of_scope", "reason": "too dark"})["item"] == "too dark"
+    assert refine.scope_change("rule:x", {"verdict": None}) is None

@@ -1,0 +1,901 @@
+Using project source overlay: /scratch/paulad/real_project/REAL
+INFO:    Converting SIF file to temporary sandbox...
+2821384:C 08 Oct 03:51:15.185 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+2821384:C 08 Oct 03:51:15.185 # Redis version=4.0.9, bits=64, commit=00000000, modified=0, pid=2821384, just started
+2821384:C 08 Oct 03:51:15.185 # Configuration loaded
+[2026-10-08 03:51:16 -0400] [2821434] [INFO] Starting gunicorn 23.0.0
+[2026-10-08 03:51:16 -0400] [2821434] [INFO] Listening at: http://127.0.0.1:5000 (2821434)
+[2026-10-08 03:51:16 -0400] [2821434] [INFO] Using worker: sync
+[2026-10-08 03:51:16 -0400] [2821487] [INFO] Booting worker with pid: 2821487
+[2026-10-08 03:51:16 -0400] [2821517] [INFO] Booting worker with pid: 2821517
+[2026-10-08 03:51:16 -0400] [2821563] [INFO] Booting worker with pid: 2821563
+[2026-10-08 03:51:16 -0400] [2821589] [INFO] Booting worker with pid: 2821589
+chmod: changing permissions of '/home/carla/CarlaUE4/Binaries/Linux/CarlaUE4-Linux-Shipping': Read-only file system
+sh: 1: xdg-user-dir: not found
+4.26.2-0+++UE4+Release-4.26 522 0
+Disabling core dumps.
+INFO:     Started server process [2822393]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:7999 (Press CTRL+C to quit)
+INFO:     127.0.0.1:37800 - "GET / HTTP/1.1" 200 OK
+API ready after 10 s
+[grid] scenario 1/32: A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 0}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:12<00:51, 12.80s/it]WARNING: attempting to destroy an actor that is already dead: Actor 208 (sensor.camera.rgb) 
+ 40%|████      | 2/5 [00:31<00:49, 16.44s/it] 60%|██████    | 3/5 [00:50<00:35, 17.51s/it] 80%|████████  | 4/5 [01:08<00:17, 17.56s/it]100%|██████████| 5/5 [01:26<00:00, 17.66s/it]100%|██████████| 5/5 [01:26<00:00, 17.21s/it]2026/10/08 03:55:41 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9435 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 03:55:41 INFO mlflow.tracking._tracking_service.client: 🏃 View run upbeat-wolf-163 at: http://127.0.0.1:5000/#/experiments/0/runs/a8b836a022fd43cf80966899dec9f87d.
+2026/10/08 03:55:41 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/0.
+[grid] scenario 2/32: A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 0}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:13<00:55, 13.98s/it] 40%|████      | 2/5 [00:28<00:42, 14.33s/it] 60%|██████    | 3/5 [00:43<00:29, 14.54s/it] 80%|████████  | 4/5 [00:55<00:13, 13.69s/it]100%|██████████| 5/5 [01:07<00:00, 13.15s/it]100%|██████████| 5/5 [01:07<00:00, 13.58s/it]2026/10/08 03:59:08 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9435 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 03:59:08 INFO mlflow.tracking._tracking_service.client: 🏃 View run handsome-cow-84 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/46ed288490a04a4180b78a5dd7a38970.
+2026/10/08 03:59:08 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 3/32: A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 0}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:13<00:55, 13.77s/it] 40%|████      | 2/5 [00:29<00:44, 14.74s/it] 60%|██████    | 3/5 [00:41<00:27, 13.61s/it] 80%|████████  | 4/5 [00:48<00:10, 10.91s/it]100%|██████████| 5/5 [01:01<00:00, 11.58s/it]100%|██████████| 5/5 [01:01<00:00, 12.20s/it]2026/10/08 04:02:26 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9435 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 04:02:26 INFO mlflow.tracking._tracking_service.client: 🏃 View run unleashed-lamb-645 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/efc4ebf3749746389971549748cd4232.
+2026/10/08 04:02:26 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 4/32: A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 0}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:14<00:58, 14.63s/it] 40%|████      | 2/5 [00:28<00:42, 14.17s/it] 60%|██████    | 3/5 [00:41<00:27, 13.87s/it] 80%|████████  | 4/5 [00:49<00:11, 11.21s/it]100%|██████████| 5/5 [01:02<00:00, 12.11s/it]100%|██████████| 5/5 [01:02<00:00, 12.57s/it]2026/10/08 04:05:48 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9435 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 04:05:49 INFO mlflow.tracking._tracking_service.client: 🏃 View run capricious-cub-131 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/d959688c98b24696b84d71d56ee77228.
+2026/10/08 04:05:49 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 5/32: A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 50}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:12<00:51, 12.91s/it] 40%|████      | 2/5 [00:26<00:40, 13.37s/it] 60%|██████    | 3/5 [00:40<00:27, 13.62s/it] 80%|████████  | 4/5 [00:53<00:13, 13.37s/it]100%|██████████| 5/5 [01:04<00:00, 12.68s/it]100%|██████████| 5/5 [01:04<00:00, 12.99s/it]2026/10/08 04:09:11 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9436 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 04:09:11 INFO mlflow.tracking._tracking_service.client: 🏃 View run treasured-gnat-707 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/fd8f55dad78247c09def5f3ac7894130.
+2026/10/08 04:09:11 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 6/32: A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 50}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:12<00:50, 12.56s/it] 40%|████      | 2/5 [00:25<00:38, 12.88s/it] 60%|██████    | 3/5 [00:37<00:24, 12.46s/it] 80%|████████  | 4/5 [00:50<00:12, 12.59s/it]100%|██████████| 5/5 [01:03<00:00, 12.91s/it]100%|██████████| 5/5 [01:03<00:00, 12.78s/it]2026/10/08 04:12:35 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9436 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 04:12:35 INFO mlflow.tracking._tracking_service.client: 🏃 View run funny-tern-996 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/1d119326e2db40e8ac1ea8351f78ffb0.
+2026/10/08 04:12:35 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 7/32: A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 50}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:12<00:49, 12.30s/it] 40%|████      | 2/5 [00:24<00:36, 12.28s/it] 60%|██████    | 3/5 [00:36<00:24, 12.28s/it] 80%|████████  | 4/5 [00:48<00:11, 11.90s/it]100%|██████████| 5/5 [00:59<00:00, 11.69s/it]100%|██████████| 5/5 [00:59<00:00, 11.90s/it]2026/10/08 04:15:51 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9436 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 04:15:51 INFO mlflow.tracking._tracking_service.client: 🏃 View run resilient-panda-308 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/7253fc3e703440ea83a94bb921ee0e9e.
+2026/10/08 04:15:51 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 8/32: A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 50}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:12<00:51, 12.96s/it] 40%|████      | 2/5 [00:25<00:38, 12.84s/it] 60%|██████    | 3/5 [00:38<00:25, 12.77s/it] 80%|████████  | 4/5 [00:50<00:12, 12.44s/it]100%|██████████| 5/5 [01:03<00:00, 12.68s/it]100%|██████████| 5/5 [01:03<00:00, 12.69s/it]2026/10/08 04:19:13 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9436 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 04:19:13 INFO mlflow.tracking._tracking_service.client: 🏃 View run mysterious-rat-469 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/f55409c96ec14837b5a36929a375c61e.
+2026/10/08 04:19:13 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 9/32: A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 0}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:13<00:55, 13.80s/it] 40%|████      | 2/5 [00:28<00:43, 14.40s/it] 60%|██████    | 3/5 [00:41<00:27, 13.87s/it]WARNING: attempting to destroy an actor that is already dead: Actor 1874 (sensor.camera.rgb) 
+ 80%|████████  | 4/5 [01:00<00:15, 15.62s/it]100%|██████████| 5/5 [01:19<00:00, 16.95s/it]100%|██████████| 5/5 [01:19<00:00, 15.89s/it]2026/10/08 04:22:49 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9435 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 04:22:49 INFO mlflow.tracking._tracking_service.client: 🏃 View run gifted-goose-754 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/6cc9cd43f02c40a296746839b2a67d32.
+2026/10/08 04:22:49 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 10/32: A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 0}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:14<00:56, 14.02s/it] 40%|████      | 2/5 [00:28<00:42, 14.03s/it] 60%|██████    | 3/5 [00:42<00:28, 14.18s/it] 80%|████████  | 4/5 [00:55<00:13, 13.85s/it]WARNING: attempting to destroy an actor that is already dead: Actor 2089 (sensor.camera.rgb) 
+100%|██████████| 5/5 [01:13<00:00, 15.17s/it]100%|██████████| 5/5 [01:13<00:00, 14.65s/it]2026/10/08 04:26:19 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9435 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 04:26:19 INFO mlflow.tracking._tracking_service.client: 🏃 View run suave-tern-617 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/61598b0344da449ea7e80cd864120f7e.
+2026/10/08 04:26:19 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 11/32: A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 0}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:04<00:17,  4.50s/it] 40%|████      | 2/5 [00:18<00:30, 10.21s/it] 60%|██████    | 3/5 [00:32<00:24, 12.03s/it] 80%|████████  | 4/5 [00:45<00:12, 12.43s/it]100%|██████████| 5/5 [00:50<00:00,  9.49s/it]100%|██████████| 5/5 [00:50<00:00, 10.05s/it]2026/10/08 04:29:30 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9435 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 04:29:30 INFO mlflow.tracking._tracking_service.client: 🏃 View run luxuriant-panda-530 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/31233d0fc8fc40d9b8e37de423fcf213.
+2026/10/08 04:29:30 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 12/32: A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 0}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:08<00:33,  8.38s/it] 40%|████      | 2/5 [00:22<00:36, 12.04s/it] 60%|██████    | 3/5 [00:37<00:26, 13.25s/it] 80%|████████  | 4/5 [00:52<00:13, 13.82s/it]100%|██████████| 5/5 [01:06<00:00, 14.05s/it]100%|██████████| 5/5 [01:06<00:00, 13.36s/it]2026/10/08 04:32:55 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9435 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 04:32:55 INFO mlflow.tracking._tracking_service.client: 🏃 View run chill-auk-923 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/027ab039aada4977add3ca8940d5cb53.
+2026/10/08 04:32:55 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 13/32: A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 50}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:14<00:58, 14.56s/it] 40%|████      | 2/5 [00:25<00:37, 12.65s/it] 60%|██████    | 3/5 [00:39<00:25, 12.94s/it] 80%|████████  | 4/5 [00:50<00:12, 12.22s/it]100%|██████████| 5/5 [01:03<00:00, 12.70s/it]100%|██████████| 5/5 [01:03<00:00, 12.76s/it]2026/10/08 04:36:16 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9436 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 04:36:17 INFO mlflow.tracking._tracking_service.client: 🏃 View run bedecked-crane-111 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/e109aec2cfb4437eb7c752d89d041218.
+2026/10/08 04:36:17 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 14/32: A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 50}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:11<00:47, 11.78s/it] 40%|████      | 2/5 [00:25<00:38, 12.76s/it] 60%|██████    | 3/5 [00:38<00:25, 12.93s/it] 80%|████████  | 4/5 [00:50<00:12, 12.80s/it]100%|██████████| 5/5 [01:04<00:00, 13.07s/it]100%|██████████| 5/5 [01:04<00:00, 12.90s/it]2026/10/08 04:39:38 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9436 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 04:39:38 INFO mlflow.tracking._tracking_service.client: 🏃 View run nosy-elk-143 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/ab735e034f1845dcad663fd959f84677.
+2026/10/08 04:39:38 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 15/32: A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 50}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:13<00:53, 13.45s/it] 40%|████      | 2/5 [00:25<00:37, 12.55s/it] 60%|██████    | 3/5 [00:37<00:24, 12.32s/it] 80%|████████  | 4/5 [00:50<00:12, 12.45s/it]100%|██████████| 5/5 [01:02<00:00, 12.44s/it]100%|██████████| 5/5 [01:02<00:00, 12.50s/it]2026/10/08 04:43:01 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9436 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 04:43:01 INFO mlflow.tracking._tracking_service.client: 🏃 View run spiffy-steed-76 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/adeca0975b2249ecbda2c2048a31b6a8.
+2026/10/08 04:43:01 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 16/32: A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 50}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:12<00:48, 12.14s/it] 40%|████      | 2/5 [00:23<00:35, 11.89s/it] 60%|██████    | 3/5 [00:37<00:25, 12.64s/it] 80%|████████  | 4/5 [00:50<00:12, 12.75s/it]100%|██████████| 5/5 [01:02<00:00, 12.63s/it]100%|██████████| 5/5 [01:02<00:00, 12.55s/it]2026/10/08 04:46:22 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9436 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 04:46:22 INFO mlflow.tracking._tracking_service.client: 🏃 View run peaceful-owl-689 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/e2a0fca2ad5346c4b629714ad6c115c1.
+2026/10/08 04:46:22 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 17/32: A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 0}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:15<01:01, 15.32s/it] 40%|████      | 2/5 [00:28<00:42, 14.30s/it] 60%|██████    | 3/5 [00:43<00:28, 14.38s/it] 80%|████████  | 4/5 [00:56<00:14, 14.08s/it]100%|██████████| 5/5 [01:09<00:00, 13.59s/it]100%|██████████| 5/5 [01:09<00:00, 13.94s/it]2026/10/08 04:49:49 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9433 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 04:49:49 INFO mlflow.tracking._tracking_service.client: 🏃 View run languid-snake-318 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/a975e6ab0a07462aa538ce29897cc428.
+2026/10/08 04:49:49 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 18/32: A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 0}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:14<00:59, 14.92s/it] 40%|████      | 2/5 [00:29<00:43, 14.58s/it]WARNING: attempting to destroy an actor that is already dead: Actor 3740 (sensor.camera.rgb) 
+ 60%|██████    | 3/5 [00:48<00:32, 16.48s/it]WARNING: attempting to destroy an actor that is already dead: Actor 3747 (sensor.camera.rgb) 
+ 80%|████████  | 4/5 [01:10<00:18, 18.71s/it]100%|██████████| 5/5 [01:31<00:00, 19.63s/it]100%|██████████| 5/5 [01:31<00:00, 18.28s/it]2026/10/08 04:53:40 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9433 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 04:53:41 INFO mlflow.tracking._tracking_service.client: 🏃 View run sedate-hawk-133 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/3c9246c2e4fa424eb19160ce3a6a6b0a.
+2026/10/08 04:53:41 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 19/32: A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 0}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:15<01:01, 15.40s/it] 40%|████      | 2/5 [00:27<00:41, 13.71s/it] 60%|██████    | 3/5 [00:33<00:19,  9.80s/it] 80%|████████  | 4/5 [00:47<00:11, 11.44s/it]WARNING: attempting to destroy an actor that is already dead: Actor 3962 (sensor.camera.rgb) 
+100%|██████████| 5/5 [00:51<00:00,  9.10s/it]100%|██████████| 5/5 [00:51<00:00, 10.40s/it]2026/10/08 04:56:50 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9433 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 04:56:50 INFO mlflow.tracking._tracking_service.client: 🏃 View run crawling-newt-710 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/c5e3749d2b8548559aa97545d0176c58.
+2026/10/08 04:56:50 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 20/32: A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 0}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:13<00:53, 13.46s/it] 40%|████      | 2/5 [00:27<00:40, 13.65s/it] 60%|██████    | 3/5 [00:42<00:28, 14.22s/it] 80%|████████  | 4/5 [00:55<00:13, 13.93s/it]100%|██████████| 5/5 [01:08<00:00, 13.46s/it]100%|██████████| 5/5 [01:08<00:00, 13.65s/it]2026/10/08 05:00:14 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9433 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 05:00:14 INFO mlflow.tracking._tracking_service.client: 🏃 View run valuable-penguin-977 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/e26134c8f7e243d59550fc32d20be989.
+2026/10/08 05:00:14 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 21/32: A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 50}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:02<00:11,  2.99s/it] 40%|████      | 2/5 [00:16<00:27,  9.21s/it] 60%|██████    | 3/5 [00:29<00:21, 10.83s/it] 80%|████████  | 4/5 [00:41<00:11, 11.54s/it]100%|██████████| 5/5 [00:55<00:00, 12.35s/it]100%|██████████| 5/5 [00:55<00:00, 11.15s/it]2026/10/08 05:03:27 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9434 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 05:03:27 INFO mlflow.tracking._tracking_service.client: 🏃 View run nimble-duck-192 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/13e7531a55354f97b74e5234cc8c0ada.
+2026/10/08 05:03:27 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 22/32: A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 50}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s]WARNING: attempting to destroy an actor that is already dead: Actor 4543 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 4542 (vehicle.tesla.model3) 
+ 20%|██        | 1/5 [00:18<01:14, 18.53s/it]WARNING: attempting to destroy an actor that is already dead: Actor 4555 (sensor.camera.rgb) 
+ 40%|████      | 2/5 [00:40<01:01, 20.35s/it] 60%|██████    | 3/5 [01:01<00:41, 20.98s/it]WARNING: attempting to destroy an actor that is already dead: Actor 4577 (sensor.camera.rgb) 
+ 80%|████████  | 4/5 [01:27<00:22, 22.79s/it]100%|██████████| 5/5 [01:53<00:00, 23.82s/it]100%|██████████| 5/5 [01:53<00:00, 22.62s/it]2026/10/08 05:07:41 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9434 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 05:07:41 INFO mlflow.tracking._tracking_service.client: 🏃 View run loud-ape-996 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/f423559287574cf39c159a54bcaa459b.
+2026/10/08 05:07:41 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 23/32: A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 50}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:13<00:52, 13.17s/it] 40%|████      | 2/5 [00:25<00:38, 12.97s/it] 60%|██████    | 3/5 [00:39<00:26, 13.20s/it] 80%|████████  | 4/5 [00:51<00:12, 12.61s/it]100%|██████████| 5/5 [01:05<00:00, 13.12s/it]100%|██████████| 5/5 [01:05<00:00, 13.04s/it]2026/10/08 05:11:03 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9434 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 05:11:03 INFO mlflow.tracking._tracking_service.client: 🏃 View run thoughtful-wolf-956 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/d55c2cab579844a3904afeaeda637b2f.
+2026/10/08 05:11:03 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 24/32: A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 50}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s]WARNING: attempting to destroy an actor that is already dead: Actor 4980 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 4979 (vehicle.tesla.model3) 
+ 20%|██        | 1/5 [00:19<01:16, 19.18s/it] 40%|████      | 2/5 [00:36<00:54, 18.16s/it]WARNING: attempting to destroy an actor that is already dead: Actor 5007 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 5006 (vehicle.tesla.model3) 
+ 60%|██████    | 3/5 [00:56<00:38, 19.10s/it] 80%|████████  | 4/5 [01:16<00:19, 19.33s/it]100%|██████████| 5/5 [01:36<00:00, 19.54s/it]100%|██████████| 5/5 [01:36<00:00, 19.29s/it]2026/10/08 05:14:59 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9434 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 05:14:59 INFO mlflow.tracking._tracking_service.client: 🏃 View run luxuriant-grub-422 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/31f0cb79aed240b587f768f5838add06.
+2026/10/08 05:14:59 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 25/32: A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 0}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:14<00:57, 14.30s/it] 40%|████      | 2/5 [00:27<00:41, 13.90s/it] 60%|██████    | 3/5 [00:41<00:27, 13.88s/it] 80%|████████  | 4/5 [00:55<00:13, 13.82s/it]100%|██████████| 5/5 [01:10<00:00, 14.23s/it]100%|██████████| 5/5 [01:10<00:00, 14.09s/it]2026/10/08 05:18:27 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9433 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 05:18:27 INFO mlflow.tracking._tracking_service.client: 🏃 View run likeable-steed-694 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/e4eb5cf41e04438aaf2cd16c1c4357ed.
+2026/10/08 05:18:27 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 26/32: A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 0}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:15<01:01, 15.48s/it] 40%|████      | 2/5 [00:30<00:45, 15.33s/it] 60%|██████    | 3/5 [00:44<00:29, 14.57s/it] 80%|████████  | 4/5 [00:57<00:14, 14.18s/it]WARNING: attempting to destroy an actor that is already dead: Actor 5435 (sensor.camera.rgb) 
+100%|██████████| 5/5 [01:16<00:00, 15.72s/it]100%|██████████| 5/5 [01:16<00:00, 15.28s/it]2026/10/08 05:22:02 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9433 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 05:22:02 INFO mlflow.tracking._tracking_service.client: 🏃 View run victorious-dove-36 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/0f06ace9dfaf4299b242690a3ca3fc3f.
+2026/10/08 05:22:02 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 27/32: A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 0}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:03<00:15,  3.82s/it] 40%|████      | 2/5 [00:17<00:29,  9.82s/it] 60%|██████    | 3/5 [00:21<00:13,  6.86s/it] 80%|████████  | 4/5 [00:34<00:09,  9.60s/it]100%|██████████| 5/5 [00:48<00:00, 11.17s/it]100%|██████████| 5/5 [00:48<00:00,  9.79s/it]2026/10/08 05:25:11 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9433 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 05:25:11 INFO mlflow.tracking._tracking_service.client: 🏃 View run auspicious-smelt-560 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/0026232994d1409bbb96129d2a3fd78d.
+2026/10/08 05:25:11 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 28/32: A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 0}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s]WARNING: attempting to destroy an actor that is already dead: Actor 5818 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 5817 (vehicle.tesla.model3) 
+ 20%|██        | 1/5 [00:20<01:21, 20.29s/it] 40%|████      | 2/5 [00:37<00:55, 18.51s/it]WARNING: attempting to destroy an actor that is already dead: Actor 5840 (sensor.camera.rgb) 
+ 60%|██████    | 3/5 [01:01<00:41, 20.92s/it] 80%|████████  | 4/5 [01:25<00:22, 22.12s/it]100%|██████████| 5/5 [01:49<00:00, 22.85s/it]100%|██████████| 5/5 [01:49<00:00, 21.89s/it]2026/10/08 05:29:20 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9433 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 05:29:20 INFO mlflow.tracking._tracking_service.client: 🏃 View run flawless-mare-547 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/b1e605e3c383448684f355f56eae9626.
+2026/10/08 05:29:20 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 29/32: A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 50}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s]WARNING: attempting to destroy an actor that is already dead: Actor 6030 (sensor.camera.rgb) 
+WARNING: attempting to destroy an actor that is already dead: Actor 6029 (vehicle.tesla.model3) 
+ 20%|██        | 1/5 [00:16<01:05, 16.47s/it] 40%|████      | 2/5 [00:33<00:49, 16.59s/it]WARNING: attempting to destroy an actor that is already dead: Actor 6047 (sensor.camera.rgb) 
+ 60%|██████    | 3/5 [00:52<00:35, 17.90s/it] 80%|████████  | 4/5 [01:12<00:18, 18.71s/it]100%|██████████| 5/5 [01:31<00:00, 18.94s/it]100%|██████████| 5/5 [01:31<00:00, 18.38s/it]2026/10/08 05:33:13 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9434 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 05:33:13 INFO mlflow.tracking._tracking_service.client: 🏃 View run agreeable-flea-370 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/26b0c6060ade4235a84dbec625499c2f.
+2026/10/08 05:33:13 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 30/32: A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 50}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:13<00:53, 13.28s/it] 40%|████      | 2/5 [00:26<00:38, 12.97s/it]WARNING: attempting to destroy an actor that is already dead: Actor 6257 (sensor.camera.rgb) 
+ 60%|██████    | 3/5 [00:43<00:29, 14.86s/it]WARNING: attempting to destroy an actor that is already dead: Actor 6264 (sensor.camera.rgb) 
+ 80%|████████  | 4/5 [01:04<00:17, 17.25s/it]100%|██████████| 5/5 [01:24<00:00, 18.31s/it]100%|██████████| 5/5 [01:24<00:00, 16.85s/it]2026/10/08 05:36:54 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9434 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 05:36:54 INFO mlflow.tracking._tracking_service.client: 🏃 View run mercurial-ram-74 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/2d4bb6da77ae49ec9abb6a49fd3d3caf.
+2026/10/08 05:36:54 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 31/32: A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 50}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:03<00:15,  3.95s/it] 40%|████      | 2/5 [00:17<00:28,  9.52s/it] 60%|██████    | 3/5 [00:29<00:21, 10.72s/it] 80%|████████  | 4/5 [00:31<00:07,  7.45s/it]100%|██████████| 5/5 [00:45<00:00,  9.72s/it]100%|██████████| 5/5 [00:45<00:00,  9.14s/it]2026/10/08 05:40:01 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9434 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 05:40:01 INFO mlflow.tracking._tracking_service.client: 🏃 View run upset-shoat-737 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/600763aca28445de8246a83e3714e292.
+2026/10/08 05:40:01 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[grid] scenario 32/32: A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 50}
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/5 [00:00<?, ?it/s] 20%|██        | 1/5 [00:13<00:54, 13.70s/it] 40%|████      | 2/5 [00:26<00:39, 13.17s/it] 60%|██████    | 3/5 [00:39<00:26, 13.09s/it] 80%|████████  | 4/5 [00:52<00:13, 13.25s/it]100%|██████████| 5/5 [01:05<00:00, 12.95s/it]100%|██████████| 5/5 [01:05<00:00, 13.08s/it]2026/10/08 05:43:25 WARNING mlflow.utils.validation: Param value '# SET SCENARIO PARAMETERS AND MODEL 
+import carla
+import logging
+import time
+import os
+import sys
+im...' (9434 characters) is truncated to 6000 characters to meet the length limit.
+
+2026/10/08 05:43:25 INFO mlflow.tracking._tracking_service.client: 🏃 View run abundant-shark-386 at: http://127.0.0.1:5000/#/experiments/715733938054195872/runs/50886ef3852044dab2d3e82699306d3a.
+2026/10/08 05:43:25 INFO mlflow.tracking._tracking_service.client: 🧪 View experiment at: http://127.0.0.1:5000/#/experiments/715733938054195872.
+[31m[1mrequirements:[0m Ultralytics requirements ['pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0'] not found, attempting AutoUpdate...
+WARNING ⚠️ Retry 1/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ Retry 2/2 failed: Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+WARNING ⚠️ [31m[1mrequirements:[0m ❌ Command '['/usr/bin/python3.8', '-m', 'pip', 'install', '--no-cache-dir', 'pillow>=10.3.0', 'seaborn>=0.11.0', 'setuptools>=70.0.0']' returned non-zero exit status 1.
+Defaulting to user installation because normal site-packages is not writeable
+ERROR: Could not install packages due to an OSError: Could not find a suitable TLS CA certificate bundle, invalid path: /etc/pki/tls/certs/ca-bundle.crt
+
+WARNING: There was an error checking the latest version of pip.
+
+YOLOv5 🚀 2026-9-21 Python-3.8.0 torch-2.4.1+cu121 CUDA:0 (NVIDIA A100-SXM4-40GB, 40440MiB)
+
+Fusing layers... 
+YOLOv5s summary: 124 layers, 7,225,885 parameters, 0 gradients, 16.4 GFLOPs
+Adding AutoShape... 
+Using cache found in /opt/torch_cache/hub/ultralytics_yolov5_master
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:18<00:00, 18.59s/it]100%|██████████| 1/1 [00:18<00:00, 18.59s/it]INFO:     127.0.0.1:37814 - "GET /run_grid?requirement=%23+R_baseline+-+the+baseline+requirement+from+run+2b+on+%28roadmap+M1.7%2C+agreed%0A%23+with+the+supervisor+2026-10-01%29%3A+the+same+car+as+rounds+1-2+%28R0_rounds1_2.dsl%29%0A%23+plus+BOTH+slots+the+paper%27s+D%2C+S+%7C%3D+R+needs%3A%0A%23+++assuming++-+the+baseline+domain+assumptions+D0+%28docs%2Fdesign%2Fdomain_assumptions.md%29%2C%0A%23+++++++++++++++loose+on+purpose%3A+the+whole+grid+and+ordinary+walking.%0A%23+++++++++++++++Checked+per+simulation+after+the+run%2C+never+imposed+on+the+simulator.%0A%23+++ensuring++-+the+baseline+soft+goals+E0%3A+the+car+moves+on+again+within+10+s+of%0A%23+++++++++++++++stopping+%28checked+from+scene+v2+on%29%3B+smoothness+stays+text+until+a%0A%23+++++++++++++++jerk+threshold+is+chosen+%28peak_jerk_mps3+is+measured%29.%0A%23+Runs+before+scene+v2+lack+pedestrian+speed+and+the+soft-goal+measures%3A%0A%23+those+are+reported+as+not+measured.%0AMAINTAIN+%22Pedestrian+Safety%22%0A++++by%0A++++++++%22Pedestrian+Check%22+using+%22Perception+Module%22%0A++++++++++++operationalized+as%0A++++++++++++++++%22Detect+Pedestrian%22+performed+by+%22yolov5s%22%0A++++++++++++++++taking+input+%22image%22+producing+output+%22pedestrian+detection+confidence%22+%26+%22pedestrian+detection+flag%22%0A++++followed+by%0A++++++++%22braking%22+using+%22braking+module%22%0A++++++++++++operationalized+as%0A++++++++++++++++%22Bring+down+throttle%22+%26+%22Apply+Brakes%22+if+%22pedestrian+detection+flag%3DTrue%22+performed+by+%22proportional_braking%22%0A++++++++++++++++taking+input+%22pedestrian+detection+flag%22+producing+output+%22Braking+Status+Flag%22%0A++++in+scenario+where%0A++++++++%22A+pedestrian+trying+to+cross+the+street+in+fog.%22%0A++++assuming+%22fog_density+%3C%3D+50%22+%26+%22initial_separation_m+%3E%3D+15%22+%26+%22pedestrian_speed_mps+%3C%3D+3%22+%26+%22daylight%2C+dry+road%22+%26+%22pedestrian+on+foot%22%0A++++ensuring+%22resume_within_s+%3C%3D+10%22+%26+%22braking+is+smooth+unless+an+emergency+stop+is+needed%22%0A&record_video=True&requirement_source=docs%2Fexamples%2FR_baseline.dsl&trials=5&parent_run_id=882fb2fe00bf4568bdb480a281db9e8b HTTP/1.1" 200 OK
+[smoke_test] run_grid with {'record_video': True, 'requirement_source': 'docs/examples/R_baseline.dsl', 'trials': 5, 'parent_run_id': '882fb2fe00bf4568bdb480a281db9e8b'}
+{'run_id': '657a1447d0ba43af9c3aa54f3c8698ce', 'n_scenarios': 32, 'worst_phenotype': 'A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 0}', 'system_under_test': {'braking_module': 'proportional_braking', 'braking_mode': 'proportional_braking', 'perception_module': 'yolov5s'}, 'STATUS': 'OK'}
+INFO:    Cleaning up image...
+
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2822393]

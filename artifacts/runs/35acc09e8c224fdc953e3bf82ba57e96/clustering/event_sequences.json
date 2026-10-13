@@ -1,0 +1,1947 @@
+{
+ "parameters": {
+  "safety_rule": "anywhere",
+  "detection_frames": 3,
+  "lane_half_width_m": 2.5
+ },
+ "events": {
+  "1": "first detected (>0.30)",
+  "2": "detection reaches 0.85",
+  "3": "detection lost (<=0.30 after 0.85)",
+  "4": "braking begins",
+  "5": "braking released while moving",
+  "6": "ego stops",
+  "7": "ego resumes",
+  "8": "closing to 20-10 m",
+  "9": "closing to 10-5 m",
+  "10": "safety violated (<5 m)",
+  "11": "closest approach",
+  "12": "pedestrian enters the ego's lane",
+  "13": "pedestrian leaves the ego's lane"
+ },
+ "bands_m": [
+  ">20",
+  "20-10",
+  "10-5",
+  "<5"
+ ],
+ "sequences": [
+  {
+   "scenario_id": "0",
+   "sim_index": 0,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "0",
+   "sim_index": 1,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins + safety violated (<5 m)",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85) + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "0",
+   "sim_index": 2,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "0",
+   "sim_index": 4,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30) + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85) + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "1",
+   "sim_index": 0,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "1",
+   "sim_index": 1,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "ego resumes",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "1",
+   "sim_index": 3,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "detection lost (<=0.30 after 0.85) + ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "1",
+   "sim_index": 4,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30) + closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "detection lost (<=0.30 after 0.85)",
+    "ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "2",
+   "sim_index": 0,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "first detected (>0.30)",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "ego resumes",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "2",
+   "sim_index": 1,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "first detected (>0.30) + detection reaches 0.85 + braking begins + safety violated (<5 m)",
+    "braking released while moving",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "2",
+   "sim_index": 2,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "2",
+   "sim_index": 3,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "first detected (>0.30) + detection reaches 0.85 + braking begins",
+    "braking released while moving + safety violated (<5 m)",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "2",
+   "sim_index": 4,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "3",
+   "sim_index": 1,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30) + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + safety violated (<5 m)",
+    "detection lost (<=0.30 after 0.85) + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "3",
+   "sim_index": 2,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "3",
+   "sim_index": 4,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "4",
+   "sim_index": 0,
+   "failure_type": "brake_released",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "detection reaches 0.85 + braking begins + closing to 10-5 m",
+    "ego stops",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "detection lost (<=0.30 after 0.85)",
+    "ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "4",
+   "sim_index": 1,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30) + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "4",
+   "sim_index": 2,
+   "failure_type": "passed_stalled",
+   "failed": false,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "detection reaches 0.85 + braking begins",
+    "closing to 10-5 m",
+    "ego stops",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "4",
+   "sim_index": 4,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "5",
+   "sim_index": 0,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "5",
+   "sim_index": 1,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "5",
+   "sim_index": 2,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30) + detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "5",
+   "sim_index": 3,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + safety violated (<5 m)",
+    "detection lost (<=0.30 after 0.85) + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "5",
+   "sim_index": 4,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops + safety violated (<5 m) + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "6",
+   "sim_index": 0,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30) + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + safety violated (<5 m)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "6",
+   "sim_index": 1,
+   "failure_type": "passed_stalled",
+   "failed": false,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "6",
+   "sim_index": 2,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "detection lost (<=0.30 after 0.85) + ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "6",
+   "sim_index": 3,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "first detected (>0.30)",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "6",
+   "sim_index": 4,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "safety violated (<5 m)",
+    "detection lost (<=0.30 after 0.85) + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "7",
+   "sim_index": 0,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "7",
+   "sim_index": 1,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "7",
+   "sim_index": 2,
+   "failure_type": "brake_released",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "detection reaches 0.85 + braking begins + closing to 10-5 m",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "detection reaches 0.85 + braking begins",
+    "detection reaches 0.85 + braking begins",
+    "detection reaches 0.85 + braking begins",
+    "detection reaches 0.85 + braking begins",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "detection reaches 0.85 + braking begins",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "7",
+   "sim_index": 3,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "8",
+   "sim_index": 0,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "8",
+   "sim_index": 1,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30) + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "8",
+   "sim_index": 2,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "detection lost (<=0.30 after 0.85) + ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "8",
+   "sim_index": 4,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30) + closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins + safety violated (<5 m)",
+    "braking released while moving",
+    "ego stops",
+    "detection lost (<=0.30 after 0.85)",
+    "ego resumes + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "9",
+   "sim_index": 0,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + safety violated (<5 m)",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "9",
+   "sim_index": 1,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "9",
+   "sim_index": 4,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "first detected (>0.30) + detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "ego resumes",
+    "detection lost (<=0.30 after 0.85)",
+    "ego stops",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "10",
+   "sim_index": 0,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "10",
+   "sim_index": 2,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "first detected (>0.30) + detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "10",
+   "sim_index": 3,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "first detected (>0.30)",
+    "detection reaches 0.85 + braking begins + safety violated (<5 m)",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "10",
+   "sim_index": 4,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "11",
+   "sim_index": 0,
+   "failure_type": "never_detected",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "safety violated (<5 m)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "11",
+   "sim_index": 1,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + safety violated (<5 m)",
+    "detection lost (<=0.30 after 0.85) + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "11",
+   "sim_index": 3,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "11",
+   "sim_index": 4,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "12",
+   "sim_index": 1,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "12",
+   "sim_index": 3,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30) + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "12",
+   "sim_index": 4,
+   "failure_type": "brake_released",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "detection lost (<=0.30 after 0.85)",
+    "ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "13",
+   "sim_index": 1,
+   "failure_type": "brake_released",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30) + closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "detection lost (<=0.30 after 0.85) + ego resumes",
+    "safety violated (<5 m)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "13",
+   "sim_index": 3,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "13",
+   "sim_index": 4,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "14",
+   "sim_index": 0,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + safety violated (<5 m)",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "14",
+   "sim_index": 2,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "first detected (>0.30) + detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "15",
+   "sim_index": 1,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "15",
+   "sim_index": 2,
+   "failure_type": "brake_released",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins + closing to 10-5 m",
+    "ego stops",
+    "detection reaches 0.85 + braking begins",
+    "detection reaches 0.85 + braking begins",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + safety violated (<5 m)",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "16",
+   "sim_index": 0,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins + closing to 10-5 m",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "16",
+   "sim_index": 2,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "16",
+   "sim_index": 3,
+   "failure_type": "passed_stalled",
+   "failed": false,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins + closing to 10-5 m",
+    "ego stops",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "17",
+   "sim_index": 0,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "detection reaches 0.85 + braking begins",
+    "detection lost (<=0.30 after 0.85)",
+    "ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "17",
+   "sim_index": 1,
+   "failure_type": "passed_stalled",
+   "failed": false,
+   "sequence": [
+    "first detected (>0.30) + detection reaches 0.85 + braking begins",
+    "ego stops + closing to 10-5 m",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "17",
+   "sim_index": 2,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops + safety violated (<5 m) + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "17",
+   "sim_index": 3,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "17",
+   "sim_index": 4,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "18",
+   "sim_index": 0,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30) + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops + safety violated (<5 m)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "18",
+   "sim_index": 1,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "detection lost (<=0.30 after 0.85)",
+    "ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "18",
+   "sim_index": 2,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops + safety violated (<5 m)",
+    "ego resumes",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "19",
+   "sim_index": 0,
+   "failure_type": "stopped_too_close",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "19",
+   "sim_index": 1,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30) + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins + safety violated (<5 m)",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "19",
+   "sim_index": 3,
+   "failure_type": "braking_insufficient",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins + closing to 10-5 m",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + safety violated (<5 m)",
+    "detection reaches 0.85 + braking begins + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "20",
+   "sim_index": 0,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "20",
+   "sim_index": 1,
+   "failure_type": "brake_released",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops + safety violated (<5 m)",
+    "ego resumes",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "20",
+   "sim_index": 2,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "20",
+   "sim_index": 4,
+   "failure_type": "brake_released",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "detection reaches 0.85 + braking begins + closing to 10-5 m",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85)",
+    "safety violated (<5 m)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "21",
+   "sim_index": 0,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "21",
+   "sim_index": 1,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops + safety violated (<5 m)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "21",
+   "sim_index": 3,
+   "failure_type": "brake_released",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "ego resumes",
+    "detection lost (<=0.30 after 0.85)",
+    "safety violated (<5 m)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "21",
+   "sim_index": 4,
+   "failure_type": "brake_released",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins + closing to 10-5 m",
+    "ego stops",
+    "safety violated (<5 m)",
+    "detection lost (<=0.30 after 0.85) + ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "22",
+   "sim_index": 1,
+   "failure_type": "brake_released",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins + closing to 10-5 m",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "safety violated (<5 m)",
+    "detection lost (<=0.30 after 0.85) + ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "22",
+   "sim_index": 2,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30) + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "22",
+   "sim_index": 3,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "detection lost (<=0.30 after 0.85)",
+    "ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "22",
+   "sim_index": 4,
+   "failure_type": "passed_stalled",
+   "failed": false,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins + closing to 10-5 m",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "23",
+   "sim_index": 1,
+   "failure_type": "brake_released",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "detection reaches 0.85 + braking begins + closing to 10-5 m",
+    "ego stops",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins + safety violated (<5 m)",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "23",
+   "sim_index": 2,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "first detected (>0.30)",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "detection lost (<=0.30 after 0.85)",
+    "ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "23",
+   "sim_index": 4,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85) + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "24",
+   "sim_index": 1,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30) + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "24",
+   "sim_index": 2,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins + closing to 10-5 m",
+    "ego stops",
+    "detection reaches 0.85 + braking begins",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins + ego stops",
+    "detection reaches 0.85 + braking begins + ego resumes",
+    "ego stops",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "24",
+   "sim_index": 4,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "25",
+   "sim_index": 1,
+   "failure_type": "brake_released",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "25",
+   "sim_index": 2,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins + closing to 10-5 m",
+    "ego stops",
+    "detection reaches 0.85 + braking begins + ego resumes",
+    "ego stops",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "25",
+   "sim_index": 3,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "25",
+   "sim_index": 4,
+   "failure_type": "brake_released",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "safety violated (<5 m)",
+    "detection lost (<=0.30 after 0.85) + ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "26",
+   "sim_index": 0,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + safety violated (<5 m)",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "26",
+   "sim_index": 1,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins + closing to 10-5 m",
+    "ego stops",
+    "detection reaches 0.85 + braking begins",
+    "detection reaches 0.85 + braking begins + ego resumes",
+    "ego stops",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "26",
+   "sim_index": 2,
+   "failure_type": "passed_stalled",
+   "failed": false,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85) + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "26",
+   "sim_index": 3,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "26",
+   "sim_index": 4,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "27",
+   "sim_index": 1,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + safety violated (<5 m)",
+    "detection lost (<=0.30 after 0.85) + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "27",
+   "sim_index": 2,
+   "failure_type": "braking_insufficient",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins",
+    "closing to 10-5 m",
+    "ego stops",
+    "detection reaches 0.85 + braking begins + ego resumes",
+    "ego stops",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "safety violated (<5 m)",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "27",
+   "sim_index": 3,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "ego resumes",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "27",
+   "sim_index": 4,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins + safety violated (<5 m)",
+    "braking released while moving",
+    "detection lost (<=0.30 after 0.85)",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "28",
+   "sim_index": 0,
+   "failure_type": "passed_stalled",
+   "failed": false,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "28",
+   "sim_index": 1,
+   "failure_type": "passed_stalled",
+   "failed": false,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "28",
+   "sim_index": 4,
+   "failure_type": "brake_released",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30) + detection reaches 0.85 + braking begins",
+    "braking released while moving + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "detection lost (<=0.30 after 0.85)",
+    "ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "29",
+   "sim_index": 0,
+   "failure_type": "brake_released",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins + closing to 10-5 m",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "detection lost (<=0.30 after 0.85)",
+    "ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "29",
+   "sim_index": 1,
+   "failure_type": "passed_stalled",
+   "failed": false,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "29",
+   "sim_index": 2,
+   "failure_type": "brake_released",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "safety violated (<5 m)",
+    "detection reaches 0.85 + braking begins",
+    "detection lost (<=0.30 after 0.85)",
+    "ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "29",
+   "sim_index": 3,
+   "failure_type": "passed_stalled",
+   "failed": false,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "detection reaches 0.85 + braking begins",
+    "ego stops + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "29",
+   "sim_index": 4,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "detection reaches 0.85 + braking begins",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "detection reaches 0.85 + braking begins",
+    "detection reaches 0.85 + braking begins + ego resumes",
+    "ego stops",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + safety violated (<5 m) + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "30",
+   "sim_index": 0,
+   "failure_type": "passed_stalled",
+   "failed": false,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "ego stops",
+    "detection lost (<=0.30 after 0.85)",
+    "closing to 10-5 m",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "30",
+   "sim_index": 2,
+   "failure_type": "passed_stalled",
+   "failed": false,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins",
+    "closing to 10-5 m",
+    "ego stops",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "30",
+   "sim_index": 3,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "first detected (>0.30) + detection reaches 0.85 + braking begins",
+    "ego stops + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "30",
+   "sim_index": 4,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins + closing to 10-5 m",
+    "ego stops",
+    "detection reaches 0.85 + braking begins",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "31",
+   "sim_index": 0,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "31",
+   "sim_index": 1,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops + safety violated (<5 m)",
+    "detection reaches 0.85 + braking begins",
+    "detection reaches 0.85 + braking begins",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "ego stops",
+    "ego resumes",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving",
+    "detection reaches 0.85 + braking begins + closest approach"
+   ]
+  },
+  {
+   "scenario_id": "31",
+   "sim_index": 3,
+   "failure_type": "brake_released",
+   "failed": true,
+   "sequence": [
+    "closing to 20-10 m",
+    "first detected (>0.30)",
+    "detection reaches 0.85 + braking begins",
+    "braking released while moving + closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "ego stops",
+    "safety violated (<5 m)",
+    "detection lost (<=0.30 after 0.85) + ego resumes",
+    "closest approach"
+   ]
+  },
+  {
+   "scenario_id": "31",
+   "sim_index": 4,
+   "failure_type": "detected_too_late",
+   "failed": true,
+   "sequence": [
+    "first detected (>0.30)",
+    "closing to 20-10 m",
+    "closing to 10-5 m",
+    "detection reaches 0.85 + braking begins",
+    "safety violated (<5 m)",
+    "ego stops",
+    "detection lost (<=0.30 after 0.85)",
+    "ego resumes",
+    "closest approach"
+   ]
+  }
+ ]
+}

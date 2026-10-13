@@ -2,11 +2,11 @@
 
 Five screens, walked through with Next/Back (or the step picker in the sidebar):
 
-    1. What we asked          R0 in full, the system it selected, the scenario space
-    2. What happened          raw outcome, this round beside the previous one, one video
-    3. What pattern           one obstacle card at a time, in support order
-    4. What you decide        verdict + reason per obstacle; then the scope items, then the assumptions (D)
-    5. What the requirement becomes   R0 / R1 side by side, [S]/[R]/[D] labels, Accept
+    1. The requirement under test   R0 in full, the system it selected, the scenario space
+    2. Test Execution Result        raw outcome, this round beside the previous one, one video
+    3. Failure Analysis             one obstacle card at a time, in support order
+    4. Obstacle triage              verdict + reason per obstacle; then the scope items, then the assumptions (D)
+    5. Requirement revision         R0 / R1 side by side, [S]/[R]/[D] labels, Accept
 
 Reads a run folder from disk (analysis via scripts/analysis/report; no Redis,
 no API, no CARLA). If the folder already holds a decisions.json written by
@@ -34,8 +34,8 @@ from scripts.redsl.grammar import DSL
 st.set_page_config(layout="wide", page_title="REAL - review")
 
 RUNS_DIR = os.path.join(settings.artifacts_dir, "runs")
-STEPS = ["1. What we asked", "2. What happened", "3. What pattern",
-         "4. What you decide", "5. What the requirement becomes"]
+STEPS = ["1. The requirement under test", "2. Test Execution Result", "3. Failure Analysis",
+         "4. Obstacle triage", "5. Requirement revision"]
 LABELS = {"S": "[S] changed the car", "R": "[R] changed the promise", "D": "[D] changed the assumptions",
           "T": "[T] fix the test / scope rules"}
 STATUS_TEXT = {"new": "new this round", "persisting": "persisting - was present in the previous round too",
@@ -53,7 +53,9 @@ def _pct(x):
 
 
 def _runs():
-    return sorted((d for d in glob.glob(os.path.join(RUNS_DIR, "*")) if os.path.isdir(d)),
+    # only folders that hold a run's results (an early run folder has none)
+    return sorted((d for d in glob.glob(os.path.join(RUNS_DIR, "*"))
+                   if os.path.isfile(os.path.join(d, "simulations.csv"))),
                   key=os.path.getmtime, reverse=True)
 
 

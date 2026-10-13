@@ -1,0 +1,4450 @@
+{
+  "schema_version": 2,
+  "not_simulated": [],
+  "run_id": "882fb2fe00bf4568bdb480a281db9e8b",
+  "sampling": "grid",
+  "analysed_at": "2026-10-08T06:50:08.048787+00:00",
+  "run_meta": {
+    "run_id": "882fb2fe00bf4568bdb480a281db9e8b",
+    "mode": "grid",
+    "requirement": "\nMAINTAIN \"Pedestrian Safety\"\n    by\n        \"Pedestrian Check\" using \"Perception Module\"\n            operationalized as\n                \"Detect Pedestrian\" performed by \"yolov5s\"\n                taking input \"image\" producing output \"pedestrian detection confidence\" & \"pedestrian detection flag\"\n    followed by\n        \"braking\" using \"braking module\"\n            operationalized as\n                \"Bring down throttle\" & \"Apply Brakes\" if \"pedestrian detection flag=True\" performed by \"proportional_braking\"\n                taking input \"pedestrian detection flag\" producing output \"Braking Status Flag\"\n    in scenario where\n        \"A pedestrian trying to cross the street in fog.\"\n    assuming \"fog_density <= 50\" & \"initial_separation_m >= 15\" & \"pedestrian_speed_mps <= 3\" & \"daylight, dry road\" & \"pedestrian on foot\"\n    ensuring \"resume_within_s <= 10\" & \"braking is smooth unless an emergency stop is needed\"\n",
+    "scenario_text": "A pedestrian trying to cross the street in fog.",
+    "constraints": {
+      "fog_density": "50"
+    },
+    "system_under_test": {
+      "braking_mode": "proportional_braking",
+      "yolo_model": "yolov5s"
+    },
+    "grammar_file": "old/old.bnf",
+    "grammar_sha256": "6b9e9a970c6e79c42a8cd3367ec30f745f15913f0976b489e73a39e9c1b3bec4",
+    "template_sha256": "89a952d0b417f83d9da8580ec29483afdd0103b5185d60ecf581719c7da7b53a",
+    "n_scenarios": 32,
+    "trials_per_scenario": 5,
+    "seed": 42,
+    "status": "complete",
+    "created_at": "2026-09-23T20:41:31.691562+00:00",
+    "worst_phenotype": "A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 0}",
+    "worst_pct": 80.0,
+    "finished_at": "2026-09-23T22:14:02.361467+00:00",
+    "requirement_as_run": "\nMAINTAIN \"Pedestrian Safety\"\n    by\n        \"Pedestrian Check\" using \"Perception Module\"\n            operationalized as\n                \"Detect Pedestrian\" performed by \"yolov5s\"\n                taking input \"image\" producing output \"pedestrian detection confidence\" & \"pedestrian detection flag\"\n    followed by\n        \"braking\" using \"braking module\"\n            operationalized as\n                \"Bring down throttle\" & \"Apply Brakes\" if \"pedestrian detection flag=True\" performed by \"proportional_braking\"\n                taking input \"pedestrian detection flag\" producing output \"Braking Status Flag\"\n    in scenario where\n        \"A pedestrian trying to cross the street in fog.\"\n"
+  },
+  "requirement": {
+    "parsed": true,
+    "detection_module": "yolov5s",
+    "operations": [
+      {
+        "task": "Detect Pedestrian",
+        "tasks": [
+          "Detect Pedestrian"
+        ],
+        "condition": null,
+        "module": "yolov5s",
+        "inputs": [
+          "image"
+        ],
+        "outputs": [
+          "pedestrian detection confidence",
+          "pedestrian detection flag"
+        ]
+      },
+      {
+        "task": "Bring down throttle & Apply Brakes",
+        "tasks": [
+          "Bring down throttle",
+          "Apply Brakes"
+        ],
+        "condition": "pedestrian detection flag=True",
+        "module": "proportional_braking",
+        "inputs": [
+          "pedestrian detection flag"
+        ],
+        "outputs": [
+          "Braking Status Flag"
+        ]
+      }
+    ],
+    "assumptions": [
+      "fog_density <= 50",
+      "initial_separation_m >= 15",
+      "pedestrian_speed_mps <= 3",
+      "daylight, dry road",
+      "pedestrian on foot"
+    ],
+    "soft_goals": [
+      "resume_within_s <= 10",
+      "braking is smooth unless an emergency stop is needed"
+    ],
+    "scenario_text": "A pedestrian trying to cross the street in fog.",
+    "tree": {
+      "temporal": "MAINTAIN",
+      "objective": "Pedestrian Safety",
+      "refinement": {
+        "combinator": "followed by",
+        "goals": [
+          {
+            "objective": "Pedestrian Check",
+            "agent": "Perception Module",
+            "operations": [
+              {
+                "task": "Detect Pedestrian",
+                "tasks": [
+                  "Detect Pedestrian"
+                ],
+                "condition": null,
+                "module": "yolov5s",
+                "inputs": [
+                  "image"
+                ],
+                "outputs": [
+                  "pedestrian detection confidence",
+                  "pedestrian detection flag"
+                ]
+              }
+            ]
+          },
+          {
+            "objective": "braking",
+            "agent": "braking module",
+            "operations": [
+              {
+                "task": "Bring down throttle & Apply Brakes",
+                "tasks": [
+                  "Bring down throttle",
+                  "Apply Brakes"
+                ],
+                "condition": "pedestrian detection flag=True",
+                "module": "proportional_braking",
+                "inputs": [
+                  "pedestrian detection flag"
+                ],
+                "outputs": [
+                  "Braking Status Flag"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "scenario": "A pedestrian trying to cross the street in fog.",
+      "assumptions": [
+        "fog_density <= 50",
+        "initial_separation_m >= 15",
+        "pedestrian_speed_mps <= 3",
+        "daylight, dry road",
+        "pedestrian on foot"
+      ],
+      "soft_goals": [
+        "resume_within_s <= 10",
+        "braking is smooth unless an emergency stop is needed"
+      ]
+    }
+  },
+  "admissibility": {
+    "rules": [
+      {
+        "name": "extreme_fog",
+        "param": "fog_density",
+        "op": ">",
+        "value": 80,
+        "reason": "Visibility below what the perception ODD is meant to cover",
+        "source": "rules file",
+        "as_assumption": "fog_density <= 80"
+      }
+    ],
+    "assumptions": [
+      {
+        "text": "fog_density <= 50",
+        "kind": "scenario",
+        "quantity": "fog_density",
+        "message": "",
+        "held": 160,
+        "broken": 0,
+        "not_measured": 0,
+        "enc_held": 128,
+        "enc_broken": 0,
+        "rate_held": 0.03125,
+        "rate_broken": null,
+        "verdict": "untested"
+      },
+      {
+        "text": "initial_separation_m >= 15",
+        "kind": "run",
+        "quantity": "initial_separation_m",
+        "message": "",
+        "held": 152,
+        "broken": 8,
+        "not_measured": 0,
+        "enc_held": 126,
+        "enc_broken": 2,
+        "rate_held": 0.031746031746031744,
+        "rate_broken": 0.0,
+        "verdict": "insufficient data"
+      },
+      {
+        "text": "pedestrian_speed_mps <= 3",
+        "kind": "run",
+        "quantity": "pedestrian_speed_mps",
+        "message": "",
+        "held": 0,
+        "broken": 0,
+        "not_measured": 160,
+        "enc_held": 0,
+        "enc_broken": 0,
+        "rate_held": null,
+        "rate_broken": null,
+        "verdict": "not measured"
+      },
+      {
+        "text": "daylight, dry road",
+        "kind": "free_text",
+        "quantity": null,
+        "message": "",
+        "held": 0,
+        "broken": 0,
+        "not_measured": 0,
+        "verdict": null
+      },
+      {
+        "text": "pedestrian on foot",
+        "kind": "free_text",
+        "quantity": null,
+        "message": "",
+        "held": 0,
+        "broken": 0,
+        "not_measured": 0,
+        "verdict": null
+      }
+    ],
+    "free_text_assumptions": [
+      "daylight, dry road",
+      "pedestrian on foot"
+    ],
+    "n_admissible": 152,
+    "n_spurious": 8,
+    "spurious": [
+      {
+        "rule": "assumption: initial_separation_m >= 15",
+        "n": 8,
+        "failures": 0,
+        "scenarios": [
+          "A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 50}",
+          "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 0}",
+          "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 50}",
+          "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 0}",
+          "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 50}",
+          "A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 0}",
+          "A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 50}",
+          "A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 0}"
+        ]
+      }
+    ]
+  },
+  "soft_goals": [
+    {
+      "text": "resume_within_s <= 10",
+      "kind": "checked",
+      "quantity": "resume_within_s",
+      "message": "",
+      "met": 0,
+      "missed": 0,
+      "not_measured": 126
+    },
+    {
+      "text": "braking is smooth unless an emergency stop is needed",
+      "kind": "free_text",
+      "quantity": null,
+      "message": "",
+      "met": 0,
+      "missed": 0,
+      "not_measured": 0
+    }
+  ],
+  "failure_model": {
+    "n_simulations": 152,
+    "n_no_encounter": 26,
+    "n_left_road": 0,
+    "n_not_crossed": 0,
+    "n_encounters": 126,
+    "n_scenarios": 32,
+    "failures": 4,
+    "failure_rate": 0.031746031746031744,
+    "failure_rate_scenarios": 0.0296875,
+    "n_distinct_scenarios": 32,
+    "max_repeats_of_a_scenario": 5,
+    "passes": 122,
+    "passed_clean": 9,
+    "passed_stalled": 113,
+    "failure_types": {
+      "never_detected": 0,
+      "detected_not_braked": 0,
+      "detected_too_late": 1,
+      "brake_released": 1,
+      "braking_insufficient": 0,
+      "stopped_too_close": 2
+    },
+    "timing": {
+      "n_detected": 126,
+      "first_detection_distance_m_median": 7.582974493380009,
+      "first_brake_distance_m_median": 21.171529424485865,
+      "speed_at_first_brake_mps_median": 1.960000276565552,
+      "stopping_distance_needed_m_median": 5.240100067758565,
+      "share_detected_too_late": 0.007936507936507936,
+      "brake_steps_median": 90.0,
+      "share_still_moving_at_closest": 0.30158730158730157,
+      "mean_inference_ms_median": 7.106417417526245
+    },
+    "by_parameter": [
+      {
+        "param": "pedestrian",
+        "value": "Adult",
+        "n": 64,
+        "failures": 1,
+        "failure_rate": 0.015625,
+        "failure_rate_others": 0.04838709677419355,
+        "effect": -0.03276209677419355,
+        "enough_data": true,
+        "n_distinct_scenarios": 16,
+        "scenario_effect": -0.034375
+      },
+      {
+        "param": "pedestrian",
+        "value": "Child",
+        "n": 62,
+        "failures": 3,
+        "failure_rate": 0.04838709677419355,
+        "failure_rate_others": 0.015625,
+        "effect": 0.03276209677419355,
+        "enough_data": true,
+        "n_distinct_scenarios": 16,
+        "scenario_effect": 0.034375
+      },
+      {
+        "param": "dress",
+        "value": "Dark",
+        "n": 64,
+        "failures": 2,
+        "failure_rate": 0.03125,
+        "failure_rate_others": 0.03225806451612903,
+        "effect": -0.0010080645161290314,
+        "enough_data": true,
+        "n_distinct_scenarios": 16,
+        "scenario_effect": -0.0031249999999999993
+      },
+      {
+        "param": "dress",
+        "value": "Light",
+        "n": 62,
+        "failures": 2,
+        "failure_rate": 0.03225806451612903,
+        "failure_rate_others": 0.03125,
+        "effect": 0.0010080645161290314,
+        "enough_data": true,
+        "n_distinct_scenarios": 16,
+        "scenario_effect": 0.0031249999999999993
+      },
+      {
+        "param": "direction",
+        "value": "LR",
+        "n": 61,
+        "failures": 4,
+        "failure_rate": 0.06557377049180328,
+        "failure_rate_others": 0.0,
+        "effect": 0.06557377049180328,
+        "enough_data": true,
+        "n_distinct_scenarios": 16,
+        "scenario_effect": 0.059375
+      },
+      {
+        "param": "direction",
+        "value": "RL",
+        "n": 65,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "failure_rate_others": 0.06557377049180328,
+        "effect": -0.06557377049180328,
+        "enough_data": true,
+        "n_distinct_scenarios": 16,
+        "scenario_effect": -0.059375
+      },
+      {
+        "param": "distance",
+        "value": "Long",
+        "n": 59,
+        "failures": 1,
+        "failure_rate": 0.01694915254237288,
+        "failure_rate_others": 0.04477611940298507,
+        "effect": -0.02782696686061219,
+        "enough_data": true,
+        "n_distinct_scenarios": 16,
+        "scenario_effect": -0.028124999999999997
+      },
+      {
+        "param": "distance",
+        "value": "Short",
+        "n": 67,
+        "failures": 3,
+        "failure_rate": 0.04477611940298507,
+        "failure_rate_others": 0.01694915254237288,
+        "effect": 0.02782696686061219,
+        "enough_data": true,
+        "n_distinct_scenarios": 16,
+        "scenario_effect": 0.028124999999999997
+      },
+      {
+        "param": "fog_density",
+        "value": "0",
+        "n": 68,
+        "failures": 2,
+        "failure_rate": 0.029411764705882353,
+        "failure_rate_others": 0.034482758620689655,
+        "effect": -0.005070993914807302,
+        "enough_data": true,
+        "n_distinct_scenarios": 16,
+        "scenario_effect": 0.0031249999999999993
+      },
+      {
+        "param": "fog_density",
+        "value": "50",
+        "n": 58,
+        "failures": 2,
+        "failure_rate": 0.034482758620689655,
+        "failure_rate_others": 0.029411764705882353,
+        "effect": 0.005070993914807302,
+        "enough_data": true,
+        "n_distinct_scenarios": 16,
+        "scenario_effect": -0.0031249999999999993
+      }
+    ],
+    "by_scenario": [
+      {
+        "scenario_id": "3",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 0}",
+        "pedestrian": "Child",
+        "dress": "Dark",
+        "direction": "LR",
+        "distance": "Short",
+        "fog_density": "0",
+        "n": 5,
+        "encounters": 4,
+        "failures": 1,
+        "failure_rate": 0.25,
+        "min_distance_m": 2.5891954465909355,
+        "passed": 0,
+        "passed_stalled": 3,
+        "no_encounter": 1,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 1,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "6",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 50}",
+        "pedestrian": "Child",
+        "dress": "Light",
+        "direction": "LR",
+        "distance": "Short",
+        "fog_density": "50",
+        "n": 5,
+        "encounters": 4,
+        "failures": 1,
+        "failure_rate": 0.25,
+        "min_distance_m": 4.525061826726613,
+        "passed": 0,
+        "passed_stalled": 3,
+        "no_encounter": 1,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 1,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "10",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 0}",
+        "pedestrian": "Child",
+        "dress": "Light",
+        "direction": "LR",
+        "distance": "Long",
+        "fog_density": "0",
+        "n": 4,
+        "encounters": 4,
+        "failures": 1,
+        "failure_rate": 0.25,
+        "min_distance_m": 4.773811806511126,
+        "passed": 2,
+        "passed_stalled": 1,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 1
+      },
+      {
+        "scenario_id": "5",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 50}",
+        "pedestrian": "Adult",
+        "dress": "Dark",
+        "direction": "LR",
+        "distance": "Short",
+        "fog_density": "50",
+        "n": 5,
+        "encounters": 5,
+        "failures": 1,
+        "failure_rate": 0.2,
+        "min_distance_m": 4.796853287949123,
+        "passed": 0,
+        "passed_stalled": 4,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 1
+      },
+      {
+        "scenario_id": "2",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 0}",
+        "pedestrian": "Child",
+        "dress": "Light",
+        "direction": "LR",
+        "distance": "Short",
+        "fog_density": "0",
+        "n": 5,
+        "encounters": 5,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 5.648257732179368,
+        "passed": 1,
+        "passed_stalled": 4,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "15",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 50}",
+        "pedestrian": "Child",
+        "dress": "Dark",
+        "direction": "LR",
+        "distance": "Long",
+        "fog_density": "50",
+        "n": 5,
+        "encounters": 3,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 6.033371746092747,
+        "passed": 1,
+        "passed_stalled": 2,
+        "no_encounter": 2,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "14",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 50}",
+        "pedestrian": "Child",
+        "dress": "Light",
+        "direction": "LR",
+        "distance": "Long",
+        "fog_density": "50",
+        "n": 4,
+        "encounters": 2,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 6.682772322256165,
+        "passed": 1,
+        "passed_stalled": 1,
+        "no_encounter": 2,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "30",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 50}",
+        "pedestrian": "Child",
+        "dress": "Light",
+        "direction": "RL",
+        "distance": "Long",
+        "fog_density": "50",
+        "n": 5,
+        "encounters": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 7.168451599112143,
+        "passed": 1,
+        "passed_stalled": 3,
+        "no_encounter": 1,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "0",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 0}",
+        "pedestrian": "Adult",
+        "dress": "Light",
+        "direction": "LR",
+        "distance": "Short",
+        "fog_density": "0",
+        "n": 4,
+        "encounters": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 7.725173356975947,
+        "passed": 1,
+        "passed_stalled": 3,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "4",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 50}",
+        "pedestrian": "Adult",
+        "dress": "Light",
+        "direction": "LR",
+        "distance": "Short",
+        "fog_density": "50",
+        "n": 5,
+        "encounters": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 8.567022687077051,
+        "passed": 0,
+        "passed_stalled": 4,
+        "no_encounter": 1,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "18",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 0}",
+        "pedestrian": "Child",
+        "dress": "Light",
+        "direction": "RL",
+        "distance": "Short",
+        "fog_density": "0",
+        "n": 4,
+        "encounters": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 8.569984654879276,
+        "passed": 1,
+        "passed_stalled": 3,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "1",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 0}",
+        "pedestrian": "Adult",
+        "dress": "Dark",
+        "direction": "LR",
+        "distance": "Short",
+        "fog_density": "0",
+        "n": 5,
+        "encounters": 5,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 8.80467923861618,
+        "passed": 0,
+        "passed_stalled": 5,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "22",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 50}",
+        "pedestrian": "Child",
+        "dress": "Light",
+        "direction": "RL",
+        "distance": "Short",
+        "fog_density": "50",
+        "n": 5,
+        "encounters": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 9.7621741140383,
+        "passed": 0,
+        "passed_stalled": 4,
+        "no_encounter": 1,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "7",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 50}",
+        "pedestrian": "Child",
+        "dress": "Dark",
+        "direction": "LR",
+        "distance": "Short",
+        "fog_density": "50",
+        "n": 5,
+        "encounters": 5,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 9.92901862424846,
+        "passed": 1,
+        "passed_stalled": 4,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "8",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 0}",
+        "pedestrian": "Adult",
+        "dress": "Light",
+        "direction": "LR",
+        "distance": "Long",
+        "fog_density": "0",
+        "n": 4,
+        "encounters": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 9.930841903176791,
+        "passed": 0,
+        "passed_stalled": 4,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "11",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 0}",
+        "pedestrian": "Child",
+        "dress": "Dark",
+        "direction": "LR",
+        "distance": "Long",
+        "fog_density": "0",
+        "n": 5,
+        "encounters": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 10.036507956623083,
+        "passed": 0,
+        "passed_stalled": 4,
+        "no_encounter": 1,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "12",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 50}",
+        "pedestrian": "Adult",
+        "dress": "Light",
+        "direction": "LR",
+        "distance": "Long",
+        "fog_density": "50",
+        "n": 4,
+        "encounters": 2,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 10.672561192213973,
+        "passed": 0,
+        "passed_stalled": 2,
+        "no_encounter": 2,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "19",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 0}",
+        "pedestrian": "Child",
+        "dress": "Dark",
+        "direction": "RL",
+        "distance": "Short",
+        "fog_density": "0",
+        "n": 5,
+        "encounters": 3,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 10.774163143037908,
+        "passed": 0,
+        "passed_stalled": 3,
+        "no_encounter": 2,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "28",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 50}",
+        "pedestrian": "Adult",
+        "dress": "Light",
+        "direction": "RL",
+        "distance": "Long",
+        "fog_density": "50",
+        "n": 4,
+        "encounters": 3,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 11.378748337373365,
+        "passed": 0,
+        "passed_stalled": 3,
+        "no_encounter": 1,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "26",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 0}",
+        "pedestrian": "Child",
+        "dress": "Light",
+        "direction": "RL",
+        "distance": "Long",
+        "fog_density": "0",
+        "n": 5,
+        "encounters": 5,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 11.877234804293824,
+        "passed": 0,
+        "passed_stalled": 5,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "9",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 0}",
+        "pedestrian": "Adult",
+        "dress": "Dark",
+        "direction": "LR",
+        "distance": "Long",
+        "fog_density": "0",
+        "n": 5,
+        "encounters": 3,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 12.117431982345188,
+        "passed": 0,
+        "passed_stalled": 3,
+        "no_encounter": 2,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "17",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 0}",
+        "pedestrian": "Adult",
+        "dress": "Dark",
+        "direction": "RL",
+        "distance": "Short",
+        "fog_density": "0",
+        "n": 5,
+        "encounters": 5,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 12.803620030730858,
+        "passed": 0,
+        "passed_stalled": 5,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "27",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 0}",
+        "pedestrian": "Child",
+        "dress": "Dark",
+        "direction": "RL",
+        "distance": "Long",
+        "fog_density": "0",
+        "n": 5,
+        "encounters": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 12.905732429639375,
+        "passed": 0,
+        "passed_stalled": 4,
+        "no_encounter": 1,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "21",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 50}",
+        "pedestrian": "Adult",
+        "dress": "Dark",
+        "direction": "RL",
+        "distance": "Short",
+        "fog_density": "50",
+        "n": 5,
+        "encounters": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 13.94598002526136,
+        "passed": 0,
+        "passed_stalled": 4,
+        "no_encounter": 1,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "24",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 0}",
+        "pedestrian": "Adult",
+        "dress": "Light",
+        "direction": "RL",
+        "distance": "Long",
+        "fog_density": "0",
+        "n": 5,
+        "encounters": 5,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 14.318642924439397,
+        "passed": 0,
+        "passed_stalled": 5,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "20",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 50}",
+        "pedestrian": "Adult",
+        "dress": "Light",
+        "direction": "RL",
+        "distance": "Short",
+        "fog_density": "50",
+        "n": 5,
+        "encounters": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 14.359250644452874,
+        "passed": 0,
+        "passed_stalled": 4,
+        "no_encounter": 1,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "31",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 50}",
+        "pedestrian": "Child",
+        "dress": "Dark",
+        "direction": "RL",
+        "distance": "Long",
+        "fog_density": "50",
+        "n": 5,
+        "encounters": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 14.532208155879758,
+        "passed": 0,
+        "passed_stalled": 4,
+        "no_encounter": 1,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "13",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : LR } at { distance : Long } distance on a day with fog density {fog_density : 50}",
+        "pedestrian": "Adult",
+        "dress": "Dark",
+        "direction": "LR",
+        "distance": "Long",
+        "fog_density": "50",
+        "n": 4,
+        "encounters": 3,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 14.766418468779406,
+        "passed": 0,
+        "passed_stalled": 3,
+        "no_encounter": 1,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "29",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 50}",
+        "pedestrian": "Adult",
+        "dress": "Dark",
+        "direction": "RL",
+        "distance": "Long",
+        "fog_density": "50",
+        "n": 5,
+        "encounters": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 15.535285448808311,
+        "passed": 0,
+        "passed_stalled": 4,
+        "no_encounter": 1,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "23",
+        "phenotype": "A { pedestrian : Child } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 50}",
+        "pedestrian": "Child",
+        "dress": "Dark",
+        "direction": "RL",
+        "distance": "Short",
+        "fog_density": "50",
+        "n": 5,
+        "encounters": 3,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 16.724837541531247,
+        "passed": 0,
+        "passed_stalled": 3,
+        "no_encounter": 2,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "16",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : RL } at { distance : Short } distance on a day with fog density {fog_density : 0}",
+        "pedestrian": "Adult",
+        "dress": "Light",
+        "direction": "RL",
+        "distance": "Short",
+        "fog_density": "0",
+        "n": 5,
+        "encounters": 4,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 20.40519440025097,
+        "passed": 0,
+        "passed_stalled": 4,
+        "no_encounter": 1,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      },
+      {
+        "scenario_id": "25",
+        "phenotype": "A { pedestrian : Adult } wearing a {dress : Dark} dress trying to cross road from { direction : RL } at { distance : Long } distance on a day with fog density {fog_density : 0}",
+        "pedestrian": "Adult",
+        "dress": "Dark",
+        "direction": "RL",
+        "distance": "Long",
+        "fog_density": "0",
+        "n": 5,
+        "encounters": 5,
+        "failures": 0,
+        "failure_rate": 0.0,
+        "min_distance_m": 20.51010332115293,
+        "passed": 0,
+        "passed_stalled": 5,
+        "no_encounter": 0,
+        "left_road": 0,
+        "not_crossed": 0,
+        "never_detected": 0,
+        "detected_not_braked": 0,
+        "detected_too_late": 0,
+        "brake_released": 0,
+        "braking_insufficient": 0,
+        "stopped_too_close": 0
+      }
+    ],
+    "warnings": [
+      "113 of 122 passes were 'stalled': the car braked to a standstill and never moved again before the time limit. The safety rule held, but the car did not get past the crossing - a standoff (in scene v1 the pedestrian also waited for the car to come within 8 m). Read the pass rate with this in mind; it is the paper's 'mitigation shifts the failure mode' effect.",
+      "26 simulation(s) were 'no encounter': the car never came within 10 m of the pedestrian and never saw it. They are NOT counted as passes. If this is common, the scenario geometry (random lane / heading) is sending the car away from the pedestrian - fix the template, do not celebrate the passes.",
+      "Failures (3% overall) do not vary with any scenario setting (largest effect 7% < 15%). That pattern points at the scoring or the fixed parts of the scenario (approach speed, confidence bar, braking logic), not at the settings the grammar varies."
+    ]
+  },
+  "obstacles": [
+    {
+      "id": "PedestrianSizeTooSmall",
+      "param": "pedestrian",
+      "value": "Child",
+      "blocks_goal": "Detect Pedestrian",
+      "domain_property": "PedestrianVisible",
+      "description": "A child has a small apparent size in the camera frame, so the detector rarely reaches the confidence needed to brake.",
+      "mitigations": {
+        "data": "Fine-tune the detector on child-pedestrian images (paper M2: collision rate 100% -> 0% in nominal weather).",
+        "model": "Use a larger detector (YOLOv5m) - more accurate but slower; the paper (M1) saw latency-induced late braking at short distance.",
+        "system": "Proportional braking from 30% confidence, full braking above 85% (paper M4: child collisions 100% -> 8%).",
+        "requirement": "State a minimum detectable pedestrian size / distance in the requirement's domain assumptions."
+      },
+      "source": "catalogue",
+      "verdict": "not_supported",
+      "evidence": {
+        "param": "pedestrian",
+        "value": "Child",
+        "n": 62,
+        "failures": 3,
+        "failure_rate": 0.04838709677419355,
+        "failure_rate_others": 0.015625,
+        "effect": 0.03276209677419355,
+        "enough_data": true,
+        "n_distinct_scenarios": 16,
+        "scenario_effect": 0.034375
+      },
+      "detection_failure_share": 0.3333333333333333,
+      "changes": {
+        "data": {
+          "kind": "S",
+          "from": "PedestrianSizeTooSmall",
+          "layer": "data",
+          "task": "Detect Pedestrian",
+          "module": "fine_tune",
+          "available": true,
+          "text": "\"Detect Pedestrian\" performed by \"fine_tune\""
+        },
+        "model": {
+          "kind": "S",
+          "from": "PedestrianSizeTooSmall",
+          "layer": "model",
+          "task": "Detect Pedestrian",
+          "module": "yolov5m",
+          "available": true,
+          "text": "\"Detect Pedestrian\" performed by \"yolov5m\""
+        },
+        "system": {
+          "kind": "S",
+          "from": "PedestrianSizeTooSmall",
+          "layer": "system",
+          "task": "Apply Brakes",
+          "module": "proportional_braking",
+          "available": true,
+          "text": "\"Apply Brakes\" performed by \"proportional_braking\""
+        },
+        "requirement": {
+          "kind": "D",
+          "from": "PedestrianSizeTooSmall",
+          "layer": "requirement",
+          "clause": "assuming",
+          "item": "pedestrian is at least 1.2 m tall",
+          "text": "assuming \"pedestrian is at least 1.2 m tall\""
+        }
+      }
+    },
+    {
+      "id": "PedestrianClothingNotVisible",
+      "param": "dress",
+      "value": "Dark",
+      "blocks_goal": "Detect Pedestrian",
+      "domain_property": "PedestrianVisible",
+      "description": "Low-contrast clothing against the background lowers detection confidence (paper: 'visual saliency' obstacle class).",
+      "mitigations": {
+        "data": "Add low-contrast / cluttered-background pedestrian samples.",
+        "model": "Lower the confidence threshold only when other cues agree (risk: more unnecessary braking).",
+        "system": "Confidence-aware cautious braking (paper M4).",
+        "requirement": "Make the contrast/visibility assumption explicit in the ODD."
+      },
+      "source": "catalogue",
+      "verdict": "not_supported",
+      "evidence": {
+        "param": "dress",
+        "value": "Dark",
+        "n": 64,
+        "failures": 2,
+        "failure_rate": 0.03125,
+        "failure_rate_others": 0.03225806451612903,
+        "effect": -0.0010080645161290314,
+        "enough_data": true,
+        "n_distinct_scenarios": 16,
+        "scenario_effect": -0.0031249999999999993
+      },
+      "detection_failure_share": 0.0,
+      "changes": {
+        "data": {
+          "kind": "S",
+          "from": "PedestrianClothingNotVisible",
+          "layer": "data",
+          "task": "Detect Pedestrian",
+          "module": "fine_tune",
+          "available": true,
+          "text": "\"Detect Pedestrian\" performed by \"fine_tune\""
+        },
+        "model": {
+          "kind": "S",
+          "from": "PedestrianClothingNotVisible",
+          "layer": "model",
+          "task": null,
+          "module": null,
+          "available": false,
+          "text": "model-level change with no requirement slot: Lower the confidence threshold only when other cues agree (risk: more unnecessary braking)."
+        },
+        "system": {
+          "kind": "S",
+          "from": "PedestrianClothingNotVisible",
+          "layer": "system",
+          "task": "Apply Brakes",
+          "module": "proportional_braking",
+          "available": true,
+          "text": "\"Apply Brakes\" performed by \"proportional_braking\""
+        },
+        "requirement": {
+          "kind": "D",
+          "from": "PedestrianClothingNotVisible",
+          "layer": "requirement",
+          "clause": "assuming",
+          "item": "pedestrian clothing contrasts with the background",
+          "text": "assuming \"pedestrian clothing contrasts with the background\""
+        }
+      }
+    },
+    {
+      "id": "AdverseWeather",
+      "param": "fog_density",
+      "value": "50",
+      "blocks_goal": "Detect Pedestrian",
+      "domain_property": "PedestrianVisible",
+      "description": "Fog degrades detection confidence and adds inference latency (paper E4). 50% fog is still a realistic deployment condition.",
+      "mitigations": {
+        "data": "Fine-tune with foggy scenes (paper M2: braking success in fog 0% -> 100%).",
+        "model": "Weather-conditioned confidence threshold.",
+        "system": "Redundant sensing (radar/lidar) or speed reduction in low visibility.",
+        "requirement": "Either add 'fog density <= N' to the ODD (scoping) or keep the requirement and demand the data/system fix."
+      },
+      "source": "catalogue",
+      "verdict": "not_supported",
+      "evidence": {
+        "param": "fog_density",
+        "value": "50",
+        "n": 58,
+        "failures": 2,
+        "failure_rate": 0.034482758620689655,
+        "failure_rate_others": 0.029411764705882353,
+        "effect": 0.005070993914807302,
+        "enough_data": true,
+        "n_distinct_scenarios": 16,
+        "scenario_effect": -0.0031249999999999993
+      },
+      "detection_failure_share": 0.5,
+      "changes": {
+        "data": {
+          "kind": "S",
+          "from": "AdverseWeather",
+          "layer": "data",
+          "task": "Detect Pedestrian",
+          "module": "fine_tune",
+          "available": true,
+          "text": "\"Detect Pedestrian\" performed by \"fine_tune\""
+        },
+        "model": {
+          "kind": "S",
+          "from": "AdverseWeather",
+          "layer": "model",
+          "task": null,
+          "module": null,
+          "available": false,
+          "text": "model-level change with no requirement slot: Weather-conditioned confidence threshold."
+        },
+        "system": {
+          "kind": "S",
+          "from": "AdverseWeather",
+          "layer": "system",
+          "task": null,
+          "module": null,
+          "available": false,
+          "text": "system-level change with no requirement slot: Redundant sensing (radar/lidar) or speed reduction in low visibility."
+        },
+        "requirement": {
+          "kind": "D",
+          "from": "AdverseWeather",
+          "layer": "requirement",
+          "clause": "assuming",
+          "item": "fog_density <= 50",
+          "text": "assuming \"fog_density <= 50\""
+        }
+      }
+    },
+    {
+      "id": "DetectionTooLate",
+      "failure_type": "detected_too_late",
+      "blocks_goal": "Detect Pedestrian",
+      "domain_property": "PedestrianVisible",
+      "description": "The detector only reaches the confidence bar when the pedestrian is already closer than the distance needed to stop at the approach speed. The pedestrian is visible for seconds before that; the bar (85%) is reached too late for the braking distance.",
+      "mitigations": {
+        "data": "Fine-tune on distant / small pedestrian instances so confidence rises earlier.",
+        "model": "A more sensitive detector, or a lower confidence bar with a second cue (risk: unnecessary braking).",
+        "system": "Proportional braking from 30% confidence, full braking above 85% (paper M4) - the car starts slowing while the detector is still unsure.",
+        "requirement": "State the approach-speed / minimum detection-distance assumption in the ODD (e.g. assuming \"ego_speed <= 5\"), or specify a time-to-brake bound.",
+        "scenario": "The approach speed (EGO_SPEED = 7.5 m/s) and spawn distance are fixed constants of scratch.temp, not grammar parameters - the grid cannot vary them. Consider making speed a scenario parameter."
+      },
+      "source": "catalogue",
+      "verdict": "insufficient_data",
+      "evidence": {
+        "failure_type": "detected_too_late",
+        "count": 1,
+        "failures": 4,
+        "share": 0.25
+      },
+      "detection_failure_share": null,
+      "changes": {
+        "data": {
+          "kind": "S",
+          "from": "DetectionTooLate",
+          "layer": "data",
+          "task": "Detect Pedestrian",
+          "module": "fine_tune",
+          "available": true,
+          "text": "\"Detect Pedestrian\" performed by \"fine_tune\""
+        },
+        "model": {
+          "kind": "S",
+          "from": "DetectionTooLate",
+          "layer": "model",
+          "task": "Detect Pedestrian",
+          "module": "yolov5m",
+          "available": true,
+          "text": "\"Detect Pedestrian\" performed by \"yolov5m\""
+        },
+        "system": {
+          "kind": "S",
+          "from": "DetectionTooLate",
+          "layer": "system",
+          "task": "Apply Brakes",
+          "module": "proportional_braking",
+          "available": true,
+          "text": "\"Apply Brakes\" performed by \"proportional_braking\""
+        },
+        "requirement": {
+          "kind": "D",
+          "from": "DetectionTooLate",
+          "layer": "requirement",
+          "clause": "assuming",
+          "item": "ego_speed <= 5",
+          "text": "assuming \"ego_speed <= 5\""
+        },
+        "scenario": {
+          "kind": "T",
+          "from": "DetectionTooLate",
+          "layer": "scenario",
+          "target": "scripts/scenarios/scratch.temp",
+          "text": "The approach speed (EGO_SPEED = 7.5 m/s) and spawn distance are fixed constants of scratch.temp, not grammar parameters - the grid cannot vary them. Consider making speed a scenario parameter."
+        }
+      }
+    },
+    {
+      "id": "BrakingNotLatched",
+      "failure_type": "brake_released",
+      "blocks_goal": "Apply Brakes",
+      "domain_property": null,
+      "description": "Braking is applied only while the pedestrian is currently detected. When the pedestrian leaves the camera frame (very close, or passing) the car releases the brake and speeds up again before the closest point.",
+      "mitigations": {
+        "data": null,
+        "model": null,
+        "system": "Latch the brake once triggered until the car has stopped or the pedestrian is confirmed clear; add a short detection memory (tracking).",
+        "requirement": "Specify braking as a state (\"once a pedestrian is detected, keep braking until stopped\"), not as a per-frame reaction."
+      },
+      "source": "catalogue",
+      "verdict": "insufficient_data",
+      "evidence": {
+        "failure_type": "brake_released",
+        "count": 1,
+        "failures": 4,
+        "share": 0.25
+      },
+      "detection_failure_share": null,
+      "changes": {
+        "system": {
+          "kind": "S",
+          "from": "BrakingNotLatched",
+          "layer": "system",
+          "task": "Apply Brakes",
+          "module": "latched_braking",
+          "available": false,
+          "text": "\"Apply Brakes\" performed by \"latched_braking\""
+        },
+        "requirement": {
+          "kind": "R",
+          "from": "BrakingNotLatched",
+          "layer": "requirement",
+          "clause": "ensuring",
+          "item": "once braking has started it continues until the vehicle has stopped or the pedestrian is clear",
+          "text": "ensuring \"once braking has started it continues until the vehicle has stopped or the pedestrian is clear\""
+        }
+      }
+    },
+    {
+      "id": "StandoffUnnecessaryStop",
+      "outcome": "passed_stalled",
+      "blocks_goal": "Smooth Braking / Progress",
+      "domain_property": "PedestrianCrossesWhenSafe",
+      "description": "The safety goal holds, but the car stops well short of the crossing and never resumes: the pedestrian waits for the car, the car waits for the pedestrian. The paper's soft goal (SmoothBraking / making progress) fails where the safety goal now succeeds - the mitigation shifted the failure mode.",
+      "mitigations": {
+        "data": null,
+        "model": "Raise the caution threshold only when the pedestrian is stationary and off the road (needs a track, not a per-frame confidence).",
+        "system": "Time-box the cautious stop: creep forward / resume when the pedestrian has not moved toward the road for N seconds; distinguish 'pedestrian at kerb' from 'pedestrian crossing'.",
+        "requirement": "Add the soft goal explicitly (e.g. 'resume within N s once the path is clear') and state the domain assumption that pedestrians cross only when the vehicle is within/beyond a given distance.",
+        "scenario": "Fix the test: let the pedestrian cross on its own schedule (time- or distance-to-crossing-based), not only once the car is within 8 m (CrossingBehavior threshold in scratch.temp) - otherwise a cautious car can never be measured getting past."
+      },
+      "source": "catalogue",
+      "verdict": "supported",
+      "evidence": {
+        "outcome": "passed_stalled",
+        "count": 113,
+        "passes": 122,
+        "share": 0.9262295081967213
+      },
+      "detection_failure_share": null,
+      "changes": {
+        "model": {
+          "kind": "S",
+          "from": "StandoffUnnecessaryStop",
+          "layer": "model",
+          "task": null,
+          "module": null,
+          "available": false,
+          "text": "model-level change with no requirement slot: Raise the caution threshold only when the pedestrian is stationary and off the road (needs a track, not a per-frame confidence)."
+        },
+        "system": {
+          "kind": "S",
+          "from": "StandoffUnnecessaryStop",
+          "layer": "system",
+          "task": "Apply Brakes",
+          "module": "proportional_braking_with_resume",
+          "available": false,
+          "text": "\"Apply Brakes\" performed by \"proportional_braking_with_resume\""
+        },
+        "requirement": {
+          "kind": "R",
+          "from": "StandoffUnnecessaryStop",
+          "layer": "requirement",
+          "clause": "ensuring",
+          "item": "vehicle resumes within 10 s once the crossing is clear",
+          "text": "ensuring \"vehicle resumes within 10 s once the crossing is clear\""
+        },
+        "scenario": {
+          "kind": "T",
+          "from": "StandoffUnnecessaryStop",
+          "layer": "scenario",
+          "target": "scripts/scenarios/scratch.temp",
+          "text": "Fix the test: let the pedestrian cross on its own schedule (time- or distance-to-crossing-based), not only once the car is within 8 m (CrossingBehavior threshold in scratch.temp) - otherwise a cautious car can never be measured getting past."
+        }
+      }
+    }
+  ],
+  "bars": {
+    "min_share": 0.25,
+    "min_effect": 0.15,
+    "min_n": 10,
+    "min_n_failures": 10
+  },
+  "scenario_artefacts": [
+    {
+      "id": "crossing_trigger_8m",
+      "metric": "passed_stalled",
+      "description": "The pedestrian's CrossingBehavior only steps out once the car is within THRESHOLD = 8 m (scratch.temp). A car that stops cautiously before that never gets to see the crossing happen: a standoff that is a property of the test, not of the system - it makes StandoffUnnecessaryStop partly unmeasurable.",
+      "fix": "scratch.temp: trigger the crossing on a timer or on the pedestrian's own distance to the crossing point, not on proximity to the ego.",
+      "value": 113
+    },
+    {
+      "id": "no_encounter_geometry",
+      "metric": "n_no_encounter",
+      "description": "Uniform lane choice + heading can place the ego driving away from the pedestrian, so the two never meet. These runs are excluded from the rates, but they waste ~25% of the simulation budget.",
+      "fix": "scratch.temp: choose the lane/spot so the ego approaches the crossing point; or reject such samples with a Scenic `require`.",
+      "value": 26
+    },
+    {
+      "id": "distance_parameter_dead",
+      "metric": "n_scenarios",
+      "description": "The grammar's `distance` (Short/Long) does not move the pedestrian in scratch.temp (position is a fixed random range; the angle depends only on direction). Its measured effect should be ~0 and any effect is noise.",
+      "fix": "scratch.temp: place the pedestrian from `distance` (as scenic_template.py's get_pedestrian_pos did), or drop the parameter from old.bnf.",
+      "value": 32
+    }
+  ],
+  "simulations": [
+    {
+      "scenario_id": "0",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/0_0.json"
+    },
+    {
+      "scenario_id": "0",
+      "sim_index": 1,
+      "outcome": "passed",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/0_1.json"
+    },
+    {
+      "scenario_id": "0",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/0_2.json"
+    },
+    {
+      "scenario_id": "0",
+      "sim_index": 3,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/0_3.json"
+    },
+    {
+      "scenario_id": "0",
+      "sim_index": 4,
+      "outcome": "passed",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "assumption: initial_separation_m >= 15",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "broken",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/0_4.json"
+    },
+    {
+      "scenario_id": "1",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/1_0.json"
+    },
+    {
+      "scenario_id": "1",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/1_1.json"
+    },
+    {
+      "scenario_id": "1",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/1_2.json"
+    },
+    {
+      "scenario_id": "1",
+      "sim_index": 3,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/1_3.json"
+    },
+    {
+      "scenario_id": "1",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/1_4.json"
+    },
+    {
+      "scenario_id": "2",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/2_0.json"
+    },
+    {
+      "scenario_id": "2",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/2_1.json"
+    },
+    {
+      "scenario_id": "2",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/2_2.json"
+    },
+    {
+      "scenario_id": "2",
+      "sim_index": 3,
+      "outcome": "passed",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/2_3.json"
+    },
+    {
+      "scenario_id": "2",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/2_4.json"
+    },
+    {
+      "scenario_id": "3",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/3_0.json"
+    },
+    {
+      "scenario_id": "3",
+      "sim_index": 1,
+      "outcome": "brake_released",
+      "encounter": true,
+      "failed": true,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/3_1.json"
+    },
+    {
+      "scenario_id": "3",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/3_2.json"
+    },
+    {
+      "scenario_id": "3",
+      "sim_index": 3,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/3_3.json"
+    },
+    {
+      "scenario_id": "3",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/3_4.json"
+    },
+    {
+      "scenario_id": "4",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/4_0.json"
+    },
+    {
+      "scenario_id": "4",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/4_1.json"
+    },
+    {
+      "scenario_id": "4",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/4_2.json"
+    },
+    {
+      "scenario_id": "4",
+      "sim_index": 3,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/4_3.json"
+    },
+    {
+      "scenario_id": "4",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/4_4.json"
+    },
+    {
+      "scenario_id": "5",
+      "sim_index": 0,
+      "outcome": "stopped_too_close",
+      "encounter": true,
+      "failed": true,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/5_0.json"
+    },
+    {
+      "scenario_id": "5",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/5_1.json"
+    },
+    {
+      "scenario_id": "5",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/5_2.json"
+    },
+    {
+      "scenario_id": "5",
+      "sim_index": 3,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/5_3.json"
+    },
+    {
+      "scenario_id": "5",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/5_4.json"
+    },
+    {
+      "scenario_id": "6",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/6_0.json"
+    },
+    {
+      "scenario_id": "6",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/6_1.json"
+    },
+    {
+      "scenario_id": "6",
+      "sim_index": 2,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/6_2.json"
+    },
+    {
+      "scenario_id": "6",
+      "sim_index": 3,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/6_3.json"
+    },
+    {
+      "scenario_id": "6",
+      "sim_index": 4,
+      "outcome": "detected_too_late",
+      "encounter": true,
+      "failed": true,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/6_4.json"
+    },
+    {
+      "scenario_id": "7",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/7_0.json"
+    },
+    {
+      "scenario_id": "7",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/7_1.json"
+    },
+    {
+      "scenario_id": "7",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/7_2.json"
+    },
+    {
+      "scenario_id": "7",
+      "sim_index": 3,
+      "outcome": "passed",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/7_3.json"
+    },
+    {
+      "scenario_id": "7",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/7_4.json"
+    },
+    {
+      "scenario_id": "8",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/8_0.json"
+    },
+    {
+      "scenario_id": "8",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/8_1.json"
+    },
+    {
+      "scenario_id": "8",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/8_2.json"
+    },
+    {
+      "scenario_id": "8",
+      "sim_index": 3,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "assumption: initial_separation_m >= 15",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "broken",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/8_3.json"
+    },
+    {
+      "scenario_id": "8",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/8_4.json"
+    },
+    {
+      "scenario_id": "9",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/9_0.json"
+    },
+    {
+      "scenario_id": "9",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/9_1.json"
+    },
+    {
+      "scenario_id": "9",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/9_2.json"
+    },
+    {
+      "scenario_id": "9",
+      "sim_index": 3,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/9_3.json"
+    },
+    {
+      "scenario_id": "9",
+      "sim_index": 4,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/9_4.json"
+    },
+    {
+      "scenario_id": "10",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/10_0.json"
+    },
+    {
+      "scenario_id": "10",
+      "sim_index": 1,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "assumption: initial_separation_m >= 15",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "broken",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/10_1.json"
+    },
+    {
+      "scenario_id": "10",
+      "sim_index": 2,
+      "outcome": "stopped_too_close",
+      "encounter": true,
+      "failed": true,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/10_2.json"
+    },
+    {
+      "scenario_id": "10",
+      "sim_index": 3,
+      "outcome": "passed",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/10_3.json"
+    },
+    {
+      "scenario_id": "10",
+      "sim_index": 4,
+      "outcome": "passed",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/10_4.json"
+    },
+    {
+      "scenario_id": "11",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/11_0.json"
+    },
+    {
+      "scenario_id": "11",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/11_1.json"
+    },
+    {
+      "scenario_id": "11",
+      "sim_index": 2,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/11_2.json"
+    },
+    {
+      "scenario_id": "11",
+      "sim_index": 3,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/11_3.json"
+    },
+    {
+      "scenario_id": "11",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/11_4.json"
+    },
+    {
+      "scenario_id": "12",
+      "sim_index": 0,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "assumption: initial_separation_m >= 15",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "broken",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/12_0.json"
+    },
+    {
+      "scenario_id": "12",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/12_1.json"
+    },
+    {
+      "scenario_id": "12",
+      "sim_index": 2,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/12_2.json"
+    },
+    {
+      "scenario_id": "12",
+      "sim_index": 3,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/12_3.json"
+    },
+    {
+      "scenario_id": "12",
+      "sim_index": 4,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/12_4.json"
+    },
+    {
+      "scenario_id": "13",
+      "sim_index": 0,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/13_0.json"
+    },
+    {
+      "scenario_id": "13",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/13_1.json"
+    },
+    {
+      "scenario_id": "13",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/13_2.json"
+    },
+    {
+      "scenario_id": "13",
+      "sim_index": 3,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "assumption: initial_separation_m >= 15",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "broken",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/13_3.json"
+    },
+    {
+      "scenario_id": "13",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/13_4.json"
+    },
+    {
+      "scenario_id": "14",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/14_0.json"
+    },
+    {
+      "scenario_id": "14",
+      "sim_index": 1,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/14_1.json"
+    },
+    {
+      "scenario_id": "14",
+      "sim_index": 2,
+      "outcome": "passed",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/14_2.json"
+    },
+    {
+      "scenario_id": "14",
+      "sim_index": 3,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/14_3.json"
+    },
+    {
+      "scenario_id": "14",
+      "sim_index": 4,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "assumption: initial_separation_m >= 15",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "broken",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/14_4.json"
+    },
+    {
+      "scenario_id": "15",
+      "sim_index": 0,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/15_0.json"
+    },
+    {
+      "scenario_id": "15",
+      "sim_index": 1,
+      "outcome": "passed",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/15_1.json"
+    },
+    {
+      "scenario_id": "15",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/15_2.json"
+    },
+    {
+      "scenario_id": "15",
+      "sim_index": 3,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/15_3.json"
+    },
+    {
+      "scenario_id": "15",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/15_4.json"
+    },
+    {
+      "scenario_id": "16",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/16_0.json"
+    },
+    {
+      "scenario_id": "16",
+      "sim_index": 1,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/16_1.json"
+    },
+    {
+      "scenario_id": "16",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/16_2.json"
+    },
+    {
+      "scenario_id": "16",
+      "sim_index": 3,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/16_3.json"
+    },
+    {
+      "scenario_id": "16",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/16_4.json"
+    },
+    {
+      "scenario_id": "17",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/17_0.json"
+    },
+    {
+      "scenario_id": "17",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/17_1.json"
+    },
+    {
+      "scenario_id": "17",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/17_2.json"
+    },
+    {
+      "scenario_id": "17",
+      "sim_index": 3,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/17_3.json"
+    },
+    {
+      "scenario_id": "17",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/17_4.json"
+    },
+    {
+      "scenario_id": "18",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/18_0.json"
+    },
+    {
+      "scenario_id": "18",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/18_1.json"
+    },
+    {
+      "scenario_id": "18",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/18_2.json"
+    },
+    {
+      "scenario_id": "18",
+      "sim_index": 3,
+      "outcome": "passed",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/18_3.json"
+    },
+    {
+      "scenario_id": "18",
+      "sim_index": 4,
+      "outcome": "passed",
+      "encounter": true,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "assumption: initial_separation_m >= 15",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "broken",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/18_4.json"
+    },
+    {
+      "scenario_id": "19",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/19_0.json"
+    },
+    {
+      "scenario_id": "19",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/19_1.json"
+    },
+    {
+      "scenario_id": "19",
+      "sim_index": 2,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/19_2.json"
+    },
+    {
+      "scenario_id": "19",
+      "sim_index": 3,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/19_3.json"
+    },
+    {
+      "scenario_id": "19",
+      "sim_index": 4,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/19_4.json"
+    },
+    {
+      "scenario_id": "20",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/20_0.json"
+    },
+    {
+      "scenario_id": "20",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/20_1.json"
+    },
+    {
+      "scenario_id": "20",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/20_2.json"
+    },
+    {
+      "scenario_id": "20",
+      "sim_index": 3,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/20_3.json"
+    },
+    {
+      "scenario_id": "20",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/20_4.json"
+    },
+    {
+      "scenario_id": "21",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/21_0.json"
+    },
+    {
+      "scenario_id": "21",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/21_1.json"
+    },
+    {
+      "scenario_id": "21",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/21_2.json"
+    },
+    {
+      "scenario_id": "21",
+      "sim_index": 3,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/21_3.json"
+    },
+    {
+      "scenario_id": "21",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/21_4.json"
+    },
+    {
+      "scenario_id": "22",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/22_0.json"
+    },
+    {
+      "scenario_id": "22",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/22_1.json"
+    },
+    {
+      "scenario_id": "22",
+      "sim_index": 2,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/22_2.json"
+    },
+    {
+      "scenario_id": "22",
+      "sim_index": 3,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/22_3.json"
+    },
+    {
+      "scenario_id": "22",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/22_4.json"
+    },
+    {
+      "scenario_id": "23",
+      "sim_index": 0,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/23_0.json"
+    },
+    {
+      "scenario_id": "23",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/23_1.json"
+    },
+    {
+      "scenario_id": "23",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/23_2.json"
+    },
+    {
+      "scenario_id": "23",
+      "sim_index": 3,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/23_3.json"
+    },
+    {
+      "scenario_id": "23",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/23_4.json"
+    },
+    {
+      "scenario_id": "24",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/24_0.json"
+    },
+    {
+      "scenario_id": "24",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/24_1.json"
+    },
+    {
+      "scenario_id": "24",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/24_2.json"
+    },
+    {
+      "scenario_id": "24",
+      "sim_index": 3,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/24_3.json"
+    },
+    {
+      "scenario_id": "24",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/24_4.json"
+    },
+    {
+      "scenario_id": "25",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/25_0.json"
+    },
+    {
+      "scenario_id": "25",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/25_1.json"
+    },
+    {
+      "scenario_id": "25",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/25_2.json"
+    },
+    {
+      "scenario_id": "25",
+      "sim_index": 3,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/25_3.json"
+    },
+    {
+      "scenario_id": "25",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/25_4.json"
+    },
+    {
+      "scenario_id": "26",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/26_0.json"
+    },
+    {
+      "scenario_id": "26",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/26_1.json"
+    },
+    {
+      "scenario_id": "26",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/26_2.json"
+    },
+    {
+      "scenario_id": "26",
+      "sim_index": 3,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/26_3.json"
+    },
+    {
+      "scenario_id": "26",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/26_4.json"
+    },
+    {
+      "scenario_id": "27",
+      "sim_index": 0,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/27_0.json"
+    },
+    {
+      "scenario_id": "27",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/27_1.json"
+    },
+    {
+      "scenario_id": "27",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/27_2.json"
+    },
+    {
+      "scenario_id": "27",
+      "sim_index": 3,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/27_3.json"
+    },
+    {
+      "scenario_id": "27",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/27_4.json"
+    },
+    {
+      "scenario_id": "28",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/28_0.json"
+    },
+    {
+      "scenario_id": "28",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/28_1.json"
+    },
+    {
+      "scenario_id": "28",
+      "sim_index": 2,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/28_2.json"
+    },
+    {
+      "scenario_id": "28",
+      "sim_index": 3,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": false,
+      "set_aside_reason": "assumption: initial_separation_m >= 15",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "broken",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/28_3.json"
+    },
+    {
+      "scenario_id": "28",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/28_4.json"
+    },
+    {
+      "scenario_id": "29",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/29_0.json"
+    },
+    {
+      "scenario_id": "29",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/29_1.json"
+    },
+    {
+      "scenario_id": "29",
+      "sim_index": 2,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/29_2.json"
+    },
+    {
+      "scenario_id": "29",
+      "sim_index": 3,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/29_3.json"
+    },
+    {
+      "scenario_id": "29",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/29_4.json"
+    },
+    {
+      "scenario_id": "30",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/30_0.json"
+    },
+    {
+      "scenario_id": "30",
+      "sim_index": 1,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/30_1.json"
+    },
+    {
+      "scenario_id": "30",
+      "sim_index": 2,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/30_2.json"
+    },
+    {
+      "scenario_id": "30",
+      "sim_index": 3,
+      "outcome": "passed",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/30_3.json"
+    },
+    {
+      "scenario_id": "30",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/30_4.json"
+    },
+    {
+      "scenario_id": "31",
+      "sim_index": 0,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/31_0.json"
+    },
+    {
+      "scenario_id": "31",
+      "sim_index": 1,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/31_1.json"
+    },
+    {
+      "scenario_id": "31",
+      "sim_index": 2,
+      "outcome": "no_encounter",
+      "encounter": false,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {},
+      "trace": "traces/31_2.json"
+    },
+    {
+      "scenario_id": "31",
+      "sim_index": 3,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/31_3.json"
+    },
+    {
+      "scenario_id": "31",
+      "sim_index": 4,
+      "outcome": "passed_stalled",
+      "encounter": true,
+      "failed": false,
+      "admissible": true,
+      "set_aside_reason": "",
+      "assumptions": {
+        "fog_density <= 50": "held",
+        "initial_separation_m >= 15": "held",
+        "pedestrian_speed_mps <= 3": "not_measured"
+      },
+      "soft_goals": {
+        "resume_within_s <= 10": "not_measured"
+      },
+      "trace": "traces/31_4.json"
+    },
+    {
+      "scenario_id": "best_video",
+      "sim_index": 0,
+      "recording_pass": true,
+      "outcome": null,
+      "encounter": false,
+      "failed": null,
+      "admissible": null,
+      "set_aside_reason": "recording pass of the worst scenario (not a sample)",
+      "assumptions": {},
+      "soft_goals": {},
+      "trace": "traces/best_video_0.json"
+    }
+  ],
+  "banner": "Assumptions stated AFTER the run (demo): round 2 re-judged against the baseline assuming/ensuring lines of docs/examples/R_baseline.dsl."
+}

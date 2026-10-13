@@ -16,12 +16,22 @@ folder. No simulator, GPU or network needed.
 """
 
 import argparse
+import csv
 import json
 import math
 import os
 from datetime import datetime, timezone
 
-from scripts.analysis import admissibility, failure_model, obstacles, soft_goals
+from scripts.analysis import admissibility, failure_model, obstacles, refine, soft_goals, trace_measures
+
+# analysis_report.json schema. Readers refuse a version they do not know.
+#   (absent) reports before 2026-10-08: aggregates only
+#   2        adds schema_version, simulations[] (per-simulation labels),
+#            obstacles[].changes (the requirement change each mitigation
+#            implies), admissibility.rules[].as_assumption, scenario_artefacts,
+#            bars, requirement.tree (the goal model) - and writes null for
+#            NaN, which is not JSON
+REPORT_SCHEMA_VERSION = 2
 
 
 def _load_meta(run_dir):
@@ -32,10 +42,12 @@ def _load_meta(run_dir):
     return {}
 
 
-def analyse(run_dir, rules_path=None, requirement=None):
+def analyse(run_dir, rules_path=None, requirement=None, safety_rule=trace_measures.DEFAULT_SAFETY_RULE):
     """Return the full analysis as a dict (see write_report for the files).
     `requirement` = text to judge the run against instead of the one in
-    run_meta.json (the run itself is unchanged)."""
+    run_meta.json (the run itself is unchanged). `safety_rule` = where the
+    safety margin applies: "anywhere" (the monitor's rule) or "path" (only
+    while the pedestrian is in the car's path; trace_measures.py)."""
     meta = _load_meta(run_dir)
     if requirement is not None:
         meta = dict(meta, requirement=requirement, requirement_as_run=meta.get("requirement"))
@@ -54,6 +66,11 @@ def analyse(run_dir, rules_path=None, requirement=None):
 
     df = failure_model.load_simulations(run_dir)
     df = admissibility.add_run_quantities(df, run_dir)
+    # glitch-robust pedestrian speed / deceleration / jerk from the traces,
+    # and the chosen safety rule (trace_measures.py)
+    df = trace_measures.add_trace_measures(df, run_dir)
+    df = trace_measures.apply_safety_rule(df, safety_rule)
+    safety_rule_changed = int((df["passed"].eq(True) != df["passed_anywhere"].eq(True)).sum())
     df = admissibility.label_simulations(df, rules)
     df, assumption_summary = admissibility.check_assumptions(df, items)
     df = failure_model.add_failure_types(df)
@@ -66,6 +83,15 @@ def analyse(run_dir, rules_path=None, requirement=None):
 
     model = failure_model.build_failure_model(valid)
     obstacle_results = obstacles.assess_obstacles(valid, model)
+    # What each candidate mitigation would change in the requirement, from
+    # refine.py's tables - recorded here so the review interface selects a
+    # change instead of keeping a second copy of the tables.
+    avail = refine.available_modules()
+    for o in obstacle_results:
+        o["changes"] = {layer: refine.change_for(o["id"], layer, text, avail)
+                        for layer, text in (o.get("mitigations") or {}).items() if text}
+    for rule in rules:
+        rule["as_assumption"] = refine.rule_as_assumption(rule)
 
     spurious_summary = []
     if len(spurious):
@@ -76,8 +102,11 @@ def analyse(run_dir, rules_path=None, requirement=None):
             })
 
     return {
+        "schema_version": REPORT_SCHEMA_VERSION,
         "not_simulated": not_simulated(run_dir, df),
         "run_id": meta.get("run_id") or os.path.basename(os.path.normpath(run_dir)),
+        "safety_rule": safety_rule,
+        "safety_rule_changed": safety_rule_changed,
         "sampling": sampling_of(meta),
         "analysed_at": datetime.now(timezone.utc).isoformat(),
         "run_meta": meta,
@@ -93,7 +122,94 @@ def analyse(run_dir, rules_path=None, requirement=None):
         "soft_goals": soft_goal_summary,
         "failure_model": model,
         "obstacles": obstacle_results,
+        # the bars the verdicts above were judged against (a judgement call,
+        # not a significance test - see failure_model / obstacles)
+        "bars": {"min_share": obstacles.MIN_SHARE, "min_effect": failure_model.MIN_EFFECT,
+                 "min_n": failure_model.MIN_N, "min_n_failures": obstacles.MIN_N_FAILURES},
+        # candidate defects of the test itself, with the number that is their evidence
+        "scenario_artefacts": [dict(a, value=model.get(a["metric"]))
+                               for a in obstacles.SCENARIO_ARTEFACTS],
+        "simulations": simulation_rows(df, items, req.get("soft_goals"), run_dir)
+                       + recording_pass_rows(run_dir),
     }
+
+
+def simulation_rows(df, items, goals, run_dir):
+    """One entry per row of simulations.csv with the labels the analysis
+    gave it: how it ended (`outcome`, one of failure_model.OUTCOMES), whether
+    it counts as an encounter, whether it is in scope and why not, the status
+    of each checkable assumption (held / broken / not_measured) and - over
+    in-scope encounters, as the summary counts them - of each checkable soft
+    goal (met / missed / not_measured). Persisted so the review interface can
+    show every simulation's outcome and reach the rows behind a count without
+    re-deriving the rules in failure_model.py and admissibility.py."""
+    checkable = [i for i in items if i["kind"] in ("scenario", "run")]
+    checked_goals = [g for g in (soft_goals.parse_soft_goal(t) for t in goals or [])
+                     if g["kind"] == "checked"]
+    rows = []
+    for _, row in df.iterrows():
+        sid, idx = str(row.get("scenario_id")), _int_or_none(row.get("sim_index"))
+        trace = f"traces/{sid}_{idx}.json"
+        in_summary = bool(row.get("admissible")) and bool(row.get("encounter"))
+        rows.append({
+            "scenario_id": sid, "sim_index": idx,
+            "outcome": row.get("failure_type"),
+            "encounter": bool(row.get("encounter")),
+            "failed": bool(row.get("failed")),
+            "admissible": bool(row.get("admissible")),
+            "set_aside_reason": row.get("spurious_reason") or "",
+            "assumptions": {i["text"]: row.get(f"assumption::{i['text']}") for i in checkable},
+            "soft_goals": {g["text"]: soft_goals.goal_status(g, row.get(g["quantity"]))
+                           for g in checked_goals} if in_summary else {},
+            "trace": trace if os.path.exists(os.path.join(run_dir, trace)) else None,
+        })
+    return rows
+
+
+def recording_pass_rows(run_dir):
+    """The 'best_video' rows of simulations.csv: the worst scenario re-run to
+    record the video. Not a sample, so load_simulations drops them from the
+    analysis; listed here so nothing in the file is hidden, never counted."""
+    path = os.path.join(run_dir, "simulations.csv")
+    if not os.path.exists(path):
+        return []
+    rows = []
+    with open(path) as f:
+        for row in csv.DictReader(f):
+            if row.get("scenario_id") != "best_video":
+                continue
+            idx = _int_or_none(row.get("sim_index"))
+            trace = f"traces/best_video_{idx}.json"
+            rows.append({
+                "scenario_id": "best_video", "sim_index": idx, "recording_pass": True,
+                "outcome": None, "encounter": False, "failed": None, "admissible": None,
+                "set_aside_reason": "recording pass of the worst scenario (not a sample)",
+                "assumptions": {}, "soft_goals": {},
+                "trace": trace if os.path.exists(os.path.join(run_dir, trace)) else None,
+            })
+    return rows
+
+
+def _int_or_none(value):
+    try:
+        if value is None or value == "" or (isinstance(value, float) and math.isnan(value)):
+            return None
+        return int(float(value))
+    except (TypeError, ValueError):
+        return None
+
+
+def _json_safe(value):
+    """NaN and infinities become null: json.dump would write bare NaN /
+    Infinity tokens, which are not JSON and which a browser's parser rejects.
+    The markdown report still prints them as n/a."""
+    if isinstance(value, float) and (math.isnan(value) or math.isinf(value)):
+        return None
+    if isinstance(value, dict):
+        return {k: _json_safe(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_safe(v) for v in value]
+    return value
 
 
 def not_simulated(run_dir, df):
@@ -103,7 +219,6 @@ def not_simulated(run_dir, df):
     path = os.path.join(run_dir, "scenarios.csv")
     if not os.path.exists(path):
         return []
-    import csv
     seen = set(df["scenario_id"].astype(str)) if "scenario_id" in df else set()
     out = []
     with open(path) as f:
@@ -161,6 +276,14 @@ def to_markdown(analysis):
         line += (f" {fm0.get('n_distinct_scenarios', '?')} distinct scenarios; the most repeated ran "
                  f"{fm0.get('max_repeats_of_a_scenario', '?')} times.")
     add(f"> {line}")
+    if analysis.get("safety_rule", "anywhere") == "path":
+        add(f"> Safety rule: the {trace_measures.SAFETY_MARGIN_M:g} m margin applies only while the "
+            f"pedestrian is in the car's path (within {trace_measures.PATH_HALF_WIDTH_M:g} m of the lane "
+            f"centre); {analysis.get('safety_rule_changed', 0)} simulation(s) change verdict compared "
+            "with the margin applied anywhere.")
+    else:
+        add(f"> Safety rule: the car stays more than {trace_measures.SAFETY_MARGIN_M:g} m from the "
+            "pedestrian, wherever the pedestrian is.")
     add("")
     meta = analysis.get("run_meta") or {}
     if meta:
@@ -361,12 +484,13 @@ def to_markdown(analysis):
     return "\n".join(lines) + "\n"
 
 
-def write_report(run_dir, rules_path=None, requirement=None, out_dir=None, banner=None):
-    if requirement is not None and (out_dir is None or
-                                    os.path.abspath(out_dir) == os.path.abspath(run_dir)):
-        raise ValueError("re-judging against another requirement needs its own --out folder "
-                         "(the run's original report is never overwritten)")
-    analysis = analyse(run_dir, rules_path, requirement)
+def write_report(run_dir, rules_path=None, requirement=None, out_dir=None, banner=None,
+                 safety_rule=trace_measures.DEFAULT_SAFETY_RULE):
+    if (requirement is not None or safety_rule != trace_measures.DEFAULT_SAFETY_RULE) and (
+            out_dir is None or os.path.abspath(out_dir) == os.path.abspath(run_dir)):
+        raise ValueError("re-judging against another requirement or safety rule needs its own "
+                         "--out folder (the run's original report is never overwritten)")
+    analysis = analyse(run_dir, rules_path, requirement, safety_rule)
     if banner:
         analysis["banner"] = banner
     out_dir = out_dir or run_dir
@@ -374,7 +498,7 @@ def write_report(run_dir, rules_path=None, requirement=None, out_dir=None, banne
     json_path = os.path.join(out_dir, "analysis_report.json")
     md_path = os.path.join(out_dir, "analysis_report.md")
     with open(json_path, "w") as f:
-        json.dump(analysis, f, indent=2, default=str)
+        json.dump(_json_safe(analysis), f, indent=2, default=str)
     md = to_markdown(analysis)
     with open(md_path, "w") as f:
         f.write(md)
@@ -389,9 +513,12 @@ def main(argv=None):
                         help="judge the run against this requirement file instead of the one it ran with")
     parser.add_argument("--out", default=None, help="folder for the report (required with --requirement)")
     parser.add_argument("--banner", default=None, help="line shown at the top of the report")
+    parser.add_argument("--safety", default=trace_measures.DEFAULT_SAFETY_RULE, choices=trace_measures.SAFETY_RULES,
+                        help="where the safety margin applies (default: path, the pedestrian in the car's lane; "
+                             "'anywhere' needs --out)")
     args = parser.parse_args(argv)
     requirement = open(args.requirement).read() if args.requirement else None
-    _, md = write_report(args.run_dir, args.rules, requirement, args.out, args.banner)
+    _, md = write_report(args.run_dir, args.rules, requirement, args.out, args.banner, args.safety)
     print(md)
 
 

@@ -1,0 +1,1 @@
+A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 40 } m away on a day with fog density {fog_density : 90}, walking at least {pedestrian_min_speed_mps : 3.0} m/s, stepping out at {crossing_trigger_m : 100} m

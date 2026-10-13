@@ -322,6 +322,9 @@ def requirement_context(requirement_text, goal=DETECTION_GOAL):
                 "operations": dsl.get_operations(),
                 "assumptions": dsl.get_assumptions(),
                 "soft_goals": dsl.get_soft_goals(),
-                "scenario_text": dsl.get_scenario()}
+                "scenario_text": dsl.get_scenario(),
+                # the goal model (top goal, refinement, agents, operations),
+                # for the review interface - one parser, exported once
+                "tree": dsl.get_goal_tree()}
     except Exception as e:  # analysis must never die on the requirement text
         return {"parsed": False, "error": str(e)}

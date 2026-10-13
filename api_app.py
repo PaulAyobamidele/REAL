@@ -85,7 +85,10 @@ async def get_testcases(requirement: str = None, sample: bool = True,
             return {"error" : str(e), "STATUS" : "NOT OK"}
 
     constraints = extract_constraints(scenario)
-    sut = system_under_test_from(dsl)
+    try:
+        sut = system_under_test_from(dsl)
+    except ValueError as e:      # a module the executor does not implement: refused, not swapped
+        return {"error": str(e), "STATUS": "NOT OK"}
     run_id = new_run_id()
     try:
         result = start_ge(sample=False, constraints=constraints, run_id=run_id,
@@ -120,7 +123,10 @@ async def run_grid_endpoint(requirement: str = None, trials: int = 5,
         if dsl.parse_tree is None:
             return {"error": f"requirement does not parse: {dsl.parse_error}", "STATUS": "NOT OK"}
         scenario = dsl.get_scenario()
-        sut = system_under_test_from(dsl)
+        try:
+            sut = system_under_test_from(dsl)
+        except ValueError as e:  # a module the executor does not implement: refused, not swapped
+            return {"error": str(e), "STATUS": "NOT OK"}
     constraints = extract_constraints(scenario)
     phenotypes = None
     if scenario_file:

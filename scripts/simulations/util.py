@@ -17,7 +17,7 @@ import mlflow
 from tqdm import tqdm
 
 from real_config import settings
-from scripts.analysis import telemetry
+from scripts.analysis import telemetry, trace_measures
 from scripts.evolve.constraints import PHENOTYPE_PARAM_RE, parse_phenotype_params
 from scripts.templates.old.scenic_template import get_pedestrian
 
@@ -52,6 +52,22 @@ DEFAULT_PEDESTRIAN_MIN_SPEED_MPS = 2.0
 # Settings a scenario may give as numbers (scripts/templates/v2/scene_v2.bnf,
 # the GE grammar); old.bnf scenarios give `distance` and use the defaults.
 NUMERIC_SETTINGS = ("approach_distance_m", "crossing_trigger_m", "pedestrian_min_speed_mps")
+# World settings beyond the scene geometry (docs/design/parameters.md). The
+# defaults are the values every earlier run used, so old grammars behave as before.
+# `wetness` sets both CARLA's wetness and its puddles (precipitation_deposits).
+WEATHER_DEFAULTS = {"cloudiness": 50.0, "precipitation": 0.0, "wetness": 0.0,
+                    "sun_azimuth_angle": 80.0, "sun_altitude_angle": 60.0}
+OCCLUSION_DEFAULT = 0
+WORLD_SETTINGS = tuple(WEATHER_DEFAULTS) + ("occlusion",)
+
+
+def world_settings(params):
+    """Weather and occlusion for one scenario: values from the scenario where
+    given (newer grammars), otherwise the defaults."""
+    out = {k: float(params.get(k, v)) for k, v in WEATHER_DEFAULTS.items()}
+    out["precipitation_deposits"] = out["wetness"]
+    out["occlusion"] = int(float(params.get("occlusion", OCCLUSION_DEFAULT)))
+    return out
 # Steps per simulation (0.1 s each). 250 = 25 s, enough to see whether a car
 # that stopped moves on again within the 10 s soft goal (was 100 = 10 s).
 MAX_STEPS = 250
@@ -117,35 +133,59 @@ behavior Exp_EgoBehaviour():
         brake_now(brake)
         take SetThrottleAction(0.0), SetBrakeAction(brake)
 """,
+    # Standoff fix: brake (as proportional_braking) only for a person the
+    # camera estimates to be in the car's lane (perceive_in_path in
+    # scratch.temp); once nobody is estimated in the lane the interrupt ends
+    # and the car drives on. A person waiting on the pavement does not stop it.
+    "path_aware_braking": """\
+behavior Exp_EgoBehaviour():
+    try:
+        do FollowLaneBehavior(target_speed = EGO_SPEED)
+    interrupt when perceive_in_path(ego.observations["front_rgb"]) > CAUTION_CONFIDENCE:
+        brake = adjust_based_on_confidence(perceive_in_path(ego.observations["front_rgb"]))
+        brake_now(brake)
+        take SetThrottleAction(0.0), SetBrakeAction(brake)
+""",
 }
+
+# Exact module names only: a name the executor does not implement is refused,
+# never replaced by a default (a misspelt module used to run as a different
+# car without a word). These older spellings in existing requirements map to
+# the baseline explicitly.
+LEGACY_BRAKING_NAMES = {"braking": "emergency_braking", "brake": "emergency_braking",
+                        "braking module": "emergency_braking"}
 
 
 def braking_mode_from_module(module):
-    """Map the braking module named in the requirement to a BRAKING_BEHAVIOURS
-    key. None/unknown -> the baseline, so old requirements behave as before."""
+    """The braking module named in the requirement -> a BRAKING_BEHAVIOURS key,
+    by exact name (or an explicit legacy spelling). None/empty -> the default
+    (the requirement names none). Anything else is refused (ValueError)."""
     if not module:
         return DEFAULT_BRAKING_MODE
-    name = str(module).strip().lower()
-    if "proportional" in name or "caution" in name:
-        return "proportional_braking"
-    if "emergency" in name or "yolo" in name or name in ("braking", "brake", "braking module"):
-        return "emergency_braking"
-    print(f"WARNING: unknown braking module {module!r} in requirement - using {DEFAULT_BRAKING_MODE}")
-    return DEFAULT_BRAKING_MODE
+    name = str(module).strip()
+    if name in BRAKING_BEHAVIOURS:
+        return name
+    if name.lower() in LEGACY_BRAKING_NAMES:
+        return LEGACY_BRAKING_NAMES[name.lower()]
+    raise ValueError(f"unknown braking module {module!r}: the executor implements "
+                     f"{', '.join(sorted(BRAKING_BEHAVIOURS))}")
 
 
 def resolve_yolo_model(name):
     """Perception model named in the requirement -> a weights file that exists
-    under settings.model_dir (yolov5s, yolov5m, fine_tune, few_shot). Unknown
-    or missing -> yolov5s with a warning, never a crash mid-run."""
+    under settings.model_dir (yolov5s, yolov5m, fine_tune, few_shot). None/empty
+    -> the default. A name without weights is refused (ValueError), never
+    replaced by another model."""
     if not name:
         return DEFAULT_YOLO_MODEL
     candidate = str(name).strip()
     path = os.path.join(settings.model_dir, f"{candidate}.pt")
     if os.path.exists(path):
         return candidate
-    print(f"WARNING: perception model {candidate!r} not found at {path} - using {DEFAULT_YOLO_MODEL}")
-    return DEFAULT_YOLO_MODEL
+    known = sorted(f[:-3] for f in os.listdir(settings.model_dir) if f.endswith(".pt")) \
+        if os.path.isdir(settings.model_dir) else []
+    raise ValueError(f"unknown perception model {candidate!r}: weights available for "
+                     f"{', '.join(known) or 'none'}")
 
 
 def configure(braking_mode=None, yolo_model=None):
@@ -231,8 +271,17 @@ class MyMonitor(specification_monitor):
             others = ([positions[i] for i in ped_idx if i < len(positions)]
                       if ped_idx else positions[1:])
             distances.append(min((ego.distanceTo(o) for o in others), default=math.inf))
-        safe_values = [d - SAFETY_MARGIN_M for d in distances]
-        rho = self.specification.evaluate({'safe': list(enumerate(safe_values))})
+        # The verdict uses the project's safety rule (trace_measures.DEFAULT_SAFETY_RULE,
+        # "path": the margin counts only while the pedestrian is in the car's
+        # lane), so GE's fitness and every run's pass/fail measure the same
+        # thing the analysis does. The "anywhere" robustness is kept for comparison.
+        ped_laterals = [float(v) for _, v in result.records.get("ped_lateral_m", [])] \
+            if isinstance(result.records.get("ped_lateral_m", []), list) else []
+        rho = self.specification.evaluate({'safe': list(enumerate(
+            trace_measures.safe_values(distances, ped_laterals, trace_measures.DEFAULT_SAFETY_RULE,
+                                       SAFETY_MARGIN_M)))})
+        rho_anywhere = self.specification.evaluate({'safe': list(enumerate(
+            trace_measures.safe_values(distances, None, "anywhere", SAFETY_MARGIN_M)))})
 
         # Hand the per-step facts to the failure-analysis log. "ego_speed" is
         # the `record ego.speed as "ego_speed"` time series from scratch.temp
@@ -248,7 +297,9 @@ class MyMonitor(specification_monitor):
         def series(name):
             s = result.records.get(name, [])
             return [float(v) for _, v in s] if isinstance(s, list) else []
-        telemetry.end_simulation(rho=rho, distances=distances, speeds=speeds,
+        telemetry.end_simulation(rho=rho, rho_anywhere=rho_anywhere,
+                                 safety_rule=trace_measures.DEFAULT_SAFETY_RULE if ped_laterals else "anywhere",
+                                 distances=distances, speeds=speeds,
                                  pedestrian_speeds=pedestrian_speeds, on_road=on_road,
                                  ego_headings=series("ego_heading"),
                                  lane_headings=series("lane_heading"),
@@ -345,9 +396,11 @@ def build_scenario(phenotype, frames_dir=None, braking_mode=None):
     # side, heading, start distance - see scene_settings).
     params.update(scene_settings(params['direction'], params.get('distance'),
                                  **{k: params[k] for k in NUMERIC_SETTINGS if k in params}))
+    params.update(world_settings(params))
     params['pedestrian'] = get_pedestrian(params['pedestrian'], params['dress'])
     params['carla_map_path'] = settings.carla_map_path
     params['carla_map_name'] = settings.carla_map_name
+    params['carla_port'] = settings.carla_port
     mode = braking_mode or RUN_CONTEXT["braking_mode"]
     params['ego_behavior'] = BRAKING_BEHAVIOURS[mode]
     params['braking_mode'] = mode
@@ -392,7 +445,7 @@ def evaluate_phenotype(phenotype, num_test=5, seed=None, scenario_id=None, log_m
     telemetry.begin_scenario(scenario_id if scenario_id is not None else phenotype,
                              phenotype, raw_params,
                              pedestrian_blueprint=params['pedestrian'],
-                             scene={k: params[k] for k in NUMERIC_SETTINGS},
+                             scene={k: params[k] for k in NUMERIC_SETTINGS + WORLD_SETTINGS},
                              braking_mode=params['braking_mode'],
                              yolo_model=yolo_model, seed=seed)
 
