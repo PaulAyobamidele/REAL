@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { Loading } from '@/components/feedback';
 import { KaosDiagram } from '@/components/requirement/KaosDiagram';
 import { MatchingRuns } from '@/components/requirement/MatchingRuns';
-import { RunPanel } from '@/components/requirement/RunPanel';
+import { RunDialog } from '@/components/requirement/RunDialog';
 import { TemplateEditor } from '@/components/requirement/TemplateEditor';
 import { Button } from '@/components/ui/Button';
 import { Disclosure } from '@/components/ui/Disclosure';
@@ -138,9 +138,6 @@ function Author({ catalog }: { catalog: AuthoringCatalog }) {
   const latest = check.status === 'done' ? check.result : null;
   const backToTemplate = current?.ok ? fromCheck(current, catalog) : null;
   const run = useRunTest({ text, fileName, open });
-  const busy = ['looking', 'submitting', 'tracking', 'fetching', 'opening'].includes(
-    run.state.phase,
-  );
 
   // the picture: the goal model of the latest text that parsed
   const layout = useMemo(
@@ -317,12 +314,13 @@ function Author({ catalog }: { catalog: AuthoringCatalog }) {
           <Button
             variant="primary"
             size="sm"
-            onClick={() => void run.runTest()}
-            disabled={problems.length > 0 || !current?.ok || busy}
-            busy={run.state.phase === 'looking' || run.state.phase === 'opening'}
-            title="open this requirement's latest test execution result, or run it on the cluster"
+            onClick={() => void run.start()}
+            // a followed job can always be looked at; a new run needs a complete requirement
+            disabled={!run.running && (problems.length > 0 || !current?.ok)}
+            busy={Boolean(run.running)}
+            title="choose, check and run this requirement on the cluster, or open its latest result"
           >
-            Run test ▸
+            {run.running ?? 'Run test ▸'}
           </Button>
         </span>
       </div>
@@ -360,13 +358,6 @@ function Author({ catalog }: { catalog: AuthoringCatalog }) {
         </section>
 
         <div className="flex min-w-0 flex-col gap-4 xl:sticky xl:top-16">
-          <RunPanel
-            state={run.state}
-            fileName={fileName}
-            onSubmit={() => void run.submit()}
-            onRetry={() => void run.retry()}
-            onDismiss={run.dismiss}
-          />
           <section className="card flex min-w-0 flex-col gap-3 p-4" aria-label="Goal model preview">
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-base font-semibold">Goal model</h2>
@@ -419,9 +410,26 @@ function Author({ catalog }: { catalog: AuthoringCatalog }) {
               </p>
             )}
           </section>
-          <MatchingRuns text={text} parses={Boolean(current?.ok)} onRunAgain={run.runAgain} />
+          <MatchingRuns text={text} parses={Boolean(current?.ok)} />
         </div>
       </div>
+      {run.shown ? (
+        <RunDialog
+          state={run.state}
+          fileName={fileName}
+          onFileName={setFileName}
+          actions={{
+            check: (o) => void run.check(o),
+            back: run.back,
+            submit: () => void run.submit(),
+            close: run.close,
+            openExisting: () => void run.openExisting(),
+            openResults: (id) => void run.openResults(id),
+            retry: () => void run.retry(),
+            dismiss: run.dismiss,
+          }}
+        />
+      ) : null}
     </div>
   );
 }

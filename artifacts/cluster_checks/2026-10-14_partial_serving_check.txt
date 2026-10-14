@@ -1,0 +1,8 @@
+checked 2026-10-14 - laptop only, a temporary helper on another port, nothing sent to the cluster
+Data: a copy of run 2b (657a1447...) cut to its first 10 scenarios (as a partial pull finds
+a running grid), analysed with report.write_report(out_dir=partial/after_10_of_32,
+banner="PARTIAL (10 of 32 scenarios) - the job is still running").
+- GET /authoring/runs/index.json lists analysis_report.json for the run (no final report exists)
+- GET /authoring/runs/<run>/analysis_report.json serves the partial one:
+  banner "PARTIAL (10 of 32 scenarios) - the job is still running", 50 simulations
+- GET /authoring/lists -> infra/hpc/smoke/scenarios_v3.txt (4 scenarios)

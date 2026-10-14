@@ -107,6 +107,19 @@ beforeEach(() => {
       const json = (body: unknown) =>
         new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' } });
       if (String(url).endsWith('/authoring/catalog')) return json(CATALOG);
+      if (String(url).endsWith('/authoring/lists')) return json({ lists: [] });
+      if (String(url).endsWith('/authoring/run/check-laptop'))
+        return json({
+          ok: true,
+          kind: null,
+          checked: 32,
+          how: 'all 32 scenarios',
+          system_under_test: { braking_mode: 'emergency_braking', yolo_model: 'yolov5s' },
+          failures: [],
+          message: null,
+        });
+      if (String(url).endsWith('/authoring/run/check-cluster'))
+        return json({ ok: true, host: 'h' });
       if (String(url).endsWith('/authoring/match'))
         return json({ ok: true, searched: 0, matches: [] });
       if (String(url).endsWith('/authoring/run')) {
@@ -265,17 +278,32 @@ describe('Run test', () => {
       { timeout: 3000 },
     );
     fireEvent.click(screen.getByRole('button', { name: /Run test/ }));
-    const panel = await screen.findByRole('region', { name: 'Run test' });
+    const dialog = await screen.findByRole('dialog', { name: 'Run test' });
+    // 1. choose: no results yet, no scenario list -> the full test
     await waitFor(() =>
-      expect(within(panel).getByText(/Run it on the cluster/)).toBeInTheDocument(),
+      expect(within(dialog).getByRole('radio', { name: /Full test/ })).toBeChecked(),
     );
-    expect(submitted).toHaveLength(0); // nothing is sent before the reviewer confirms
-    fireEvent.click(within(panel).getByRole('button', { name: 'Submit to the cluster' }));
+    fireEvent.click(within(dialog).getByRole('button', { name: /Check and run/ }));
+    // 2. check: every check ticks, then Submit appears; nothing was sent before
     await waitFor(() =>
-      expect(within(panel).getByText(/waiting in the queue/)).toBeInTheDocument(),
+      expect(
+        within(dialog).getByRole('button', { name: 'Submit to the cluster' }),
+      ).toBeInTheDocument(),
     );
-    expect(panel).toHaveTextContent('4999001');
+    expect(within(dialog).getByText(/emergency_braking · yolov5s/)).toBeInTheDocument();
+    expect(submitted).toHaveLength(0);
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Submit to the cluster' }));
+    // 3. run: the timeline, and the toolbar button follows the job
+    await waitFor(() =>
+      expect(within(dialog).getByText('Waiting in the queue')).toBeInTheDocument(),
+    );
+    expect(dialog).toHaveTextContent('4999001');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Close' }));
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Test queued' })).toBeInTheDocument();
     expect(submitted[0]?.name).toBe('R_new.dsl');
+    // the job script's defaults unless the reviewer changed an option
+    expect((submitted[0] as unknown as { options: unknown }).options).toEqual({ search: 'grid' });
   });
 });
 

@@ -264,3 +264,8 @@ ui/dist/
 ui/coverage/
 ui/public/workspace/
 ui/.vite/
+
+# local cluster state: job ids, node names and cluster paths (anonymous repository)
+artifacts/jobs.json
+artifacts/job_logs/
+artifacts/runs/*/job_log.out

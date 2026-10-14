@@ -2022,6 +2022,65 @@ lane data behave as before. Test added; 268 in total.
   set aside as spurious, 1 not-crossed test defect. Supersedes the 2b numbers
   in §8.45 (155 / 3 / 145 / 103).
 
+### 8.50 2026-10-13/14 — task 1a.6: Run test runs the hand workflow (done)
+
+Four diffs, each approved before it was written, each checked on the real
+cluster where it could be (results in `artifacts/cluster_checks/`).
+- **Cluster copy.** The 3-file check became every file a job executes
+  (top-level modules, `scripts/`, the editable Scenic, VerifAI, grape: 605).
+  Hashing them on `$SCRATCH` took **16 min** (965 s; ~1 file/s, login node
+  load 17-40), so the sync now writes `CODE_MANIFEST.txt` into the staging
+  copy (`python -m scripts.redsl.cluster_jobs --manifest <staging>`) and the
+  check reads it plus a spot check of 6 real files: **1.3 s**, "matches"
+  after a sync, refusal before it. `mlruns/` left out (the sync excludes it).
+  Never syncs or cancels; names the jobs that make a sync unsafe.
+- **Laptop check** (`scripts/redsl/preflight.py`, own process): modules via
+  `util.braking_mode_from_module` / `resolve_yolo_model`; Scenic builds every
+  listed scene, the 32 grid scenes (42 s) or a covering set for GE. Real:
+  both smoke requirements + their 4-scene list pass (9-10 s); a misspelt
+  module is refused with the implemented ones (4 s).
+- **Options** = the job script's variables and `--time` (<= 05:00:00), the
+  exact `sbatch` command kept in `jobs.json`. Compared with the hand submit
+  lines of 5455821/2 (sacct): same time, search, trials, script, contents;
+  only paths differed - a list identical in the cluster copy is now passed by
+  its own path.
+- **Following**: status from squeue/sacct and the log (node, ports, n/N,
+  tracebacks with MLflow "Error handling request" counted apart, last lines);
+  run id only from a run folder created after the job started; partial pulls
+  every 5 min into `partial/after_<n>_of_<N>/` (kept), served until the final
+  report; final pull in any end state with `job_log.out` and an INCOMPLETE
+  banner when it ended early. Real: status of both smoke jobs right (node,
+  ports, 4/4, run ids); fetch of 5455822 added the final report and cluster
+  map to run `0a0c13e6…` (40 s). A real bug found and fixed (3a): the API's
+  error printed in double quotes was missed.
+- **Interface**: options form with _Quick check (45 min)_, progress panel,
+  PARTIAL/INCOMPLETE banner on every review step, every refusal with its
+  lists, the `scancel` command shown, never run.
+- Job ids and cluster paths stay in git-ignored files (`jobs.json`,
+  `job_logs/`, `<run>/job_log.out`): `artifacts/` is committed.
+- The tool's status read smoke A's failure correctly (the API's NOT OK on
+  MLflow `runs/log-batch`); the cause and its fix are in §8.49 (MLflow store
+  per job, logging non-fatal).
+Tests: 303 Python (incl. a partial report on run 2b cut to 10 scenarios),
+119 interface. Then (2026-10-14) the run box became a guided three-step
+panel (Choose / Check / Run; review_ui.md), and a one-off empty answer from
+the code check - reported as "606 missing" - is now a failed check with the
+raw answer kept (`artifacts/cluster_checks/*_empty_answer.txt`); 306 Python,
+124 interface.
+**End-to-end (2026-10-14), the done-when of 1a.6:** R_baseline + the 4-scenario
+smoke list, 1 run, 45 min, submitted from the panel after all checks ticked;
+51 min in the queue (fair-share), 15 min running, followed in the panel with
+two partial reports written while it ran (after 2 and 4 of 4), pulled whole
+with its log, analysed, marked complete (run `82e6a075…`). Against the hand
+run of the same inputs (`0a0c13e6…`): the same files, mode, trials, seeds,
+scene and grammar hashes, scenario list path, car, goal tree, 5 simulations,
+nothing unsimulated; 0 MLflow errors (the §8.49 fix in effect). The values
+differ - CARLA is not deterministic with the same seeds - and one scenario
+flips at the margin (robustness -0.22 by hand, +0.03 from the tool): one
+trial does not settle a borderline case.
+(`artifacts/cluster_checks/2026-10-14_end_to_end_comparison.md`) Pending for 1a.6: one real run started from the UI, followed
+with partial results, pulled and opened, compared with the hand run.
+
 ### 8.7 The iteration loop (stages 7-9) — original design
 
 Per round: requirement R_n → run (grid) → `simulations.csv` → report →

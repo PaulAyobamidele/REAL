@@ -64,6 +64,14 @@ docker build -f Dockerfile.review -t real-review . && docker run --rm -p 8080:80
 # open http://localhost:8080 - the two bundled rounds, analysed, as an example workspace
 ```
 
+With the authoring helper running (`sim_env/bin/python -m scripts.redsl.serve`),
+the *Write a requirement* screen writes a requirement in the DSL with its goal
+model drawn live, and **Run test** runs it: checked on the laptop (modules,
+Scenic scenes), checked against the cluster's code, submitted with the job
+script's own options over your ssh session, followed with partial results,
+brought back whole and opened for review - the same job, folder and analysis
+as by hand ([`ui/README.md`](ui/README.md), [`infra/hpc/README.md`](infra/hpc/README.md)).
+
 The Streamlit page (`pages/4_review.py`) remains the earlier interface and
 keeps working; the original `Dockerfile` still serves it.
 

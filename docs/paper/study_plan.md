@@ -14,7 +14,7 @@ The live cluster connection (1a) is built alongside.
 | 1a.3 ✅ (laptop; cluster smoke pending) | Verdicts in analysis only: the monitor records; pass/fail and GE fitness use the path-aware rule computed from the per-step series | GE cannot optimise a rule the analysis does not use |
 | 1a.4 ✅ (laptop; cluster smoke pending) | Executor truth: braking and detector names matched exactly, unknown names refused; implement every car option the tool offers (e.g. braking only for a pedestrian in the lane, then resuming; a second detector) | a requirement runs as written or is refused |
 | 1a.5 ✅ (laptop; cluster smoke pending) | Several jobs at once: per-job ports | two jobs on one node run |
-| 1a.6 | Live cluster connection: submit from the tool, run id, progress as rows land, incremental pull, analysis updating as results arrive | a run started from the UI is followed to the end in the UI |
+| 1a.6 | Live cluster connection: submit from the tool, run id, progress as rows land, incremental pull, analysis updating as results arrive | a run started from the UI is followed to the end in the UI — **done 2026-10-14**: a quick check started from the panel was checked, submitted, followed (two partial reports), pulled, analysed and opened; same files, settings and seeds as the hand run of the same inputs (Notes 8.50) |
 | 1a.7 | Profile where the time per scenario goes | breakdown measured |
 
 ## Dimension 1b — the tool, study mode

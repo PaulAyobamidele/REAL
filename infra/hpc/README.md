@@ -93,6 +93,15 @@ The review interface's **Run test** (ui/README.md) submits through this overlay:
 
 ## 5. Submit the job
 
+The review interface's **Run test** does this section by clicking instead of
+typing (ui/README.md): the same `run_real_av.slurm`, the same `REAL_*`
+variables and `--time` (its options map one to one), the same run folder, and
+the pull and analysis of section 6 - after a laptop check of the modules and
+scenes and a check of the cluster copy (section 4b). It records the exact
+`sbatch` command in `artifacts/jobs.json`. Job logs it pulls
+(`<run>/job_log.out`, `artifacts/job_logs/`) and `jobs.json` contain job ids
+and cluster paths and are git-ignored.
+
 ```bash
 scp infra/hpc/run_real_av.slurm narval:scratch/real_project/run_real_av.slurm
 ssh narval "cd scratch/real_project && sbatch run_real_av.slurm"
