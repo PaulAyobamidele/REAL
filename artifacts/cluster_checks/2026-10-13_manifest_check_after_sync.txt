@@ -1,0 +1,6 @@
+checked at 2026-10-13T16:31:07 - real cluster, read-only, after the sync
+files in this project's manifest: 605
+check 1: RESULT matches
+check 1: took 1.3 s
+check 2: RESULT matches
+check 2: took 1.2 s

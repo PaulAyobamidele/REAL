@@ -33,13 +33,25 @@ Endpoints (JSON, localhost only):
                             ran exactly this requirement (equal goal trees,
                             so comments and layout do not count), with their
                             headline numbers.
-    POST /authoring/run     {"text", "name"} -> Run Test: the text must parse;
+    POST /authoring/run     {"text", "name", "options"} -> Run Test: the text must parse;
+                            options: search, trials, population, generations,
+                            grammar, scenario_file, time, parent_run_id, round
+                            (cluster_jobs.options_from); checked on the laptop
+                            first (scripts/redsl/preflight.py);
                             saved as requirements/<name>, submitted to the
                             cluster over the reviewer's ssh session
                             (scripts/redsl/cluster_jobs.py)
     GET  /authoring/jobs[/<id>]  submitted jobs; one job's state and progress
-    POST /authoring/jobs/<id>/fetch  pull a completed run and analyse it
+    GET  /authoring/lists   scenario lists a list run can use (Run Test's options)
+    POST /authoring/run/check-laptop  {"text", "options"} -> Run Test's checks on this
+                            machine (options, modules, scenes); reused by /run
+                            for 10 minutes
+    POST /authoring/run/check-cluster  -> Run Test's checks over ssh (session, code)
+    POST /authoring/jobs/<id>/fetch  pull an ended job's run (all of it) and analyse it
+    POST /authoring/jobs/<id>/partial  pull a running job's results so far, analyse them (PARTIAL)
     GET  /authoring/runs/index.json and /authoring/runs/<run>/<file>
+                            (a run without a final report serves its newest
+                            partial one, labelled PARTIAL inside)
                             artifacts/runs served read-only as a workspace
                             (the layout ui/scripts/make-workspace-index.mjs
                             writes), so a browser without a folder picker can
@@ -257,8 +269,41 @@ CONTENT_TYPES = {".json": "application/json", ".csv": "text/csv", ".md": "text/m
                  ".dsl": "text/plain", ".mp4": "video/mp4", ".png": "image/png"}
 
 
+def _partial_folder(run_dir):
+    """partial/after_<n>_of_<N> named by partial/latest.json, while the run has no final report."""
+    try:
+        with open(os.path.join(run_dir, "partial", "latest.json")) as f:
+            folder = os.path.join(run_dir, json.load(f)["folder"])
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+    return folder if os.path.isfile(os.path.join(folder, "analysis_report.json")) else None
+
+
+# scenario lists a list run can use (Run Test's options): folders searched, and
+# what a line must look like to count as a scenario
+LIST_FOLDERS = ("infra/hpc/smoke", "requirements/lists", "docs/examples")
+
+
+def scenario_lists(root=None):
+    """The .txt files under LIST_FOLDERS whose lines are scenarios (comments aside)."""
+    root = root or ROOT
+    out = []
+    for folder in LIST_FOLDERS:
+        d = os.path.join(root, folder)
+        for name in sorted(os.listdir(d)) if os.path.isdir(d) else []:
+            if not name.endswith(".txt"):
+                continue
+            with open(os.path.join(d, name)) as f:
+                lines = [l.strip() for l in f if l.strip() and not l.startswith("#")]
+            if lines and all("{ pedestrian" in l or "{pedestrian" in l for l in lines):
+                out.append({"path": f"{folder}/{name}", "scenarios": len(lines)})
+    return out
+
+
 def _round_files(run_dir):
     files = [f for f in TOP_LEVEL if os.path.isfile(os.path.join(run_dir, f))]
+    if "analysis_report.json" not in files and _partial_folder(run_dir):
+        files += ["analysis_report.json", "analysis_report.md"]     # served from the newest partial
     traces = os.path.join(run_dir, "traces")
     if os.path.isdir(traces):
         files += [f"traces/{t}" for t in os.listdir(traces) if t.endswith(".json")]
@@ -410,6 +455,8 @@ class Handler(BaseHTTPRequestHandler):
         path = urllib.parse.unquote(self.path.split("?")[0])
         if path.rstrip("/") == "/authoring/catalog":
             self._send(200, catalog())
+        elif path.rstrip("/") == "/authoring/lists":
+            self._send(200, {"lists": scenario_lists()})
         elif path.rstrip("/") == "/authoring/jobs":
             self._send(200, {"jobs": cluster_jobs.list_jobs()})
         elif re.match(r"^/authoring/jobs/\d+$", path):
@@ -424,6 +471,11 @@ class Handler(BaseHTTPRequestHandler):
     def _send_file(self, rel):
         root = os.path.realpath(RUNS_DIR)
         full = os.path.realpath(os.path.join(root, rel))
+        run, _, name = rel.partition("/")
+        if name in ("analysis_report.json", "analysis_report.md") and not os.path.isfile(full):
+            # no final report yet: the newest partial one (its banner says PARTIAL)
+            partial = _partial_folder(os.path.join(root, run))
+            full = os.path.realpath(os.path.join(partial, name)) if partial else full
         if not full.startswith(root + os.sep) or not os.path.isfile(full):
             self._send(404, {"error": "not found"})
             return
@@ -458,10 +510,18 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         route = self.path.rstrip("/")
         fetch = re.match(r"^/authoring/jobs/(\d+)/fetch$", route)
+        partial = re.match(r"^/authoring/jobs/(\d+)/partial$", route)
+        if partial:
+            self._cluster(lambda: cluster_jobs.refresh_partial(partial.group(1)))
+            return
         if fetch:
             self._cluster(lambda: cluster_jobs.fetch(fetch.group(1)))
             return
-        if route not in ("/authoring/check", "/authoring/match", "/authoring/run"):
+        if route == "/authoring/run/check-cluster":
+            self._cluster(cluster_jobs.check_cluster)
+            return
+        if route not in ("/authoring/check", "/authoring/match", "/authoring/run",
+                         "/authoring/run/check-laptop"):
             self._send(404, {"error": "not found"})
             return
         try:
@@ -471,12 +531,18 @@ class Handler(BaseHTTPRequestHandler):
         except (ValueError, AttributeError):
             self._send(400, {"error": "expected JSON {\"text\": \"...\"}"})
             return
+        if route == "/authoring/run/check-laptop":
+            if not check(text)["ok"]:
+                self._send(400, {"error": "the requirement does not parse", "kind": "parse"})
+                return
+            self._cluster(lambda: cluster_jobs.check_laptop(text, body.get("options")))
+            return
         if route == "/authoring/run":
             # the parser is the gate here too: nothing reaches the cluster unless it parses
             if not check(text)["ok"]:
                 self._send(400, {"error": "the requirement does not parse"})
                 return
-            self._cluster(lambda: cluster_jobs.submit(text, body.get("name", "")))
+            self._cluster(lambda: cluster_jobs.submit(text, body.get("name", ""), body.get("options")))
             return
         self._send(200, check(text) if route == "/authoring/check" else match(text))
 

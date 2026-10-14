@@ -93,20 +93,52 @@ are listed there). _Results for this requirement_ lists the runs in
 `artifacts/runs` that ran exactly it, and _Show these runs in the
 Workspace_ opens them. Screen 5 still edits R1 as text.
 
-**Run test** takes the requirement to its Test Execution Result (review
-screen 2). If a grid run of exactly this requirement exists, it opens the
-latest one at once. Otherwise it asks first, then saves the text as
-`requirements/<name>.dsl`, submits it to the cluster over your own ssh
-session (`sbatch --export=ALL,REAL_REQUIREMENT_FILE=requirements/<name>
-run_real_av.slurm`), follows the job (queue, then test case n of 32; the
-page can be left and reopened), and when it completes pulls the run into
-`artifacts/runs/`, analyses it, and opens its result. Without an open ssh
-session it says so and submits nothing: run `ssh narval` once in a
-terminal first. Before anything is sent it also checks that Narval's project
-copy (`scratch/real_project/REAL`) exists and that its parser
-(`grammar.py`), `api_app.py` and job script are identical to this project's;
-if not, it says to sync first (infra/hpc/README.md, 4b) and submits nothing.
-It never creates that copy. Submitted jobs are listed in `artifacts/jobs.json`.
+**Run test** opens one panel in three steps - _1. Choose_, _2. Check_,
+_3. Run_ - for the same workflow as by hand (infra/hpc/README.md, section 5),
+with clicks instead of typing. _Choose_: a requirement that already has
+results offers _Open the latest result_; otherwise (or to run it again)
+_Quick check_ (the first scenario list, 1 run, 45 min) or _Full test_ (the
+grid, 32 × 5, up to 5 h), with every job script option under _More options_
+(search, runs per scenario, time limit, GE population, generations and
+grammar, scenario list, parent run and round; an empty option is the job
+script's default) and the file name it is saved as. _Check_ ticks off, in
+this order, and nothing reaches the cluster until each passes and you press
+_Submit_; a failure stops the later checks and says what to do in one
+sentence with one button (_Check again_, _Edit the requirement_, or _Back to
+the options_), the lists behind it under a fold (the files that differ, the
+jobs that block a sync, the sync commands to copy, Scenic's messages):
+
+1. **On this machine** (`scripts/redsl/preflight.py`): the modules are ones
+   the executor implements (resolved as the API resolves them), and Scenic
+   builds the scenes the job will run against the Town01 map in the repo -
+   every listed scenario, all 32 of the grid (~40 s), or for GE every value
+   of every parameter at least once.
+2. **Over your own ssh session**: the cluster's project copy exists and its
+   code matches this project's (the `CODE_MANIFEST.txt` written at sync time
+   plus five real files hashed; the refusal lists the files and any job that
+   makes a sync unsafe). Run `ssh narval` once in a terminal first.
+3. The requirement is saved as `requirements/<name>.dsl` (never overwriting
+   other content), copied there, and submitted with exactly the variables the
+   options name; `artifacts/jobs.json` keeps the options, the variables, the
+   full `sbatch` command and the laptop check.
+
+_Run_ is a timeline (submitted, waiting in the queue or started on a node,
+running scenario n of N with the elapsed time against the limit, bringing
+the results back, opening the result); the panel can be closed - the job
+keeps running and the toolbar button reads _Test running · n of N_. Under
+_Details_: the queue state, node, start and elapsed
+time against the limit, the ports, scenario n of N, the tracebacks in the log
+(MLflow server error reports counted apart), scenarios the simulator could
+not create, and the last log lines; every 5 minutes the helper pulls the
+results so far (no frames or video) and analyses them into
+`<run>/partial/after_<n>_of_<N>/`, which _Open them_ shows with a **PARTIAL**
+banner on every review step. When the job ends - in any state - the whole run
+and its log (`job_log.out`) come back and are analysed with the project's
+defaults: a complete run opens at screen 2; one that ended early is labelled
+**INCOMPLETE** and can be opened; a job that made no run keeps its log in
+`artifacts/job_logs/`. The tool never syncs code and never cancels a job: the
+panel shows `scancel <job>` for you to run. `jobs.json`, `job_logs/` and
+`job_log.out` hold job ids and cluster paths and are git-ignored.
 
 This screen needs the **authoring helper**, run from the repository root:
 

@@ -99,6 +99,15 @@ export function ReviewPage({
       roundLabel={roundLabel}
       progress={reviewProgress({ step, report, draft, visited })}
     >
+      {report.banner && step !== 1 ? (
+        // a run still running (PARTIAL) or ended early (INCOMPLETE): said on every step
+        <Notice
+          tone="warning"
+          title={report.banner.startsWith('PARTIAL') ? 'Results so far' : 'Incomplete run'}
+        >
+          {report.banner}
+        </Notice>
+      ) : null}
       {version < 2 && step >= 3 ? (
         <Notice tone="warning" title="Older analysis report">
           <FileName>analysis_report.json</FileName> has schema version {version}: it lacks the goal

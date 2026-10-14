@@ -238,23 +238,77 @@ export function modelSourceFromCheck(result: Extract<CheckResult, { ok: true }>)
 
 // ------------------------------------------------------------------ Run Test
 
+/** The submit options, one per job script variable (scripts/redsl/cluster_jobs.options_from). */
+export const runOptionsSchema = z.object({
+  search: z.enum(['grid', 'ge', 'list']),
+  trials: z.number().optional(),
+  time: z.string().optional(),
+  population: z.number().optional(),
+  generations: z.number().optional(),
+  grammar: z.string().optional(),
+  scenario_file: z.string().optional(),
+  parent_run_id: z.string().optional(),
+  round: z.number().optional(),
+});
+export type RunOptions = z.infer<typeof runOptionsSchema>;
+export type Search = RunOptions['search'];
+/** The job script's own defaults (infra/hpc/run_real_av.slurm). */
+export const DEFAULT_TRIALS: Record<Search, number> = { grid: 5, list: 3, ge: 2 };
+export const DEFAULT_TIME = '05:00:00';
+export const QUICK_TIME = '00:45:00';
+export const GRID_SCENARIOS = 32;
+
+const maybe = <T extends z.ZodTypeAny>(t: T) => t.nullable().optional();
+
 export const jobSchema = z
   .object({
     job_id: z.string(),
     requirement: z.string(),
     submitted_at: z.string(),
     state: z.string(),
-    progress: z.object({ done: z.number(), total: z.number() }).nullable().optional(),
-    run_id: z.string().nullable().optional(),
+    progress: maybe(z.object({ done: z.number(), total: z.number() })),
+    run_id: maybe(z.string()),
     fetched: z.boolean().optional(),
-    message: z.string().nullable().optional(),
+    message: maybe(z.string()),
+    options: runOptionsSchema.partial().optional(),
+    command: z.string().optional(),
+    started_at: maybe(z.string()),
+    elapsed: maybe(z.string()),
+    node: maybe(z.string()),
+    time_limit: maybe(z.string()),
+    ports: maybe(z.string()),
+    api_error: maybe(z.string()),
+    tracebacks: z.number().optional(),
+    mlflow_server_errors: z.number().optional(),
+    not_created: z.number().optional(),
+    log_tail: z.array(z.string()).optional(),
+    partial: maybe(z.object({ done: z.number().nullable(), total: z.number().nullable() })),
+    partial_message: maybe(z.string()),
+    complete: z.boolean().optional(),
   })
   .passthrough();
 export type Job = z.infer<typeof jobSchema>;
 
-/** A cluster step the helper refused, with its reason worded for the reviewer. */
+/** The lists behind a refusal (scripts/redsl/cluster_jobs.ClusterError details). */
+export interface RefusalDetails {
+  host?: string;
+  sync_commands?: string[];
+  differ?: string[];
+  missing?: string[];
+  tampered?: string[];
+  blocking_jobs?: { job_id: string; state: string }[];
+  failures?: { scenario: string; error: string }[];
+}
+
+/** A cluster step the helper refused, with its reason worded for the reviewer.
+ * kind: no_copy | stale_copy | options | parse | module | scenarios | scene |
+ * preflight | not_ended | error */
 export class ClusterRefusal extends Error {
-  constructor(message: string) {
+  constructor(
+    message: string,
+    readonly kind = 'error',
+    readonly details: RefusalDetails = {},
+  ) {
     super(message);
     this.name = 'ClusterRefusal';
   }
@@ -269,30 +323,86 @@ async function cluster(path: string, init?: RequestInit): Promise<unknown> {
       continue;
     }
     if (!(response.headers.get('Content-Type') ?? '').includes('json')) continue;
-    const body = (await response.json()) as { error?: string };
+    const body = (await response.json()) as { error?: string; kind?: string } & RefusalDetails;
     if (!response.ok)
-      throw new ClusterRefusal(body.error ?? `the helper answered ${response.status}`);
+      throw new ClusterRefusal(
+        body.error ?? `the helper answered ${response.status}`,
+        body.kind ?? 'error',
+        body,
+      );
     return body;
   }
   throw new HelperUnavailableError();
 }
 
-/** Save the requirement as requirements/<name> and submit it to the cluster. */
-export async function submitRun(text: string, name: string): Promise<Job> {
+/** Check on this machine, then save requirements/<name> and submit it with these options. */
+export async function submitRun(text: string, name: string, options: RunOptions): Promise<Job> {
   return jobSchema.parse(
     await cluster('/authoring/run', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, name }),
+      body: JSON.stringify({ text, name, options }),
     }),
   );
+}
+
+/** Run Test's checks on this machine: options, modules, scenes (scripts/redsl/preflight.py). */
+export const laptopCheckSchema = z
+  .object({
+    ok: z.boolean(),
+    kind: z.string().nullable().optional(),
+    message: z.string().nullable().optional(),
+    checked: z.number().nullable().optional(),
+    how: z.string().nullable().optional(),
+    system_under_test: z
+      .object({ braking_mode: z.string(), yolo_model: z.string() })
+      .nullable()
+      .optional(),
+    failures: z.array(z.object({ scenario: z.string(), error: z.string() })).optional(),
+  })
+  .passthrough();
+export type LaptopCheck = z.infer<typeof laptopCheckSchema>;
+
+export async function checkLaptop(text: string, options: RunOptions): Promise<LaptopCheck> {
+  return laptopCheckSchema.parse(
+    await cluster('/authoring/run/check-laptop', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, options }),
+    }),
+  );
+}
+
+/** Run Test's checks over ssh: a session, then the cluster's code. Throws ClusterRefusal. */
+export async function checkCluster(): Promise<void> {
+  await cluster('/authoring/run/check-cluster', { method: 'POST' });
 }
 
 export async function jobStatus(jobId: string): Promise<Job> {
   return jobSchema.parse(await cluster(`/authoring/jobs/${jobId}`));
 }
 
-/** Pull a completed run and analyse it; resolves when it is in artifacts/runs. */
+/** Status plus, at most every 5 minutes, the results so far pulled and analysed (PARTIAL). */
+export async function refreshPartial(jobId: string): Promise<Job> {
+  return jobSchema.parse(await cluster(`/authoring/jobs/${jobId}/partial`, { method: 'POST' }));
+}
+
+export const scenarioListSchema = z.object({ path: z.string(), scenarios: z.number() });
+export type ScenarioList = z.infer<typeof scenarioListSchema>;
+
+/** Scenario lists a list run can use; [] without the helper. */
+export async function scenarioLists(): Promise<ScenarioList[]> {
+  try {
+    const body = z
+      .object({ lists: z.array(scenarioListSchema) })
+      .safeParse(await cluster('/authoring/lists'));
+    return body.success ? body.data.lists : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Pull an ended job's run (all of it) and analyse it; resolves when it is in artifacts/runs. */
 export async function fetchJob(jobId: string): Promise<Job> {
   return jobSchema.parse(await cluster(`/authoring/jobs/${jobId}/fetch`, { method: 'POST' }));
 }

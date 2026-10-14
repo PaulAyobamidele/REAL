@@ -1,0 +1,883 @@
+{
+ "schema_version": 1,
+ "parameters": {
+  "run_id": "82e6a075e02746fab0d89e0525d81358",
+  "safety_rule": "path",
+  "detection_frames": 3,
+  "lane_half_width_m": 2.5,
+  "max_clusters": 12
+ },
+ "map": {
+  "variance_2d": 0.911019347583508,
+  "rank_correlation": 0.9411239481143202,
+  "method": "classical multidimensional scaling of the event-sequence distance"
+ },
+ "events": {
+  "1": "first detected (>0.30)",
+  "2": "detection reaches 0.85",
+  "3": "detection lost (<=0.30 after 0.85)",
+  "4": "braking begins",
+  "5": "braking released while moving",
+  "6": "ego stops",
+  "7": "ego resumes",
+  "8": "closing to 20-10 m",
+  "9": "closing to 10-5 m",
+  "10": "safety violated (<5 m)",
+  "11": "closest approach",
+  "12": "pedestrian enters the ego's lane",
+  "13": "pedestrian leaves the ego's lane"
+ },
+ "points": [
+  {
+   "scenario_id": "0",
+   "sim_index": 0,
+   "x": 0.497,
+   "y": -0.2271,
+   "failure_type": "passed_stalled",
+   "failed": false,
+   "sequence": [
+    [
+     "closing to 20-10 m"
+    ],
+    [
+     "braking begins"
+    ],
+    [
+     "first detected (>0.30)"
+    ],
+    [
+     "ego stops"
+    ],
+    [
+     "pedestrian enters the ego's lane"
+    ],
+    [
+     "pedestrian leaves the ego's lane"
+    ],
+    [
+     "ego resumes"
+    ],
+    [
+     "braking begins"
+    ],
+    [
+     "closing to 10-5 m"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "ego stops"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "closest approach"
+    ]
+   ]
+  },
+  {
+   "scenario_id": "1",
+   "sim_index": 0,
+   "x": -0.2878,
+   "y": -0.1021,
+   "failure_type": "passed_stalled",
+   "failed": false,
+   "sequence": [
+    [
+     "closing to 20-10 m"
+    ],
+    [
+     "braking begins"
+    ],
+    [
+     "first detected (>0.30)",
+     "closing to 10-5 m"
+    ],
+    [
+     "ego stops"
+    ],
+    [
+     "pedestrian enters the ego's lane"
+    ],
+    [
+     "closest approach"
+    ]
+   ]
+  },
+  {
+   "scenario_id": "2",
+   "sim_index": 0,
+   "x": 0.084,
+   "y": 0.4772,
+   "failure_type": "passed",
+   "failed": false,
+   "sequence": [
+    [
+     "pedestrian enters the ego's lane"
+    ],
+    [
+     "braking begins"
+    ],
+    [
+     "braking released while moving"
+    ],
+    [
+     "closing to 20-10 m"
+    ],
+    [
+     "braking begins"
+    ],
+    [
+     "braking released while moving"
+    ],
+    [
+     "braking begins",
+     "closing to 10-5 m"
+    ],
+    [
+     "first detected (>0.30)"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "ego stops"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "pedestrian leaves the ego's lane"
+    ],
+    [
+     "detection lost (<=0.30 after 0.85)"
+    ],
+    [
+     "ego resumes"
+    ],
+    [
+     "safety violated (<5 m)"
+    ],
+    [
+     "closest approach"
+    ]
+   ]
+  },
+  {
+   "scenario_id": "3",
+   "sim_index": 0,
+   "x": -0.2933,
+   "y": -0.148,
+   "failure_type": "passed_stalled",
+   "failed": false,
+   "sequence": [
+    [
+     "closing to 20-10 m"
+    ],
+    [
+     "braking begins",
+     "closing to 10-5 m"
+    ],
+    [
+     "first detected (>0.30)",
+     "detection reaches 0.85"
+    ],
+    [
+     "ego stops"
+    ],
+    [
+     "pedestrian enters the ego's lane"
+    ],
+    [
+     "detection reaches 0.85"
+    ],
+    [
+     "detection reaches 0.85",
+     "closest approach"
+    ]
+   ]
+  }
+ ],
+ "default_cut": 1,
+ "cuts": [
+  {
+   "linkage": "average",
+   "threshold": 0.8,
+   "clusters": 2,
+   "silhouette": 0.1837645772594752,
+   "structure": "no substantial structure - read clusters as neighbourhoods on the map, not as types",
+   "assignment": [
+    2,
+    1,
+    1,
+    1
+   ],
+   "groups": [
+    {
+     "cluster": 1,
+     "size": 3,
+     "medoid": {
+      "scenario_id": "1",
+      "sim_index": 0
+     },
+     "medoid_sequence": [
+      [
+       "closing to 20-10 m"
+      ],
+      [
+       "braking begins"
+      ],
+      [
+       "first detected (>0.30)",
+       "closing to 10-5 m"
+      ],
+      [
+       "ego stops"
+      ],
+      [
+       "pedestrian enters the ego's lane"
+      ],
+      [
+       "closest approach"
+      ]
+     ],
+     "outcomes": {
+      "passed_stalled": 2,
+      "passed": 1
+     },
+     "failed": 0,
+     "scenarios": [
+      "1",
+      "2",
+      "3"
+     ],
+     "within_median": 0.71875,
+     "over_represented_settings": []
+    },
+    {
+     "cluster": 2,
+     "size": 1,
+     "medoid": {
+      "scenario_id": "0",
+      "sim_index": 0
+     },
+     "medoid_sequence": [
+      [
+       "closing to 20-10 m"
+      ],
+      [
+       "braking begins"
+      ],
+      [
+       "first detected (>0.30)"
+      ],
+      [
+       "ego stops"
+      ],
+      [
+       "pedestrian enters the ego's lane"
+      ],
+      [
+       "pedestrian leaves the ego's lane"
+      ],
+      [
+       "ego resumes"
+      ],
+      [
+       "braking begins"
+      ],
+      [
+       "closing to 10-5 m"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "ego stops"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "closest approach"
+      ]
+     ],
+     "outcomes": {
+      "passed_stalled": 1
+     },
+     "failed": 0,
+     "scenarios": [
+      "0"
+     ],
+     "within_median": 0.0,
+     "over_represented_settings": []
+    }
+   ]
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.7,
+   "clusters": 3,
+   "silhouette": 0.24051069703243616,
+   "structure": "no substantial structure - read clusters as neighbourhoods on the map, not as types",
+   "assignment": [
+    2,
+    1,
+    3,
+    1
+   ],
+   "groups": [
+    {
+     "cluster": 1,
+     "size": 2,
+     "medoid": {
+      "scenario_id": "1",
+      "sim_index": 0
+     },
+     "medoid_sequence": [
+      [
+       "closing to 20-10 m"
+      ],
+      [
+       "braking begins"
+      ],
+      [
+       "first detected (>0.30)",
+       "closing to 10-5 m"
+      ],
+      [
+       "ego stops"
+      ],
+      [
+       "pedestrian enters the ego's lane"
+      ],
+      [
+       "closest approach"
+      ]
+     ],
+     "outcomes": {
+      "passed_stalled": 2
+     },
+     "failed": 0,
+     "scenarios": [
+      "1",
+      "3"
+     ],
+     "within_median": 0.38095238095238093,
+     "over_represented_settings": []
+    },
+    {
+     "cluster": 2,
+     "size": 1,
+     "medoid": {
+      "scenario_id": "0",
+      "sim_index": 0
+     },
+     "medoid_sequence": [
+      [
+       "closing to 20-10 m"
+      ],
+      [
+       "braking begins"
+      ],
+      [
+       "first detected (>0.30)"
+      ],
+      [
+       "ego stops"
+      ],
+      [
+       "pedestrian enters the ego's lane"
+      ],
+      [
+       "pedestrian leaves the ego's lane"
+      ],
+      [
+       "ego resumes"
+      ],
+      [
+       "braking begins"
+      ],
+      [
+       "closing to 10-5 m"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "ego stops"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "closest approach"
+      ]
+     ],
+     "outcomes": {
+      "passed_stalled": 1
+     },
+     "failed": 0,
+     "scenarios": [
+      "0"
+     ],
+     "within_median": 0.0,
+     "over_represented_settings": []
+    },
+    {
+     "cluster": 3,
+     "size": 1,
+     "medoid": {
+      "scenario_id": "2",
+      "sim_index": 0
+     },
+     "medoid_sequence": [
+      [
+       "pedestrian enters the ego's lane"
+      ],
+      [
+       "braking begins"
+      ],
+      [
+       "braking released while moving"
+      ],
+      [
+       "closing to 20-10 m"
+      ],
+      [
+       "braking begins"
+      ],
+      [
+       "braking released while moving"
+      ],
+      [
+       "braking begins",
+       "closing to 10-5 m"
+      ],
+      [
+       "first detected (>0.30)"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "ego stops"
+      ],
+      [
+       "detection reaches 0.85"
+      ],
+      [
+       "pedestrian leaves the ego's lane"
+      ],
+      [
+       "detection lost (<=0.30 after 0.85)"
+      ],
+      [
+       "ego resumes"
+      ],
+      [
+       "safety violated (<5 m)"
+      ],
+      [
+       "closest approach"
+      ]
+     ],
+     "outcomes": {
+      "passed": 1
+     },
+     "failed": 0,
+     "scenarios": [
+      "2"
+     ],
+     "within_median": 0.0,
+     "over_represented_settings": []
+    }
+   ]
+  }
+ ],
+ "sweep": [
+  {
+   "linkage": "average",
+   "threshold": 0.05,
+   "clusters": 4,
+   "silhouette": null
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.1,
+   "clusters": 4,
+   "silhouette": null
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.15,
+   "clusters": 4,
+   "silhouette": null
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.2,
+   "clusters": 4,
+   "silhouette": null
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.25,
+   "clusters": 4,
+   "silhouette": null
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.3,
+   "clusters": 4,
+   "silhouette": null
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.35,
+   "clusters": 4,
+   "silhouette": null
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.4,
+   "clusters": 3,
+   "silhouette": 0.24051069703243616
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.45,
+   "clusters": 3,
+   "silhouette": 0.24051069703243616
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.5,
+   "clusters": 3,
+   "silhouette": 0.24051069703243616
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.55,
+   "clusters": 3,
+   "silhouette": 0.24051069703243616
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.6,
+   "clusters": 3,
+   "silhouette": 0.24051069703243616
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.65,
+   "clusters": 3,
+   "silhouette": 0.24051069703243616
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.7,
+   "clusters": 3,
+   "silhouette": 0.24051069703243616
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.75,
+   "clusters": 2,
+   "silhouette": 0.1837645772594752
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.8,
+   "clusters": 2,
+   "silhouette": 0.1837645772594752
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.85,
+   "clusters": 1,
+   "silhouette": null
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.9,
+   "clusters": 1,
+   "silhouette": null
+  },
+  {
+   "linkage": "average",
+   "threshold": 0.95,
+   "clusters": 1,
+   "silhouette": null
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.05,
+   "clusters": 4,
+   "silhouette": null
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.1,
+   "clusters": 4,
+   "silhouette": null
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.15,
+   "clusters": 4,
+   "silhouette": null
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.2,
+   "clusters": 4,
+   "silhouette": null
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.25,
+   "clusters": 4,
+   "silhouette": null
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.3,
+   "clusters": 4,
+   "silhouette": null
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.35,
+   "clusters": 4,
+   "silhouette": null
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.4,
+   "clusters": 3,
+   "silhouette": 0.24051069703243616
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.45,
+   "clusters": 3,
+   "silhouette": 0.24051069703243616
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.5,
+   "clusters": 3,
+   "silhouette": 0.24051069703243616
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.55,
+   "clusters": 3,
+   "silhouette": 0.24051069703243616
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.6,
+   "clusters": 3,
+   "silhouette": 0.24051069703243616
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.65,
+   "clusters": 3,
+   "silhouette": 0.24051069703243616
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.7,
+   "clusters": 3,
+   "silhouette": 0.24051069703243616
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.75,
+   "clusters": 2,
+   "silhouette": 0.1837645772594752
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.8,
+   "clusters": 2,
+   "silhouette": 0.1837645772594752
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.85,
+   "clusters": 1,
+   "silhouette": null
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.9,
+   "clusters": 1,
+   "silhouette": null
+  },
+  {
+   "linkage": "complete",
+   "threshold": 0.95,
+   "clusters": 1,
+   "silhouette": null
+  }
+ ]
+}

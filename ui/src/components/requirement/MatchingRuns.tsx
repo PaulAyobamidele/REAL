@@ -15,16 +15,7 @@ import { displayDate, displayPercent } from '@/utils/format';
  * "Show these runs in the Workspace" opens artifacts/runs through the helper
  * - no folder picker needed - with these runs first.
  */
-export function MatchingRuns({
-  text,
-  parses,
-  onRunAgain,
-}: {
-  text: string;
-  parses: boolean;
-  /** Offer to run this requirement again on the cluster. */
-  onRunAgain?: () => void;
-}) {
+export function MatchingRuns({ text, parses }: { text: string; parses: boolean }) {
   const { workspace, open } = useWorkspace();
   const [state, setState] = useState<
     | { status: 'idle' | 'looking' }
@@ -120,11 +111,6 @@ export function MatchingRuns({
             >
               Show these runs in the Workspace →
             </Button>
-            {onRunAgain ? (
-              <Button variant="quiet" size="sm" onClick={onRunAgain}>
-                Run again on the cluster
-              </Button>
-            ) : null}
           </div>
           {openError ? <Notice tone="error">{openError}</Notice> : null}
         </>

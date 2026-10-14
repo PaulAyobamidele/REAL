@@ -562,3 +562,36 @@ Built as planned, with these differences:
   and quotes no longer use the faintest grey. A disabled primary button keeps
   its raspberry tint instead of turning grey, and Run test says why it cannot
   run yet ("Fill 10 gaps to run").
+- Live cluster connection (2026-10-13/14, study-plan task 1a.6): Run test
+  runs the hand workflow by clicks. Before anything is sent: options checked
+  (one per job script variable, `--time` at most 05:00:00 because the job's
+  request gives up at 17,400 s); a laptop check in its own process
+  (`scripts/redsl/preflight.py`: modules resolved as the API does, Scenic
+  scenes built with the stand-ins of `tests/test_scene_compile.py`); the
+  cluster copy checked against `CODE_MANIFEST.txt` (written at sync time:
+  hashing the ~600 files on scratch took 16 min, the manifest plus a 6-file
+  spot check 1.3 s) with the differing files and blocking jobs named. A list
+  file identical in the cluster copy is passed by its own path, so a list run
+  records what a hand run records. While running: status from squeue/sacct
+  and the job log (node, ports, n/N from the run, tracebacks with MLflow's
+  "Error handling request" reports counted apart - real logs have many that
+  are not failures - and the last 15 lines); the run id only from a run
+  folder created after the job started, never guessed between two; every
+  5 min a pull of the light files and a report into
+  `partial/after_<n>_of_<N>/` (kept; `latest.json` points at the newest),
+  served as the run's report until the final one exists, its PARTIAL banner
+  shown on every review step. At the end, any end state: whole run + log,
+  final report (INCOMPLETE banner if it ended early), or the log alone in
+  `artifacts/job_logs/`. The tool never syncs or cancels (it shows
+  `scancel`). Job ids and cluster paths stay in git-ignored files.
+- Guided Run test panel (2026-10-14, after the reviewer found the run box
+  hard to follow): one modal panel in three steps (Choose / Check / Run)
+  replaces the box at the top of the right column. Plain choices first
+  (_Quick check_, _Full test_; the job script's options under _More options_,
+  a change shown as _Custom_), an existing result offered beside them; the
+  checks split into two helper calls (`/authoring/run/check-laptop`, reused by
+  Submit for 10 minutes, and `/authoring/run/check-cluster`) so they tick off
+  one by one; one sentence and one button per failure; a timeline while it
+  runs; closing never stops a job (the toolbar button follows it). Also: an
+  empty answer from the cluster's code check is a failed check ("did not
+  answer properly", raw answer kept), not "every file missing" - seen once.
