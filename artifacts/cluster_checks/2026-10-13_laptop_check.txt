@@ -1,0 +1,32 @@
+checked at 2026-10-13T16:41:13 - laptop only, nothing sent
+
+[smoke A: R_path_aware + 4-scenario list] 10.0 s
+  ok: True | kind: None | checked: 4 | every listed scenario
+  system under test: {'braking_mode': 'path_aware_braking', 'yolo_model': 'yolov5s'}
+  would submit: sbatch --parsable --time=00:45:00 --export=ALL,REAL_REQUIREMENT_FILE=requirements/<name>.dsl,REAL_SEARCH=list,REAL_TRIALS=1,REAL_SCENARIOS=requirements/lists/scenarios_v3.txt run_real_av.slurm
+
+[smoke B: R_baseline + 4-scenario list] 8.8 s
+  ok: True | kind: None | checked: 4 | every listed scenario
+  system under test: {'braking_mode': 'proportional_braking', 'yolo_model': 'yolov5s'}
+  would submit: sbatch --parsable --time=00:45:00 --export=ALL,REAL_REQUIREMENT_FILE=requirements/<name>.dsl,REAL_SEARCH=list,REAL_TRIALS=1,REAL_SCENARIOS=requirements/lists/scenarios_v3.txt run_real_av.slurm
+
+[misspelt module] 3.9 s
+  ok: False | kind: module | checked: None | None
+  system under test: None
+  message: unknown braking module 'proportional_brakng': the executor implements emergency_braking, path_aware_braking, proportional_braking
+
+[grid, 32 scenes] 41.8 s
+  ok: True | kind: None | checked: 32 | all 32 scenarios
+  system under test: {'braking_mode': 'proportional_braking', 'yolo_model': 'yolov5s'}
+  would submit: sbatch --parsable --time=05:00:00 --export=ALL,REAL_REQUIREMENT_FILE=requirements/<name>.dsl,REAL_SEARCH=grid,REAL_TRIALS=5 run_real_av.slurm
+
+--- comparison with the hand-submitted smoke jobs (sacct SubmitLine, read-only) ---
+smoke job A: sbatch --time=00:45:00 --export=ALL,REAL_SEARCH=list,REAL_SCENARIOS=infra/hpc/smoke/scenarios_v3.txt,REAL_TRIALS=1,REAL_REQUIREMENT_FILE=infra/hpc/smoke/R_path_aware.dsl run_real_av.slurm
+smoke job B: sbatch --time=00:45:00 --export=ALL,REAL_SEARCH=list,REAL_SCENARIOS=infra/hpc/smoke/scenarios_v3.txt,REAL_TRIALS=1,REAL_REQUIREMENT_FILE=docs/examples/R_baseline.dsl run_real_av.slurm
+Same: --time, REAL_SEARCH, REAL_TRIALS, the job script; same file contents.
+Different: (1) variable order (no effect); (2) --parsable (only sbatch's output format);
+(3) file paths - the tool passes its saved copies requirements/<name>.dsl and
+requirements/lists/scenarios_v3.txt, so run_meta.json records those paths as
+requirement_source / scenario_source instead of infra/hpc/smoke/... and docs/examples/...
+
+(job ids, node names, user and paths replaced by labels on 2026-10-15 for the anonymous repository; the measurements are unchanged)
