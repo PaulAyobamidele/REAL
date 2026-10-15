@@ -310,6 +310,25 @@ class MyMonitor(specification_monitor):
         return rho
 
 
+class ScenicServerSayingWhy(ScenicServer):
+    """VerifAI's ScenicServer, but it always says why an attempt gave no
+    result (VerifAI prints it only at verbosity >= 1; a silent None left two
+    study-pilot scenarios one repeat short with no reason in the log)."""
+
+    def _simulate(self, scene):
+        from scenic.core.simulators import SimulationCreationError
+        try:
+            result = self.simulator.simulate(scene, maxSteps=self.maxSteps,
+                                             verbosity=self.verbosity,
+                                             maxIterations=self.maxIterations)
+        except SimulationCreationError as e:
+            print(f"[sim] could not create the simulation: {e}")
+            return None
+        if result is None:
+            print("[sim] simulation rejected while running (a Scenic requirement failed)")
+        return result
+
+
 class falsifier:
 
     def __init__(self, code):
@@ -332,19 +351,21 @@ class falsifier:
         self.falsifier = generic_falsifier(sampler=sampler,
                                             monitor=MyMonitor(),
                                             falsifier_params=self.falsifier_params,
-                                            server_class=ScenicServer,
+                                            server_class=ScenicServerSayingWhy,
                                             server_options=self.server_options)
 
     def falsify(self, num_test=10, max_attempts=None):
         """Run num_test simulations and count how many satisfied the safety
         requirement (rho > 0).
 
-        rho is None when Scenic could not even create the simulation; those
-        attempts are retried, but only up to max_attempts (default 3*num_test)
-        so one broken scenario cannot hang an unattended job. rho == 0 is a
-        (boundary) failure, not a skip - the old `if rho:` dropped it.
+        rho is None when Scenic could not create or complete the simulation;
+        those attempts are retried, but only up to max_attempts (default
+        10*num_test; 3*num_test left two pilot scenarios one repeat short) so
+        one broken scenario cannot hang an unattended job. Attempts that
+        succeed are unchanged by the cap: the same seed replays them. rho == 0
+        is a (boundary) failure, not a skip - the old `if rho:` dropped it.
         """
-        max_attempts = max_attempts or 3 * num_test
+        max_attempts = max_attempts or 10 * num_test
 
         t = 0
         p = 0
@@ -356,6 +377,7 @@ class falsifier:
                 telemetry.begin_simulation()
                 sample, rho, timings = self.falsifier.server.run_server()
                 if rho is None:
+                    print(f"[falsify] attempt {attempts} of at most {max_attempts}: no result")
                     continue
                 t += 1
                 pbar.update(1)
@@ -364,15 +386,16 @@ class falsifier:
                 else:
                     n += 1
 
-        if t == 0:
-            print(f"WARNING: no simulation could be created in {attempts} attempts")
+        if t < num_test:
+            print(f"WARNING: {t} of {num_test} simulations after {attempts} attempts")
 
         fitness = {'total' : t,
                    'passed' : p,
                    'failed' : n,
                    # A scenario that never ran counts as fully passed (100) so
                    # the GE search is not rewarded for scenarios that don't run.
-                   'pct' : p*100/t if t else 100.0}
+                   'pct' : p*100/t if t else 100.0,
+                   'attempts' : attempts}
 
         return fitness
 

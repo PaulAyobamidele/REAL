@@ -2104,6 +2104,27 @@ with partial results, pulled and opened, compared with the hand run.
   for chunk 1 only); chunks 2-6 are submitted by hand (`infra/hpc/study/README.md`).
 - Videos are recorded only for a run's worst scenario; the pilot gate uses
   the per-step traces.
+- Same day: the first pilot submission (one 5-h job) waited behind ~800
+  pending GPU jobs (group GPU fair-share 0.23) and was cancelled before it
+  started. Jobs are now half-chunks of 24 scenarios (`chunk_<n>a/b.txt`, 2.5-h
+  limit; 48 jobs, same GPU time): short jobs fill the scheduler's gaps.
+  Moving to another cluster was rejected: all four cars must run on the same
+  hardware.
+- **Pilot result** (`artifacts/study/pilot_check_2026-10-15.md`): both halves
+  completed in 1 h 20 min, 0 errors. 142 of 144 simulations: scenarios 41 and
+  43 (RL, dusk, parked car) used all 9 attempts of the retry limit for 2
+  results, and the report's "not simulated" list misses partial scenarios.
+  Every assumption verdict matches its scenario's setting. Valid: 3 failures
+  of 68 (4.4 %), all brake released on a wet road; 63 of 65 passes stalled.
+  Correction: chunks of 48 do not align with the 72-scenario pedestrian x
+  clothing blocks, so a chunk is not balanced (only the 288 is).
+- **Fix (study-v2, approved diffs):** retry limit 3x -> 10x trials, each
+  attempt with no result logged, `attempts` column in scenarios.csv; the
+  reason is printed by a REAL subclass of VerifAI's ScenicServer
+  (`ScenicServerSayingWhy`; VerifAI is an upstream submodule and stays
+  untouched); the report lists scenarios short of their repeats
+  (`short_of_repeats`). Pilot reports regenerated (old ones moved aside). Top-up
+  job: scenarios 41-43 (`chunks/topup_41_43.txt`, offset 41). 312 tests.
 
 ### 8.7 The iteration loop (stages 7-9) — original design
 

@@ -74,7 +74,7 @@ def enumerate_phenotypes(bnf_path):
 SCENARIO_PARAMS = ["pedestrian", "dress", "direction", "distance", "fog_density",
                    "approach_distance_m", "pedestrian_min_speed_mps", "crossing_trigger_m",
                    "sun_altitude_angle", "wetness", "precipitation", "cloudiness", "occlusion"]
-SCENARIO_FIELDS = ["scenario_id", "phenotype"] + SCENARIO_PARAMS + ["total", "passed", "failed", "pct", "seed"]
+SCENARIO_FIELDS = ["scenario_id", "phenotype"] + SCENARIO_PARAMS + ["total", "passed", "failed", "pct", "seed", "attempts"]
 
 
 def _sha256(path):
@@ -174,7 +174,7 @@ def run_grid(run_id, requirement=None, scenario_text=None, constraints=None,
             fitness = evaluate(phenotype, num_test=trials, seed=seed, scenario_id=scenario_id)
             row = {"scenario_id": scenario_id, "phenotype": phenotype, "seed": seed}
             row.update({k: params.get(k) for k in SCENARIO_PARAMS})
-            row.update({k: fitness.get(k) for k in ("total", "passed", "failed", "pct")})
+            row.update({k: fitness.get(k) for k in ("total", "passed", "failed", "pct", "attempts")})
             rows.append(row)
             writer.writerow(row)
             f.flush()

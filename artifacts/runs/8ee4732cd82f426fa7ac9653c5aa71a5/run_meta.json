@@ -1,0 +1,49 @@
+{
+  "run_id": "8ee4732cd82f426fa7ac9653c5aa71a5",
+  "mode": "list",
+  "scenario_source": "infra/hpc/study/chunks/chunk_1a.txt",
+  "scenario_offset": 0,
+  "requirement": "# Study requirement, car C1 (the car shown to participants): proportional_braking + yolov5s.\n# C1-C4 differ only in the two \"performed by\" names (docs/paper/experiment_design.md).\nMAINTAIN \"Pedestrian Safety\"\n    by\n        \"Pedestrian Check\" using \"Perception Module\"\n            operationalized as\n                \"Detect Pedestrian\" performed by \"yolov5s\"\n                taking input \"image\" producing output \"pedestrian detection confidence\" & \"pedestrian detection flag\"\n    followed by\n        \"braking\" using \"braking module\"\n            operationalized as\n                \"Bring down throttle\" & \"Apply Brakes\" if \"pedestrian detection flag=True\" performed by \"proportional_braking\"\n                taking input \"pedestrian detection flag\" producing output \"Braking Status Flag\"\n    in scenario where\n        \"A pedestrian trying to cross the street.\"\n    assuming \"fog_density <= 50\" & \"sun_altitude_angle >= 0\" & \"initial_separation_m >= 15\" & \"pedestrian_speed_mps <= 3\" & \"pedestrian on foot\"\n    ensuring \"resume_within_s <= 10\" & \"braking is smooth unless an emergency stop is needed\"\n",
+  "scenario_text": "A pedestrian trying to cross the street.",
+  "constraints": {},
+  "system_under_test": {
+    "braking_mode": "proportional_braking",
+    "yolo_model": "yolov5s"
+  },
+  "scene": {
+    "version": 2,
+    "max_steps": 250,
+    "crossing_trigger_m": 0,
+    "crossing_trigger_meaning": "0 = meet the car; > 0 = step out when the car is this close (m)",
+    "crossing_timeout_s": 6,
+    "pedestrian_min_speed_mps": 2.0,
+    "approach_distance_m": {
+      "Short": 20,
+      "Long": 35
+    },
+    "directions": {
+      "LR": {
+        "pedestrian_side": -1,
+        "pedestrian_angle": -90
+      },
+      "RL": {
+        "pedestrian_side": 1,
+        "pedestrian_angle": 90
+      }
+    }
+  },
+  "parent_run_id": null,
+  "round": null,
+  "requirement_source": "infra/hpc/study/R_study_C1.dsl",
+  "grammar_file": "old/old.bnf",
+  "grammar_sha256": "6b9e9a970c6e79c42a8cd3367ec30f745f15913f0976b489e73a39e9c1b3bec4",
+  "template_sha256": "7cd1f90c1d6c7d9a43aea6358bcaf9582ea53422ba221957fe86d9951422854d",
+  "n_scenarios": 24,
+  "trials_per_scenario": 3,
+  "seed": 42,
+  "status": "complete",
+  "created_at": "2026-10-15T08:31:00.877116+00:00",
+  "worst_phenotype": "A { pedestrian : Adult } wearing a {dress : Light} dress trying to cross road from { direction : LR } with the car { approach_distance_m : 20 } m away on a day with fog density {fog_density : 0}, sun altitude {sun_altitude_angle : 10} deg, road wetness {wetness : 80}, rain {precipitation : 0}, cloud {cloudiness : 50}, occlusion {occlusion : 0}, walking at least {pedestrian_min_speed_mps : 2.0} m/s, stepping out at {crossing_trigger_m : 0} m",
+  "worst_pct": 33.333333333333336,
+  "finished_at": "2026-10-15T09:48:57.103699+00:00"
+}

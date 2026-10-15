@@ -97,10 +97,15 @@ run is the study owner's (§8).
 - Execution: per car, 6 jobs of 48 scenarios (list mode, ~3 h each, 5-h limit)
   → 24 jobs, run in parallel (per-job ports and MLflow stores), submitted in
   batches; wall-clock 1-2 days at current queue priority.
+- Jobs are **half-chunks** of 24 scenarios (`chunk_<n>a/b.txt`, ~1.5 h, 2.5-h
+  limit, offsets 0, 24, ..., 264): 48 jobs, the same total GPU time; short
+  jobs start sooner at our fair-share (decided 2026-10-15, after a 5-h job
+  waited behind ~800 pending GPU jobs).
 - Chunks: `infra/hpc/study/chunks/chunk_<n>.txt`, 48 scenarios each in
-  enumeration order (1: adult, light; 2: adult, light/dark; 3: adult, dark;
-  4-6 the same for the child). Each covers every weather, occlusion and
-  direction combination. Chunk *n* is submitted with
+  enumeration order. A pedestrian x clothing block is 72 scenarios, so chunks
+  do not align with blocks and are **not** balanced (chunk 1: adult, light,
+  the first 48 of 72; fog 0/40/70 = 24/12/12); only the full 288 is
+  (corrected 2026-10-15). Chunk *n* is submitted with
   `REAL_SCENARIO_OFFSET=48*(n-1)` (0, 48, 96, 144, 192, 240).
 - Fixed protocol: one tagged code version for all 24 jobs, the same seeds,
   3 repeats; a code change after the pilot means re-running what ran before it.
@@ -181,14 +186,18 @@ differ. The researcher analyses across participants.
 ## 11. Pilot — pre-registered predictions (written 2026-10-15, before submission)
 
 Pilot: C1 (proportional_braking + yolov5s), chunk 1 (48 scenarios: adult,
-light clothing, every direction x fog x time of day x road x occlusion),
-3 repeats = 144 simulations, `REAL_SCENARIO_OFFSET=0`, 5-h limit.
+light clothing; the first 48 of that block's 72, see §5),
+3 repeats = 144 simulations, submitted as two jobs of 24 scenarios (halves
+1a, offset 0, and 1b, offset 24), 2.5-h limit each.
 
 | # | Prediction | Basis |
 |---|---|---|
-| P1 | 144 simulations recorded, none unsimulated; test defects (left road, never in the lane) <= 5 % | scene v3 smokes; run 2b (0 defects) |
-| P2 | Finishes within 5 h; about 3 h (48 x ~3.8 min) | timing of runs so far |
+| P1 | 144 simulations recorded (72 per half), none unsimulated; test defects (left road, never in the lane) <= 5 % | scene v3 smokes; run 2b (0 defects) |
+| P2 | Each half finishes within 2.5 h; about 1.5 h (24 x ~3.8 min) | timing of runs so far |
 | P3 | `fog_density <= 50` broken in exactly 48 of 144, `sun_altitude_angle >= 0` in exactly 48; neither "not measured" | grammar levels |
+
+(The predictions were written for one 48-scenario job; the split changes only
+P2's time and the number of jobs, not what is predicted.)
 | P4 | Few safety failures: <= 10 % of encounters | proportional braking: 1.9 % in 2b; safe in all 4 v3 smokes |
 | P5 | Standoffs dominate: >= 70 % of passes; `resume_within_s <= 10` missed in most simulations | 2b: 147 of 155 passes; v3 smokes froze 3 of 4 |
 | P6 (weak) | Any safety failures sit mostly in fog 70 or night | the detector's known weakness |
@@ -198,3 +207,11 @@ Gate for the remaining 23 jobs: P1-P3 and P7 hold, and the per-step traces
 show a normal crossing at every level (pedestrian reaches the lane, car stays
 on the road and in its lane; videos are recorded only for the run's worst
 scenario, not per scenario). P4-P6 are findings, not gates.
+
+**Outcome (2026-10-15, `artifacts/study/pilot_check_2026-10-15.md`):** P2, P4,
+P5, P7 hold; P3 holds as a check (every verdict matches its scenario's
+setting) but its count was wrong (fog 70 is 12 of chunk 1's 48 scenarios,
+not 16); P6 not supported (all 3 failures valid, all on a wet road); **P1
+fails**: 142 of 144, scenarios 41 and 43 hit the 9-attempt retry limit with 2
+simulations each, and the report did not flag it. The gate is not passed
+until that is fixed.

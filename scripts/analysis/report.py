@@ -104,6 +104,7 @@ def analyse(run_dir, rules_path=None, requirement=None, safety_rule=trace_measur
     return {
         "schema_version": REPORT_SCHEMA_VERSION,
         "not_simulated": not_simulated(run_dir, df),
+        "short_of_repeats": short_of_repeats(run_dir, df, meta),
         "run_id": meta.get("run_id") or os.path.basename(os.path.normpath(run_dir)),
         "safety_rule": safety_rule,
         "safety_rule_changed": safety_rule_changed,
@@ -225,6 +226,25 @@ def not_simulated(run_dir, df):
         for row in csv.DictReader(f):
             if str(row.get("scenario_id")) not in seen:
                 out.append({"scenario_id": row.get("scenario_id"), "label": _label(row)})
+    return out
+
+
+def short_of_repeats(run_dir, df, meta):
+    """Scenarios simulated, but fewer times than the run asked for (e.g. the
+    retry limit was reached: study pilot, two scenarios at 2 of 3). Invisible
+    to not_simulated, which only lists scenarios with no simulation at all."""
+    requested = (meta or {}).get("trials_per_scenario")
+    path = os.path.join(run_dir, "scenarios.csv")
+    if not requested or not os.path.exists(path) or "scenario_id" not in df:
+        return []
+    counts = df["scenario_id"].astype(str).value_counts()
+    out = []
+    with open(path) as f:
+        for row in csv.DictReader(f):
+            n = int(counts.get(str(row.get("scenario_id")), 0))
+            if 0 < n < int(requested):
+                out.append({"scenario_id": row.get("scenario_id"), "label": _label(row),
+                            "simulated": n, "requested": int(requested)})
     return out
 
 
@@ -351,6 +371,10 @@ def to_markdown(analysis):
         add(f"- **{len(analysis['not_simulated'])} scenario(s) could not be simulated** (the simulator "
             "could not create them) and have no data: "
             + "; ".join(f"#{s['scenario_id']} {s['label']}" for s in analysis["not_simulated"]) + ".")
+    if analysis.get("short_of_repeats"):
+        add(f"- **{len(analysis['short_of_repeats'])} scenario(s) have fewer simulations than requested**: "
+            + "; ".join(f"#{s['scenario_id']} {s['simulated']} of {s['requested']} ({s['label']})"
+                        for s in analysis["short_of_repeats"]) + ".")
     add(f"- {fm['failures']} of {fm['n_encounters']} encounters failed ({_pct(fm['failure_rate'])})"
         + (f"; with every distinct scenario counted once: {_pct(fm.get('failure_rate_scenarios'))}."
            if analysis.get("sampling") == "ge" else "."))
