@@ -1,0 +1,62 @@
+checked at 2026-10-13T16:54:37 - real cluster; two hand-submitted smoke jobs registered in a scratch jobs.json
+
+[status smoke job A]
+  state: COMPLETED
+  started_at: 2026-10-13T08:06:42
+  elapsed: 00:24:10
+  node: a GPU node
+  time_limit: 00:45:00
+  ports: CARLA 23284 (traffic manager 29284), Redis 33821, MLflow 34821, API 35821
+  progress: {'done': 4, 'total': 4}
+  run_id: 954c0cd907344d29871f30d464894a85
+  ok: False
+  api_error: None
+  tracebacks: 5
+  mlflow_server_errors: 2
+  not_created: 0
+  message: the job completed but the run did not report STATUS OK; last lines: mlflow.exceptions.MlflowException: API request to http://127.0.0.1:34821/api/2.0/mlflow/runs/log-batch failed with exception HTTPConnectionPool(host='127.0.0.1', port=34821): Max retries exceeded with url: /api/2.0/mlflow/runs/log-batch (Caused by ResponseError('too many 500 error responses')) | INFO:     Shutting down | INFO:     Waiting for application shutdown. | INFO:     Application shutdown complete. | INFO:     Finished server process [675639]
+
+[status smoke job B]
+  state: COMPLETED
+  started_at: 2026-10-13T08:14:32
+  elapsed: 00:34:10
+  node: a GPU node
+  time_limit: 00:45:00
+  ports: CARLA 23288 (traffic manager 29288), Redis 33822, MLflow 34822, API 35822
+  progress: {'done': 4, 'total': 4}
+  run_id: 0a0c13e60916417bbc1d08acbd846aeb
+  ok: True
+  api_error: None
+  tracebacks: 7
+  mlflow_server_errors: 5
+  not_created: 0
+  message: None
+
+[fetch smoke job B] 40 s: fetched=True complete=True run=0a0c13e60916417bbc1d08acbd846aeb message=None
+
+--- what the real check showed ---
+1. Status matches sacct and the logs for both jobs: start, elapsed, node, time limit, ports,
+   progress 4/4, and the run id (smoke job A -> 954c0cd9..., smoke job B -> 0a0c13e6..., the latter
+   identical to the id the job printed).
+2. Fetch of smoke job B: run 0a0c13e6... was already in artifacts/runs (pulled by hand earlier the
+   same day, including job_log.out); rsync changed nothing that was there; the tool added the
+   final analysis_report.{json,md} and cluster_map.json (default path-aware rule). 40 s.
+3. Smoke A (smoke job A, path_aware_braking) did NOT finish cleanly: all 4 scenarios ran, then the
+   API answered {'error': "API request to .../mlflow/runs/log-batch failed ... too many 500
+   error responses"}; run_meta.json still says "status": "running" and there is no best video.
+   The tool reported "did not report STATUS OK" with the last log lines - correct - but
+4. BUG in the new status: api_error stayed empty, because this error was printed in double
+   quotes ({'error': "..."}) and the pattern only accepted single quotes. Fix proposed (diff 3a).
+Traceback (most recent call last):
+  File "<stdin>", line 5, in <module>
+  File "<project>/scripts/redsl/cluster_jobs.py", line 497, in status
+    raise ClusterError(NO_SESSION if "denied" in r.stderr or "Permission" in r.stderr
+scripts.redsl.cluster_jobs.ClusterError: no open ssh session to the cluster: open a terminal, run `ssh the cluster` once (with your second factor), then press Run Test again
+
+(the re-check above failed: the ssh session had expired overnight - "no open ssh session to the cluster"; to be re-run after `ssh the cluster`)
+
+--- after fix 3a, re-run 2026-10-14T20:29:25: real status of smoke job A ---
+api_error: API request to http://127.0.0.1:34821/api/2.0/mlflow/runs/log-batch failed with exception HTTPConnectionPool(host='127.0.0.1', port=34821): Max retries exceeded with url: /api/2.0/mlflow/runs/log-batc
+message: the API answered NOT OK: API request to http://127.0.0.1:34821/api/2.0/mlflow/runs/log-batch failed with exception HTTPConnectionPool(host='127.0.0.1', port=34821): Max retries exceeded with url: /api/2.0/mlflow/runs/log-batch (Caused by Re
+
+(job ids, node names, user and paths replaced by labels on 2026-10-15 for the anonymous repository; the measurements are unchanged)
