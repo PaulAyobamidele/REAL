@@ -105,7 +105,7 @@ def _run_job_request_block(monkeypatch, env):
     fake.get = lambda url, params=None, timeout=None: calls.append((url, params)) or Resp()
     monkeypatch.setitem(sys.modules, "requests", fake)
     for k in ("REAL_SEARCH", "REAL_GRAMMAR", "REAL_POPULATION", "REAL_GENERATIONS", "REAL_TRIALS",
-              "REAL_PARENT_RUN_ID", "REAL_ROUND"):
+              "REAL_PARENT_RUN_ID", "REAL_ROUND", "REAL_SCENARIOS", "REAL_SCENARIO_OFFSET"):
         monkeypatch.delenv(k, raising=False)
     for k, v in env.items():
         monkeypatch.setenv(k, v)
@@ -128,3 +128,12 @@ def test_job_script_runs_ge_when_asked(monkeypatch):
     assert params["grammar_file"] == "v2/scene_v2.bnf"
     assert (params["population_size"], params["max_generations"], params["trials"]) == (16, 6, 2)
     assert params["round"] == 3 and params["requirement_source"] == "docs/examples/R_baseline.dsl"
+
+
+def test_job_script_passes_the_chunk_offset_in_list_mode(monkeypatch):
+    calls = _run_job_request_block(monkeypatch, {"REAL_SEARCH": "list", "REAL_SCENARIOS": "chunk_2.txt",
+                                                 "REAL_SCENARIO_OFFSET": "48",
+                                                 "REAL_REQUIREMENT_FILE": "docs/examples/R_baseline.dsl"})
+    url, params = calls[0]
+    assert url.endswith("/run_grid")
+    assert params["scenario_file"] == "chunk_2.txt" and params["scenario_offset"] == 48

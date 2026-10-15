@@ -100,7 +100,7 @@ def run_grid(run_id, requirement=None, scenario_text=None, constraints=None,
              trials=5, grammar_file="old/old.bnf", record_video=True, evaluate=None,
              braking_mode=None, yolo_model=None,
              parent_run_id=None, round_no=None, requirement_source=None,
-             phenotypes=None, scenario_source=None):
+             phenotypes=None, scenario_source=None, scenario_offset=0):
     """Run every scenario in the grammar `trials` times and persist the results.
 
     `phenotypes` = run exactly these scenarios instead (mode "list"), e.g. the
@@ -138,6 +138,7 @@ def run_grid(run_id, requirement=None, scenario_text=None, constraints=None,
         "run_id": run_id,
         "mode": "list" if phenotypes else "grid",
         "scenario_source": scenario_source,
+        "scenario_offset": scenario_offset,
         "requirement": requirement,
         "scenario_text": scenario_text,
         "constraints": constraints or {},
@@ -164,9 +165,12 @@ def run_grid(run_id, requirement=None, scenario_text=None, constraints=None,
     with open(scenarios_csv, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=SCENARIO_FIELDS)
         writer.writeheader()
-        for scenario_id, (params, phenotype) in enumerate(scenarios):
+        for i, (params, phenotype) in enumerate(scenarios):
+            # `scenario_offset`: a chunk of a larger enumerated space keeps its
+            # scenarios' global numbers and seeds (paired across cars and jobs)
+            scenario_id = scenario_offset + i
             seed = settings.random_seed + scenario_id
-            print(f"[grid] scenario {scenario_id + 1}/{len(scenarios)}: {phenotype}")
+            print(f"[grid] scenario {i + 1}/{len(scenarios)}: {phenotype}")
             fitness = evaluate(phenotype, num_test=trials, seed=seed, scenario_id=scenario_id)
             row = {"scenario_id": scenario_id, "phenotype": phenotype, "seed": seed}
             row.update({k: params.get(k) for k in SCENARIO_PARAMS})

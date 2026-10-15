@@ -109,7 +109,8 @@ async def get_testcases(requirement: str = None, sample: bool = True,
 async def run_grid_endpoint(requirement: str = None, trials: int = 5,
                             record_video: bool = True,
                             parent_run_id: str = None, round: int = None,
-                            requirement_source: str = None, scenario_file: str = None):
+                            requirement_source: str = None, scenario_file: str = None,
+                            scenario_offset: int = 0):
     # Runs EVERY scenario the grammar can express `trials` times each (32 x 5
     # for old.bnf) and writes per-simulation telemetry for failure analysis.
     # async def for the same signal.alarm()/main-thread reason as
@@ -145,7 +146,8 @@ async def run_grid_endpoint(requirement: str = None, trials: int = 5,
                           braking_mode=sut["braking_mode"], yolo_model=sut["perception_module"],
                           parent_run_id=parent_run_id, round_no=round,
                           requirement_source=requirement_source,
-                          phenotypes=phenotypes, scenario_source=scenario_file)
+                          phenotypes=phenotypes, scenario_source=scenario_file,
+                          scenario_offset=scenario_offset)
         return {"run_id": run_id, "n_scenarios": len(result["scenarios"]),
                 "worst_phenotype": result["worst_phenotype"],
                 "system_under_test": sut, "STATUS": "OK"}

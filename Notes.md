@@ -2081,6 +2081,30 @@ trial does not settle a borderline case.
 (`artifacts/cluster_checks/2026-10-14_end_to_end_comparison.md`) Pending for 1a.6: one real run started from the UI, followed
 with partial results, pulled and opened, compared with the hand run.
 
+### 8.51 2026-10-15 — the study space: grammar, four cars, chunks, pilot ready
+
+- Grammar `scripts/templates/study/study_space.bnf`: pedestrian x clothing x
+  direction x fog (0/40/70) x sun (60/10/-10) x wetness (0/80) x occlusion
+  (0/1) = **288**; car start 20 m, trigger 0, min speed 2.0, no rain, cloud 50
+  as literals. Requirement C1-C4 (`infra/hpc/study/`): assumptions fog <= 50
+  and **sun >= 0** (each broken by one level), separation >= 15, speed <= 3;
+  neutral scenario sentence (no keyword steers). Decisions:
+  `docs/paper/experiment_design.md` §10.
+- **Scenario offset** (approved diff): a list-mode chunk keeps the global
+  scenario number and seed (`REAL_SCENARIO_OFFSET` -> API `scenario_offset`
+  -> `run_grid`; recorded in run_meta). Without it, every chunk would reuse
+  seeds 0-47 and number its scenarios from 0, breaking the pairing across
+  cars. Tests: grid chunk ids/seeds, job script list mode.
+- Six chunks of 48 in enumeration order (chunk 1 = adult, light clothing, all
+  48 combinations of the other factors); together exactly the grammar's 288
+  in its order.
+- Laptop check: all 288 scenes build; all four cars' modules exist. 308 tests.
+- Pilot (C1, chunk 1, 3 repeats): predictions written before submission,
+  experiment_design.md §11. The Run panel cannot pass an offset yet (right
+  for chunk 1 only); chunks 2-6 are submitted by hand (`infra/hpc/study/README.md`).
+- Videos are recorded only for a run's worst scenario; the pilot gate uses
+  the per-step traces.
+
 ### 8.7 The iteration loop (stages 7-9) — original design
 
 Per round: requirement R_n → run (grid) → `simulations.csv` → report →

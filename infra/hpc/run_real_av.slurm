@@ -61,6 +61,10 @@ elif search == "list":
     endpoint = "run_grid"
     params.update(scenario_file=os.environ["REAL_SCENARIOS"],
                   trials=int(os.environ.get("REAL_TRIALS", "3")))
+    # a chunk of a larger enumerated space: its first scenario's global number,
+    # so scenario ids and seeds are the same whichever job a scenario lands in
+    if os.environ.get("REAL_SCENARIO_OFFSET"):
+        params["scenario_offset"] = int(os.environ["REAL_SCENARIO_OFFSET"])
 else:
     raise SystemExit(f"REAL_SEARCH must be grid, ge or list, not {search!r}")
 if os.environ.get("REAL_PARENT_RUN_ID"):

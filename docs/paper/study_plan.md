@@ -31,9 +31,9 @@ The live cluster connection (1a) is built alongside.
 
 | # | Task | Done when |
 |---|---|---|
-| 2.1 | The presented requirement (`assuming` with one fog level deliberately past its limit; soft goals) | parses, every item checkable |
-| 2.2 | Grammar enumerating the space (~288 scenarios) | count verified |
-| 2.3 | The four car configurations (2 braking x 2 detectors) | each runs as named |
-| 2.4 | Scene validation on a subset (list mode), video frames checked | crossing, on-road, no silent gaps |
+| 2.1 ✅ | The presented requirement (`assuming` with one fog level deliberately past its limit; soft goals) | parses, every item checkable — `infra/hpc/study/R_study_C1.dsl`; night also assumed out (2026-10-15) |
+| 2.2 ✅ | Grammar enumerating the space (~288 scenarios) | count verified — 288, `scripts/templates/study/study_space.bnf`; 6 chunks with global seeds |
+| 2.3 (laptop ✅) | The four car configurations (2 braking x 2 detectors) | each runs as named — modules checked on the laptop; on the cluster with the pilot and C2-C4 |
+| 2.4 | Scene validation on a subset (list mode), traces checked | crossing, on-road, no silent gaps — the pilot (C1, chunk 1), predictions in experiment_design.md §11 |
 | 2.5 | Pre-run: jobs split by configuration and chunk, run in parallel; integrity check (every scenario x repeat x configuration present) | complete matrix |
 | 2.6 | Dataset: schema, README, verdicts re-computable, archived with a DOI | loads in study mode |

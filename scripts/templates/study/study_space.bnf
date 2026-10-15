@@ -1,0 +1,8 @@
+<rule>          ::= A { pedestrian : <pedestrian> } wearing a {dress : <dress>} dress trying to cross road from { direction : <direction> } with the car { approach_distance_m : 20 } m away on a day with fog density {fog_density : <fog_density>}, sun altitude {sun_altitude_angle : <sun_altitude_angle>} deg, road wetness {wetness : <wetness>}, rain {precipitation : 0}, cloud {cloudiness : 50}, occlusion {occlusion : <occlusion>}, walking at least {pedestrian_min_speed_mps : 2.0} m/s, stepping out at {crossing_trigger_m : 0} m
+<pedestrian>    ::= Adult | Child
+<dress>         ::= Light | Dark
+<direction>     ::= LR | RL
+<fog_density>   ::= 0 | 40 | 70
+<sun_altitude_angle> ::= 60 | 10 | -10
+<wetness>       ::= 0 | 80
+<occlusion>     ::= 0 | 1

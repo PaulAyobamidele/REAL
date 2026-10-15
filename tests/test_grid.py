@@ -87,3 +87,26 @@ def test_run_grid_persists_everything(tmp_path, monkeypatch):
     assert "walker.pedestrian.0013" in code  # Child + Dark blueprint
     assert not re.search(r"<[a-z_]+>", code)
     assert (out / "traces").is_dir()
+
+
+def test_a_chunk_keeps_global_scenario_ids_and_seeds(tmp_path, monkeypatch):
+    # chunk 2 of an enumerated space: the same scenario gets the same id and
+    # seed in every job and for every car (paired comparisons)
+    import real_config
+
+    monkeypatch.setattr(real_config.settings, "artifacts_dir", str(tmp_path))
+    calls = []
+
+    def fake_evaluate(phenotype, num_test, seed, scenario_id):
+        calls.append((seed, scenario_id))
+        return {"total": num_test, "passed": num_test, "failed": 0, "pct": 100.0}
+
+    phenotypes = [p for _, p in enumerate_phenotypes(OLD_BNF)][8:12]
+    run_grid("chunk-run", requirement="req", trials=1, record_video=False, evaluate=fake_evaluate,
+             phenotypes=phenotypes, scenario_source="chunk_2.txt", scenario_offset=8)
+
+    assert [c[1] for c in calls] == [8, 9, 10, 11]
+    assert [c[0] for c in calls] == [settings.random_seed + i for i in range(8, 12)]
+    with open(tmp_path / "runs" / "chunk-run" / "run_meta.json") as f:
+        meta = json.load(f)
+    assert meta["mode"] == "list" and meta["scenario_offset"] == 8
