@@ -2134,6 +2134,23 @@ with partial results, pulled and opened, compared with the hand run.
   Pilot gate passed. **All 46 remaining jobs submitted** (C1 chunks 2-6, C2-C4
   all 12 halves; 2.5-h limit each; ids in the git-ignored job log).
 
+### 8.51b 2026-10-15 — the 46 jobs: two jobs on one node share one CARLA
+
+`artifacts/study/port_isolation_failure_2026-10-15.md`. 36 completed, 8 timed
+out, 2 failed. A second job on a busy node crashes its CARLA (`bind: Address
+already in use`) and its client then drives the first job's CARLA; the first
+job floods `Invalid session` and crawls. Per-job ports (1a.5) do not isolate
+jobs: never tested on the cluster until now. 19 jobs contaminated (re-run), 27
+clean (alone on their node; 24/24). Cause open: server flag or client port.
+Diagnostic (3 CARLA servers in one job, 45 s apart, `infra/hpc/diag/ports_check.slurm`):
+each listens only on its own port and port+1 and answers there; nothing on
+2000-2002. So `-carla-port` works and idle servers coexist; what held the
+second job's port in the study is still unknown. **Fix (study-v2.1, approved):**
+the job stops if its own CARLA is not alive after start-up (logging the port
+holder) and a watchdog stops the API if CARLA dies during the run, so a job
+can never finish on another job's server. Simulation and analysis unchanged:
+the 27 clean runs stand. 19 contaminated jobs re-submitted.
+
 ### 8.52 2026-10-15 — public repository (deployment step 1)
 
 Public repo `PaulAyobamidele/real-tool`: a **fresh history** (one commit from
