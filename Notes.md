@@ -2150,6 +2150,18 @@ the job stops if its own CARLA is not alive after start-up (logging the port
 holder) and a watchdog stops the API if CARLA dies during the run, so a job
 can never finish on another job's server. Simulation and analysis unchanged:
 the 27 clean runs stand. 19 contaminated jobs re-submitted.
+**Root cause (found by the new check):** inside the container `$CARLA_PORT`
+was 2000. The image's `%environment` (`infra/hpc/carla.def`) sets
+`CARLA_PORT=2000` and `REDIS_PORT=6379`, and Apptainer gives the image's
+values priority over the job's exports: every job ran CARLA on 2000 and Redis
+on 6379, so two jobs on one node shared both (a second job's CARLA crashed on
+bind and its client drove the first job's server; Redis carried detections
+across jobs). MLflow and API ports were not in the image, so they were per
+job. **Fix (study-v2.2, approved):** `apptainer exec --env
+"CARLA_PORT=...,REDIS_PORT=..."` plus an in-container echo of the ports and a
+test. Of the 19 re-runs, 15 ran alone on their node (valid) and 4 stopped
+themselves at start-up (CARLA could not bind 2000); those 4 re-submitted with
+the fix.
 
 ### 8.52 2026-10-15 — public repository (deployment step 1)
 

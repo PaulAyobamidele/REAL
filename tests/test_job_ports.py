@@ -67,3 +67,11 @@ def test_mlflow_failure_does_not_stop_a_run(monkeypatch):
             "{ direction : LR } at { distance : Short } distance on a day with fog density {fog_density : 0}")
     fitness = util.evaluate_phenotype(phen, num_test=2, scenario_id="t", log_mlflow=True)
     assert fitness == {"total": 2, "passed": 2, "failed": 0, "pct": 100.0}
+
+
+def test_the_job_passes_its_ports_into_the_container():
+    # the image's %environment sets CARLA_PORT=2000 and REDIS_PORT=6379 and wins
+    # over exported values; only --env overrides it (study, 2026-10-15)
+    script = open(os.path.join(ROOT, "infra", "hpc", "run_real_av.slurm")).read()
+    exec_block = script[script.index("apptainer exec --nv"):]
+    assert '--env "CARLA_PORT=${CARLA_PORT},REDIS_PORT=${REDIS_PORT}"' in exec_block.split("bash -c")[0]

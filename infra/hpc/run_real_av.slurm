@@ -122,11 +122,17 @@ export MLFLOW_STORE="/artifacts/mlflow/job_${SLURM_JOB_ID:-local}"
 echo "Ports: CARLA ${CARLA_PORT} (traffic manager $(( CARLA_PORT + 6000 ))), Redis ${REDIS_PORT}, MLflow ${MLFLOW_PORT}, API ${API_PORT}"
 # --- end per-job ports ---------------------------------------------------
 
+# --env: the image's %environment sets CARLA_PORT=2000 and REDIS_PORT=6379 and
+# wins over the job's exported values, so without it every job ran CARLA on
+# 2000 and Redis on 6379, and two jobs on one node shared both (study,
+# 2026-10-15). --env overrides the image's values.
 apptainer exec --nv --unsquash \
+    --env "CARLA_PORT=${CARLA_PORT},REDIS_PORT=${REDIS_PORT}" \
     --bind "$ARTIFACTS_DIR:/artifacts" \
     "${SOURCE_BIND[@]}" \
     "$IMAGE" bash -c '
         set -e
+        echo "Ports inside the container: CARLA ${CARLA_PORT}, Redis ${REDIS_PORT}"
         # Skip yolov5 pip-based auto-update check (2 failed attempts per
         # individual on an offline compute node, each costing real wall-clock
         # time across every evaluation - a speed optimization, not required
