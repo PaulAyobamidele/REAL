@@ -10,7 +10,7 @@ From: carlasim/carla:0.9.13
 # Switch this back to a `git clone` of a tagged release once you're cutting a
 # reproducible, citable build for the actual Zenodo artifact.
 %files
-    /Users/ayobamidele/real-av-build/REAL /opt/real-av/REAL
+    /path/to/real-av-build/REAL /opt/real-av/REAL
 
 %post
     set -e

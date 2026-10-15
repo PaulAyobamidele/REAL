@@ -2125,6 +2125,42 @@ with partial results, pulled and opened, compared with the hand run.
   untouched); the report lists scenarios short of their repeats
   (`short_of_repeats`). Pilot reports regenerated (old ones moved aside). Top-up
   job: scenarios 41-43 (`chunks/topup_41_43.txt`, offset 41). 312 tests.
+- **Top-up** (run `f01e7692…`, study-v2): 41 and 43 reached 3 of 3 after 15
+  and 13 attempts, 42 at 3; seeds = the global numbering. The new log names
+  the cause: 10 of 12 failed attempts were "Unable to spawn object unnamed
+  Car" (CARLA could not place a car, most likely the parked car on a blocked
+  spot; Scenic then resamples the crossing point), 2 were rejected while
+  running. A test-selection effect in occluded scenes, not a broken test.
+  Pilot gate passed. **All 46 remaining jobs submitted** (C1 chunks 2-6, C2-C4
+  all 12 halves; 2.5-h limit each; ids in the git-ignored job log).
+
+### 8.52 2026-10-15 — public repository (deployment step 1)
+
+Public repo `PaulAyobamidele/real-tool`: a **fresh history** (one commit from
+study-v2), because two old commits of this repo hold the development
+credentials. MIT licence (the existing file, unchanged). Built with
+`git archive` into a staging folder, so this repo was not touched. Left out:
+`artifacts/` (results go to Zenodo; job logs carry the cluster username),
+`Notes.md`, `AGENT_HANDOFF.md`, `docs/presentations/`, `docs/paper/latex/`,
+`test.ipynb` (a literal password), `scratch.py`, duplicate weights and `.onnx`
+exports. Personal paths in `infra/hpc/README.md` and `carla.def` replaced by
+placeholders (here too). Submodules pinned to the same commits. Author email:
+the GitHub noreply address. 1,195 files, 93 MB (vs 1.5 GB); 311 tests pass
+there (1 skipped: needs run 2b). Later releases: repeat the export from a tag.
+
+### 8.53 2026-10-15 — multi-arch Docker image (deployment step 2)
+
+`Dockerfile.review` now ends in a Python stage with nginx serving the built
+page and `scripts/redsl/serve.py` behind `/authoring` (unchanged; started by
+`infra/docker/review/start.sh`, routed by `infra/docker/review/nginx.conf`), so
+the requirement editor parses with the project's parser inside the container.
+Detector weights are reduced to empty files with their names (the catalog
+lists names; nothing runs a detector). Local arm64 build: 410 MB; page,
+workspace index, catalog (4 detectors, 3 braking modules) and a check of
+`R_study_C1.dsl` (5 assumptions) all answer; the Run panel's cluster check
+refuses with 409 (no cluster in the container). `.github/workflows/docker.yml`
+builds linux/amd64 + linux/arm64 on a `v*` tag and publishes
+`ghcr.io/paulayobamidele/real-tool`.
 
 ### 8.7 The iteration loop (stages 7-9) — original design
 

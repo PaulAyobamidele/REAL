@@ -9,6 +9,9 @@
 !scripts/evolve/
 !scripts/templates/
 !scripts/scenarios/scratch.temp
+!scripts/simulations/util.py
+!model/
+!infra/docker/review/
 !docs/examples/
 !examples/demo_runs/
 !ui/

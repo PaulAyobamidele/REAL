@@ -18,7 +18,7 @@ Run every command below via `limactl shell apptainer -- <command>` (Lima mounts 
 ## 1. Fill in the placeholders
 
 - `run_real_av.slurm` needs no `--account`/`--partition` by default — Narval auto-selects your default RAPI and the right `gpubase_*` partition based on `--time`. Only add `#SBATCH --account=<def-or-rrg-your-sponsor>` if `sbatch` complains (e.g. you have more than one active RAPI).
-- `carla.def`'s `%files` source path (`/Users/ayobamidele/real-av-build/REAL`) — update if you build the staging copy somewhere else.
+- `carla.def`'s `%files` source path (`/path/to/real-av-build/REAL`) — update if you build the staging copy somewhere else.
 
 ## 2. Build a clean staging copy, then the image
 
@@ -43,7 +43,7 @@ Build inside the Lima VM, with the build temp dir redirected to real disk (see "
 
 ```bash
 limactl shell apptainer -- sudo APPTAINER_TMPDIR=/var/tmp/apptainer-build \
-  apptainer build /home/ayobamidele.linux/carla.sif infra/hpc/carla.def
+  apptainer build /home/<user>.linux/carla.sif infra/hpc/carla.def
 ```
 
 ### Build fixes baked into `carla.def` (found the hard way — keep these if you edit the file)
@@ -57,7 +57,7 @@ limactl shell apptainer -- sudo APPTAINER_TMPDIR=/var/tmp/apptainer-build \
 ## 3. Verifying the build (and its real limits, locally)
 
 ```bash
-limactl shell apptainer -- apptainer exec /home/ayobamidele.linux/carla.sif \
+limactl shell apptainer -- apptainer exec /home/<user>.linux/carla.sif \
   python3.8 -c "import real_config; import numpy; print('ok')"
 ```
 
@@ -69,7 +69,7 @@ Narval requires mandatory MFA (Duo) on every fresh SSH connection, and the proje
 
 ```bash
 # On your Mac (not inside the VM, not inside a Narval SSH session):
-limactl copy apptainer:/home/ayobamidele.linux/carla.sif ~/real-av-build/carla.sif
+limactl copy apptainer:/home/<user>.linux/carla.sif ~/real-av-build/carla.sif
 rsync -avP --partial ~/real-av-build/carla.sif narval:scratch/real_project/carla.sif
 ```
 
