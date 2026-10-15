@@ -9,6 +9,16 @@
 
 ## ▶️ Try it in 5 minutes (no simulator, no GPU)
 
+One command, nothing to build (Intel/AMD and Apple/ARM machines):
+
+```bash
+docker run --rm -p 8080:80 ghcr.io/paulayobamidele/real-tool
+# open http://localhost:8080
+```
+
+This is the review interface on two analysed example rounds, with the
+requirement editor and its checker; signing offers the files as downloads.
+
 The demo runs the whole REAL loop on two real rounds that were run in CARLA
 on the Narval cluster (`examples/demo_runs/`), then opens the review page:
 

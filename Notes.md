@@ -2161,6 +2161,10 @@ workspace index, catalog (4 detectors, 3 braking modules) and a check of
 refuses with 409 (no cluster in the container). `.github/workflows/docker.yml`
 builds linux/amd64 + linux/arm64 on a `v*` tag and publishes
 `ghcr.io/paulayobamidele/real-tool`.
+Published (2026-10-15): tag `v0.1.0` built in 8.5 min on GitHub; the image
+has linux/amd64 and linux/arm64 variants and is pullable without a login. The
+amd64 variant was pulled and run (emulated, `uname -m` = x86_64): page,
+catalog and the check of `R_study_C1.dsl` answer.
 
 ### 8.7 The iteration loop (stages 7-9) — original design
 
