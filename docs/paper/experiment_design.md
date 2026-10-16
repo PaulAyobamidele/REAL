@@ -34,6 +34,13 @@ ensuring "resume_within_s <= 10" & "braking is smooth unless an emergency stop i
 (`infra/hpc/study/R_study_C1.dsl`; C2-C4 differ only in the two
 `performed by` names.)
 
+**Changed 2026-10-16 (v2, before any participant):** `pedestrian_speed_mps <= 3`
+removed. The scene sets the pedestrian's speed from the car's, so the system
+under test could break this assumption and have its own failures excused
+(`artifacts/study/speed_assumption_2026-10-16.md`). The presented requirement
+is `infra/hpc/study/R_study_v2_C1.dsl`; the rounds are re-judged, not re-run
+(`artifacts/study/rounds/C<n>/judged_v2/`).
+
 - Two assumptions are deliberately broken by one level each (§3): fog 70
   breaks `fog_density <= 50`, night (sun -10) breaks `sun_altitude_angle >= 0`,
   so the valid / spurious machinery acts on real data and Q3 has two

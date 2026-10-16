@@ -2166,6 +2166,14 @@ The 4 with the fix ran with their own ports inside the container (e.g. CARLA
 22960, Redis 33740), 24/24, no errors. **Study space complete (2026-10-16):**
 1,152 cells x 3 = 3,456 simulations from 49 runs
 (`artifacts/study/completeness_2026-10-16.md`, `space_manifest.csv`).
+**Merged rounds and a flaw found (2026-10-16):** `scripts/study/merge_rounds.py`
+merges each car's runs into one round (`artifacts/study/rounds/C1..C4`, 288 x 3
+each, sources recorded). The first analysis set aside different numbers per
+car: the scene's pedestrian walks faster the faster the car comes, so a car
+that does not brake broke `pedestrian_speed_mps <= 3` and its failures were
+excused (C2: 455). Assumption removed (study owner); rounds re-judged with
+`R_study_v2_*` into `judged_v2/`: C1 5.9 % failures, 332/354 passes stalled;
+C2 93.1 %; C3 1.6 %; C4 89.3 % (`artifacts/study/speed_assumption_2026-10-16.md`).
 
 ### 8.52 2026-10-15 — public repository (deployment step 1)
 
