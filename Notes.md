@@ -2162,6 +2162,10 @@ job. **Fix (study-v2.2, approved):** `apptainer exec --env
 test. Of the 19 re-runs, 15 ran alone on their node (valid) and 4 stopped
 themselves at start-up (CARLA could not bind 2000); those 4 re-submitted with
 the fix.
+The 4 with the fix ran with their own ports inside the container (e.g. CARLA
+22960, Redis 33740), 24/24, no errors. **Study space complete (2026-10-16):**
+1,152 cells x 3 = 3,456 simulations from 49 runs
+(`artifacts/study/completeness_2026-10-16.md`, `space_manifest.csv`).
 
 ### 8.52 2026-10-15 — public repository (deployment step 1)
 
