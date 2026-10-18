@@ -18,6 +18,7 @@ import {
 } from '@/domain/goalModel';
 import type { Draft } from '@/state/draft';
 import { displayPercent, cx } from '@/utils/format';
+import { STUDY } from '@/study/config';
 
 /**
  * The requirement as a goal tree with obstacles attached - a WAI-ARIA tree
@@ -365,7 +366,7 @@ function AssumptionSummaryText({
     <span className="text-xs text-text-muted">
       held {summary.held}, broken {summary.broken}
       {summary.not_measured ? `, not measured ${summary.not_measured}` : ''}
-      {summary.verdict ? ` · tool: ${summary.verdict}` : ''}
+      {summary.verdict && !STUDY ? ` · tool: ${summary.verdict}` : ''}
       {summary.rate_held !== null && summary.rate_held !== undefined
         ? ` · failure rate held ${displayPercent(summary.rate_held)} / broken ${displayPercent(summary.rate_broken)}`
         : ''}

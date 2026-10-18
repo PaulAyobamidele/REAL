@@ -13,20 +13,7 @@
 import { cpSync, existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
-const TOP_LEVEL = [
-  'run_meta.json',
-  'analysis_report.json',
-  'analysis_report.md',
-  'cluster_map.json',
-  'simulations.csv',
-  'scenarios.csv',
-  'decisions.json',
-  'R0.dsl',
-  'R1.dsl',
-  'requirement_diff.md',
-  'best_scenario_h264.mp4',
-  'best_scenario.mp4',
-];
+import { listRound } from './workspaceFiles.mjs';
 
 function parseArgs(argv) {
   const args = { out: null, label: null, example: false, workspace: null };
@@ -44,27 +31,6 @@ function parseArgs(argv) {
     process.exit(2);
   }
   return args;
-}
-
-function listRound(dir) {
-  const files = [];
-  for (const name of readdirSync(dir)) {
-    const full = join(dir, name);
-    const st = statSync(full);
-    if (st.isFile() && TOP_LEVEL.includes(name)) files.push(name);
-    if (st.isDirectory() && name === 'traces') {
-      for (const t of readdirSync(full)) if (t.endsWith('.json')) files.push(`traces/${t}`);
-    }
-    if (st.isDirectory() && name === 'frames') {
-      for (const sensor of readdirSync(full)) {
-        const sensorDir = join(full, sensor);
-        if (!statSync(sensorDir).isDirectory()) continue;
-        for (const f of readdirSync(sensorDir))
-          if (f.endsWith('.png')) files.push(`frames/${sensor}/${f}`);
-      }
-    }
-  }
-  return files.sort();
 }
 
 const args = parseArgs(process.argv.slice(2));

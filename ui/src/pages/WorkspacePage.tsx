@@ -20,6 +20,7 @@ import { HELPER_COMMAND, projectRunsSource } from '@/services/authoring';
 import { reviewHash, routeHash } from '@/state/route';
 import { useWorkspace } from '@/state/WorkspaceContext';
 import { cx, displayDate } from '@/utils/format';
+import { STUDY } from '@/study/config';
 
 /** Loading a workspace: where the files come from and which rounds were found. */
 export function WorkspacePage({ focusRuns = null }: { focusRuns?: string[] | null } = {}) {
@@ -70,7 +71,9 @@ export function WorkspacePage({ focusRuns = null }: { focusRuns?: string[] | nul
       <header className="flex flex-col items-center gap-1.5 text-center">
         <h1 className="text-2xl lg:text-3xl">Workspace</h1>
         <p className="prose-width text-base text-text-muted">
-          A folder of run folders. Open one, drop one, or use the bundled example.
+          {STUDY
+            ? 'The test rounds of this requirement.'
+            : 'A folder of run folders. Open one, drop one, or use the bundled example.'}
         </p>
       </header>
 
@@ -92,84 +95,87 @@ export function WorkspacePage({ focusRuns = null }: { focusRuns?: string[] | nul
         </span>
       </a>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="card flex flex-col gap-3 p-5">
-          <h2 className="text-lg">Open a folder</h2>
-          <p className="text-sm text-text-muted">
-            {canPick
-              ? 'Signing writes into the round folder.'
-              : 'Needs Chrome or Edge to write back.'}
-          </p>
-          <div className="mt-auto flex flex-wrap gap-2">
+      {/* the study build has one fixed source: no opening, dropping or example */}
+      {STUDY ? null : (
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="card flex flex-col gap-3 p-5">
+            <h2 className="text-lg">Open a folder</h2>
+            <p className="text-sm text-text-muted">
+              {canPick
+                ? 'Signing writes into the round folder.'
+                : 'Needs Chrome or Edge to write back.'}
+            </p>
+            <div className="mt-auto flex flex-wrap gap-2">
+              <Button
+                variant={canPick ? 'primary' : 'secondary'}
+                onClick={openFolder}
+                disabled={!canPick}
+              >
+                Open a folder…
+              </Button>
+              <Button
+                variant={canPick ? 'secondary' : 'primary'}
+                onClick={openProjectRuns}
+                title="artifacts/runs, read through the authoring helper (any browser)"
+              >
+                Open the project&apos;s runs
+              </Button>
+            </div>
+          </div>
+          <div
+            className={cx(
+              'card flex flex-col gap-3 border-dashed border-border-strong p-5 shadow-none',
+              dragging && 'border-human bg-human-soft',
+            )}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragging(true);
+            }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={onDrop}
+          >
+            <h2 className="text-lg">Drop a folder</h2>
+            <p className="text-sm text-text-muted">Read-only; signing offers downloads.</p>
+            <input
+              ref={inputRef}
+              type="file"
+              multiple
+              className="sr-only"
+              aria-label="Choose a workspace folder"
+              // @ts-expect-error webkitdirectory is not in the React types
+              webkitdirectory=""
+              onChange={async (e) => {
+                if (!e.target.files?.length) return;
+                setOpenError(null);
+                await open(new DroppedFilesSource(filesFromInput(e.target.files)));
+                e.target.value = '';
+              }}
+            />
             <Button
-              variant={canPick ? 'primary' : 'secondary'}
-              onClick={openFolder}
-              disabled={!canPick}
-            >
-              Open a folder…
-            </Button>
-            <Button
+              onClick={() => inputRef.current?.click()}
+              className="mt-auto self-start"
               variant={canPick ? 'secondary' : 'primary'}
-              onClick={openProjectRuns}
-              title="artifacts/runs, read through the authoring helper (any browser)"
             >
-              Open the project&apos;s runs
+              Choose a folder…
             </Button>
           </div>
+          <div className="card flex flex-col gap-3 p-5">
+            <h2 className="text-lg">Bundled example</h2>
+            <p className="text-sm text-text-muted">
+              {probing
+                ? 'Looking…'
+                : exampleSource
+                  ? 'Two real rounds, labelled as example data.'
+                  : 'None served next to this build.'}
+            </p>
+            {exampleSource ? (
+              <Button onClick={() => open(exampleSource)} className="mt-auto self-start">
+                Use the example
+              </Button>
+            ) : null}
+          </div>
         </div>
-        <div
-          className={cx(
-            'card flex flex-col gap-3 border-dashed border-border-strong p-5 shadow-none',
-            dragging && 'border-human bg-human-soft',
-          )}
-          onDragOver={(e) => {
-            e.preventDefault();
-            setDragging(true);
-          }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={onDrop}
-        >
-          <h2 className="text-lg">Drop a folder</h2>
-          <p className="text-sm text-text-muted">Read-only; signing offers downloads.</p>
-          <input
-            ref={inputRef}
-            type="file"
-            multiple
-            className="sr-only"
-            aria-label="Choose a workspace folder"
-            // @ts-expect-error webkitdirectory is not in the React types
-            webkitdirectory=""
-            onChange={async (e) => {
-              if (!e.target.files?.length) return;
-              setOpenError(null);
-              await open(new DroppedFilesSource(filesFromInput(e.target.files)));
-              e.target.value = '';
-            }}
-          />
-          <Button
-            onClick={() => inputRef.current?.click()}
-            className="mt-auto self-start"
-            variant={canPick ? 'secondary' : 'primary'}
-          >
-            Choose a folder…
-          </Button>
-        </div>
-        <div className="card flex flex-col gap-3 p-5">
-          <h2 className="text-lg">Bundled example</h2>
-          <p className="text-sm text-text-muted">
-            {probing
-              ? 'Looking…'
-              : exampleSource
-                ? 'Two real rounds, labelled as example data.'
-                : 'None served next to this build.'}
-          </p>
-          {exampleSource ? (
-            <Button onClick={() => open(exampleSource)} className="mt-auto self-start">
-              Use the example
-            </Button>
-          ) : null}
-        </div>
-      </div>
+      )}
       {openError ? <Notice tone="error">{openError}</Notice> : null}
       {state.status === 'error' ? (
         <FileErrorNotice
@@ -200,16 +206,24 @@ export function WorkspacePage({ focusRuns = null }: { focusRuns?: string[] | nul
               <Button size="sm" onClick={() => reload()}>
                 Reload
               </Button>
-              <Button size="sm" variant="quiet" onClick={close}>
-                Close
-              </Button>
+              {STUDY ? null : (
+                <Button size="sm" variant="quiet" onClick={close}>
+                  Close
+                </Button>
+              )}
             </span>
           </div>
 
           {workspace.rounds.length === 0 && workspace.broken.length === 0 ? (
-            <EmptyState title="No rounds in this workspace">
-              A round is a folder with a <FileName>run_meta.json</FileName>.
-            </EmptyState>
+            STUDY ? (
+              <EmptyState title="No test rounds yet">
+                Write a requirement and run the test; its round appears here.
+              </EmptyState>
+            ) : (
+              <EmptyState title="No rounds in this workspace">
+                A round is a folder with a <FileName>run_meta.json</FileName>.
+              </EmptyState>
+            )
           ) : null}
 
           {workspace.rounds.map((round) => {

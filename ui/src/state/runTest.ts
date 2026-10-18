@@ -16,6 +16,25 @@ import {
 } from '@/services/authoring';
 import type { FileSource } from '@/services/workspace';
 import { reviewHash } from '@/state/route';
+import { STUDY } from '@/study/config';
+import { logEvent } from '@/study/log';
+import { replayApi } from '@/study/replay';
+
+/**
+ * Where the cluster calls go: the live connection through the helper, or -
+ * in the study build - a replay of the pre-computed rounds that answers the
+ * same calls with the same shapes (src/study/replay.ts).
+ */
+const live = {
+  pollMs: 30_000,
+  checkLaptop,
+  checkCluster,
+  submitRun,
+  refreshPartial,
+  fetchJob,
+  projectRunsSource: projectRunsSource as () => Promise<FileSource | null>,
+};
+const api = STUDY ? replayApi : live;
 
 /**
  * Run Test, from the requirement being written to its Test Execution Result,
@@ -60,7 +79,6 @@ export type RunTestState =
   | { phase: 'error'; message: string; kind?: string; details?: RefusalDetails; job?: Job };
 
 const KEY = 'real-av.run-test.job';
-const POLL_MS = 30_000;
 const ENDED = [
   'COMPLETED',
   'FAILED',
@@ -124,7 +142,7 @@ export function useRunTest({
   const openRun = useCallback(
     async (runId: string) => {
       setState({ phase: 'opening', runId });
-      const source = await projectRunsSource();
+      const source = await api.projectRunsSource();
       if (!source) {
         setState({
           phase: 'error',
@@ -134,6 +152,7 @@ export function useRunTest({
       }
       await open(source);
       setShown(false);
+      logEvent({ screen: 'run', event: 'result_opened', target: runId });
       window.location.hash = reviewHash(runId, 2);
     },
     [open],
@@ -142,6 +161,7 @@ export function useRunTest({
   /** Run test: open the panel; a job already followed is shown, otherwise step 1. */
   const start = useCallback(async () => {
     setShown(true);
+    logEvent({ screen: 'author', event: 'run_test_opened' });
     if (['tracking', 'fetching', 'ended'].includes(state.phase)) return;
     setState({ phase: 'looking' });
     try {
@@ -168,7 +188,7 @@ export function useRunTest({
         setState({ phase, existing, options, checks, failure });
       put('checking');
       try {
-        const laptop = await checkLaptop(text, options);
+        const laptop = await api.checkLaptop(text, options);
         if (!laptop.ok) {
           const failure: Failure = {
             message: laptop.message ?? 'the check on this machine failed',
@@ -198,7 +218,7 @@ export function useRunTest({
         return;
       }
       try {
-        await checkCluster();
+        await api.checkCluster();
         checks = mark(mark(checks, 'session', 'ok'), 'code', 'ok');
         put('ready');
       } catch (e) {
@@ -222,7 +242,7 @@ export function useRunTest({
     if (state.phase !== 'ready' || state.failure) return;
     setState({ ...state, phase: 'submitting' });
     try {
-      const job = await submitRun(text, name, state.options);
+      const job = await api.submitRun(text, name, state.options);
       remember(job.job_id);
       setState({ phase: 'tracking', job });
     } catch (e) {
@@ -235,7 +255,7 @@ export function useRunTest({
       try {
         // the helper pulls and analyses the results so far at most every 5 minutes;
         // otherwise this is the job's status
-        const job = await refreshPartial(jobId);
+        const job = await api.refreshPartial(jobId);
         if (job.fetched) {
           remember(null);
           if (job.run_id && job.complete) await openRun(job.run_id);
@@ -243,7 +263,7 @@ export function useRunTest({
         } else if (ENDED.includes(job.state)) {
           // every ended job is brought back: a whole run, an incomplete one (labelled), or its log
           setState({ phase: 'fetching', job });
-          const back = await fetchJob(jobId);
+          const back = await api.fetchJob(jobId);
           remember(null);
           if (back.run_id && back.complete) await openRun(back.run_id);
           else setState({ phase: 'ended', job: back });
@@ -274,7 +294,7 @@ export function useRunTest({
   // poll while a job runs
   useEffect(() => {
     if (state.phase !== 'tracking') return;
-    const t = window.setTimeout(() => void follow(state.job.job_id), POLL_MS);
+    const t = window.setTimeout(() => void follow(state.job.job_id), api.pollMs);
     return () => window.clearTimeout(t);
   }, [state, follow]);
 

@@ -11,6 +11,7 @@ import type { AnalysisReport } from '@/services/schemas';
 import { KNOWN_FILES } from '@/services/workspace';
 import { useRequirementView } from '@/state/requirementView';
 import { reviewHash } from '@/state/route';
+import { STUDY } from '@/study/config';
 import { cx } from '@/utils/format';
 
 const SAMPLING_WORDS: Record<string, string> = {
@@ -69,7 +70,8 @@ export function Step1Asked({ round, report }: { round: RoundSummary; report: Ana
             The tool could not parse this requirement{req.error ? `: ${req.error}` : ''}.
           </Notice>
         ) : null}
-        {report.banner ? <Notice tone="tool">{report.banner}</Notice> : null}
+        {/* a report's banner is a researcher's note: not shown to study participants */}
+        {report.banner && !STUDY ? <Notice tone="tool">{report.banner}</Notice> : null}
       </section>
 
       <div className="flex min-w-0 flex-col gap-5">

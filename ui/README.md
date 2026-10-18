@@ -151,6 +151,74 @@ goes text -> parser -> form -> text -> parser with the text unchanged apart
 from whitespace and comments and the two goal trees equal
 (`tests/contract/authoring.test.ts`).
 
+## Study mode
+
+To publish: `npm run publish:study` (or `-- <remote>`) builds the site and,
+after asking, force-pushes only the built site to the remote's `gh-pages`
+branch (one commit, so the round data never piles up in history); then
+GitHub -> Settings -> Pages -> Deploy from branch -> gh-pages. The build
+records its code version (`git describe --dirty`) in every participant's
+`decisions.json`. To try a session again in the same browser, use a private
+window (a finished session shows only its thank-you screen).
+Acceptance: `artifacts/cluster_checks/2026-10-18_study_mode_acceptance.md`.
+
+A separate build for the user study: `npm run build:study` (output in
+`dist-study/`; `npm run dev:study` while developing, after `npm run
+study:data`). `study:data` copies the study rounds from `../artifacts/study`
+(read only) into `study-public/`: the round participants review in
+`workspace/`, the pre-computed follow-ups (other cars, with their reports
+re-judged against the study requirement) in `followups/`; only the files the
+interface reads, each round under a fixed neutral run id (the copy's
+`run_meta.json` keeps `study_round` for the record), and a round carrying
+`decisions.json` is refused. Both folders are git-ignored. It opens on
+a start screen (the participant's background and a random anonymous ID, shown
+in the header from then on) and then gives the normal tool's pages; the
+study's runs will be replayed from pre-computed rounds, the tool's verdicts
+hidden, every action logged (`log.jsonl`) and everything returned as one zip
+per participant. In the study build the Workspace shows only the test
+rounds (no opening, dropping or example), a round with `decisions.json` is
+refused, and a report's banner (a researcher's note) is not shown.
+Rounds appear as in the real tool: none until the participant has run the
+requirement. _Write a requirement_ shows the requirement under test read only
+(its menus and check come from `study-public/study-authoring/`, made at build
+time by the project's own Python - there is no helper on the page; the
+researchers' `#` comment lines are dropped from the copy). _Run test_ is the
+normal panel, replayed: only the saved full test (288 scenarios × 3 runs),
+the checks tick, a job number, queue, node and scenario n of 288 over about a
+minute, then the saved round is revealed and opened at its Test Execution
+Result (`src/study/replay.ts`; every replay is logged as one; no elapsed time
+is shown). The review hides the tool's judgement everywhere - verdict chips
+and colours, "supported / below the bar", the support order, assumption
+verdicts, round-to-round status - and lists the obstacles A to Z with all
+their evidence; each accepted obstacle needs one choice from the study menu
+(`src/study/menu.ts`: three car changes, the requirement, a domain
+assumption, something else), which also replaces the catalogue's fixes on
+the Failure Analysis step. Signing (step 5): the participant's anonymous ID
+signs; R1 is written by the tool only (no hand edits) - the car changes chosen
+add up to one of the four saved cars (`src/study/car.ts`), changes in the
+participant's own words are recorded in `decisions.json`, not in R1; signing
+is refused, with the reason logged, if R1's car has no saved run on the site
+or an assumption text has a double quote. `decisions.json` gets a `study`
+block (participant, profession, times, build, round, car, verdicts hidden,
+menu offered); everything - with `log.jsonl` (every decision with old and new
+value, every click that opens evidence, every screen) - downloads as one
+`study_<ID>.zip` (`src/study/zip.ts`, no dependency). **The session ends at
+signing**: the participant's first refinement is what the study needs, and
+R1 is run on the cluster afterwards by the researchers; from then on the page
+shows only a thank-you screen with the zip to download again (also after a
+reload). A revised requirement
+can be re-judged on the same simulations in the page (`src/study/rejudge.ts`):
+the build exports each round's per-simulation quantities with the project's
+own Python (`scripts/study_quantities.py` -> `study_quantities.json`, about
+1 MB per round), and the page ports the rest of `report.py`'s judging (the
+assumptions, the soft goals, the counts the Test Execution Result shows). A
+contract test (`tests/study/rejudge.contract.test.ts`) compares it with
+`analyse(run, requirement=R1)`; `REJUDGE_RUN=<run>` runs it on another run.
+Code:
+`src/study/`, `scripts/make-study-site.mjs`. Design and decisions:
+`docs/design/study_mode_brief.md`, `docs/design/review_ui.md`, Notes 8.54.
+The normal build is unaffected.
+
 ## Files
 
 | Read                                                                                                                                                                                                                                 | Written on signing                                          |

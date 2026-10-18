@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import type { ChangeKind, ToolVerdict } from '@/services/schemas';
 import type { ObstacleStatus } from '@/services/schemas/decisions';
 import { cx } from '@/utils/format';
+import { STUDY } from '@/study/config';
 
 /**
  * Small labelled marks. Every colour is paired with a word; none carries
@@ -107,6 +108,7 @@ export function ToolVerdictChip({
   verdict: ToolVerdict;
   sampling?: string;
 }) {
+  if (STUDY) return null; // study participants judge the evidence, not the tool's label
   const lead = sampling === 'ge' && verdict === 'supported' ? ' (GE lead, confirm on a grid)' : '';
   return (
     <Chip tone={TOOL_VERDICT_TONE[verdict]} title="the tool's verdict, from the analysis report">
@@ -137,6 +139,8 @@ export function StatusChip({
   status: ObstacleStatus;
   hasPrevious: boolean;
 }) {
+  // the study build has one round, and an obstacle's status there follows the tool's verdict
+  if (STUDY) return null;
   if (!hasPrevious && status === 'new')
     return <Chip tone="neutral">no previous round to compare</Chip>;
   return <Chip tone={STATUS_TONE[status]}>{STATUS_WORDS[status]}</Chip>;

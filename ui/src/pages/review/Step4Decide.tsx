@@ -11,6 +11,7 @@ import { belowBarWords, bySupport, isSupported } from '@/domain/support';
 import type { AnalysisReport } from '@/services/schemas';
 import type { Draft, DraftAction } from '@/state/draft';
 import { unconfirmedCount } from '@/state/draft';
+import { STUDY } from '@/study/config';
 
 /** Step 4: a verdict per obstacle, per scope item and per domain assumption. */
 export function Step4Decide({
@@ -24,9 +25,12 @@ export function Step4Decide({
   draft: Draft;
   dispatch: (action: DraftAction) => void;
 }) {
-  const obstacles = [...report.obstacles].sort(bySupport);
-  const above = obstacles.filter(isSupported);
-  const below = obstacles.filter((o) => !isSupported(o));
+  // the study build: one list, A to Z - nothing says which obstacles the tool supports
+  const obstacles = [...report.obstacles].sort((a, b) =>
+    STUDY ? a.id.localeCompare(b.id) : bySupport(a, b),
+  );
+  const above = STUDY ? obstacles : obstacles.filter(isSupported);
+  const below = STUDY ? [] : obstacles.filter((o) => !isSupported(o));
   const belowOpen = below.filter((o) => !draft.doc.obstacles[o.id]?.verdict).length;
   const card = (o: (typeof obstacles)[number]) => (
     <ObstacleDecisionCard
@@ -56,7 +60,10 @@ export function Step4Decide({
 
       <section className="flex flex-col gap-4" aria-labelledby="obstacles-title">
         <h2 id="obstacles-title" className="text-lg">
-          Obstacles <span className="text-sm font-normal text-text-muted">in order of support</span>
+          Obstacles{' '}
+          {STUDY ? null : (
+            <span className="text-sm font-normal text-text-muted">in order of support</span>
+          )}
         </h2>
         {obstacles.length === 0 ? (
           <p className="text-sm text-text-muted">The analysis lists no obstacles.</p>

@@ -2207,6 +2207,84 @@ has linux/amd64 and linux/arm64 variants and is pullable without a login. The
 amd64 variant was pulled and run (emulated, `uname -m` = x86_64): page,
 catalog and the check of `R_study_C1.dsl` answer.
 
+### 8.54 2026-10-18 — study mode (brief: docs/design/study_mode_brief.md), step 1 of 8
+
+Decisions taken with the study owner (the brief's open questions, revised):
+the study runs on a **GitHub page** as a **separate study-only build**
+(`VITE_STUDY=1`), so there is no backend: results come back as one zip per
+participant, and the signing check uses the saved results (R1 written only by
+the tool; its car must be one of C1-C4). Participants get the **normal tool's
+pages and flow**, with every cluster run **replayed** from the pre-computed
+rounds (~1 min, looks live; the briefing says runs are pre-computed; the log
+records it); no on-screen replay label. Start screen: profession + random
+anonymous ID (`S-XXXX`). All six obstacles, alphabetical, one neutral style;
+one mitigation per accepted obstacle; time recorded, not shown. Assumption or
+promise changes are re-judged on C1's simulations in the page (rules ported,
+contract-tested against Python). The site is built on the laptop with C1-C4
+bundled (~310 MB) and published to a gh-pages branch; the study data stays out
+of the main history.
+Step 1 done: `ui/src/study/` (config, session, log, start screen, route log);
+the header shows the participant; the normal build is unchanged (130 UI tests
+pass, the study build compiles).
+Step 2 done: `npm run build:study` bundles C1 (97 MB) and C2-C4 (152 MB; their
+`judged_v2` reports) under neutral run ids; `artifacts/study` is only read (a
+test fingerprints the source before and after). The reports' researcher
+banner ("Re-judged ... study requirement ...") is hidden in the study build;
+a round with `decisions.json` is refused. Checked on the built site: no
+"study_C" or "Re-judged" anywhere on the Workspace or step 1. 136 UI tests.
+Step 3 done: the replayed Run test. Checked end to end on the built site:
+no rounds at first; R0 read only (researcher comment lines dropped in the
+copy, the original kept as `study_requirement_original`); Run test -> checks
+ticked at 6 s -> queued -> scenario 115 of 288 at 33 s -> C1's Test Execution
+Result opened at 65 s; the Workspace then lists the round; the log has
+run_test_opened, run_checks x2, run_submitted (replay, study_C1, shown id),
+run_finished, result_opened. 143 UI tests. The replay shows no elapsed time
+(owner: real seconds would not look like a cluster run).
+Step 4 done: the tool's verdicts hidden (17 places in the end: the 13
+inventoried, plus the "Supported this round" row, "What the tool says", the
+status chip - "not supported in either round" - and the catalogue's fixes on
+step 3, which also break "only the study menu"); obstacles A to Z; the study
+menu with `choice` beside the layer ("Change a domain assumption" ->
+`requirement`); every accepted obstacle needs a fix. Scanned on the built site
+with the real round: steps 1-5 show no verdict word and no verdict-coloured
+shape. 153 UI tests.
+Step 5 done: signing. Checked on the built site: a participant accepted
+BrakingNotLatched with path-aware braking, rejected the other five, kept the
+scope and assumptions, signed; `study_S-4AW2.zip` downloaded with
+decisions.json, R0, R1, the diff and log.jsonl; Python's
+`decisions.validate()` finds no problem; the study block says car C2, verdicts
+hidden, round study_C1; R1 runs path_aware_braking + yolov5s; the log has 39
+events from session_start to signed. Refusals (car not bundled, a double
+quote) are tested and logged. 161 UI tests, 315 Python.
+Step 6 done: re-judging in the page. Python's steps before the assumptions are
+exported per simulation at build time (`ui/scripts/study_quantities.py`,
+~1 MB per round, 0.8 s for 160 simulations); `ui/src/study/rejudge.ts` ports
+parse_assumption, assumption_status, check_assumptions, assumption_verdicts,
+the soft-goal check and build_failure_model's counts. Contract test against
+`report.analyse(run, requirement=R1)` for six revised requirements (as run;
+fog tightened; separation dropped and sun added; a string comparison and a
+slower walker; an assumption about the car, refused; every assumption
+dropped plus a soft goal): identical on run 2b (160 simulations; counted
+159/79/159/0/159/160) and on the study round C1 (864; counted
+383/192/383/13/383/864) - artifacts/cluster_checks/2026-10-18_rejudge_contract_study_C1.txt.
+The obstacles etc. of a re-judged round are not recomputed. 168 UI tests.
+Decision (owner, 2026-10-18): **the session ends at signing.** The study needs
+the participant's first refinement; the researchers run R1 on the cluster
+afterwards. Step 7 (Run test on R1 in the page) is dropped; the re-judging
+stays in the code, unused. After signing only a thank-you screen shows, with
+the zip to download again (checked on the built site, also after a reload);
+the log ends with session_end. 169 UI tests.
+Step 8 done: `npm run publish:study` (asks before a single-commit force push
+of the built site to gh-pages; tried with "n": nothing pushed); builds are
+stamped `git describe --dirty`. The brief's ten acceptance checks pass on a
+plain static server with the site in a sub-folder, as GitHub Pages serves it:
+a full session (start, replayed run 65 s, decisions, sign, zip, thank-you,
+reload) with no failed request; the zip validates, car C3, R1 with the
+tightened sun assumption, 53 log events from session_start to session_end
+(`artifacts/cluster_checks/2026-10-18_study_mode_acceptance.md`). Study plan:
+1b.1-1b.4 ticked (1b.1 as revised: not labelled on screen); 1b.5 is the
+researchers' run of each R1 after the sessions. Not committed, not deployed.
+
 ### 8.7 The iteration loop (stages 7-9) — original design
 
 Per round: requirement R_n → run (grid) → `simulations.csv` → report →

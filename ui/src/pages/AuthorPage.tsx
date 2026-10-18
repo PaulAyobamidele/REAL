@@ -32,6 +32,8 @@ import { downloadText } from '@/services/signing';
 import { useRunTest } from '@/state/runTest';
 import { useWorkspace } from '@/state/WorkspaceContext';
 import { cx } from '@/utils/format';
+import { studyR0 } from '@/study/authoringData';
+import { STUDY } from '@/study/config';
 
 /**
  * Write a requirement the way one writes LaTeX in Overleaf: the source on
@@ -51,8 +53,11 @@ export function AuthorPage() {
     | { status: 'error'; error: Error }
   >({ status: 'loading' });
 
+  const [studyText, setStudyText] = useState<string | null>(null);
   const load = useCallback(() => {
     setCatalogState({ status: 'loading' });
+    // the study build opens with the requirement under test, read only
+    if (STUDY) void studyR0().then((r) => setStudyText(r.text));
     fetchCatalog().then(
       (catalog) => setCatalogState({ status: 'ready', catalog }),
       (error: Error) => setCatalogState({ status: 'error', error }),
@@ -82,7 +87,9 @@ export function AuthorPage() {
           . Reviewing rounds does not need it.
         </Notice>
       ) : null}
-      {catalogState.status === 'ready' ? <Author catalog={catalogState.catalog} /> : null}
+      {catalogState.status === 'ready' && (!STUDY || studyText !== null) ? (
+        <Author catalog={catalogState.catalog} studyText={studyText} />
+      ) : null}
     </div>
   );
 }
@@ -93,13 +100,20 @@ type CheckState =
   | { status: 'done'; result: CheckResult; text: string }
   | { status: 'unavailable' };
 
-function Author({ catalog }: { catalog: AuthoringCatalog }) {
+function Author({
+  catalog,
+  studyText = null,
+}: {
+  catalog: AuthoringCatalog;
+  /** study build: the requirement under test, shown read only */
+  studyText?: string | null;
+}) {
   const { workspace, open } = useWorkspace();
   const [form, setForm] = useState<RequirementForm>(() => emptyForm(catalog));
-  const [mode, setMode] = useState<'template' | 'text'>('template');
-  const [raw, setRaw] = useState('');
+  const [mode, setMode] = useState<'template' | 'text'>(STUDY ? 'text' : 'template');
+  const [raw, setRaw] = useState(studyText ?? '');
   const [check, setCheck] = useState<CheckState>({ status: 'idle' });
-  const [fileName, setFileName] = useState('R_new.dsl');
+  const [fileName, setFileName] = useState(STUDY ? 'R0.dsl' : 'R_new.dsl');
   const [saved, setSaved] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -215,70 +229,77 @@ function Author({ catalog }: { catalog: AuthoringCatalog }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="card flex flex-wrap items-center gap-2 px-4 py-2.5">
-        <div className="flex rounded-lg bg-fill p-0.5" role="group" aria-label="Editing mode">
-          {(['template', 'text'] as const).map((m) => (
-            <button
-              key={m}
-              type="button"
-              aria-pressed={mode === m}
-              disabled={
-                m === 'template' && mode === 'text' && !(backToTemplate && 'form' in backToTemplate)
-              }
-              title={
-                m === 'template' && backToTemplate && 'reason' in backToTemplate
-                  ? `The gaps cannot hold this text: ${backToTemplate.reason}`
-                  : undefined
-              }
-              onClick={() => {
-                if (m === mode) return;
-                if (m === 'text') {
-                  setRaw(toDsl(form));
-                  setMode('text');
-                } else if (backToTemplate && 'form' in backToTemplate) {
-                  setForm(backToTemplate.form);
-                  setMode('template');
+        {/* the study build shows the requirement under test read only: no editing controls */}
+        {STUDY ? null : (
+          <>
+            <div className="flex rounded-lg bg-fill p-0.5" role="group" aria-label="Editing mode">
+              {(['template', 'text'] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  aria-pressed={mode === m}
+                  disabled={
+                    m === 'template' &&
+                    mode === 'text' &&
+                    !(backToTemplate && 'form' in backToTemplate)
+                  }
+                  title={
+                    m === 'template' && backToTemplate && 'reason' in backToTemplate
+                      ? `The gaps cannot hold this text: ${backToTemplate.reason}`
+                      : undefined
+                  }
+                  onClick={() => {
+                    if (m === mode) return;
+                    if (m === 'text') {
+                      setRaw(toDsl(form));
+                      setMode('text');
+                    } else if (backToTemplate && 'form' in backToTemplate) {
+                      setForm(backToTemplate.form);
+                      setMode('template');
+                    }
+                  }}
+                  className={cx(
+                    'rounded-md px-3 py-1 text-xs transition-all duration-fast disabled:cursor-not-allowed disabled:opacity-50',
+                    mode === m
+                      ? 'bg-surface-raised font-medium text-text shadow-[0_1px_3px_rgb(0_0_0/0.12)] dark:bg-[#5a5a5e]'
+                      : 'text-text-muted hover:text-text',
+                  )}
+                >
+                  {m === 'template' ? 'Fill the gaps' : 'Plain text'}
+                </button>
+              ))}
+            </div>
+            <input
+              ref={fileRef}
+              type="file"
+              accept=".dsl,text/plain"
+              className="sr-only"
+              aria-label="Load a requirement file"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setFileName(file.name);
+                  await loadText(await file.text(), file.name);
                 }
+                e.target.value = '';
               }}
-              className={cx(
-                'rounded-md px-3 py-1 text-xs transition-all duration-fast disabled:cursor-not-allowed disabled:opacity-50',
-                mode === m
-                  ? 'bg-surface-raised font-medium text-text shadow-[0_1px_3px_rgb(0_0_0/0.12)] dark:bg-[#5a5a5e]'
-                  : 'text-text-muted hover:text-text',
-              )}
+            />
+            <Button size="sm" onClick={() => fileRef.current?.click()}>
+              Load a .dsl…
+            </Button>
+            <Button
+              size="sm"
+              variant="quiet"
+              onClick={() => {
+                setForm(emptyForm(catalog));
+                setMode('template');
+                setNotice(null);
+              }}
             >
-              {m === 'template' ? 'Fill the gaps' : 'Plain text'}
-            </button>
-          ))}
-        </div>
-        <input
-          ref={fileRef}
-          type="file"
-          accept=".dsl,text/plain"
-          className="sr-only"
-          aria-label="Load a requirement file"
-          onChange={async (e) => {
-            const file = e.target.files?.[0];
-            if (file) {
-              setFileName(file.name);
-              await loadText(await file.text(), file.name);
-            }
-            e.target.value = '';
-          }}
-        />
-        <Button size="sm" onClick={() => fileRef.current?.click()}>
-          Load a .dsl…
-        </Button>
-        <Button
-          size="sm"
-          variant="quiet"
-          onClick={() => {
-            setForm(emptyForm(catalog));
-            setMode('template');
-            setNotice(null);
-          }}
-        >
-          Start blank
-        </Button>
+              Start blank
+            </Button>
+          </>
+        )}
         <span
           role="status"
           className={cx(
@@ -295,12 +316,16 @@ function Author({ catalog }: { catalog: AuthoringCatalog }) {
         </span>
         {notice ? <span className="text-xs text-text-muted">{notice}</span> : null}
         <span className="ml-auto flex items-center gap-2">
-          <input
-            aria-label="File name"
-            value={fileName}
-            onChange={(e) => setFileName(e.target.value)}
-            className="w-40 rounded-lg border border-border bg-surface-raised px-2.5 py-1 font-mono text-xs text-text"
-          />
+          {STUDY ? (
+            <span className="font-mono text-xs text-text-muted">{fileName}</span>
+          ) : (
+            <input
+              aria-label="File name"
+              value={fileName}
+              onChange={(e) => setFileName(e.target.value)}
+              className="w-40 rounded-lg border border-border bg-surface-raised px-2.5 py-1 font-mono text-xs text-text"
+            />
+          )}
           {problems.length || (current && !current.ok) ? (
             <span className="text-xs text-human">
               {problems.length
@@ -308,9 +333,11 @@ function Author({ catalog }: { catalog: AuthoringCatalog }) {
                 : 'Fix the text to run'}
             </span>
           ) : null}
-          <Button size="sm" onClick={save} disabled={problems.length > 0 || !current?.ok}>
-            Save
-          </Button>
+          {STUDY ? null : (
+            <Button size="sm" onClick={save} disabled={problems.length > 0 || !current?.ok}>
+              Save
+            </Button>
+          )}
           <Button
             variant="primary"
             size="sm"
@@ -339,13 +366,14 @@ function Author({ catalog }: { catalog: AuthoringCatalog }) {
           ) : (
             <textarea
               value={raw}
+              readOnly={STUDY}
               onChange={(e) => setRaw(e.target.value)}
               spellCheck={false}
               aria-label="Requirement text"
               className="dsl min-h-[28rem] w-full resize-y border border-border font-mono focus-visible:border-human"
             />
           )}
-          {mode === 'text' ? (
+          {mode === 'text' && !STUDY ? (
             <p className="text-xs text-text-muted">
               For what the gaps do not cover: {catalog.not_covered.join('; ')}.
             </p>

@@ -3,6 +3,7 @@ import { evidenceText } from '@/domain/decisions';
 import type { AnalysisReport, Obstacle } from '@/services/schemas';
 import type { Draft } from '@/state/draft';
 import { displayPercent } from '@/utils/format';
+import { STUDY } from '@/study/config';
 
 /** What the tool says about one obstacle, as tool output, with its evidence line. */
 export function ObstacleSummary({
@@ -36,10 +37,10 @@ export function ObstacleSummary({
       <dl className="grid gap-x-4 gap-y-1 text-sm sm:grid-cols-[auto_1fr]">
         <dt className="text-text-muted">Stands for</dt>
         <dd className="m-0">{condition}</dd>
-        <dt className="text-text-muted">Support this round</dt>
+        <dt className="text-text-muted">{STUDY ? 'Evidence' : 'Support this round'}</dt>
         <dd className="m-0">
           <span className="num">{entry?.evidence ?? evidenceText(obstacle)}</span>
-          {bars ? (
+          {bars && !STUDY ? (
             <span className="text-text-muted">
               {' '}
               · bar for support:{' '}
@@ -49,7 +50,7 @@ export function ObstacleSummary({
             </span>
           ) : null}
         </dd>
-        {previous ? (
+        {previous && !STUDY ? (
           <>
             <dt className="text-text-muted">Previous round</dt>
             <dd className="num m-0">

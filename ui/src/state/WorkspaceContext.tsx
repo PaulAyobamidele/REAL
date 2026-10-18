@@ -13,6 +13,8 @@ import { joinRows, type SimulationRow } from '@/domain/evidence';
 import type { RoundSummary } from '@/domain/lineage';
 import { parseSimulationsCsv } from '@/services/csv';
 import type { ClusterMap } from '@/services/schemas';
+import { STUDY } from '@/study/config';
+import { StudySource } from '@/study/studySource';
 import {
   joinPath,
   KNOWN_FILES,
@@ -40,7 +42,7 @@ export interface WorkspaceApi {
   state: WorkspaceStatus;
   workspace: Workspace | null;
   /** The bundled example workspace served next to the build, when present. */
-  exampleSource: StaticSource | null;
+  exampleSource: FileSource | null;
   probing: boolean;
   open: (source: FileSource) => Promise<void>;
   reload: () => Promise<void>;
@@ -69,7 +71,7 @@ export function WorkspaceProvider({
   initialSource?: FileSource | null;
 }) {
   const [state, setState] = useState<WorkspaceStatus>({ status: 'idle' });
-  const [exampleSource, setExampleSource] = useState<StaticSource | null>(null);
+  const [exampleSource, setExampleSource] = useState<FileSource | null>(null);
   const [probing, setProbing] = useState(true);
   const simulationCache = useRef(new Map<string, Promise<SimulationRow[]>>());
   const traceCache = useRef(new Map<string, Promise<Trace>>());
@@ -112,7 +114,8 @@ export function WorkspaceProvider({
 
   useEffect(() => {
     let live = true;
-    StaticSource.probe(STATIC_WORKSPACE_URL).then((found) => {
+    // the study build opens the participant's own rounds (src/study/studySource.ts)
+    (STUDY ? StudySource.probe() : StaticSource.probe(STATIC_WORKSPACE_URL)).then((found) => {
       if (!live) return;
       setExampleSource(found);
       setProbing(false);

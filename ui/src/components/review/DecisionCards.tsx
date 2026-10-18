@@ -10,6 +10,8 @@ import type {
 } from '@/services/schemas';
 import { assumptionState, obstacleState, scopeState, type Draft } from '@/state/draft';
 import type { DraftAction } from '@/state/draft';
+import { STUDY } from '@/study/config';
+import { StudyMitigationMenu } from '@/study/StudyMitigationMenu';
 
 import { MitigationMenu } from './MitigationMenu';
 import { VerdictControl } from './VerdictControl';
@@ -62,10 +64,12 @@ export function ObstacleDecisionCard({
   if (!entry) return null;
   const state = obstacleState(draft, obstacle.id);
   const accepted = entry.verdict === 'accept' || entry.verdict === 'rename';
+  // the study build: every accepted obstacle needs a fix, with no reason shown
   const mitigationRequired =
     accepted &&
-    entry.tool_verdict === 'supported' &&
-    (entry.status === 'new' || entry.status === 'persisting');
+    (STUDY ||
+      (entry.tool_verdict === 'supported' &&
+        (entry.status === 'new' || entry.status === 'persisting')));
   return (
     <article className="card flex flex-col gap-4 p-5" aria-labelledby={`obstacle-${obstacle.id}`}>
       <header className="flex flex-col gap-2">
@@ -77,7 +81,7 @@ export function ObstacleDecisionCard({
           <StatusChip status={entry.status} hasPrevious={hasPrevious} />
         </div>
         <p className="num text-sm text-text-muted">{entry.evidence}</p>
-        <Disclosure summary="What the tool says" compact>
+        <Disclosure summary={STUDY ? 'What this means' : 'What the tool says'} compact>
           <p className="prose-width text-sm text-text-muted">{obstacle.description}</p>
         </Disclosure>
       </header>
@@ -115,20 +119,36 @@ export function ObstacleDecisionCard({
       />
       {accepted ? (
         <Disclosure
-          summary={entry.mitigation ? `Fix: ${entry.mitigation.layer} layer` : 'Choose a fix'}
+          summary={
+            entry.mitigation
+              ? STUDY
+                ? 'Fix chosen'
+                : `Fix: ${entry.mitigation.layer} layer`
+              : 'Choose a fix'
+          }
           defaultOpen={mitigationRequired && !entry.mitigation}
         >
-          <MitigationMenu
-            legend="Mitigation"
-            obstacleId={obstacle.id}
-            obstacle={obstacle}
-            options={entry.options}
-            value={entry.mitigation}
-            onChange={(m) =>
-              dispatch({ type: 'obstacle/mitigation', id: obstacle.id, mitigation: m })
-            }
-            required={mitigationRequired}
-          />
+          {STUDY ? (
+            <StudyMitigationMenu
+              obstacleId={obstacle.id}
+              value={entry.mitigation}
+              onChange={(m) =>
+                dispatch({ type: 'obstacle/mitigation', id: obstacle.id, mitigation: m })
+              }
+            />
+          ) : (
+            <MitigationMenu
+              legend="Mitigation"
+              obstacleId={obstacle.id}
+              obstacle={obstacle}
+              options={entry.options}
+              value={entry.mitigation}
+              onChange={(m) =>
+                dispatch({ type: 'obstacle/mitigation', id: obstacle.id, mitigation: m })
+              }
+              required={mitigationRequired}
+            />
+          )}
         </Disclosure>
       ) : null}
     </article>
@@ -158,7 +178,7 @@ export function ScopeDecisionCard({
         </div>
         <p className="num text-sm text-text-muted">{entry.evidence}</p>
         {entry.description || entry.suggested_fix || entry.rule?.param ? (
-          <Disclosure summary="What the tool says" compact>
+          <Disclosure summary={STUDY ? 'What this means' : 'What the tool says'} compact>
             {entry.description ? (
               <p className="prose-width text-sm text-text-muted">{entry.description}</p>
             ) : null}
@@ -216,7 +236,9 @@ export function AssumptionDecisionCard({
             {text}
           </h3>
           <Chip tone="neutral">{entry.kind.replace('_', ' ')}</Chip>
-          {entry.tool_verdict ? <Chip tone="tool">tool: {entry.tool_verdict}</Chip> : null}
+          {entry.tool_verdict && !STUDY ? (
+            <Chip tone="tool">tool: {entry.tool_verdict}</Chip>
+          ) : null}
         </div>
         <p className="num text-sm text-text-muted">{entry.evidence}</p>
       </header>
@@ -239,7 +261,7 @@ export function AssumptionDecisionCard({
           error={!entry.new_text ? `${entry.verdict} needs the new text` : undefined}
         />
       ) : null}
-      {entry.verdict === 'loosen' && entry.tool_verdict === 'untested' ? (
+      {entry.verdict === 'loosen' && entry.tool_verdict === 'untested' && !STUDY ? (
         <Notice tone="refusal">
           Never broken in this run: loosening it has no evidence behind it.
         </Notice>

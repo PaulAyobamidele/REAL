@@ -595,3 +595,67 @@ Built as planned, with these differences:
   runs; closing never stops a job (the toolbar button follows it). Also: an
   empty answer from the cluster's code check is a failed check ("did not
   answer properly", raw answer kept), not "every file missing" - seen once.
+- Study mode (2026-10-18, in progress; brief `docs/design/study_mode_brief.md`,
+  decisions in Notes 8.54): a separate study-only build (`VITE_STUDY=1`) for a
+  GitHub page - the normal tool's pages and flow for one participant, runs
+  replayed from the pre-computed rounds, the tool's verdicts hidden, every
+  action logged, one zip per participant. Step 1: `ui/src/study/` - a start
+  screen (profession, random anonymous ID `S-XXXX` shown in the header), the
+  session kept in the browser (a reload resumes it), and an append-only log of
+  screens and steps entered and left. Step 2: the rounds bundled by
+  `scripts/make-study-site.mjs` (C1 to review, C2-C4 as follow-ups with their
+  v2 reports; neutral run ids - sha256 of the study id - so nothing on screen
+  says "study"; the real id kept as `study_round`); the study Workspace has one
+  fixed source; `decisions.json` in a round is refused; report banners hidden.
+  Step 3: the replayed Run test. The Run test hook takes its cluster calls from
+  one object - the live helper, or in the study build `src/study/replay.ts`,
+  which answers the same calls with the same shapes from the saved rounds
+  (checks ~4 s, queue ~6 s, 288 scenarios over ~50 s, a 7-digit job number, a
+  node, ports; no partial reports, since none exist to show). A round is
+  revealed only when its replay is fetched (`src/study/studySource.ts`, per
+  participant), as a run comes back in the real tool. Write a requirement
+  works without the helper from files made at build time
+  (`study-authoring/`: catalog + R0's check; not `authoring/`, which the dev
+  and preview servers forward to the helper).
+  Step 4: the tool's judgement hidden, behind the one `STUDY` switch - the
+  13 inventoried places plus four found while testing (the "Supported this
+  round" row, the "What the tool says" headings, the round-to-round status
+  chip whose wording follows the verdict, and the catalogue's fixes on step
+  3); obstacles A to Z everywhere; the study menu (six choices, `choice`
+  recorded beside a valid layer; "Change a domain assumption" -> layer
+  `requirement`, owner 2026-10-18); every accepted obstacle needs a fix
+  (`isComplete` / `completionGaps(doc, everyAccepted)`). A test walks the five
+  steps of a fixture round for verdict words; the built site was scanned the
+  same way on the real study round (no words, no verdict colours).
+  Step 5: signing. R1 from the tool only; the study's car changes become
+  module swaps adding up to C1-C4 (`study/car.ts`); own-words changes stay in
+  decisions.json. Checks before signing: R1's car is one of C1-C4 and bundled
+  with the site; no double quote in an assumption text. A `study` block in
+  decisions.json; one zip per participant with the four signed files and
+  `log.jsonl`. The log now has every decision (old and new value; typing
+  grouped per field, flushed before signing) and every click on something
+  interactive (evidence opened). The log falls back to memory only if the
+  browser's storage fails.
+  Step 6: re-judging on the same simulations. What Python computes before the
+  assumptions (outcomes, run quantities, trace measures, the safety rule,
+  test-scope rules, failure types) is exported per simulation at build time
+  (`ui/scripts/study_quantities.py`, the analysis's own functions); the page
+  ports the rest of `analyse()` for what the Test Execution Result shows:
+  parse/check assumptions, their summary and verdict, soft goals over counted
+  encounters, the failure model's counts, the per-simulation records and the
+  spurious summary. Not recomputed: obstacles, failure rates by parameter and
+  scenario, timing, map (`rejudged.partial`). Contract-tested against
+  `analyse(run, requirement=R1)` for six revised requirements - exact on run
+  2b (160 simulations) and on the study round C1 (864).
+  Decision (owner, 2026-10-18): the session ends at signing - the study needs
+  the participant's first refinement; R1 is run on the cluster afterwards.
+  So no Run test on R1 in the page (planned step 7 dropped); the re-judging of
+  step 6 stays in the code, unused by participants. After signing, a
+  thank-you screen with the zip (`study/ended.ts`, `EndScreen.tsx`); the log
+  ends with `session_end`.
+  Step 8: `npm run publish:study` (build, then - after a y/N prompt - a
+  single-commit force push of the built site to `gh-pages`, `.nojekyll`
+  included; the round data never enters the main history); the build is
+  stamped with `git describe --always --dirty`. The brief's ten acceptance
+  checks passed on a GitHub-Pages-like static server with the site in a
+  sub-folder (`artifacts/cluster_checks/2026-10-18_study_mode_acceptance.md`).

@@ -1,7 +1,17 @@
-import { createContext, useCallback, useContext, useMemo, useReducer, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useReducer,
+  useRef,
+  type ReactNode,
+} from 'react';
 
 import type { RoundSummary } from '@/domain/lineage';
 import type { AnalysisReport } from '@/services/schemas';
+import { STUDY } from '@/study/config';
+import { logDecision } from '@/study/decisionLog';
 
 import {
   createDraft,
@@ -57,6 +67,9 @@ const DraftContext = createContext<DraftApi | null>(null);
 
 export function DraftProvider({ children }: { children: ReactNode }) {
   const [state, dispatchAll] = useReducer(reducer, { drafts: {} });
+  // the drafts as last rendered, so the study log can record each decision's old value
+  const latest = useRef(state.drafts);
+  latest.current = state.drafts;
 
   const draftFor = useCallback((runId: string) => state.drafts[runId], [state.drafts]);
 
@@ -75,10 +88,10 @@ export function DraftProvider({ children }: { children: ReactNode }) {
     [state.drafts],
   );
 
-  const dispatch = useCallback(
-    (runId: string, action: DraftAction) => dispatchAll({ type: 'update', runId, action }),
-    [],
-  );
+  const dispatch = useCallback((runId: string, action: DraftAction) => {
+    if (STUDY) logDecision(latest.current[runId], action);
+    dispatchAll({ type: 'update', runId, action });
+  }, []);
 
   const restart = useCallback((round: RoundSummary, previous: AnalysisReport | null) => {
     if (!round.report) return;

@@ -4,3 +4,5 @@ node_modules
 public/workspace
 package-lock.json
 tests/fixtures
+dist-study
+study-public

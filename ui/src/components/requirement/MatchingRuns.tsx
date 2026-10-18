@@ -7,6 +7,7 @@ import { matchRequirement, projectRunsSource, type MatchResult } from '@/service
 import { routeHash } from '@/state/route';
 import { useWorkspace } from '@/state/WorkspaceContext';
 import { displayDate, displayPercent } from '@/utils/format';
+import { STUDY } from '@/study/config';
 
 /**
  * The project's runs that ran exactly the requirement being written, and a
@@ -74,15 +75,27 @@ export function MatchingRuns({ text, parses }: { text: string; parses: boolean }
       ) : null}
       {state.status === 'done' && !matches.length ? (
         <p className="text-sm text-text-muted">
-          None of the {state.result.searched} runs in <code>artifacts/runs</code> used exactly this
-          requirement. Press Run test to run it on the cluster.
+          {STUDY ? (
+            'No test round has used this requirement yet. Press Run test to run it on the cluster.'
+          ) : (
+            <>
+              None of the {state.result.searched} runs in <code>artifacts/runs</code> used exactly
+              this requirement. Press Run test to run it on the cluster.
+            </>
+          )}
         </p>
       ) : null}
       {matches.length ? (
         <>
           <p className="text-sm text-text-muted">
-            {matches.length} of the {state.status === 'done' ? state.result.searched : ''} runs in{' '}
-            <code>artifacts/runs</code> used exactly this requirement:
+            {STUDY ? (
+              <>Test rounds of this requirement:</>
+            ) : (
+              <>
+                {matches.length} of the {state.status === 'done' ? state.result.searched : ''} runs
+                in <code>artifacts/runs</code> used exactly this requirement:
+              </>
+            )}
           </p>
           <ul className="flex flex-col gap-1.5">
             {matches.map((m) => (

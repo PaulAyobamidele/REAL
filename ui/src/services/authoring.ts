@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
 import type { GoalModelSource } from '@/domain/goalModel';
+import { studyCatalog, studyCheck, studyMatch } from '@/study/authoringData';
+import { STUDY } from '@/study/config';
 
 import { requirementContextSchema } from './schemas';
 import { StaticSource } from './workspace/staticSource';
@@ -158,10 +160,13 @@ async function call(path: string, init?: RequestInit): Promise<unknown> {
 }
 
 export async function fetchCatalog(): Promise<AuthoringCatalog> {
+  // the study build has no helper: the catalog was saved with the build
+  if (STUDY) return authoringCatalogSchema.parse(await studyCatalog());
   return authoringCatalogSchema.parse(await call('/authoring/catalog'));
 }
 
 export async function checkRequirement(text: string): Promise<CheckResult> {
+  if (STUDY) return checkResultSchema.parse(await studyCheck(text));
   return checkResultSchema.parse(
     await call('/authoring/check', {
       method: 'POST',
@@ -194,6 +199,7 @@ export type MatchResult = z.infer<typeof matchResultSchema>;
 
 /** The runs in the project's artifacts/runs that ran exactly this requirement (the parser compares). */
 export async function matchRequirement(text: string): Promise<MatchResult> {
+  if (STUDY) return matchResultSchema.parse(await studyMatch(text));
   return matchResultSchema.parse(
     await call('/authoring/match', {
       method: 'POST',

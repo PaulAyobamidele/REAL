@@ -2,6 +2,7 @@ import { useMemo, type KeyboardEvent, type ReactNode } from 'react';
 
 import { fitText, type Box, type KaosLayout, type LinkPath } from '@/domain/kaosLayout';
 import { cx } from '@/utils/format';
+import { STUDY } from '@/study/config';
 
 /**
  * The goal model drawn in the KAOS notation of the REAL paper, from a
@@ -218,7 +219,10 @@ export function KaosDiagram({
           {layout.boxes.map((b) => {
             if (b.kind === 'obstacle') {
               const o = b.obstacle!;
-              const tone = OBSTACLE_TONE[o.verdict] ?? OBSTACLE_TONE.not_supported!;
+              // the study build styles every obstacle alike: no verdict in the colour
+              const tone = STUDY
+                ? OBSTACLE_TONE.supported!
+                : (OBSTACLE_TONE[o.verdict] ?? OBSTACLE_TONE.not_supported!);
               const selected = o.id === selectedObstacleId;
               const cxText = b.x + b.w / 2;
               return (
@@ -516,21 +520,25 @@ function Legend({ withObstacles }: { withObstacles: boolean }) {
               points="1,2 23,2 29,16 7,16"
               className="fill-kaos-obstacle stroke-kaos-obstacle-line"
             />,
-            'obstacle, supported',
+            STUDY ? 'obstacle' : 'obstacle, supported',
           )}
-          {item(
-            <polygon
-              points="1,2 23,2 29,16 7,16"
-              className="fill-caution-soft stroke-caution [stroke-dasharray:3_2]"
-            />,
-            'insufficient data',
-          )}
-          {item(
-            <polygon
-              points="1,2 23,2 29,16 7,16"
-              className="fill-set-aside-soft stroke-border-strong"
-            />,
-            'not supported',
+          {STUDY ? null : (
+            <>
+              {item(
+                <polygon
+                  points="1,2 23,2 29,16 7,16"
+                  className="fill-caution-soft stroke-caution [stroke-dasharray:3_2]"
+                />,
+                'insufficient data',
+              )}
+              {item(
+                <polygon
+                  points="1,2 23,2 29,16 7,16"
+                  className="fill-set-aside-soft stroke-border-strong"
+                />,
+                'not supported',
+              )}
+            </>
           )}
           <li>Click an obstacle to follow its chain.</li>
         </>

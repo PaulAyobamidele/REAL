@@ -21,11 +21,11 @@ The live cluster connection (1a) is built alongside.
 
 | # | Task | Done when |
 |---|---|---|
-| 1b.1 | Load the pre-computed results for the presented requirement; **labelled as a replay** (dataset, date, run id) — everything after loading runs live | the screen says it is pre-computed |
-| 1b.2 | Tool's suggested verdicts hidden in study mode, and the file records that | blank verdicts |
-| 1b.3 | Per-participant folder (participant ID, not name); `decisions.json` + an append-only, time-stamped log of every interaction (verdicts and later changes, reasons, mitigations, assumption edits, requirement edits, screens and evidence opened, time spent) | a session can be reconstructed from the files |
-| 1b.4 | At signing: the revised requirement must parse and be executable as written (modules exist, parameters in range) | an unrunnable requirement cannot be signed |
-| 1b.5 | Follow-up per person: car changes → a cluster run with provenance (shared run, participant); assumption / promise changes → re-judged on the laptop; before/after comparison per person | one before/after per participant |
+| 1b.1 ✅ | Load the pre-computed results for the presented requirement; **labelled as a replay** (dataset, date, run id) — everything after loading runs live | the screen says it is pre-computed — **done 2026-10-18, as revised by the owner:** the round is bundled and replayed in the normal flow; not labelled on screen (runs look live; the briefing says all runs are pre-computed); `decisions.json` and the log record the round (`study_C1`) and that every run was a replay |
+| 1b.2 ✅ | Tool's suggested verdicts hidden in study mode, and the file records that | blank verdicts — **done 2026-10-18:** 17 places hidden, checked on the built site; `study.verdicts_hidden: true` |
+| 1b.3 ✅ | Per-participant folder (participant ID, not name); `decisions.json` + an append-only, time-stamped log of every interaction (verdicts and later changes, reasons, mitigations, assumption edits, requirement edits, screens and evidence opened, time spent) | a session can be reconstructed from the files — **done 2026-10-18:** one `study_<ID>.zip` per participant (random anonymous ID + profession), `decisions.json` + `log.jsonl` (append-only, time-stamped: screens, evidence opened, every verdict and change with old and new value, signing) |
+| 1b.4 ✅ | At signing: the revised requirement must parse and be executable as written (modules exist, parameters in range) | an unrunnable requirement cannot be signed — **done 2026-10-18:** R1 written by the tool only (parses); its car must be one of the four saved cars; refusals logged |
+| 1b.5 | Follow-up per person: car changes → a cluster run with provenance (shared run, participant); assumption / promise changes → re-judged on the laptop; before/after comparison per person | one before/after per participant — **after the sessions, by the researchers (owner, 2026-10-18):** the study session ends at signing; R1 from each zip is run on the cluster (car changes; Run test) - the in-page re-judging (`ui/src/study/rejudge.ts`, exact against `report.analyse`) is available for assumption-only changes |
 
 ## Dimension 2 — the pre-computed space
 

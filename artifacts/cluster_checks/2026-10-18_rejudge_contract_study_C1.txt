@@ -1,0 +1,5 @@
+re-judging contract check on the study round C1 (864 simulations), 2026-10-18T11:30Z
+the page's rejudge.ts vs scripts/analysis/report.py analyse(run, requirement=R1); read only
+n_admissible/assumptions/failures per variant: 383/4/22  192/4/14  383/4/22  13/3/0  383/5/22  864/0/81
+ ✓ tests/study/rejudge.contract.test.ts (7 tests) 48ms
+      Tests  7 passed (7)

@@ -11,6 +11,7 @@ import { useDrafts } from '@/state/DraftContext';
 import type { DraftAction } from '@/state/draft';
 import { useVisitedSteps } from '@/state/visitedSteps';
 import { useWorkspace } from '@/state/WorkspaceContext';
+import { STUDY } from '@/study/config';
 
 import { Step1Asked } from './review/Step1Asked';
 import { Step2Happened } from './review/Step2Happened';
@@ -99,7 +100,7 @@ export function ReviewPage({
       roundLabel={roundLabel}
       progress={reviewProgress({ step, report, draft, visited })}
     >
-      {report.banner && step !== 1 ? (
+      {report.banner && step !== 1 && (!STUDY || report.banner.startsWith('PARTIAL')) ? (
         // a run still running (PARTIAL) or ended early (INCOMPLETE): said on every step
         <Notice
           tone="warning"

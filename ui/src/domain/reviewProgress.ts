@@ -1,6 +1,7 @@
 import { completionGaps } from '@/domain/decisions';
 import type { AnalysisReport } from '@/services/schemas';
 import { assumptionState, obstacleState, scopeState, type Draft } from '@/state/draft';
+import { STUDY } from '@/study/config';
 
 /**
  * Where a review stands, step by step, for the progress tracker. Each step
@@ -105,7 +106,9 @@ export function reviewProgress({
       step: 3,
       state: stateOf(3, visited.has(3)),
       detail: report.obstacles.length
-        ? `${supported} supported · ${below} below the bar`
+        ? STUDY
+          ? plural(report.obstacles.length, 'obstacle')
+          : `${supported} supported · ${below} below the bar`
         : 'no obstacles named',
       attention: null,
       fraction: null,

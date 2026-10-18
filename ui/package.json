@@ -18,7 +18,11 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "workspace:index": "node scripts/make-workspace-index.mjs"
+    "workspace:index": "node scripts/make-workspace-index.mjs",
+    "study:data": "node scripts/make-study-site.mjs ../artifacts/study --out study-public",
+    "dev:study": "VITE_STUDY=1 vite",
+    "build:study": "npm run study:data && tsc --noEmit -p tsconfig.json && VITE_STUDY=1 VITE_BUILD=$(git describe --always --dirty) vite build --outDir dist-study",
+    "publish:study": "bash scripts/publish-study.sh"
   },
   "dependencies": {
     "@fontsource-variable/jetbrains-mono": "^5.3.0",

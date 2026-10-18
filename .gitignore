@@ -263,6 +263,9 @@ ui/node_modules/
 ui/dist/
 ui/coverage/
 ui/public/workspace/
+# study build: data copied from artifacts/study, and its output
+ui/study-public/
+ui/dist-study/
 ui/.vite/
 
 # local cluster state: job ids, node names and cluster paths (anonymous repository)

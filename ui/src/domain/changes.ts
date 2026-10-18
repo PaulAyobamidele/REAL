@@ -7,6 +7,9 @@ import type {
   RequirementChange,
 } from '@/services/schemas';
 
+import { carChanges } from '@/study/car';
+import { STUDY } from '@/study/config';
+
 import { splitClauses } from './requirementText';
 
 /**
@@ -191,8 +194,15 @@ export function planChanges(doc: DecisionsDoc, report: AnalysisReport, r0: strin
   const problems: PlanProblem[] = [];
   const obstaclesById = new Map(report.obstacles.map((o) => [o.id, o]));
 
+  if (STUDY) {
+    // the study menu (study/menu.ts): the car changes swap modules, adding up to one of the
+    // four saved cars; a change in the participant's words is recorded in decisions.json,
+    // never written into R1 (R1 is the tool's, so it always parses and can be run)
+    changes.push(...carChanges(doc));
+  }
   for (const [oid, o] of Object.entries(doc.obstacles)) {
     if ((o.verdict !== 'accept' && o.verdict !== 'rename') || !o.mitigation) continue;
+    if (STUDY) continue;
     const change = mitigationChange(
       oid,
       o.mitigation,

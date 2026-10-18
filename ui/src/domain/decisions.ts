@@ -1,4 +1,6 @@
 import type { AnalysisReport, AssumptionSummary, Obstacle, ToolVerdict } from '@/services/schemas';
+import { STUDY } from '@/study/config';
+import { studyOptions } from '@/study/menu';
 import {
   ASSUMPTION_VERDICTS,
   LAYERS,
@@ -111,7 +113,8 @@ export function buildDecisions(report: AnalysisReport, options: BuildOptions = {
       evidence: evidenceText(o),
       reason: null,
       mitigation: null,
-      options: optionsOf(o),
+      // the study build offers its own menu (study/menu.ts) and records it as offered
+      options: STUDY ? studyOptions() : optionsOf(o),
     };
   }
 
@@ -254,15 +257,10 @@ export function validateDecisions(doc: DecisionsDoc): string[] {
  * has a mitigation. Why only those: a resolved or absent obstacle has nothing
  * to mitigate this round.
  */
-export function isComplete(doc: DecisionsDoc): boolean {
+export function isComplete(doc: DecisionsDoc, everyAccepted = STUDY): boolean {
   for (const o of Object.values(doc.obstacles)) {
     if (o.verdict === null) return false;
-    if (
-      (o.verdict === 'accept' || o.verdict === 'rename') &&
-      o.tool_verdict === 'supported' &&
-      (o.status === 'new' || o.status === 'persisting') &&
-      o.mitigation === null
-    ) {
+    if (needsMitigation(o, everyAccepted) && o.mitigation === null) {
       return false;
     }
   }
@@ -271,20 +269,30 @@ export function isComplete(doc: DecisionsDoc): boolean {
 }
 
 /** What still blocks completion, in words a reviewer can act on. */
-export function completionGaps(doc: DecisionsDoc): string[] {
+/**
+ * Whether an obstacle's decision still needs a mitigation: an accepted (or
+ * renamed) one that is supported and new or persisting - or, in the study
+ * build (everyAccepted), any accepted one, so nothing points at the tool's
+ * verdict.
+ */
+function needsMitigation(o: ObstacleDecision, everyAccepted: boolean): boolean {
+  const accepted = o.verdict === 'accept' || o.verdict === 'rename';
+  if (everyAccepted) return accepted;
+  return (
+    accepted && o.tool_verdict === 'supported' && (o.status === 'new' || o.status === 'persisting')
+  );
+}
+
+export function completionGaps(doc: DecisionsDoc, everyAccepted = STUDY): string[] {
   const gaps: string[] = [];
   const noVerdict = Object.entries(doc.obstacles).filter(([, o]) => o.verdict === null).length;
   if (noVerdict) gaps.push(`${noVerdict} obstacle${noVerdict === 1 ? '' : 's'} without a verdict`);
   const noMitigation = Object.entries(doc.obstacles).filter(
-    ([, o]) =>
-      (o.verdict === 'accept' || o.verdict === 'rename') &&
-      o.tool_verdict === 'supported' &&
-      (o.status === 'new' || o.status === 'persisting') &&
-      o.mitigation === null,
+    ([, o]) => needsMitigation(o, everyAccepted) && o.mitigation === null,
   );
   if (noMitigation.length) {
     gaps.push(
-      `${noMitigation.length} accepted, supported obstacle${noMitigation.length === 1 ? '' : 's'} without a mitigation (${noMitigation.map(([id]) => id).join(', ')})`,
+      `${noMitigation.length} accepted${everyAccepted ? '' : ', supported'} obstacle${noMitigation.length === 1 ? '' : 's'} without a mitigation (${noMitigation.map(([id]) => id).join(', ')})`,
     );
   }
   const scopeOpen = Object.values(doc.scope).filter((s) => s.verdict === null).length;

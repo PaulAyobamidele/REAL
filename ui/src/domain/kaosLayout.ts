@@ -1,4 +1,5 @@
 import type { AnalysisReport, Obstacle, Operation } from '@/services/schemas';
+import { STUDY } from '@/study/config';
 
 import { evidenceText } from './decisions';
 import { obstacleNodes, type GoalModel, type ModelNode } from './goalModel';
@@ -171,7 +172,8 @@ function obstacleBox(
   status: string | null,
 ): Box {
   const verdict = `${VERDICT_WORDS[o.verdict] ?? o.verdict}${status ? ` · ${status}` : ''}`;
-  const counts = `${verdict} · ${evidenceText(o)}`;
+  // the study build shows the evidence only, not the tool's verdict
+  const counts = STUDY ? evidenceText(o) : `${verdict} · ${evidenceText(o)}`;
   return {
     id: `obstacle.${o.id}`,
     kind: 'obstacle',

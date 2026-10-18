@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 
 import { routeHash, type Route } from '@/state/route';
 import { useWorkspace } from '@/state/WorkspaceContext';
+import { STUDY } from '@/study/config';
+import { loadSession } from '@/study/session';
 import { cx } from '@/utils/format';
 
 /**
@@ -64,7 +66,12 @@ export function AppShell({ route, children }: { route: Route; children: ReactNod
               </a>
             ))}
           </nav>
-          {inReview ? (
+          {STUDY ? (
+            <span className="ml-auto text-xs text-text-muted">
+              Participant{' '}
+              <span className="font-mono font-semibold text-text">{loadSession()?.id}</span>
+            </span>
+          ) : inReview ? (
             <span className="ml-auto text-xs text-text-muted">
               Reviewing run <span className="font-mono text-text">{route.runId.slice(0, 8)}</span>
               {workspace?.source.isExample ? ' · example data' : ''}

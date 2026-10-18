@@ -24,6 +24,8 @@ import { KNOWN_FILES } from '@/services/workspace';
 import { useRequirementView } from '@/state/requirementView';
 import { useWorkspace } from '@/state/WorkspaceContext';
 import { cx } from '@/utils/format';
+import { STUDY } from '@/study/config';
+import { STUDY_MENU } from '@/study/menu';
 
 /**
  * Step 3, the sandbox: the goal model on the left, failures and their video
@@ -199,12 +201,13 @@ export function Step3Pattern({
           <ViewSwitch view={view} onChange={setView} />
         </span>
       </div>
-      {report.obstacles.some(isSupported) ? (
+      {/* the study build lists every obstacle A to Z: the list must not say which the tool supports */}
+      {STUDY || report.obstacles.some(isSupported) ? (
         <div className="flex flex-wrap items-center gap-1.5 rounded-lg bg-surface-raised px-3 py-2 text-sm">
-          <span className="text-text-muted">Supported this round:</span>
+          <span className="text-text-muted">{STUDY ? 'Obstacles:' : 'Supported this round:'}</span>
           {[...report.obstacles]
-            .filter(isSupported)
-            .sort(bySupport)
+            .filter((o) => STUDY || isSupported(o))
+            .sort((a, b) => (STUDY ? a.id.localeCompare(b.id) : bySupport(a, b)))
             .map((o) => (
               <Button
                 key={o.id}
@@ -216,9 +219,11 @@ export function Step3Pattern({
                 {o.id}
               </Button>
             ))}
-          <span className="text-xs text-text-faint">
-            {report.obstacles.filter((o) => !isSupported(o)).length} below the bar
-          </span>
+          {STUDY ? null : (
+            <span className="text-xs text-text-faint">
+              {report.obstacles.filter((o) => !isSupported(o)).length} below the bar
+            </span>
+          )}
         </div>
       ) : null}
       {model.limitation ? <Notice tone="warning">{model.limitation}</Notice> : null}
@@ -317,7 +322,7 @@ export function Step3Pattern({
             ) : (
               <>
                 <h3 className="text-lg">Failures · video · evidence</h3>
-                {noSupported ? (
+                {noSupported && !STUDY ? (
                   <Notice tone="success" title="No supported obstacle">
                     Nothing is above the support bar this round. The counts and set-aside rows are
                     still here.
@@ -339,7 +344,20 @@ export function Step3Pattern({
             aria-label="Fixes"
           >
             <h3 className="text-lg">Fixes</h3>
-            {obstacle ? (
+            {obstacle && STUDY ? (
+              // the study build offers only its own menu (brief 4.6), never the catalogue's
+              <>
+                <ul className="flex flex-col gap-1.5 text-sm">
+                  {STUDY_MENU.map((m) => (
+                    <li key={m.choice} className="rounded-lg bg-surface-raised px-3 py-2">
+                      <span className="font-medium">{m.label}</span>
+                      <span className="block text-xs text-text-muted">{m.hint}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-xs text-text-faint">You choose in the next step.</p>
+              </>
+            ) : obstacle ? (
               <>
                 <MitigationList
                   options={Object.entries(obstacle.mitigations ?? {})

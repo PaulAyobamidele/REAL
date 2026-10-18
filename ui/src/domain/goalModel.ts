@@ -10,6 +10,8 @@ import type {
 
 import { belowBarWords, bySupport, isSupported } from './support';
 
+import { STUDY } from '@/study/config';
+
 /**
  * The goal model shown on "Failure Analysis": the requirement's goal tree (from
  * the report, parsed once in Python) with each obstacle attached to the node
@@ -244,6 +246,14 @@ function foldBelowBar(node: ModelNode): void {
   const obstacles = node.children.filter((c): c is ObstacleNode => c.kind === 'obstacle');
   if (!obstacles.length) return;
   const rest = node.children.filter((c) => c.kind !== 'obstacle');
+  if (STUDY) {
+    // the study build: every obstacle open, A to Z - the order must not say which the tool supports
+    node.children = [
+      ...rest,
+      ...[...obstacles].sort((a, b) => a.obstacle.id.localeCompare(b.obstacle.id)),
+    ];
+    return;
+  }
   const sorted = [...obstacles].sort((a, b) => bySupport(a.obstacle, b.obstacle));
   const above = sorted.filter((o) => isSupported(o.obstacle));
   const below = sorted.filter((o) => !isSupported(o.obstacle));
