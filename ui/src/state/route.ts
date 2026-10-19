@@ -8,6 +8,7 @@ import { useCallback, useSyncExternalStore } from 'react';
  *   #/?runs=a,b   the workspace with these runs first (the runs of a requirement)
  *   #/lineage     the chain of rounds
  *   #/author      write a requirement (the form, gated by the project's parser)
+ *   #/manual      the REAL-DSL manual
  *   #/review/<run id>/<step 1-5>[?focus=<evidence filter | obstacle:<id>>]
  * `focus` is how a number elsewhere links into the evidence table.
  */
@@ -16,6 +17,7 @@ export type Route =
   | { screen: 'workspace'; runs?: string[] }
   | { screen: 'lineage' }
   | { screen: 'author' }
+  | { screen: 'manual' }
   | { screen: 'review'; runId: string; step: number; focus?: string };
 
 export const STEP_COUNT = 5;
@@ -26,6 +28,7 @@ export function parseRoute(hash: string): Route {
   if (path[0] === 'overview') return { screen: 'overview' };
   if (path[0] === 'lineage') return { screen: 'lineage' };
   if (path[0] === 'author') return { screen: 'author' };
+  if (path[0] === 'manual') return { screen: 'manual' };
   if (path[0] === 'review' && path[1]) {
     const step = Number.parseInt(path[2] ?? '1', 10);
     const focus = new URLSearchParams(query).get('focus');
@@ -52,6 +55,8 @@ export function routeHash(route: Route): string {
       return '#/lineage';
     case 'author':
       return '#/author';
+    case 'manual':
+      return '#/manual';
     case 'review': {
       const base = `#/review/${encodeURIComponent(route.runId)}/${route.step}`;
       return route.focus ? `${base}?focus=${encodeURIComponent(route.focus)}` : base;

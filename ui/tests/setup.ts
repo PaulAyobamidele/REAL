@@ -33,3 +33,11 @@ if (typeof window !== 'undefined') {
     Object.assign(window, { ResizeObserver });
   }
 }
+
+// the REAL-DSL editor (CodeMirror) measures text through ranges, which jsdom does not lay out
+if (typeof document !== 'undefined') {
+  const empty = () => Object.assign([], { item: () => null }) as unknown as DOMRectList;
+  Range.prototype.getClientRects ??= empty;
+  Range.prototype.getBoundingClientRect ??= () => new DOMRect();
+  Element.prototype.getClientRects ??= empty;
+}

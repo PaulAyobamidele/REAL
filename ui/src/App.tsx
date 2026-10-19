@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { AppShell } from '@/layouts/AppShell';
 import { AuthorPage } from '@/pages/AuthorPage';
 import { LineagePage } from '@/pages/LineagePage';
+import { ManualPage } from '@/pages/ManualPage';
 import { OverviewPage } from '@/pages/OverviewPage';
 import { ReviewPage } from '@/pages/ReviewPage';
 import { WorkspacePage } from '@/pages/WorkspacePage';
@@ -35,6 +36,7 @@ function Screens() {
       ) : null}
       {route.screen === 'lineage' ? <LineagePage /> : null}
       {route.screen === 'author' ? <AuthorPage /> : null}
+      {route.screen === 'manual' ? <ManualPage /> : null}
       {route.screen === 'review' ? (
         <ReviewPage key={route.runId} runId={route.runId} step={route.step} focus={route.focus} />
       ) : null}

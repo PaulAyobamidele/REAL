@@ -58,6 +58,11 @@ export function AppShell({ route, children }: { route: Route; children: ReactNod
                 label: 'Rounds',
                 active: route.screen === 'lineage',
               },
+              {
+                route: { screen: 'manual' } as Route,
+                label: 'Manual',
+                active: route.screen === 'manual',
+              },
             ].map((item) => (
               <a
                 key={item.label}
@@ -76,16 +81,16 @@ export function AppShell({ route, children }: { route: Route; children: ReactNod
             ))}
           </nav>
           {STUDY ? (
-            <span className="ml-auto text-xs text-white">
+            <span className="ml-auto max-w-[20rem] truncate text-xs text-white">
               Participant <span className="font-mono font-semibold">{loadSession()?.id}</span>
             </span>
           ) : inReview ? (
-            <span className="ml-auto text-xs text-white">
+            <span className="ml-auto max-w-[20rem] truncate text-xs text-white">
               Reviewing run <span className="font-mono">{route.runId.slice(0, 8)}</span>
               {workspace?.source.isExample ? ' · example data' : ''}
             </span>
           ) : workspace ? (
-            <span className="ml-auto text-xs text-white">
+            <span className="ml-auto max-w-[20rem] truncate text-xs text-white">
               {workspace.source.label}
               {workspace.source.isExample ? ' · example data' : ''}
             </span>

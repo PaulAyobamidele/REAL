@@ -36,6 +36,8 @@ WORKDIR /ui
 COPY ui/package.json ui/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY ui/ ./
+# the REAL-DSL manual, shown in the tool (imported as @docs/manual/real-dsl.md)
+COPY docs/manual/ /docs/manual/
 COPY --from=demo /work/demo/runs /work/runs
 RUN rm -rf public/workspace \
  && node scripts/make-workspace-index.mjs /work/runs --out public/workspace --example \
