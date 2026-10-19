@@ -70,10 +70,15 @@ their own group and never counted as passes.
 
 ## Writing a requirement
 
-_Write a requirement_ (top bar, or the card on the Workspace screen) works
-like Overleaf: the requirement on the left, its KAOS goal model on the
-right, redrawn as you type. The left side is the DSL itself with gaps to
-fill - the fixed words (`MAINTAIN`, `by`, `using`, `operationalized as`, ...)
+_Requirements Compliance to Validate_ (top bar) works like Overleaf: the
+requirement on the left, its KAOS goal model on the right (with its legend),
+redrawn as you type, and Run test centred below. The left side opens on the
+**REAL-DSL editor**: colours, completion that follows the grammar
+(Ctrl+Space; on an empty editor it offers a whole requirement to fill), hover
+help, the parser's errors marked on their line, light or dark. The language
+is described in `docs/manual/real-dsl.md`, also the tool's Manual page (`#/manual`;
+"See manual" links to it). The guided alternative, _Fill the gaps_, is the DSL itself with gaps
+to fill - the fixed words (`MAINTAIN`, `by`, `using`, `operationalized as`, ...)
 are text, free gaps (names, inputs, outputs, the scenario sentence,
 free-text assumptions and soft goals) take suggestions from every
 `docs/examples/*.dsl` and from what is already written (the perception
@@ -151,6 +156,18 @@ goes text -> parser -> form -> text -> parser with the text unchanged apart
 from whitespace and comments and the two goal trees equal
 (`tests/contract/authoring.test.ts`).
 
+## Overview
+
+The first page (`#/overview`), first in the top bar: the normal tool opens on
+"How REAL works"; the study build shows "Overview" right after the start
+screen. Both texts are in `src/pages/OverviewPage.tsx`. Both show the
+architecture figure (`src/assets/real_architecture.png`, a copy of the paper's
+Fig. 1) and a help-video card: set `VITE_HELP_VIDEO_URL` at build time (or the
+default in `src/config/help.ts`). The video plays in a pop-up on the page.
+
+In the study build there is no Workspace: the nav is Overview, Requirement
+under Test, Rounds, and `#/` leads to the requirement page.
+
 ## Study mode
 
 To publish: `npm run publish:study` (or `-- <remote>`) builds the site and,
@@ -171,8 +188,8 @@ re-judged against the study requirement) in `followups/`; only the files the
 interface reads, each round under a fixed neutral run id (the copy's
 `run_meta.json` keeps `study_round` for the record), and a round carrying
 `decisions.json` is refused. Both folders are git-ignored. It opens on
-a start screen (the participant's background and a random anonymous ID, shown
-in the header from then on) and then gives the normal tool's pages; the
+a start screen (REAL and its sub-headline, the participant's expertise in
+their own words, and a random anonymous ID, shown in the header from then on) and then gives the normal tool's pages; the
 study's runs will be replayed from pre-computed rounds, the tool's verdicts
 hidden, every action logged (`log.jsonl`) and everything returned as one zip
 per participant. In the study build the Workspace shows only the test
@@ -294,16 +311,20 @@ src/
 ```
 
 Design tokens are the only place colours, type and spacing are defined.
-`src/styles/tokens.css` carries the set, in an Apple-like style: cool grey
-neutrals (#F5F5F7 page, white cards, #1D1D1F text), one raspberry accent
-(`human`, #C8175D) used sparingly for the current step, the primary action,
-links and the reviewer's own verdicts; `fail`, `pass`, `set-aside`,
-`caution` and the four change kinds reserved for meaning (`fail` is a warm
-red, #CC2F12, so it never reads as the accent); a desktop-app
+`src/styles/tokens.css` carries the set. Colour is a five-colour palette
+with one job per colour (2026-10-19): #EAEAAA page background, white cards,
+#172033 text; #667D01 with white text only for the instructions box
+(`Instructions`), so it is always what to read first; #610000 the header,
+the same on every page; #9EB200 the primary button, with dark text; links,
+selection, focus and "passed" in the dark text colour, marked by an
+underline, a tick or a border; #AD1F07 "failed" and errors. `set-aside`, `caution` and the four change kinds keep their own
+colours; every meaning also has a word. Light only.
+`tests/styles/contrast.test.ts` checks every text/background pair against
+WCAG 2.2 AA. A desktop-app
 type scale (12 / 13 / 14 px body, 16 px card titles, 26 to 32 px page
 titles); 6 / 10 / 16 px radii; translucent `fill` greys for quiet controls;
-150 / 200 / 280 ms motion; a dark-mode override. The look is calm and
-compact: one frosted top bar (screens, and the five steps inside a review
+150 / 200 / 280 ms motion. The look is calm and
+compact: one top bar (screens, and the five steps inside a review
 as a segmented control), cards lifted by a hairline and a soft shadow
 instead of borders, borderless tinted tags, capsule buttons, verdicts as a
 row of tiles (the chosen one in the `human` colour), explanations folded
@@ -322,4 +343,6 @@ doing one job: `zod` (schemas that validate the loaded files and give the
 types), `papaparse` (CSV), `diff` (line diffs for the side-by-side view and
 `requirement_diff.md`), `@radix-ui/react-radio-group` (accessible radio
 groups for verdicts). The goal tree follows the WAI-ARIA tree pattern and is
-implemented here, since Radix has no tree primitive.
+implemented here, since Radix has no tree primitive. The REAL-DSL editor is
+CodeMirror 6 (`@codemirror/*`, `@lezer/highlight`); the manual is rendered
+with `marked`.

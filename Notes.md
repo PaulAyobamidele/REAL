@@ -2285,6 +2285,58 @@ tightened sun assumption, 53 log events from session_start to session_end
 1b.1-1b.4 ticked (1b.1 as revised: not labelled on screen); 1b.5 is the
 researchers' run of each R1 after the sessions. Not committed, not deployed.
 
+### 8.55 2026-10-19 — the interface's palette
+
+Five colours, one job each (owner): page `#EAEAAA`; instructions box only
+`#9EB200`; header `#610000` on every page; actions `#667D01` (button fill)
+with `#5A6E01` for green text (the palette green is 3.7:1 on the page
+background, below AA - the darker shade is 4.6:1); failed/error `#AD1F07`;
+text `#172033`; light only. 24 contrast checks over the real tokens (WCAG 2.2
+AA), all pass; 193 UI tests. Both builds; screenshots of the workspace, the
+author page, review steps 2-4 and the study's start screen.
+Same day: the study's start screen shows REAL with its sub-headline, centred,
+and asks for expertise in the participant's words (`study.expertise`,
+replacing `profession`); the header reads REAL in both builds. Then the
+greens swapped: instructions box #667D01 with white text (its only use),
+primary button #9EB200 with dark text; links, "passed", selection and focus
+in the dark text colour with an underline / tick / border. 193 UI tests.
+Then an Overview page before the Workspace: "How REAL works" (normal tool, its
+landing page) and "About this study" (after Start; neutral, tested for no
+hints). 197 UI tests. Then the study's heading became "Overview"; both pages
+show the architecture figure (Fig. 1, full width) and a help-video card
+("Video coming soon" until a link is set). 197 UI tests.
+Then: the video plays in a pop-up on the page (no "coming soon" text); the
+study build drops the Workspace (Overview -> Requirement under Test -> run ->
+review; Rounds to go back), and calls the requirement page "Requirement under
+Test" (the normal tool keeps "Write a requirement"). 199 UI tests.
+Then the requirement page: "Requirements Compliance to Validate" (both
+builds), numbered instructions under every title, one centred way on per
+page (Run test, Continue, Back / Next, Sign), "Results for this requirement"
+removed, the goal model's legend always under it, and a REAL-DSL editor
+(CodeMirror: colours, grammar-guided completion, hover help, errors on their
+line, light/dark; read only in the study). The REAL-DSL manual written as a
+CADP-style man page, docs/manual/real-dsl.md, every example checked against
+the parser. Fixed on the way: a requirement with one sub-goal crashed the
+page (the parser returns that sub-goal itself, not a list). 230 UI tests.
+Grammar observations made while writing the manual (not changed; for the
+paper's limitations or a later fix): (1) a module the simulator does not
+implement makes the run fail, it is not replaced by the default (the page
+said otherwise; corrected); (2) the grammar says `(goal)+` but the parser
+starts at `goal`, so a file holds one goal; (3) `|` in a condition reaches the
+goal tree as `&`; (4) empty `followed by` / `triggering` refinements parse;
+(5) one sub-goal is reported as "no sub-goal with an operation"; (6) the
+legacy module name "braking module" is reported as not run, though the
+executor maps it to emergency_braking; (7) mixing `followed by` and
+`parallely` groups right-to-left, and the combinator is read from the raw
+text between sub-goals; (8) MAINTAIN and ACHIEVE are treated alike after
+parsing; (9) scenario words match as substrings ("walking along" -> distance
+Long); (10) "fog density <= 50" (with a space) is classed free text, not
+rejected; (11) parse errors show internal token names (__ANON_0).
+Then: "Start Running Compliance Test", step 2 renamed "Test Execution
+Report", the manual its own page (#/manual, in the top bar). Pending from the
+owner: a best-case example on the report (the scenario that optimizes for the
+failure), and a part of the study build to remove. 231 UI tests.
+
 ### 8.7 The iteration loop (stages 7-9) — original design
 
 Per round: requirement R_n → run (grid) → `simulations.csv` → report →

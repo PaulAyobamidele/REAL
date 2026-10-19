@@ -659,3 +659,91 @@ Built as planned, with these differences:
   stamped with `git describe --always --dirty`. The brief's ten acceptance
   checks passed on a GitHub-Pages-like static server with the site in a
   sub-folder (`artifacts/cluster_checks/2026-10-18_study_mode_acceptance.md`).
+- Palette (owner, 2026-10-19): five colours, one job each, defined once as
+  tokens (`src/styles/tokens.css`): `#EAEAAA` page background; `#9EB200` the
+  instructions box ONLY (`components/ui/Instructions.tsx`: the start screen,
+  the line under each step title, the run panel's guidance, step 5's signing
+  note) so the eye learns to read it first; `#610000` the header, the same on
+  every page including the study's start and thank-you screens; `#667D01`
+  the primary button fill, and a 12% darker shade `#5A6E01` for green text,
+  links, selection, focus and "passed" (4.6:1 even on the page background,
+  where the palette green gives only 3.7:1); `#AD1F07` failed and errors.
+  Text `#172033`, cards white. Meaning is never colour alone (a word or ✓/✕
+  beside it). Light only (dark mode removed; `dark:` styles need a class the
+  app never sets). KAOS notation, change kinds and map series keep their
+  colours. `tests/styles/contrast.test.ts` checks every text/background pair
+  in the tokens against WCAG 2.2 AA and that the bright green has no other use.
+- Start screen and name (owner, 2026-10-19): the study's first page shows the
+  tool's name, REAL, large and centred, with "A Tool for Refining Autonomous
+  Systems Requirements through Compliance Failure Analysis" beneath; the
+  participant's background is now their expertise, typed in their own words
+  (`study.expertise` in decisions.json, `session_start` in the log), not six
+  buttons. The header and the page title read REAL in both builds.
+- Greens swapped (owner, 2026-10-19): the instructions box is `#667D01` with
+  white text (4.7:1) and is that colour's only use; the primary button is
+  `#9EB200` with dark text (6.8:1). Neither green is a text colour any more:
+  links, "passed", selected items and the focus ring are the dark text
+  colour, marked by an underline (links always underlined; text-like buttons
+  too), a tick or a border. The contrast test checks the new pairs and that
+  `#667D01` has no use but the instructions box.
+- Overview page (owner, 2026-10-19): a first page before the Workspace, first
+  in the top bar (`#/overview`, `pages/OverviewPage.tsx`). The normal tool
+  opens on it ("How REAL works": what REAL is for, one round step by step,
+  where things are); the study goes to it right after Start ("Overview":
+  what it is about, the system under test, what the participant will
+  do, what is recorded) - neutral wording, no hint of which failures matter or
+  that runs are pre-computed (a test checks). Both lead on to the Workspace.
+  Both also show the tool's architecture (the paper's Fig. 1, copied to
+  `ui/src/assets/real_architecture.png`, wider than the text, opens full size)
+  and a help-video card: its link comes from `VITE_HELP_VIDEO_URL`
+  (`src/config/help.ts`). The play button opens the video in a pop-up on the
+  page (YouTube links play in the embedded player, other links as a video
+  file); with no link set the button does nothing and no note is shown.
+- Study flow (owner, 2026-10-19): the study build has no Workspace. Its nav is
+  Overview, Requirement under Test, Rounds; Overview leads on to the
+  requirement page, and `#/` redirects there. The requirement page is called
+  "Requirement under Test" in the study (the participant reads and runs R0,
+  does not write it; the term matches "system under test" and review step 1);
+  the normal tool keeps "Write a requirement" (`src/study/labels.ts`). The
+  round still opens straight from the run, and from Rounds afterwards.
+- Requirement page (owner, 2026-10-19): titled "Requirements Compliance to
+  Validate" in both builds (replaces "Write a requirement" / "Requirement
+  under Test"). Under the title, an instructions box of short numbered steps,
+  like every page with steps (start, overview, review steps 1-5): normal tool
+  "load your requirement written in REAL-DSL (See manual), or write it";
+  study "a test has already been run on this requirement; its REAL-DSL is
+  shown, read only". The page does one thing: "Results for this requirement"
+  (MatchingRuns) is gone. Run test is centred under the page, as is every
+  page's way on (`components/ui/PageActions.tsx`): Continue on the overview,
+  Back / Next on the review steps (the floating round buttons are gone), Sign
+  on step 5 - all `size="lg"`, the action colour for the main one.
+- REAL-DSL editor (`components/requirement/DslEditor.tsx`,
+  `dsl/language.ts`; CodeMirror 6): keywords, MAINTAIN/ACHIEVE, operators,
+  numbers and comments coloured; each quoted string takes the colour of its
+  shape in the goal model (module / assumption / soft goal); a quantity is
+  bold only where it is compared; a word the grammar does not know is
+  underlined as an error. Completion offers only what the grammar allows next
+  (keywords with their empty string, then modules the simulator implements,
+  assumption and soft-goal quantities with unit and meaning, comparison
+  operators, the example wording), plus a whole-requirement skeleton
+  (Ctrl+Space on an empty editor). Hover notes on keywords, quantities and
+  modules; the parser's error and unimplemented modules marked on their line;
+  line numbers, status bar (parses / line / column), light and dark (kept per
+  browser), wrapped lines indented under their text. The study shows the
+  same editor read only. Colours pass AA in both themes
+  (`tests/styles/editorContrast.test.ts`). "Fill the gaps" stays as the
+  guided alternative; the editor is the default.
+- Manual: `docs/manual/real-dsl.md` (a CADP-style man page: NAME, SYNOPSIS,
+  ... SEE ALSO; every example checked against the parser), shown in the tool
+  in a pop-up with its sections listed ("See manual"). The Docker image copies
+  `docs/manual/` for the build.
+- Goal model legend: always shown, under the diagram, every shape named with
+  what it stands for and the REAL-DSL words that write it.
+- Same day (owner): the run button reads "Start Running Compliance Test" (its
+  panel is the "Compliance test" dialog); review step 2 is the "Test Execution
+  Report"; the manual is its own page, `#/manual` ("Manual" in the top bar,
+  both builds; "See manual" links to it): every section in order, the section
+  list beside it marking where you are, and a way on to the requirement page.
+  Still to come from the owner: a "best case" example on the Test Execution
+  Report (the scenario that optimizes for the failure), and one part of the
+  study build to remove (screenshot to follow).
