@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import { Instructions } from '@/components/ui/Instructions';
 import { ChangeList, RequirementDiff } from '@/components/requirement/RequirementDiff';
 import { Button } from '@/components/ui/Button';
 import { KindChip } from '@/components/ui/Chip';
@@ -251,12 +252,12 @@ export function Step5Becomes({
           </Notice>
         ) : null}
         {STUDY ? (
-          <p className="text-sm text-text-muted">
+          <Instructions>
             When you sign, a file <FileName>{`study_${participant}.zip`}</FileName> downloads.
             Please send it to the researcher. Nothing is uploaded.
-          </p>
+          </Instructions>
         ) : (
-          <p className="text-sm text-text-muted">
+          <Instructions>
             Writes <FileName>decisions.json</FileName>, <FileName>R0.dsl</FileName>,{' '}
             <FileName>R1.dsl</FileName>, <FileName>requirement_diff.md</FileName>{' '}
             {canWrite ? (
@@ -266,7 +267,7 @@ export function Step5Becomes({
             ) : (
               <>as downloads (this source is read-only).</>
             )}
-          </p>
+          </Instructions>
         )}
         {blockers.length ? (
           <Disclosure summary={`Before signing (${blockers.length})`} defaultOpen compact>

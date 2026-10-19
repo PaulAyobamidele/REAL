@@ -68,13 +68,15 @@
     font: inherit;
     color: inherit;
   }
+  /* links are the text colour, so the underline is what marks them */
   a {
     color: var(--color-human);
-    text-decoration: none;
-  }
-  a:hover {
     text-decoration: underline;
     text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+  a:hover {
+    text-decoration-thickness: 2px;
   }
   summary {
     list-style: none;
@@ -105,11 +107,6 @@
     border: 1px solid rgb(0 0 0 / 0.04);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-card);
-  }
-  @media (prefers-color-scheme: dark) {
-    .card {
-      border-color: transparent;
-    }
   }
   /* a panel inside a card: the sunken surface */
   .panel {
@@ -237,10 +234,17 @@
     display: none !important;
   }
 
-  /* frosted chrome: the top bar */
-  .glass {
-    background: color-mix(in srgb, var(--color-surface-raised) 72%, transparent);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    backdrop-filter: saturate(180%) blur(20px);
+  /* the header: one colour, the same on every page */
+  .app-header {
+    background: var(--color-header);
+    color: var(--color-header-text);
+  }
+
+  /* the instructions box: the only place the bright green appears, so the eye
+     learns that this is what to read first */
+  .instructions {
+    background: var(--color-instructions);
+    color: var(--color-instructions-text);
+    border-radius: var(--radius-md);
   }
 }

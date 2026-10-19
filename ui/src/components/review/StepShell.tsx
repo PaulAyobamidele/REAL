@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 
+import { Instructions } from '@/components/ui/Instructions';
 import { reviewHash, STEP_COUNT } from '@/state/route';
 import { cx } from '@/utils/format';
 
@@ -40,7 +41,7 @@ export function StepShell({
         <h1 className="text-2xl lg:text-3xl">
           <span className="text-text-faint">{step}.</span> {name}
         </h1>
-        <p className="prose-width text-base text-text-muted">{STEP_CAPTIONS[step - 1]}</p>
+        <Instructions className="prose-width mt-2">{STEP_CAPTIONS[step - 1]}</Instructions>
       </header>
       {children}
       <div className="fixed right-5 bottom-5 z-30 flex items-center gap-2">

@@ -13,10 +13,12 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const VARIANT: Record<ButtonVariant, string> = {
   primary:
-    'bg-human text-white hover:brightness-110 active:brightness-95 disabled:bg-human-soft disabled:text-human disabled:hover:brightness-100',
+    'bg-action-primary text-action-primary-text hover:brightness-105 active:brightness-95 disabled:opacity-50 disabled:hover:brightness-100',
   secondary:
     'bg-fill text-text hover:bg-fill-strong active:bg-fill-strong disabled:opacity-60 disabled:text-text-faint',
-  quiet: 'bg-transparent text-human hover:bg-fill disabled:opacity-60 disabled:text-text-faint',
+  // a text-like action: underlined, since its colour is the text colour
+  quiet:
+    'bg-transparent text-human underline underline-offset-2 hover:bg-fill disabled:opacity-60 disabled:text-text-faint',
   danger: 'bg-fail-soft text-fail hover:brightness-95 disabled:opacity-60 disabled:text-text-faint',
 };
 

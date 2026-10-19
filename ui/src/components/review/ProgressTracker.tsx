@@ -32,7 +32,7 @@ export function ProgressTracker({
   return (
     <nav
       aria-label="Review progress"
-      className="glass sticky top-14 z-20 rounded-2xl px-5 py-3 shadow-card ring-1 ring-border/60"
+      className="sticky top-14 z-20 rounded-2xl bg-surface-raised px-5 py-3 shadow-card ring-1 ring-border/60"
     >
       {/* compact: below md */}
       <div className="flex flex-col gap-1.5 md:hidden">

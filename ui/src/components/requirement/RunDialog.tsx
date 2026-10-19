@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
+import { Instructions } from '@/components/ui/Instructions';
 import { RunOptionsForm } from '@/components/requirement/RunOptionsForm';
 import { Button } from '@/components/ui/Button';
 import { Disclosure } from '@/components/ui/Disclosure';
@@ -558,7 +559,9 @@ function Run({ state, actions }: { state: RunTestState; actions: Actions }) {
         </div>
       ) : null}
       {state.phase === 'tracking' ? (
-        <Muted>You can close this panel; the job keeps running and the results open here.</Muted>
+        <Instructions>
+          You can close this panel; the job keeps running and the results open here.
+        </Instructions>
       ) : null}
 
       {state.phase === 'ended' ? <Ended job={job} actions={actions} /> : null}
