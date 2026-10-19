@@ -76,13 +76,20 @@ const subGoalJson = z
   })
   .passthrough();
 
+export type SubGoalJson = z.infer<typeof subGoalJson>;
+
 export const goalTreeJsonSchema = z
   .object({
     temporal: z.string().nullable().optional(),
     objective: z.string().nullable().optional(),
+    // two sub-goals or more: a combinator and the list; one sub-goal: the sub-goal itself
     refinement: z
-      .object({ combinator: z.string().nullable().optional(), goals: z.array(subGoalJson) })
-      .passthrough()
+      .union([
+        z
+          .object({ combinator: z.string().nullable().optional(), goals: z.array(subGoalJson) })
+          .passthrough(),
+        subGoalJson,
+      ])
       .nullable()
       .optional(),
     scenario: z.string().nullable().optional(),

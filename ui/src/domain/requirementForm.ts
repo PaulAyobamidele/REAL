@@ -3,6 +3,7 @@ import type {
   CheckResult,
   ClassifiedItem,
   GoalTreeJson,
+  SubGoalJson,
 } from '@/services/authoring';
 
 /**
@@ -159,7 +160,9 @@ export function fromCheck(
 ): { form: RequirementForm } | { reason: string } {
   if (result.covered) return { reason: result.covered };
   const tree: GoalTreeJson = result.tree;
-  const goals = tree.refinement?.goals ?? [];
+  // one sub-goal comes back as the sub-goal itself, more as a combinator and a list
+  const r = tree.refinement;
+  const goals = !r ? [] : 'goals' in r && Array.isArray(r.goals) ? r.goals : [r as SubGoalJson];
   const subgoals: SubGoalForm[] = [];
   for (const g of goals) {
     const ops = g.operations ?? [];
