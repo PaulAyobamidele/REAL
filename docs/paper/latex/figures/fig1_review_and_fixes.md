@@ -86,3 +86,32 @@ only at Input and Step 4 (A8), apart from R6 below.
 
 After these, run the checklist in `architecture_diagram.md` section 10 once
 more before it goes into the paper.
+
+---
+
+## Third draft (reviewed 2026-10-19)
+
+**Fixed:** the three loops now leave Step 4 and go to the right places
+(4 -> 3 *[D] [R]*, 4 -> 2 *[S]: new round*, 4 -> Input *R1 becomes the next
+input*) (R5, R7); "A3, A4", "A5" gone (R1); Step 2 no longer repeats the
+cluster's detail (R8); one "IDE" title (R10); legend one entry per style
+(R11).
+
+**Still wrong, or wrong again:**
+
+| # | Problem | Fix |
+|---|---|---|
+| T1 | **Results go from the Run folder up the right edge into the engineer's "sign"**, and nothing reaches Diagnosis (3) | One solid arrow **Run folder -> Diagnosis (3)**, labelled *traces and results*. Delete the right-edge arrow |
+| T2 | **"No Engineer Action" with a worker icon over Step 2**, plus a dotted arrow down (back again; B5) | Remove both. Nothing over Steps 1-3 |
+| T3 | **A dotted "control specify" line from the engineer lane down to Diagnosis (3)** | Remove it (and the words "control specify": not a term in the paper) |
+| T4 | **Three engineer actions at the end** ("Refines R1", "Decides" with a ⊗ icon, "sign" with a pen icon); ⊗ reads as "stop / rejected" | One label over Step 4: *decides and signs R1*, one dotted arrow; no ⊗, no pen |
+| T5 | **"same R4"** on the line between Diagnosis and the Monitor (garbled), drawn in the **Submit** line style | Delete that line; the Monitor box already says *same rule as 3*. If a link is kept, give it its own style and the label *same safety rule* |
+| T6 | **Submit lands on "System under test"**, not on the job | Dashed *submit* arrow from Step 2 to the **Job frame** (or to Scenario search, the job's first box) |
+| T7 | **"list" is back** in Scenario search (B3) | *GE / grid* |
+| T8 | **Legend text inside the Input box**: "(★ new in this paper)" | Title *Input: Requirements*; the star after *IDE support* already says it |
+| T9 | **Backticks still printed** around `performed by`, `assuming`, `ensuring` (R2) | Monospace font, no backticks |
+| T10 | **Edge labels on the pipeline are gone** | Add: Input -> 1 *R0*; 1 -> 2 *checked R0*; 2 -> 3 *traces and results* (or put that label on T1's arrow instead); 3 -> 4 *candidate obstacles + evidence* |
+| T11 | **The tool lane says "engineer's machine"**, but Step 2 runs on the cluster (B1) | Lane title *TOOL* only, or *TOOL (engineer's machine; simulation on the cluster)* |
+| T12 | **Step numbers drawn as "⊙1"** | Filled black circles with white digits, as in the spec |
+| T13 | **The R1 loop carries two labels** ("R1 becomes the next input", "loops back from 4") | Keep one: *R1 becomes the next input* |
+| T14 | **Still raster** (R12) | Vector PDF |
