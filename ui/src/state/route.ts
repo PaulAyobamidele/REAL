@@ -3,6 +3,7 @@ import { useCallback, useSyncExternalStore } from 'react';
 /**
  * Three screens and a step, kept in the URL hash so that reload and the
  * browser's Back button keep their place:
+ *   #/overview    what the tool (or, in the study build, the study) is: the first page
  *   #/            the workspace (what is loaded, from where)
  *   #/?runs=a,b   the workspace with these runs first (the runs of a requirement)
  *   #/lineage     the chain of rounds
@@ -11,6 +12,7 @@ import { useCallback, useSyncExternalStore } from 'react';
  * `focus` is how a number elsewhere links into the evidence table.
  */
 export type Route =
+  | { screen: 'overview' }
   | { screen: 'workspace'; runs?: string[] }
   | { screen: 'lineage' }
   | { screen: 'author' }
@@ -21,6 +23,7 @@ export const STEP_COUNT = 5;
 export function parseRoute(hash: string): Route {
   const [pathPart, query = ''] = hash.replace(/^#/, '').split('?');
   const path = (pathPart ?? '').split('/').filter(Boolean);
+  if (path[0] === 'overview') return { screen: 'overview' };
   if (path[0] === 'lineage') return { screen: 'lineage' };
   if (path[0] === 'author') return { screen: 'author' };
   if (path[0] === 'review' && path[1]) {
@@ -41,6 +44,8 @@ export function parseRoute(hash: string): Route {
 
 export function routeHash(route: Route): string {
   switch (route.screen) {
+    case 'overview':
+      return '#/overview';
     case 'workspace':
       return route.runs?.length ? `#/?runs=${route.runs.map(encodeURIComponent).join(',')}` : '#/';
     case 'lineage':
