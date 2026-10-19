@@ -57,3 +57,32 @@ rule as ③*) -> Run folder. **Arrows between lanes:** ② -> Job dashed
 ④ -> ② *[S]: new round*; ④ -> Input *R₁ becomes the next input* (or the last
 two merged). Legend on one line (C4). Vector PDF, 7.0 x 2.2 in. Then run the
 checklist in `architecture_diagram.md` section 10.
+
+---
+
+## Second draft (reviewed 2026-10-19): what is fixed, what is still wrong
+
+**Fixed:** pipeline arrows between the steps (A1); submit arrow into the job
+(A5); one numbering only (B4); "No engineer action" labels gone (B5);
+clip-art and the in-image title gone (C3, C5); "list" gone (B3); engineer
+only at Input and Step 4 (A8), apart from R6 below.
+
+**Still wrong or new (fix all):**
+
+| # | Problem | Fix |
+|---|---|---|
+| R1 | **Fix-list ids printed in the figure**: "A3, A4", "A5" | Delete them. They are this file's references, not figure labels |
+| R2 | **Markdown leaked into the labels**: leading `*` and `**` ("*checked R0", "**[S]: new round") and literal backticks around `performed by`, `assuming`, `ensuring` | Plain text for labels (italic by font, not by asterisks); keywords in a monospace font with no backticks |
+| R3 | **Edge labels sit one arrow too early**: "checked R0" is over Input -> 1, "traces and results" over 1 -> 2, "candidate obstacles + evidence" over 2 -> 3 | Input -> 1: *R0*; 1 -> 2: *checked R0*; 2 -> 3: *traces and results*; 3 -> 4: *candidate obstacles + evidence* |
+| R4 | **"traces and results" goes from the Run folder up into Refinement (4)**; the Monitor also has an arrow up into the tool lane | One arrow only: **Run folder -> Diagnosis (3)**. Nothing from the Monitor upward; nothing from the cluster into 4 |
+| R5 | **"loops back from 4" still starts under Step 2** and ends at Input | Start it at the bottom of box 4, run it under all three lanes, end it at the bottom of Input; label *R1 becomes the next input* |
+| R6 | **A third person icon over Diagnosis (3)** with a dotted line down | Remove it: Steps 1-3 are automatic |
+| R7 | **[S] and [D][R] drawn as one red line**: it runs from Step 1's top to Diagnosis, and neither end is at Step 4 | Two separate red arrows, both **leaving Step 4**: 4 -> 3 *[D] [R]: re-diagnosed, no new simulation* (short, above the boxes); 4 -> 2 *[S]: new round* (longer, above the boxes, ending on Step 2, not Step 1) |
+| R8 | **Test generation still drawn twice** (Step 2's box lists grammar, Scenic, CARLA, YOLO, monitor; the cluster lane draws them again) | Step 2's support box: *requirement -> scenario grammar; runs as a job on a GPU cluster (below)*. The cluster lane shows the detail |
+| R9 | **★ on "grammar -> GE/grid"**: GE (GRAPE) is reused; and no ★ on the Input's IDE support (new) | ★ on: IDE support, requirement check, the requirement-driven grammar (not GE), monitor's shared rule, diagnosis, refinement. Never on GE, Scenic, CARLA, YOLO |
+| R10 | **Refinement box has both a vertical "IDE:" and the title "IDE: triage and revision"** | Keep the title only |
+| R11 | **Legend lists "engineer" twice** (a dashed grey line and a grey box) and the control and engineer line styles look alike | One entry per style: `★ new in this paper · —— pipeline · - - - submit · ━━ loop back (red) · ┈┈ engineer`. Make dashed (submit) and dotted (engineer) clearly different |
+| R12 | **Still a raster image** | Vector PDF, fonts embedded, no Type 3 fonts; text ≥ 6 pt printed |
+
+After these, run the checklist in `architecture_diagram.md` section 10 once
+more before it goes into the paper.
