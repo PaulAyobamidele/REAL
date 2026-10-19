@@ -17,17 +17,24 @@ beforeEach(() => {
   window.localStorage.clear();
   window.localStorage.setItem(
     'real-av.study.session',
-    JSON.stringify({ id: 'S-7K3Q', profession: 'Student', started_at: '', build: 'dev' }),
+    JSON.stringify({ id: 'S-7K3Q', expertise: 'Student', started_at: '', build: 'dev' }),
   );
   serveStudySite();
 });
 afterEach(() => vi.unstubAllGlobals());
 
 describe('the study build, before any run', () => {
-  it('has no test rounds yet, as in the real tool before a run', async () => {
+  it('has no Workspace: its address leads to the requirement under test', async () => {
     window.location.hash = '#/';
     render(<App />);
-    expect(await screen.findByText('No test rounds yet')).toBeInTheDocument();
+    await waitFor(() => expect(window.location.hash).toBe('#/author'));
+    expect(screen.queryByText('No test rounds yet')).toBeNull();
+    const nav = screen.getByRole('navigation', { name: 'Screens' });
+    expect(
+      within(nav)
+        .getAllByRole('link')
+        .map((a) => a.textContent),
+    ).toEqual(['Overview', 'Requirement under Test', 'Rounds']);
   });
 
   it('shows the requirement under test read only, without the editing controls', async () => {

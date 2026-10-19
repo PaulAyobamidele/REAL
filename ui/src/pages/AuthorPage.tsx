@@ -34,6 +34,7 @@ import { useWorkspace } from '@/state/WorkspaceContext';
 import { cx } from '@/utils/format';
 import { studyR0 } from '@/study/authoringData';
 import { STUDY } from '@/study/config';
+import { authorTitle } from '@/study/labels';
 
 /**
  * Write a requirement the way one writes LaTeX in Overleaf: the source on
@@ -68,7 +69,7 @@ export function AuthorPage() {
   return (
     <div className="flex w-full flex-col gap-5">
       <header className="flex flex-col items-center gap-1 text-center">
-        <h1 className="text-2xl lg:text-3xl">Write a requirement</h1>
+        <h1 className="text-2xl lg:text-3xl">{authorTitle()}</h1>
       </header>
       {catalogState.status === 'loading' ? <Loading what="the authoring lists" /> : null}
       {catalogState.status === 'error' ? (

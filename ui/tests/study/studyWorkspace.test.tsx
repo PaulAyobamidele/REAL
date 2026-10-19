@@ -23,7 +23,7 @@ vi.mock('@/study/config', async (orig) => ({
 function started() {
   window.localStorage.setItem(
     'real-av.study.session',
-    JSON.stringify({ id: 'S-7K3Q', profession: 'Student', started_at: '', build: 'dev' }),
+    JSON.stringify({ id: 'S-7K3Q', expertise: 'Student', started_at: '', build: 'dev' }),
   );
 }
 
@@ -35,15 +35,14 @@ describe('the study workspace', () => {
     expect(ws.broken[0]?.error.message).toMatch(/starts with no decisions/);
   });
 
-  it('shows the rounds without the ways to open, drop or swap a workspace', async () => {
+  it('never shows the Workspace, so no way to open, drop or swap one', async () => {
     started();
     window.location.hash = '#/';
     render(<App autoOpenExample={false} initialSource={fixtureSource()} />);
-    await screen.findByText('The test rounds of this requirement.');
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Reload' })).toBeInTheDocument());
+    await waitFor(() => expect(window.location.hash).toBe('#/author'));
+    expect(screen.queryByText('The test rounds of this requirement.')).toBeNull();
     expect(screen.queryByRole('heading', { name: 'Open a folder' })).toBeNull();
     expect(screen.queryByRole('heading', { name: 'Drop a folder' })).toBeNull();
-    expect(screen.queryByRole('button', { name: 'Close' })).toBeNull();
   });
 
   it('does not show a report banner (a researcher note) to participants', async () => {

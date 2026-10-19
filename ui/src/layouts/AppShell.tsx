@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { routeHash, type Route } from '@/state/route';
 import { useWorkspace } from '@/state/WorkspaceContext';
 import { STUDY } from '@/study/config';
+import { authorTitle } from '@/study/labels';
 import { loadSession } from '@/study/session';
 import { cx } from '@/utils/format';
 
@@ -21,45 +22,53 @@ export function AppShell({ route, children }: { route: Route; children: ReactNod
       >
         Skip to content
       </a>
-      <header className="glass sticky top-0 z-30 border-b border-border/70">
+      <header className="app-header sticky top-0 z-30">
         <div className="mx-auto flex min-h-12 max-w-[80rem] flex-wrap items-center gap-x-5 gap-y-2 px-5 py-2 lg:px-8">
           <a
-            href="#/"
-            className="flex items-center gap-2 text-sm font-semibold tracking-tight text-text no-underline hover:no-underline"
+            href={STUDY ? routeHash({ screen: 'overview' }) : '#/'}
+            className="flex items-center gap-2 text-sm font-semibold tracking-tight text-white no-underline hover:no-underline"
           >
-            <span
-              aria-hidden="true"
-              className="inline-block size-5 rounded-md bg-gradient-to-br from-human to-[#ff8a5c]"
-            />
-            real-av
+            <span aria-hidden="true" className="inline-block size-5 rounded-md bg-header-marker" />
+            REAL
           </a>
           <nav aria-label="Screens" className="flex items-center gap-0.5">
-            {(
-              [
-                {
-                  route: { screen: 'workspace' } as Route,
-                  label: 'Workspace',
-                  active: route.screen === 'workspace',
-                },
-                {
-                  route: { screen: 'author' } as Route,
-                  label: 'Write a requirement',
-                  active: route.screen === 'author',
-                },
-                {
-                  route: { screen: 'lineage' } as Route,
-                  label: 'Rounds',
-                  active: route.screen === 'lineage',
-                },
-              ] as const
-            ).map((item) => (
+            {[
+              {
+                route: { screen: 'overview' } as Route,
+                label: 'Overview',
+                active: route.screen === 'overview',
+              },
+              // the study has no Workspace: its one round opens from the run
+              ...(STUDY
+                ? []
+                : [
+                    {
+                      route: { screen: 'workspace' } as Route,
+                      label: 'Workspace',
+                      active: route.screen === 'workspace',
+                    },
+                  ]),
+              {
+                route: { screen: 'author' } as Route,
+                label: authorTitle(),
+                active: route.screen === 'author',
+              },
+              {
+                route: { screen: 'lineage' } as Route,
+                label: 'Rounds',
+                active: route.screen === 'lineage',
+              },
+            ].map((item) => (
               <a
                 key={item.label}
                 href={routeHash(item.route)}
                 aria-current={item.active ? 'page' : undefined}
                 className={cx(
-                  'rounded-md px-2.5 py-1 text-sm no-underline transition-colors duration-fast hover:no-underline',
-                  item.active ? 'bg-fill font-medium text-text' : 'text-text-muted hover:text-text',
+                  // white on the header (13.9:1); the active page is bold and carries a white bar
+                  'border-b-[3px] px-2.5 py-1 text-sm text-white no-underline transition-colors duration-fast hover:no-underline',
+                  item.active
+                    ? 'border-header-marker font-semibold'
+                    : 'border-transparent opacity-85 hover:border-white/50 hover:opacity-100',
                 )}
               >
                 {item.label}
@@ -67,17 +76,16 @@ export function AppShell({ route, children }: { route: Route; children: ReactNod
             ))}
           </nav>
           {STUDY ? (
-            <span className="ml-auto text-xs text-text-muted">
-              Participant{' '}
-              <span className="font-mono font-semibold text-text">{loadSession()?.id}</span>
+            <span className="ml-auto text-xs text-white">
+              Participant <span className="font-mono font-semibold">{loadSession()?.id}</span>
             </span>
           ) : inReview ? (
-            <span className="ml-auto text-xs text-text-muted">
-              Reviewing run <span className="font-mono text-text">{route.runId.slice(0, 8)}</span>
+            <span className="ml-auto text-xs text-white">
+              Reviewing run <span className="font-mono">{route.runId.slice(0, 8)}</span>
               {workspace?.source.isExample ? ' · example data' : ''}
             </span>
           ) : workspace ? (
-            <span className="ml-auto text-xs text-text-muted">
+            <span className="ml-auto text-xs text-white">
               {workspace.source.label}
               {workspace.source.isExample ? ' · example data' : ''}
             </span>

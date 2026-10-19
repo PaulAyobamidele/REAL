@@ -3,11 +3,12 @@ import { useEffect, useState } from 'react';
 import { AppShell } from '@/layouts/AppShell';
 import { AuthorPage } from '@/pages/AuthorPage';
 import { LineagePage } from '@/pages/LineagePage';
+import { OverviewPage } from '@/pages/OverviewPage';
 import { ReviewPage } from '@/pages/ReviewPage';
 import { WorkspacePage } from '@/pages/WorkspacePage';
 import type { FileSource } from '@/services/workspace';
 import { DraftProvider } from '@/state/DraftContext';
-import { useRoute } from '@/state/route';
+import { routeHash, useRoute } from '@/state/route';
 import { WorkspaceProvider } from '@/state/WorkspaceContext';
 import { STUDY } from '@/study/config';
 import { startLog } from '@/study/log';
@@ -21,9 +22,17 @@ import { useStudyRouteLog } from '@/study/useStudyRouteLog';
 function Screens() {
   const [route] = useRoute();
   useStudyRouteLog(route); // study build: screens and steps entered and left; no-op otherwise
+  // the study has no Workspace: its address leads to the requirement under test
+  const noWorkspace = STUDY && route.screen === 'workspace';
+  useEffect(() => {
+    if (noWorkspace) window.location.replace(routeHash({ screen: 'author' }));
+  }, [noWorkspace]);
   return (
     <AppShell route={route}>
-      {route.screen === 'workspace' ? <WorkspacePage focusRuns={route.runs ?? null} /> : null}
+      {route.screen === 'overview' ? <OverviewPage /> : null}
+      {route.screen === 'workspace' && !STUDY ? (
+        <WorkspacePage focusRuns={route.runs ?? null} />
+      ) : null}
       {route.screen === 'lineage' ? <LineagePage /> : null}
       {route.screen === 'author' ? <AuthorPage /> : null}
       {route.screen === 'review' ? (
