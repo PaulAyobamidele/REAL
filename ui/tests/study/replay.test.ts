@@ -25,7 +25,7 @@ beforeEach(() => {
   window.localStorage.clear();
   window.localStorage.setItem(
     'real-av.study.session',
-    JSON.stringify({ id: 'S-TEST', profession: 'Student', started_at: '', build: 'dev' }),
+    JSON.stringify({ id: 'S-TEST', expertise: 'Student', started_at: '', build: 'dev' }),
   );
   startLog('S-TEST');
   serveStudySite();

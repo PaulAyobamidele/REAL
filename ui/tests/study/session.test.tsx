@@ -31,19 +31,23 @@ describe('the participant', () => {
     for (const id of ids) expect(id).toMatch(/^S-[ABCDEFGHJKMNPQRSTUVWXYZ23456789]{4}$/);
   });
 
-  it('must give a background; "Other" needs words; starting saves and logs the session', () => {
+  it('shows the tool, asks for expertise in words, and saves and logs the session', () => {
     const onStart = vi.fn();
     render(<StartScreen onStart={onStart} />);
+    expect(screen.getByRole('heading', { level: 1, name: 'REAL' })).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'A Tool for Refining Autonomous Systems Requirements through Compliance Failure Analysis',
+      ),
+    ).toBeInTheDocument();
     const start = screen.getByRole('button', { name: 'Start' });
     expect(start).toBeDisabled();
-    fireEvent.click(screen.getByRole('radio', { name: 'Other' }));
-    expect(start).toBeDisabled();
-    fireEvent.change(screen.getByLabelText('Your background, in your words'), {
-      target: { value: 'test pilot' },
+    fireEvent.change(screen.getByLabelText('Your expertise'), {
+      target: { value: '  test pilot  ' },
     });
     fireEvent.click(start);
-    const session = onStart.mock.calls[0]?.[0] as { id: string; profession: string };
-    expect(session.profession).toBe('Other: test pilot');
+    const session = onStart.mock.calls[0]?.[0] as { id: string; expertise: string };
+    expect(session.expertise).toBe('test pilot');
     expect(loadSession()?.id).toBe(session.id); // a reload resumes it
     expect(events(session.id)).toMatchObject([{ event: 'session_start', participant: session.id }]);
   });

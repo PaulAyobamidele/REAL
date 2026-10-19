@@ -45,7 +45,7 @@ beforeEach(() => {
   window.localStorage.clear();
   window.localStorage.setItem(
     'real-av.study.session',
-    JSON.stringify({ id: 'S-7K3Q', profession: 'Student', started_at: '', build: 'dev' }),
+    JSON.stringify({ id: 'S-7K3Q', expertise: 'Student', started_at: '', build: 'dev' }),
   );
 });
 

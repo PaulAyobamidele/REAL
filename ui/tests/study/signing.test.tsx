@@ -68,7 +68,7 @@ beforeEach(() => {
     'real-av.study.session',
     JSON.stringify({
       id: 'S-TEST',
-      profession: 'Student',
+      expertise: 'Student',
       started_at: '2026-10-18T09:00:00Z',
       build: 'dev',
     }),
@@ -133,7 +133,7 @@ describe('signing in the study build', () => {
     expect(doc.reviewer).toBe('S-TEST');
     expect(doc.study).toMatchObject({
       participant: 'S-TEST',
-      profession: 'Student',
+      expertise: 'Student',
       car: 'C2',
       verdicts_hidden: true,
       r1_written_by_tool: true,

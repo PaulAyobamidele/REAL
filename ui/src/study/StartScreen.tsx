@@ -1,19 +1,18 @@
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 
+import { Instructions } from '@/components/ui/Instructions';
 import { Button } from '@/components/ui/Button';
-import { cx } from '@/utils/format';
 
-import { PROFESSIONS } from './config';
 import { logEvent, startLog } from './log';
 import { newId, newSession, saveSession, type StudySession } from './session';
+import { StudyHeader } from './StudyHeader';
 
-/** The study's first screen: the participant's background and their anonymous ID. */
+/** The study's first screen: the tool's name, the participant's expertise in their words, their anonymous ID. */
 export function StartScreen({ onStart }: { onStart: (s: StudySession) => void }) {
   const id = useMemo(newId, []);
-  const [profession, setProfession] = useState<string | null>(null);
-  const [other, setOther] = useState('');
-  const isOther = profession === 'Other';
-  const value = isOther ? (other.trim() ? `Other: ${other.trim()}` : null) : profession;
+  const fieldId = useId();
+  const [expertise, setExpertise] = useState('');
+  const value = expertise.trim();
 
   const start = () => {
     if (!value) return;
@@ -23,61 +22,54 @@ export function StartScreen({ onStart }: { onStart: (s: StudySession) => void })
     logEvent({
       screen: 'start',
       event: 'session_start',
-      new: { profession: value, build: session.build },
+      new: { expertise: value, build: session.build },
     });
+    window.location.hash = '#/overview'; // the first page after Start: what the study is
     onStart(session);
   };
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-xl flex-col justify-center gap-6 px-5 py-10">
-      <div className="flex flex-col gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight">Welcome</h1>
-        <p className="text-sm text-text">
+    <>
+      <StudyHeader />
+      <main className="mx-auto flex min-h-[calc(100dvh-3rem)] max-w-xl flex-col items-center justify-center gap-7 px-5 py-10 text-center">
+        <div className="flex flex-col items-center gap-3">
+          <h1 className="text-5xl font-bold tracking-tight">REAL</h1>
+          <p className="text-lg text-text-muted">
+            A Tool for Refining Autonomous Systems Requirements through Compliance Failure Analysis
+          </p>
+        </div>
+        <Instructions className="w-full">
           You will review one test round of an automated-braking car and decide what its failures
           mean and what to do about them. There are no right answers. We are interested in your
           judgement.
-        </p>
-      </div>
-      <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 text-sm font-medium">Your background</legend>
-        <div role="radiogroup" aria-label="Your background" className="flex flex-col gap-1.5">
-          {[...PROFESSIONS, 'Other'].map((p) => (
-            <button
-              key={p}
-              type="button"
-              role="radio"
-              aria-checked={profession === p}
-              onClick={() => setProfession(p)}
-              className={cx(
-                'rounded-lg border px-3 py-2 text-left text-sm transition-colors',
-                profession === p
-                  ? 'border-human bg-human-soft/40 font-medium'
-                  : 'border-border hover:border-border-strong',
-              )}
-            >
-              {p}
-            </button>
-          ))}
-        </div>
-        {isOther ? (
+        </Instructions>
+        <form
+          className="flex w-full flex-col items-center gap-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            start();
+          }}
+        >
+          <label htmlFor={fieldId} className="text-sm font-medium">
+            Your expertise
+          </label>
           <input
-            aria-label="Your background, in your words"
-            value={other}
-            onChange={(e) => setOther(e.target.value)}
-            placeholder="in a few words"
-            className="mt-1 rounded-lg border border-border bg-surface-raised px-3 py-1.5 text-sm"
+            id={fieldId}
+            value={expertise}
+            onChange={(e) => setExpertise(e.target.value)}
+            placeholder="e.g., Robotic Requirement Engineering, Legal Compliance"
+            autoComplete="off"
+            className="w-full rounded-lg border border-border-strong bg-surface-raised px-3 py-2 text-center text-sm text-text placeholder:text-text-faint focus-visible:border-human focus-visible:outline-none"
           />
-        ) : null}
-      </fieldset>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-text-muted">
-          Your anonymous ID: <span className="font-mono font-semibold text-text">{id}</span> (shown
-          on every screen)
-        </p>
-        <Button variant="primary" onClick={start} disabled={!value}>
-          Start
-        </Button>
-      </div>
-    </main>
+          <p className="text-sm text-text-muted">
+            Your anonymous ID: <span className="font-mono font-semibold text-text">{id}</span>{' '}
+            (shown on every screen)
+          </p>
+          <Button variant="primary" type="submit" disabled={!value}>
+            Start
+          </Button>
+        </form>
+      </main>
+    </>
   );
 }

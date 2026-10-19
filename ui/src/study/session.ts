@@ -4,8 +4,8 @@ import { BUILD } from './config';
 export interface StudySession {
   /** S-XXXX, random, carries no meaning */
   id: string;
-  /** one of PROFESSIONS, or "Other: <text>" */
-  profession: string;
+  /** the participant's expertise, in their own words */
+  expertise: string;
   started_at: string;
   build: string;
 }
@@ -18,15 +18,15 @@ export function newId(): string {
   return `S-${Array.from(bytes, (b) => ALPHABET[b % ALPHABET.length]).join('')}`;
 }
 
-export function newSession(id: string, profession: string): StudySession {
-  return { id, profession, started_at: new Date().toISOString(), build: BUILD };
+export function newSession(id: string, expertise: string): StudySession {
+  return { id, expertise, started_at: new Date().toISOString(), build: BUILD };
 }
 
 export function loadSession(): StudySession | null {
   try {
     const raw = window.localStorage.getItem(KEY);
     const s = raw ? (JSON.parse(raw) as StudySession) : null;
-    return s && typeof s.id === 'string' && typeof s.profession === 'string' ? s : null;
+    return s && typeof s.id === 'string' && typeof s.expertise === 'string' ? s : null;
   } catch {
     return null;
   }

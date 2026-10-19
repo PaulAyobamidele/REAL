@@ -58,7 +58,7 @@ export async function signStudy(input: {
     ...input.doc,
     study: {
       participant: session.id,
-      profession: session.profession,
+      expertise: session.expertise,
       started_at: session.started_at,
       signed_at: signedAt.toISOString(),
       build: session.build,
