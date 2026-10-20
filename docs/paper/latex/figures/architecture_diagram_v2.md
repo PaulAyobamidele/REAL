@@ -204,11 +204,13 @@ detector and controller run in the loop.
   under the Validity check, so the *no* branch goes **straight up** into it
   and the *yes* branch is the only line in the left margin; nothing crosses,
   and both labels sit horizontally inside the frame beside their line.
-- **One actor glyph, only where it matters:** the engineer inside the two
-  components a person operates (Requirement editor, Review interface). The
-  robot glyph was tried in every automated component and dropped (owner,
-  2026-10-20): automation is the default and marking it everywhere was noise;
-  the legend states once that every other component runs automatically.
+- **Actor glyphs only where they matter (owner, 2026-10-20):** the engineer
+  inside the two components a person operates (Requirement editor, Review
+  interface); the robot inside the five that automate work the framework
+  paper left to people (Requirement check, Validity check, Failure
+  classifier, Obstacle analyser, Requirement writer). None on stage 2, whose
+  automation is obvious and whose tools are reused; a robot in every
+  automated box was tried and rejected as noise.
 - **Artefacts named by function:** `run folder` → *execution traces (results,
   metadata)*; `decisions.json` → *signed decisions (+ R₁ with its changes,
   labelled [S] [D] [R])*. File names belong in the text, not the figure.
