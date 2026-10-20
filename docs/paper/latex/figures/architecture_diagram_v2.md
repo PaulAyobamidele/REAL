@@ -191,3 +191,25 @@ Loop labels as drawn: *[D] [R]: re-diagnosed, no new simulation*;
 *[S]: next round, R₁ is the new input*. The system under test touches the
 simulator box (one unit), as in the model figure; the caption says the
 detector and controller run in the loop.
+
+## 8. Revision of 2026-10-20 (owner's review: strict flowchart rules, icons, names)
+
+- **Shapes, strictly:** rectangle = process (component); parallelogram =
+  input/output (artefact; stacked = a set); **diamond = decision**; frame =
+  stage. Rounded boxes dropped (a pill is a terminator in the convention).
+- **The branch after stage 4 is drawn as a decision** `[S] changed?`:
+  *yes* → next round from stage 1 (R₁ is the new input); *no* ([D] [R] only)
+  → stage 3 re-diagnoses the stored traces. The two red loop lines cross once
+  outside the frames; the crossing carries a **line-jump** (they do not
+  connect).
+- **Actors inside the box they index, one icon size (0.14 in):** the robot
+  in every component that runs automatically; the engineer in the two
+  components a person operates (Requirement editor, Review interface). No
+  icons in stage titles or on artefacts.
+- **Artefacts named by function:** `run folder` → *execution traces (results,
+  metadata)*; `decisions.json` → *signed decisions (+ R₁ with its changes,
+  labelled [S] [D] [R])*. File names belong in the text, not the figure.
+- Legend: 12 entries over two lines (shapes, decision, stage, two actors;
+  three provenances, data flow, loop back).
+- Icons: Flaticon (`icons/ATTRIBUTION.md`); attribution to complete before
+  submission or swap for a licence-free set.

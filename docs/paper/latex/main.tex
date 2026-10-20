@@ -74,9 +74,12 @@ CARLA through Scenic with the detector and the braking controller in the loop; a
 safety monitor records every run. (3)~Each run is judged valid or spurious against
 $R_0$'s assumptions, failures are typed from their traces and grouped into
 obstacles with evidence. (4)~The engineer decides each obstacle and assumption in
-the review interface; the tool writes $R_1$ with every change labelled. [D] and [R]
-changes are re-diagnosed on the stored traces; an [S] change starts the next
-round. Violet~$\bigstar$: new in this paper. Orange: reused from the REAL framework
+the review interface; the tool writes $R_1$ with every change labelled. If the
+system changed ([S]), the next round starts from stage~1 with $R_1$; if only
+assumptions or the requirement changed ([D], [R]), stage~3 re-diagnoses the
+stored traces without new simulation. Rectangles are components, parallelograms
+artefacts, the diamond a decision; a robot marks what runs automatically, a
+hard hat what the engineer operates. Violet~$\bigstar$: new in this paper. Orange: reused from the REAL framework
 package~\cite{real2026}. Grey, dashed: existing tools~\cite{carla2017,scenic2023,grape2022}.
 Yellow: artefacts. Icons: Flaticon~\todo{authors' names per Flaticon's attribution rule}. (Regenerate: \texttt{figures/make\_fig1\_v2.py}.)}
 \label{fig:arch}
