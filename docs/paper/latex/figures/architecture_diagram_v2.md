@@ -199,9 +199,11 @@ detector and controller run in the loop.
   stage. Rounded boxes dropped (a pill is a terminator in the convention).
 - **The branch after stage 4 is drawn as a decision** `[S] changed?`:
   *yes* → next round from stage 1 (R₁ is the new input); *no* ([D] [R] only)
-  → stage 3 re-diagnoses the stored traces. The two red loop lines cross once
-  outside the frames; the crossing carries a **line-jump** (they do not
-  connect).
+  → stage 3 re-diagnoses the stored traces. Routing (revised the same day
+  after the owner found the corner cluttered): the diamond sits directly
+  under the Validity check, so the *no* branch goes **straight up** into it
+  and the *yes* branch is the only line in the left margin; nothing crosses,
+  and both labels sit horizontally inside the frame beside their line.
 - **Actors inside the box they index, one icon size (0.14 in):** the robot
   in every component that runs automatically; the engineer in the two
   components a person operates (Requirement editor, Review interface). No

@@ -196,27 +196,24 @@ y, yc = 0.30, 0.45
 component(5.50, y, 1.38, BH, "new", "engineer", "Review interface", ["five steps · mitigation menu"])
 component(3.70, y, 1.45, BH, "new", "robot", "Requirement writer", [r"R$_1$ with labelled changes"])
 artefact(2.25, y, 1.20, BH, "signed decisions", [r"+ R$_1$ with its changes", "labelled [S] [D] [R]"])
-DX, DY, DHW, DHH = 1.55, yc, 0.30, 0.145
+DX, DY, DHW, DHH = 1.70, yc, 0.30, 0.145
 decision(DX, DY, DHW, DHH, ["[S]", "changed?"])
 arrow([(5.50, yc), (5.15, yc)])
 arrow([(3.70, yc), (3.45 - SKEW / 2, yc)])
 arrow([(2.25 + SKEW / 2, yc), (DX + DHW, yc)])
 arrow([(6.19, 0.94), (6.19, y + BH)])              # the diagnosis opens in the review interface
 
-# ---- the two loops back (red) from the decision ---------------------------
-# no: only [D] or [R] changed -> re-diagnosed on the stored traces (into stage 3)
-arrow([(DX - DHW, DY), (0.29, DY), (0.29, 1.09), (0.70, 1.09)], color=LOOP, lw=1.1)
-text(0.34, 0.39, "no ([D] [R] only):", style="italic", color=LOOP, va="center", fit=DX - DHW - 0.38)
-text(0.34, 0.30, "re-diagnosed, no new run", style="italic", color=LOOP, va="center", fit=DX - DHW - 0.38)
-# yes: the system changed -> next round from stage 1, R1 is the new input
-YES_Y = 0.655
-import math
-jump = [(0.29 + 0.05 * math.cos(math.radians(a)), YES_Y + 0.05 * math.sin(math.radians(a)))
-        for a in range(0, 181, 15)]                 # a line-jump over the "no" line: they do not connect
-arrow([(DX, DY + DHH), (DX, YES_Y), (0.34, YES_Y)] + jump + [(0.24, YES_Y), (0.16, YES_Y),
-       (0.16, 2.44), (0.52, 2.44)], color=LOOP, lw=1.1)
-text(0.20, YES_Y - 0.06, r"yes: next round, R$_1$ is the new input", style="italic", color=LOOP,
-     va="center", fit=DX - 0.26)
+# ---- the two branches of the decision (red loops) --------------------------
+# no: only [D] or [R] changed -> stage 3 re-diagnoses the stored traces; the
+# validity check sits directly above the diamond, so the branch goes straight up
+arrow([(DX, DY + DHH), (DX, 0.94)], color=LOOP, lw=1.1)
+text(DX + 0.08, 0.80, "no, only [D] or [R] changed:", style="italic", color=LOOP, va="center", fit=1.5)
+text(DX + 0.08, 0.71, "re-diagnosed on the stored traces", style="italic", color=LOOP, va="center", fit=1.5)
+# yes: the system changed -> next round from stage 1 with R1 as the input; the
+# only line in the left margin, so nothing crosses
+arrow([(DX - DHW, DY), (0.16, DY), (0.16, 2.44), (0.52, 2.44)], color=LOOP, lw=1.1)
+text(0.47, 0.64, "yes, the system changed:", style="italic", color=LOOP, va="center", fit=DX - DHW - 0.50)
+text(0.47, 0.55, r"next round with R$_1$", style="italic", color=LOOP, va="center", fit=DX - DHW - 0.50)
 
 # ------------------------------------------------------------------ legend, two lines
 def legend_item(lx, ly, draw, label):
