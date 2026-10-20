@@ -1,0 +1,209 @@
+% Sections II-V for the ICSE 2027 tool paper. Drop-in after the Introduction.
+% \toolname is the tool's name (the Introduction currently calls both the
+% method and the tool "REAL"; a distinct tool name avoids that ambiguity).
+% Every claim below is implemented; results the study has not produced yet are
+% marked \todo{} and must not be filled with estimates.
+\providecommand{\toolname}{REAL}
+\providecommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+
+\section{Background}
+\label{sec:background}
+
+REAL~\cite{real2026} builds on Zave and Jackson's entailment
+$D, S \models R$~\cite{zave1997}: a system specification $S$, under domain
+assumptions $D$, must satisfy the requirement $R$. A failure is therefore
+evidence against $S$ only if $D$ held when it occurred. REAL calls such a
+failure \emph{valid}; a failure in a situation that breaks $D$, i.e.\ outside
+the operational design domain (ODD), is \emph{spurious}. Valid failures are
+read as \emph{obstacles} in the KAOS sense~\cite{lamsweerde2000}: conditions
+under which a goal cannot be satisfied. REAL iterates
+\emph{identify--analyse--mitigate}: a grammar generates test scenarios from
+the requirement, failures are grouped into obstacles, and each obstacle is
+resolved at one of four layers: the data, the model, the system around the
+model, or the requirement itself. REAL describes this loop; it gives no
+tool support for running it.
+
+\section{\toolname}
+\label{sec:tool}
+
+\toolname{} supports one round of the loop in four stages
+(Fig.~\ref{fig:arch}). The engineer writes the requirement and decides;
+everything else runs automatically, and each computed result is shown with
+the evidence behind it. The stages exchange four artefacts: the checked
+requirement, the execution traces, the diagnosis, and the signed decisions.
+
+\subsection{Stage 1: Specify}
+\label{sec:specify}
+Requirements are written in the REAL DSL~\cite{real2026}, which
+\toolname{} extends with explicit slots for the three parts of the entailment:
+\begin{itemize}
+\item a goal refined into tasks, each \texttt{performed by} a named module
+(the system $S$, e.g.\ a detector and a braking controller);
+\item \texttt{assuming} clauses (the domain $D$), e.g.\
+\texttt{"fog\_density <= 50"}, written over quantities the simulator can
+measure, or as free text that is recorded but not checked;
+\item \texttt{ensuring} clauses (soft goals in $R$), e.g.\
+\texttt{"resume\_within\_s <= 10"}.
+\end{itemize}
+The \emph{requirement editor} presents the requirement as text with gaps.
+Bounded choices are menus read from the code: the modules the executor
+implements, the measurable quantities, the operators. The \emph{DSL parser}
+checks every edit and marks the line it rejects, and the requirement can be
+viewed as a goal tree or a KAOS diagram. The \emph{requirement check} then
+applies two refusals that keep the entailment honest. An assumption about the
+system under test (any quantity of the car itself) is rejected, since it
+would let any failure be defined away. A misspelt or unimplemented module
+name is rejected instead of silently running a different system. The stage
+yields $R_0$, checked, with its goal model.
+
+\subsection{Stage 2: Generate and Execute Tests}
+\label{sec:generate}
+A BNF grammar defines the scenario space from the requirement; its factors
+are the pedestrian, clothing, direction of crossing, fog, time of day, road
+wetness and an occluding parked car. The \emph{scenario search} enumerates
+the space exhaustively (a grid) or explores it by grammatical
+evolution~\cite{oneill2001,grape2022}, which deliberately goes beyond the
+stated assumptions. Each scenario becomes a Scenic program~\cite{scenic2023}
+executed in CARLA~\cite{carla2017} with the system under test in the loop:
+the named detector and braking controller. A \emph{safety monitor} scores
+every run and a \emph{telemetry recorder} writes its per-step trace:
+distance to the pedestrian, car and pedestrian speed, detector confidence,
+and the pedestrian's position relative to the lane. The stage runs as a job
+on a GPU cluster. Before any cluster time is spent, two checks run: every
+scene is compiled on the laptop against the real map, and the cluster's copy
+of the code is compared with the local one. The run panel follows the job,
+shows partial results as simulations finish, and retrieves the execution
+traces when it ends.
+
+\subsection{Stage 3: Diagnose}
+\label{sec:diagnose}
+The diagnosis reads the execution traces, never the simulator. The outcome
+of each run is computed from its trace under a path-aware safety rule: the
+car must keep a 5\,m margin while the pedestrian is in its lane. The same
+function scores the run in the cluster's monitor, in the search's fitness
+and here, so a search cannot exploit a rule the analysis does not use. Three
+components turn the runs into a diagnosis.
+\begin{itemize}
+\item \emph{Validity check.} For every run, each \texttt{assuming} clause is
+\emph{held}, \emph{broken} or \emph{not measured}, and a failure is spurious
+only if a clause was broken; each \texttt{ensuring} clause is met or missed.
+Runs in which the test itself did not happen (no encounter, the car left the
+road, the pedestrian never entered the lane) are set aside and listed as test
+defects, never counted as passes.
+\item \emph{Failure classifier.} Each valid failure is typed by what its
+trace shows: never detected, detected but not braked, detected too late,
+brake released, braking insufficient, or stopped too close. Passes in which
+the car stopped and never drove on are kept as their own type, since a car
+that freezes is safe yet still misses its soft goal.
+\item \emph{Obstacle analyser.} Obstacles from a catalogue (e.g.\
+\textsc{AdverseWeather}, \textsc{DetectionTooLate}) and unnamed candidates
+are retained only when a scenario factor raises the failure rate by at least
+15 points with at least 10 failures. Each obstacle is attached to the goal it
+blocks in the goal model and comes with its failure rates by factor level,
+example traces, and candidate mitigations per layer. Each assumption also
+receives a verdict: \emph{load-bearing} (failures rise when it is broken),
+\emph{not load-bearing}, \emph{fewer failures when broken}, \emph{untested},
+or \emph{insufficient data}, so the question \emph{``was this assumption
+needed?''} is answered from the data.
+\end{itemize}
+A map of behaviours complements the diagnosis: every valid encounter is
+placed by an edit distance over its sequence of events (multidimensional
+scaling with hierarchical clustering); the map reports its own faithfulness
+and silhouette, and labels weak clusters as neighbourhoods, not types.
+
+\subsection{Stage 4: Decide and Refine}
+\label{sec:decide}
+In the \emph{review interface} the engineer decides each obstacle:
+\emph{accept}, \emph{rename}, \emph{reject} or \emph{defer}, with a reason
+in their own words; chooses, for each accepted obstacle, a mitigation from a
+menu spanning the data, model, system and requirement layers; and rules on
+each assumption: keep, tighten, loosen, drop, or add one. The tool's verdicts
+are suggestions only; nothing is decided without the engineer. From the
+decisions, the \emph{requirement writer} produces $R_1$ next to $R_0$ with
+every change labelled by the part of the entailment it touches: [S] the
+system, [D] an assumption, [R] the requirement, or [T] the test itself (a
+defect in the scene, which is fixed rather than blamed on the system). The
+engineer signs, which records the signed decisions: each verdict, reason and
+mitigation, the reviewer, and the run they rest on; a requirement that does
+not parse or cannot be executed as written cannot be signed. The labels
+decide what happens next (the diamond in Fig.~\ref{fig:arch}): if the system
+changed ([S]), the next round starts from stage~1 with $R_1$ as its input; if
+only assumptions or the requirement changed ([D], [R]), stage~3 re-diagnoses
+the stored traces in seconds, with no new simulation. Each new run records
+its parent run and the decision that caused it, so the lineage view shows how
+a requirement evolved and why.
+
+\subsection{Implementation}
+\label{sec:impl}
+The back end is written in Python: the DSL parser, a FastAPI service that
+drives Scenic and CARLA, the analysis, and the job control (Slurm with an
+Apptainer image). The front end is a React/TypeScript single-page
+application. Every result is a file in a run folder (metadata with code and
+grammar hashes, per-simulation tables, traces), so any analysis can be
+recomputed from the traces without the simulator. A Docker image runs the
+complete review loop on recorded rounds without a GPU or simulator. The tool
+has \todo{N} automated tests, none of which needs the simulator.
+
+\section{Preliminary Evaluation}
+\label{sec:eval}
+
+We ask: \textbf{RQ}: \emph{How effective is \toolname{} in helping engineers
+validate and refine autonomous-system requirements and domain assumptions?}
+Engineers may legitimately disagree on what a failure means, so we measure
+what the diagnoses lead people to do, and where they diverge, rather than
+agreement with a single answer.
+
+\textbf{Subject.} An automated-braking system (a YOLOv5 detector and a
+proportional braking controller) under a requirement assuming
+\texttt{fog\_density <= 50}, \texttt{sun\_altitude\_angle >= 0} (no night),
+an initial separation of at least 15\,m and a pedestrian speed of at most
+3\,m/s, and ensuring that the car drives on within 10\,s. The grammar
+enumerates 288 scenarios (pedestrian $\times$ clothing $\times$ direction
+$\times$ 3 fog levels $\times$ 3 times of day $\times$ dry/wet road
+$\times$ occlusion), each run 3 times. One fog level and one time of day lie
+outside the assumptions by design, so 160 of the 288 scenarios break at
+least one assumption and their failures must be judged spurious. This gives
+the validity check a ground truth: every simulation's verdict
+(held/broken) must match its scenario's grammar levels.
+
+\textbf{Pre-computed follow-ups.} The same 288 scenarios, with the same
+seeds, are also run for three variants of the system: a path-aware braking
+controller, a larger detector (YOLOv5m), and both. A participant who mitigates
+at the system layer therefore sees the result of their choice on identical
+scenarios. Decisions at other layers are re-judged on the stored traces, or
+recorded when they fall outside the four variants.
+
+\textbf{Procedure.} \todo{N} participants with software-engineering, ML or
+automotive background each review the same pre-computed round independently,
+after a fixed briefing and a guided tour on a training round. The tool's
+suggested verdicts are hidden. \toolname{} records every interaction per
+participant: \texttt{decisions.json}, an append-only time-stamped log of
+verdicts, changes, evidence opened and time per decision, and the signed
+$R_1$.
+
+\textbf{Measures.} Per participant: (M1) obstacles accepted, renamed,
+rejected and deferred; (M2) requirements and domain assumptions refined, by
+label [S]/[D]/[R]/[T] and mitigation layer; (M3) diagnoses reported as
+unhelpful; (M4) the before/after result of their revised requirement.
+Across participants: where decisions on the same obstacle converge and where
+they diverge.
+
+\textbf{Results.} \todo{From the study: M1--M4, the divergence analysis, and
+the validity check on the pre-computed space.}
+
+\textbf{Early evidence.} In the authors' own use, the loop shifted a failure
+mode rather than removing it. In round~1, emergency braking failed 91 of 120
+encounters (76\%). Switching to proportional braking ([S]) reduced failures
+to 4 of 128 (3\%), but the car now stopped in 113 of its passes and never
+drove on. The per-step traces also exposed defects in our own test scene
+(e.g.\ a pedestrian who never crossed), which \toolname{} labels [T] rather
+than blaming the system.
+
+\section{Conclusion}
+\label{sec:conclusion}
+\toolname{} turns REAL's failure-driven loop into a tool. The requirement
+keeps the system, the domain and the requirement apart, and the tool checks
+the domain assumptions for every simulation. It groups valid failures into
+obstacles with evidence, and records the engineer's decisions as a labelled,
+signed revision linked to the runs behind it. Next, we will report the study
+and extend the system variants beyond braking and perception.
