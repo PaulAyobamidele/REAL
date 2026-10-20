@@ -213,5 +213,7 @@ detector and controller run in the loop.
   labelled [S] [D] [R])*. File names belong in the text, not the figure.
 - Legend: 12 entries over two lines (shapes, decision, stage, two actors;
   three provenances, data flow, loop back).
-- Icons: Flaticon (`icons/ATTRIBUTION.md`); attribution to complete before
-  submission or swap for a licence-free set.
+- Icons: the two actor glyphs (robot, engineer with a hard hat) are drawn
+  by the script as vector patches (owner's choice, 2026-10-20, over Flaticon
+  icons that would have needed a credit line). No licence, no raster: the
+  PDF is fully vector.

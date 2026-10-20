@@ -4,8 +4,8 @@ architecture_diagram_v2.md.
 
     python docs/paper/latex/figures/make_fig1_v2.py
 
-Writes fig1_architecture_v2.pdf (vector text, TrueType fonts, no Type 3; the
-two icons are embedded rasters) and a PNG preview next to this file. Every
+Writes fig1_architecture_v2.pdf (fully vector: TrueType fonts, no Type 3,
+the two actor glyphs drawn as patches) and a PNG preview next to this file. Every
 text is measured; the script stops if a line overflows its box or the
 legend overflows the width.
 
@@ -24,7 +24,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon, Rectangle
+from matplotlib.patches import Circle, FancyBboxPatch, Polygon, Rectangle, Wedge
 
 matplotlib.rcParams.update({
     "pdf.fonttype": 42, "ps.fonttype": 42,
@@ -54,7 +54,6 @@ ax.set_ylim(0, H)
 ax.axis("off")
 renderer = fig.canvas.get_renderer()
 OVERFLOWS = []
-ICONS = {n: plt.imread(os.path.join(HERE, "icons", f"{n}.png")) for n in ("robot", "engineer")}
 
 
 def wid(artist):
@@ -68,13 +67,42 @@ def text(x, y, s, size=T_SUB, fit=None, **kw):
     return t
 
 
+def glyph_robot(cx, cy, h):
+    """The tool: a robot (antenna, visor with two eyes, body), drawn as vector patches."""
+    s = h
+    ax.plot([cx, cx], [cy + 0.30 * s, cy + 0.41 * s], color=INK, lw=0.6, zorder=9)
+    ax.add_patch(Circle((cx, cy + 0.45 * s), 0.05 * s, fc="#D9402B", ec=INK, lw=0.4, zorder=9))
+    ax.add_patch(FancyBboxPatch((cx - 0.36 * s, cy - 0.10 * s), 0.72 * s, 0.40 * s,
+                                boxstyle=f"round,pad=0,rounding_size={0.08 * s}",
+                                fc="#ECECEC", ec=INK, lw=0.6, zorder=9))
+    ax.add_patch(FancyBboxPatch((cx - 0.26 * s, cy + 0.02 * s), 0.52 * s, 0.18 * s,
+                                boxstyle=f"round,pad=0,rounding_size={0.04 * s}", fc=INK, ec="none", zorder=10))
+    for dx in (-0.12, 0.12):
+        ax.add_patch(Circle((cx + dx * s, cy + 0.11 * s), 0.035 * s, fc="#BFD8F5", ec="none", zorder=11))
+    ax.add_patch(Rectangle((cx - 0.08 * s, cy - 0.17 * s), 0.16 * s, 0.07 * s, fc=INK, ec="none", zorder=9))
+    ax.add_patch(FancyBboxPatch((cx - 0.30 * s, cy - 0.50 * s), 0.60 * s, 0.33 * s,
+                                boxstyle=f"round,pad=0,rounding_size={0.06 * s}",
+                                fc="#ECECEC", ec=INK, lw=0.6, zorder=9))
+    for sx in (-1, 1):
+        ax.add_patch(Rectangle((cx + sx * 0.34 * s - 0.04 * s, cy - 0.42 * s), 0.08 * s, 0.17 * s,
+                               fc="#CFCFCF", ec=INK, lw=0.5, zorder=8))
+
+
+def glyph_engineer(cx, cy, h):
+    """The engineer: hard hat with a brim, face, shoulders, drawn as vector patches."""
+    s = h
+    ax.add_patch(Wedge((cx, cy - 0.50 * s), 0.42 * s, 0, 180, fc="#2E6BC6", ec=INK, lw=0.6, zorder=9))
+    ax.add_patch(Circle((cx, cy + 0.02 * s), 0.24 * s, fc="#F6C19B", ec=INK, lw=0.6, zorder=10))
+    for dx in (-0.09, 0.09):
+        ax.add_patch(Circle((cx + dx * s, cy + 0.02 * s), 0.028 * s, fc=INK, ec="none", zorder=11))
+    ax.add_patch(Wedge((cx, cy + 0.14 * s), 0.30 * s, 0, 180, fc="#F5B800", ec=INK, lw=0.6, zorder=11))
+    ax.add_patch(FancyBboxPatch((cx - 0.37 * s, cy + 0.10 * s), 0.74 * s, 0.07 * s,
+                                boxstyle=f"round,pad=0,rounding_size={0.03 * s}",
+                                fc="#E0A400", ec=INK, lw=0.5, zorder=12))
+
+
 def icon(name, cx, cy, h=ICON_H):
-    img = ICONS[name]
-    w = h * img.shape[1] / img.shape[0]
-    ax.imshow(img, extent=(cx - w / 2, cx + w / 2, cy - h / 2, cy + h / 2), zorder=9,
-              interpolation="lanczos")
-    ax.set_xlim(0, W)
-    ax.set_ylim(0, H)
+    (glyph_robot if name == "robot" else glyph_engineer)(cx, cy, h)
 
 
 def star_after(t, size):
