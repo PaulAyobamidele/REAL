@@ -15,6 +15,7 @@ import { STUDY } from '@/study/config';
 
 import { Step1Asked } from './review/Step1Asked';
 import { Step2Happened } from './review/Step2Happened';
+import { StepExample } from './review/StepExample';
 import { Step3Pattern } from './review/Step3Pattern';
 import { Step4Decide } from './review/Step4Decide';
 import { Step5Becomes } from './review/Step5Becomes';
@@ -24,10 +25,13 @@ export function ReviewPage({
   runId,
   step,
   focus,
+  example = false,
 }: {
   runId: string;
   step: number;
   focus?: string;
+  /** the worked example between steps 1 and 2 (#/review/<id>/example) */
+  example?: boolean;
 }) {
   const { workspace, roundById, state } = useWorkspace();
   const { ensureDraft, dispatch } = useDrafts();
@@ -56,22 +60,12 @@ export function ReviewPage({
   }
   const prev = previousOf(round, workspace.rounds);
   const previousReport = prev?.round.report ?? null;
-  const roundLabel = (
-    <>
-      Run <span className="font-mono">{round.id}</span>
-      {round.meta.round !== null && round.meta.round !== undefined
-        ? ` · round ${round.meta.round}`
-        : ''}
-      {workspace.source.isExample ? ' · example data (bundled)' : ''}
-    </>
-  );
 
   if (!round.report) {
     return (
       <StepShell
         runId={round.id}
         step={step}
-        roundLabel={roundLabel}
         progress={reviewProgress({ step, report: null, draft: null, visited })}
       >
         {round.reportError ? (
@@ -93,12 +87,25 @@ export function ReviewPage({
   const draft = ensureDraft(round, previousReport);
   const version = reportVersion(report);
 
+  if (example)
+    return (
+      <StepShell
+        runId={round.id}
+        step={1}
+        example
+        progress={reviewProgress({ step: 1, report, draft, visited })}
+        ownInstructions
+      >
+        <StepExample round={round} />
+      </StepShell>
+    );
+
   return (
     <StepShell
       runId={round.id}
       step={step}
-      roundLabel={roundLabel}
       progress={reviewProgress({ step, report, draft, visited })}
+      ownInstructions={step >= 2}
     >
       {report.banner && step !== 1 && (!STUDY || report.banner.startsWith('PARTIAL')) ? (
         // a run still running (PARTIAL) or ended early (INCOMPLETE): said on every step
@@ -144,6 +151,7 @@ export function ReviewPage({
       {step === 4 ? (
         draft ? (
           <Step4Decide
+            r0={round.requirementText ?? ''}
             report={report}
             previous={previousReport}
             draft={draft}

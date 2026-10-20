@@ -8,6 +8,7 @@ import type {
 } from '@/services/schemas';
 
 import { carChanges } from '@/study/car';
+import { explainedBy, resolutionOf, worldChanges } from '@/domain/triage';
 import { STUDY } from '@/study/config';
 
 import { splitClauses } from './requirementText';
@@ -41,7 +42,8 @@ export function scopeChange(
 ): Change | null {
   const v = s.verdict;
   if (v === 'out_of_scope') {
-    const item = asAssumption ?? s.reason ?? sid;
+    // the stated limit; the reason only for documents written before the limit had its own field
+    const item = asAssumption ?? s.limit ?? s.reason ?? sid;
     return {
       kind: 'D',
       from: sid,
@@ -200,9 +202,15 @@ export function planChanges(doc: DecisionsDoc, report: AnalysisReport, r0: strin
     // never written into R1 (R1 is the tool's, so it always parses and can be run)
     changes.push(...carChanges(doc));
   }
+  // "the world explains it" (domain/triage.ts), both builds: the obstacle's assumption or
+  // soft goal, added automatically (once, and not when the requirement already says it)
+  changes.push(...worldChanges(doc, report.obstacles, r0 ?? ''));
   for (const [oid, o] of Object.entries(doc.obstacles)) {
     if ((o.verdict !== 'accept' && o.verdict !== 'rename') || !o.mitigation) continue;
     if (STUDY) continue;
+    // added above; and "refine the requirement" records words, the edit is made in R1 by hand
+    // (scripts/analysis/refine.py skips it too)
+    if (explainedBy(o) === 'world' || resolutionOf(o) === 'refine') continue;
     const change = mitigationChange(
       oid,
       o.mitigation,

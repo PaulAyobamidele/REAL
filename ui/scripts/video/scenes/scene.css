@@ -1,0 +1,82 @@
+/* The demo video's animated scenes (record.mjs records each once), in the
+   tool's Calm canvas palette: wheat, olive, lime, brick, maroon, ink. */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --page: #f5f5dc;
+  --wheat: #eaeaaa;
+  --olive: #667d01;
+  --lime: #9eb200;
+  --brick: #ad1f07;
+  --maroon: #610000;
+  --ink: #172033;
+  --muted: #4a5161;
+  --white: #ffffff;
+  --sans: 'Poppins', -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--sans);
+}
+.stage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4vh;
+}
+.title {
+  font-size: 5.2vh;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+.lede {
+  font-size: 2.6vh;
+  color: var(--muted);
+  text-align: center;
+  max-width: 70vw;
+  line-height: 1.5;
+}
+.label {
+  font-size: 1.6vh;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--olive);
+}
+.in {
+  opacity: 0;
+  animation: in 700ms ease forwards;
+}
+@keyframes in {
+  from {
+    opacity: 0;
+    transform: translateY(1.6vh);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.out {
+  animation: out 600ms ease forwards;
+}
+@keyframes out {
+  to {
+    opacity: 0;
+  }
+}

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>E1 · End card</title>
+    <link rel="stylesheet" href="scene.css" />
+    <style>
+      /* the end card (links come in ?repo= and ?paper=, from record.mjs) */
+      body {
+        background: var(--page);
+      }
+      .band {
+        position: absolute;
+        inset: 0 0 auto;
+        height: 7vh;
+        background: var(--maroon);
+      }
+      .real {
+        font-size: 16vh;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+      .sub {
+        font-size: 3vh;
+        color: var(--muted);
+        text-align: center;
+        max-width: 60vw;
+        line-height: 1.4;
+      }
+      .links {
+        display: flex;
+        gap: 3vw;
+        font-family: var(--mono);
+        font-size: 2.3vh;
+      }
+      .result {
+        font-size: 2.6vh;
+        font-weight: 500;
+        text-align: center;
+        max-width: 64vw;
+        line-height: 1.5;
+      }
+      .end {
+        display: flex;
+        align-items: center;
+        gap: 4vw;
+      }
+      #qr {
+        padding: 1.4vh;
+        background: var(--white);
+        border-radius: 1.4vh;
+      }
+      #qr:empty {
+        display: none;
+      }
+      .links {
+        flex-direction: column;
+        gap: 1.6vh;
+      }
+      .links span {
+        padding: 1.2vh 1.6vw;
+        border-radius: 999px;
+        background: var(--white);
+        border: 0.2vh solid #dcdcb0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="band"></div>
+    <div class="stage">
+      <div class="real in" style="animation-delay: 150ms">REAL</div>
+      <div class="sub in" style="animation-delay: 700ms">
+        A Tool for Refining Autonomous Systems Requirements through Compliance Failure Analysis
+      </div>
+      <div class="result in" style="animation-delay: 1300ms">
+        Shown on 288 CARLA scenarios × 3 runs: each fix measured, each round linked to its decision.
+      </div>
+      <div class="end in" style="animation-delay: 2000ms">
+        <div id="qr"></div>
+        <div class="links"><span id="repo"></span><span id="paper"></span></div>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+      const q = new URLSearchParams(location.search);
+      // each link shows only when given
+      for (const id of ['repo', 'paper']) {
+        const el = document.getElementById(id);
+        if (q.get(id)) el.textContent = q.get(id);
+        else el.remove();
+      }
+      // the QR code opens the repository (only when its link is given)
+      const repo = q.get('repo');
+      if (repo && window.QRCode)
+        new QRCode(document.getElementById('qr'), {
+          text: repo.startsWith('http') ? repo : `https://${repo}`,
+          width: 200,
+          height: 200,
+          colorDark: '#172033',
+          colorLight: '#ffffff',
+        });
+    </script>
+  </body>
+</html>

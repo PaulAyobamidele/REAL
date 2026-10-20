@@ -3,6 +3,7 @@ import { useCallback, useSyncExternalStore } from 'react';
 /**
  * Three screens and a step, kept in the URL hash so that reload and the
  * browser's Back button keep their place:
+ *   #/welcome     the study build's first page (expertise, participant ID), revisited
  *   #/overview    what the tool (or, in the study build, the study) is: the first page
  *   #/            the workspace (what is loaded, from where)
  *   #/?runs=a,b   the workspace with these runs first (the runs of a requirement)
@@ -10,25 +11,31 @@ import { useCallback, useSyncExternalStore } from 'react';
  *   #/author      write a requirement (the form, gated by the project's parser)
  *   #/manual      the REAL-DSL manual
  *   #/review/<run id>/<step 1-5>[?focus=<evidence filter | obstacle:<id>>]
+ *   #/review/<run id>/example   the worked example, between steps 1 and 2
  * `focus` is how a number elsewhere links into the evidence table.
  */
 export type Route =
+  | { screen: 'welcome' }
   | { screen: 'overview' }
   | { screen: 'workspace'; runs?: string[] }
   | { screen: 'lineage' }
   | { screen: 'author' }
   | { screen: 'manual' }
-  | { screen: 'review'; runId: string; step: number; focus?: string };
+  | { screen: 'review'; runId: string; step: number; focus?: string }
+  | { screen: 'example'; runId: string };
 
 export const STEP_COUNT = 5;
 
 export function parseRoute(hash: string): Route {
   const [pathPart, query = ''] = hash.replace(/^#/, '').split('?');
   const path = (pathPart ?? '').split('/').filter(Boolean);
+  if (path[0] === 'welcome') return { screen: 'welcome' };
   if (path[0] === 'overview') return { screen: 'overview' };
   if (path[0] === 'lineage') return { screen: 'lineage' };
   if (path[0] === 'author') return { screen: 'author' };
   if (path[0] === 'manual') return { screen: 'manual' };
+  if (path[0] === 'review' && path[1] && path[2] === 'example')
+    return { screen: 'example', runId: decodeURIComponent(path[1]) };
   if (path[0] === 'review' && path[1]) {
     const step = Number.parseInt(path[2] ?? '1', 10);
     const focus = new URLSearchParams(query).get('focus');
@@ -47,6 +54,8 @@ export function parseRoute(hash: string): Route {
 
 export function routeHash(route: Route): string {
   switch (route.screen) {
+    case 'welcome':
+      return '#/welcome';
     case 'overview':
       return '#/overview';
     case 'workspace':
@@ -57,6 +66,8 @@ export function routeHash(route: Route): string {
       return '#/author';
     case 'manual':
       return '#/manual';
+    case 'example':
+      return `#/review/${encodeURIComponent(route.runId)}/example`;
     case 'review': {
       const base = `#/review/${encodeURIComponent(route.runId)}/${route.step}`;
       return route.focus ? `${base}?focus=${encodeURIComponent(route.focus)}` : base;

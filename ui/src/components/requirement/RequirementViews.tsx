@@ -9,6 +9,7 @@ import { layoutKaos } from '@/domain/kaosLayout';
 import type { AnalysisReport } from '@/services/schemas';
 import type { Draft } from '@/state/draft';
 import type { RequirementView } from '@/state/requirementView';
+import { STUDY } from '@/study/config';
 import { cx } from '@/utils/format';
 
 /**
@@ -44,7 +45,7 @@ export function ViewSwitch({
 }) {
   return (
     <div className="flex rounded-lg bg-fill p-0.5" role="group" aria-label={label}>
-      {VIEWS.map((v) => (
+      {VIEWS.filter((v) => !(STUDY && v.value === 'tree')).map((v) => (
         <button
           key={v.value}
           type="button"

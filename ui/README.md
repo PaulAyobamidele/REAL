@@ -72,12 +72,16 @@ their own group and never counted as passes.
 
 _Requirements Compliance to Validate_ (top bar) works like Overleaf: the
 requirement on the left, its KAOS goal model on the right (with its legend),
-redrawn as you type, and Run test centred below. The left side opens on the
+redrawn as you type and as tall as the editor, and _Start Running Compliance
+Test_ centred below. Pointing at any part of the REAL-DSL marks its box in the
+goal model. (In the study build the button opens the Test Execution Report at
+once: no run panel.) The left side opens on the
 **REAL-DSL editor**: colours, completion that follows the grammar
 (Ctrl+Space; on an empty editor it offers a whole requirement to fill), hover
 help, the parser's errors marked on their line, light or dark. The language
-is described in `docs/manual/real-dsl.md`, also the tool's Manual page (`#/manual`;
-"See manual" links to it). The guided alternative, _Fill the gaps_, is the DSL itself with gaps
+is described in `docs/manual/real-dsl.md`, also the tool's Manual page
+(`#/manual`; "See manual" links to it); its known limitations are the work list
+`docs/design/real_dsl_robustness.md`. The guided alternative, _Fill the gaps_, is the DSL itself with gaps
 to fill - the fixed words (`MAINTAIN`, `by`, `using`, `operationalized as`, ...)
 are text, free gaps (names, inputs, outputs, the scenario sentence,
 free-text assumptions and soft goals) take suggestions from every
@@ -155,6 +159,14 @@ Reviewing does not need it. The form round-trips: every `docs/examples/*.dsl`
 goes text -> parser -> form -> text -> parser with the text unchanged apart
 from whitespace and comments and the two goal trees equal
 (`tests/contract/authoring.test.ts`).
+
+## Welcome
+
+Both builds open on a welcome page (`#/welcome`, the REAL logo leads back
+there). It shows REAL, what it does, and the user's expertise. The normal tool
+keeps the expertise in the browser and records it as `reviewer_expertise` in
+`decisions.json` on signing. The study build's welcome page starts, or
+continues, the participant's session.
 
 ## Overview
 
@@ -314,7 +326,7 @@ Design tokens are the only place colours, type and spacing are defined.
 `src/styles/tokens.css` carries the set. Colour is a five-colour palette
 with one job per colour (2026-10-19): #EAEAAA page background, white cards,
 #172033 text; #667D01 with white text only for the instructions box
-(`Instructions`), so it is always what to read first; #610000 the header,
+(`Instructions`), so it is always what to read first; #8A1538 (wine) the header,
 the same on every page; #9EB200 the primary button, with dark text; links,
 selection, focus and "passed" in the dark text colour, marked by an
 underline, a tick or a border; #AD1F07 "failed" and errors. `set-aside`, `caution` and the four change kinds keep their own

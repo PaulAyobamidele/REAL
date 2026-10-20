@@ -34,7 +34,7 @@ describe('the study overview', () => {
       expect(screen.getByRole('heading', { name })).toBeInTheDocument();
     expect(screen.queryByText(/coming soon/i)).toBeNull();
     expect(
-      screen.getByRole('link', { name: /Continue to the Requirement under Test/ }),
+      screen.getByRole('link', { name: /Continue to Requirements Compliance to Validate/ }),
     ).toHaveAttribute('href', '#/author');
     // nothing that points at the tool's judgement or at pre-computed runs
     expect(document.body.textContent).not.toMatch(

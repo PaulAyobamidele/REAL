@@ -41,6 +41,8 @@ export interface SigningInput {
   reviewer: string;
   r1Override: string | null;
   decidedAt?: Date;
+  /** the reviewer's expertise, from the welcome page (recorded as reviewer_expertise) */
+  expertise?: string;
 }
 
 /** Build the signed document and the four files; throws with the validation problems if invalid. */
@@ -58,6 +60,7 @@ export function prepareSigning(input: SigningInput): SigningResult {
   const doc: DecisionsDoc = {
     ...input.doc,
     reviewer,
+    ...(input.expertise?.trim() ? { reviewer_expertise: input.expertise.trim() } : {}),
     decided_at: pyUtcIsoformat(input.decidedAt ?? new Date()),
     requirement_changes: toRequirementChanges(plan.changes),
   };

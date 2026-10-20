@@ -80,7 +80,9 @@ export function KaosDiagram({
   onSelectObstacle,
   fit = false,
   withObstacles = true,
-  legend = true,
+  highlight = null,
+  tones = null,
+  fill = false,
 }: {
   layout: KaosLayout;
   selectedObstacleId: string | null;
@@ -89,14 +91,23 @@ export function KaosDiagram({
   fit?: boolean;
   /** Whether the legend lists obstacles (none while a requirement is being written). */
   withObstacles?: boolean;
-  legend?: boolean;
+  /** Boxes to mark (id prefixes, e.g. "domain" or "op.0.1"): the part of the text being pointed at. */
+  highlight?: readonly string[] | null;
+  /** Boxes to colour by their test result: failed (red) or broken (amber), by box id. */
+  tones?: Readonly<Record<string, 'fail' | 'caution'>> | null;
+  /** Fill the container's height: the diagram centred, the legend at the bottom. */
+  fill?: boolean;
 }) {
   const selectedBox = selectedObstacleId ? `obstacle.${selectedObstacleId}` : null;
   const chain = useMemo(
     () => (selectedBox ? chainOf(layout, selectedBox) : null),
     [layout, selectedBox],
   );
-  const dim = (id: string) => chain !== null && !chain.has(id);
+  const marked = highlight?.length
+    ? (id: string) => highlight.some((p) => id === p || id.startsWith(`${p}.`))
+    : null;
+  const dim = (id: string) =>
+    (chain !== null && !chain.has(id)) || (marked !== null && !marked(id));
   const toggle = (id: string) => onSelectObstacle(selectedObstacleId === id ? null : id);
   const onKey = (e: KeyboardEvent, id: string) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -107,8 +118,13 @@ export function KaosDiagram({
   const fade = 'transition-opacity motion-safe:duration-base motion-reduce:transition-none';
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="overflow-x-auto rounded-lg bg-surface-raised">
+    <div className={cx('flex flex-col gap-2', fill && 'h-full')}>
+      <div
+        className={cx(
+          'overflow-x-auto rounded-lg bg-surface-raised',
+          fill && 'flex flex-1 flex-col justify-center',
+        )}
+      >
         <svg
           viewBox={`0 0 ${layout.width} ${layout.height}`}
           width={layout.width}
@@ -165,7 +181,9 @@ export function KaosDiagram({
           ))}
 
           {layout.links.map((l, i) => {
-            const lit = chain === null || linkLit(l, chain, selectedBox);
+            const lit =
+              (chain === null || linkLit(l, chain, selectedBox)) &&
+              (marked === null || marked(l.from) || marked(l.to));
             const d = l.points.map(([x, y], k) => `${k ? 'L' : 'M'}${x},${y}`).join(' ');
             const last = l.points[l.points.length - 1]!;
             const prev = l.points[l.points.length - 2]!;
@@ -195,7 +213,7 @@ export function KaosDiagram({
           })}
 
           {layout.refinement ? (
-            <g className={cx(fade, chain !== null && !chain.has('goal') && 'opacity-30')}>
+            <g className={cx(fade, dim('goal') && 'opacity-30')}>
               <line
                 x1={layout.refinement.x}
                 y1={layout.refinement.y - 8}
@@ -289,7 +307,15 @@ export function KaosDiagram({
               );
             }
             return (
-              <g key={b.id} className={cx(fade, dim(b.id) && 'opacity-25')}>
+              <g
+                key={b.id}
+                className={cx(
+                  fade,
+                  dim(b.id) && 'opacity-25',
+                  tones?.[b.id] && `kaos-${tones[b.id]}`,
+                  marked?.(b.id) && 'kaos-marked',
+                )}
+              >
                 <title>{b.title}</title>
                 <BoxShape b={b} />
                 <BoxText b={b} />
@@ -298,7 +324,7 @@ export function KaosDiagram({
           })}
         </svg>
       </div>
-      {legend ? <Legend withObstacles={withObstacles} /> : null}
+      <Legend withObstacles={withObstacles} withResults={Boolean(tones)} />
     </div>
   );
 
@@ -466,83 +492,153 @@ function BoxText({ b }: { b: Box }) {
   );
 }
 
-function Legend({ withObstacles }: { withObstacles: boolean }) {
-  const item = (shape: ReactNode, words: string) => (
-    <li className="flex items-center gap-1.5">
-      <svg viewBox="0 0 30 18" className="h-[18px] w-[30px]" aria-hidden="true">
+/**
+ * What every shape means, always under the diagram: the shape, its name, what
+ * it stands for, and the REAL-DSL words that write it.
+ */
+function Legend({
+  withObstacles,
+  withResults = false,
+}: {
+  withObstacles: boolean;
+  withResults?: boolean;
+}) {
+  const item = (shape: ReactNode, name: string, meaning: string, dsl?: string) => (
+    <li className="flex items-start gap-2.5">
+      <svg viewBox="0 0 30 18" className="mt-0.5 h-[18px] w-[30px] shrink-0" aria-hidden="true">
         {shape}
       </svg>
-      {words}
+      <span>
+        <strong className="font-semibold text-text">{name}</strong>: {meaning}
+        {dsl ? (
+          <>
+            {' '}
+            <code className="rounded bg-surface-sunken px-1 font-mono text-[11px] text-text">
+              {dsl}
+            </code>
+          </>
+        ) : null}
+      </span>
     </li>
   );
   return (
-    <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-text-muted" aria-label="Legend">
-      {item(
-        <polygon points="7,2 29,2 23,16 1,16" className="fill-kaos-goal stroke-kaos-goal-line" />,
-        'goal',
-      )}
-      {item(
-        <polygon
-          points="7,2 29,2 23,16 1,16"
-          className="fill-kaos-goal stroke-kaos-soft-line [stroke-dasharray:3_2]"
-        />,
-        'soft goal (ensuring)',
-      )}
-      {item(
-        <polygon
-          points="1,6 15,1 29,6 29,16 1,16"
-          className="fill-kaos-domain stroke-kaos-domain-line"
-        />,
-        'domain property (assuming)',
-      )}
-      {item(
-        <rect
-          x="1"
-          y="3"
-          width="28"
-          height="12"
-          rx="6"
-          className="fill-surface-raised stroke-text-faint"
-        />,
-        'operation',
-      )}
-      {item(
-        <polygon
-          points="1,9 6,2 24,2 29,9 24,16 6,16"
-          className="fill-kaos-agent stroke-kaos-agent-line"
-        />,
-        'module performing it',
-      )}
-      {withObstacles ? (
-        <>
-          {item(
-            <polygon
-              points="1,2 23,2 29,16 7,16"
-              className="fill-kaos-obstacle stroke-kaos-obstacle-line"
-            />,
-            STUDY ? 'obstacle' : 'obstacle, supported',
-          )}
-          {STUDY ? null : (
-            <>
-              {item(
-                <polygon
-                  points="1,2 23,2 29,16 7,16"
-                  className="fill-caution-soft stroke-caution [stroke-dasharray:3_2]"
-                />,
-                'insufficient data',
-              )}
-              {item(
-                <polygon
-                  points="1,2 23,2 29,16 7,16"
-                  className="fill-set-aside-soft stroke-border-strong"
-                />,
-                'not supported',
-              )}
-            </>
-          )}
-          <li>Click an obstacle to follow its chain.</li>
-        </>
-      ) : null}
-    </ul>
+    <section
+      className="rounded-lg border border-border bg-surface-sunken px-4 py-3"
+      aria-label="Legend"
+    >
+      <h3 className="mb-2 text-xs font-semibold tracking-wide text-text uppercase">Legend</h3>
+      <ul className="grid gap-x-6 gap-y-2 text-xs leading-5 text-text-muted sm:grid-cols-2">
+        {item(
+          <polygon points="7,2 29,2 23,16 1,16" className="fill-kaos-goal stroke-kaos-goal-line" />,
+          'Goal',
+          'what the system must keep true or reach; sub-goals are its parts',
+          'MAINTAIN / ACHIEVE, by',
+        )}
+        {item(
+          <>
+            <line x1="15" y1="2" x2="15" y2="9" className="stroke-kaos-ref-line" />
+            <circle cx="15" cy="12" r="5" className="fill-kaos-ref stroke-kaos-ref-line" />
+          </>,
+          'Refinement',
+          'the sub-goals under it, together, meet the goal above',
+          'followed by / parallely',
+        )}
+        {item(
+          <rect
+            x="1"
+            y="3"
+            width="28"
+            height="12"
+            rx="6"
+            className="fill-surface-raised stroke-text-faint"
+          />,
+          'Operation',
+          'a task the system performs',
+          'operationalized as',
+        )}
+        {item(
+          <polygon
+            points="1,9 6,2 24,2 29,9 24,16 6,16"
+            className="fill-kaos-agent stroke-kaos-agent-line"
+          />,
+          'Module',
+          'the software that performs the task; the small circle on its line marks who is responsible',
+          'performed by',
+        )}
+        {item(
+          <polygon
+            points="1,6 15,1 29,6 29,16 1,16"
+            className="fill-kaos-domain stroke-kaos-domain-line"
+          />,
+          'Domain property',
+          'what is assumed about the world; a failure counts against the system only when it held',
+          'assuming',
+        )}
+        {item(
+          <polygon
+            points="7,2 29,2 23,16 1,16"
+            className="fill-kaos-goal stroke-kaos-soft-line [stroke-dasharray:3_2]"
+          />,
+          'Soft goal',
+          'a quality promised beyond safety (dashed border)',
+          'ensuring',
+        )}
+        {withResults ? (
+          <>
+            {item(
+              <polygon
+                points="7,2 29,2 23,16 1,16"
+                className="fill-fail-soft stroke-fail [stroke-width:2]"
+              />,
+              'Failed',
+              'the system did not meet this part in the counted runs',
+            )}
+            {item(
+              <polygon
+                points="1,6 15,1 29,6 29,16 1,16"
+                className="fill-[#fbecc4] stroke-caution [stroke-dasharray:3_2] [stroke-width:2]"
+              />,
+              'Broken assumption',
+              'it did not hold in some runs, so those runs are not counted against the system',
+            )}
+          </>
+        ) : null}
+        {withObstacles ? (
+          <>
+            {item(
+              <polygon
+                points="1,2 23,2 29,16 7,16"
+                className="fill-kaos-obstacle stroke-kaos-obstacle-line"
+              />,
+              'Obstacle',
+              STUDY
+                ? 'a group of failures that blocks a goal'
+                : 'a group of failures that blocks a goal, supported by the evidence',
+            )}
+            {STUDY ? null : (
+              <>
+                {item(
+                  <polygon
+                    points="1,2 23,2 29,16 7,16"
+                    className="fill-caution-soft stroke-caution [stroke-dasharray:3_2]"
+                  />,
+                  'Obstacle, insufficient data',
+                  'too few simulations to decide',
+                )}
+                {item(
+                  <polygon
+                    points="1,2 23,2 29,16 7,16"
+                    className="fill-set-aside-soft stroke-border-strong"
+                  />,
+                  'Obstacle, not supported',
+                  'the evidence does not back it',
+                )}
+              </>
+            )}
+            <li className="sm:col-span-2">Click an obstacle to follow its chain to the goal.</li>
+          </>
+        ) : null}
+      </ul>
+    </section>
   );
 }

@@ -37,7 +37,7 @@ const live = {
 const api = STUDY ? replayApi : live;
 
 /**
- * Run Test, from the requirement being written to its Test Execution Result,
+ * Run Test, from the requirement being written to its Test Execution Report,
  * in three steps the panel shows: choose what to run, check it (on this
  * machine: modules and scenes; over ssh: the session and the cluster's code),
  * run it. Nothing reaches the cluster before every check has passed and the
@@ -153,15 +153,27 @@ export function useRunTest({
       await open(source);
       setShown(false);
       logEvent({ screen: 'run', event: 'result_opened', target: runId });
-      window.location.hash = reviewHash(runId, 2);
+      // the review starts where it is read from: the requirement under test, then its report
+      window.location.hash = reviewHash(runId, 1);
     },
     [open],
   );
 
   /** Run test: open the panel; a job already followed is shown, otherwise step 1. */
   const start = useCallback(async () => {
-    setShown(true);
     logEvent({ screen: 'author', event: 'run_test_opened' });
+    // the study: the test has already run - straight to its Test Execution Report
+    if (STUDY) {
+      setState({ phase: 'opening', runId: '' });
+      const runId = await replayApi.openDirect(text);
+      if (runId) await openRun(runId);
+      else {
+        setShown(true);
+        setState({ phase: 'error', message: 'no saved run exists for this requirement' });
+      }
+      return;
+    }
+    setShown(true);
     if (['tracking', 'fetching', 'ended'].includes(state.phase)) return;
     setState({ phase: 'looking' });
     try {
@@ -174,7 +186,7 @@ export function useRunTest({
     } catch {
       setState({ phase: 'choose', existing: null }); // without the run list, running still works
     }
-  }, [text, state.phase]);
+  }, [text, state.phase, openRun]);
 
   /** Step 2: the checks on this machine, then over ssh; Submit waits for all of them. */
   const check = useCallback(
@@ -321,12 +333,14 @@ export function useRunTest({
     },
     /** the toolbar's words while a job is followed */
     running:
-      state.phase === 'tracking' || state.phase === 'fetching'
-        ? job?.progress
-          ? `Test running · ${job.progress.done} of ${job.progress.total}`
-          : job?.state === 'PENDING'
-            ? 'Test queued'
-            : 'Test running'
-        : null,
+      state.phase === 'opening'
+        ? 'Opening the review…'
+        : state.phase === 'tracking' || state.phase === 'fetching'
+          ? job?.progress
+            ? `Test running · ${job.progress.done} of ${job.progress.total}`
+            : job?.state === 'PENDING'
+              ? 'Test queued'
+              : 'Test running'
+          : null,
   };
 }

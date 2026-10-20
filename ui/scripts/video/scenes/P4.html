@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>P4 · The gap we fill</title>
+    <link rel="stylesheet" href="slide.css" />
+    <style>
+      .bridge {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 2vw;
+      }
+      .gap {
+        font-size: 3.4vh;
+        font-weight: 700;
+        color: var(--maroon);
+        padding: 1.4vh 2vw;
+        border: 0.3vh dashed var(--maroon);
+        border-radius: 999px;
+      }
+      .who {
+        font-size: 2.4vh;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="band"></div>
+    <div class="slide">
+      <div class="section in" style="animation-delay: 100ms">4 · The gap we fill</div>
+      <div class="headline in" style="animation-delay: 300ms">
+        Failures and requirements live apart
+      </div>
+      <div class="bridge">
+        <div class="card in" style="animation-delay: 600ms">
+          <b>Testing tools</b><span>find failures</span>
+        </div>
+        <div class="gap in" style="animation-delay: 3000ms"><span class="star">★</span> REAL</div>
+        <div class="card in" style="animation-delay: 1400ms">
+          <b>Requirements tools</b><span>write requirements</span>
+        </div>
+      </div>
+      <div class="punch in" style="animation-delay: 6000ms">
+        An assumption may describe <em>the world, never the car.</em>
+      </div>
+      <div class="who in" style="animation-delay: 10000ms">
+        For requirements engineers and machine-learning engineers.
+      </div>
+      <div class="pageno">5</div>
+    </div>
+  </body>
+</html>

@@ -15,7 +15,15 @@ describe('the overview', () => {
       within(nav)
         .getAllByRole('link')
         .map((a) => a.textContent),
-    ).toEqual(['Overview', 'Workspace', 'Write a requirement', 'Rounds']);
+    ).toEqual(['Workspace', 'Manual']);
+    // the logo: the tool's first page, its welcome
+    expect(screen.getByRole('link', { name: 'REAL: back to the first page' })).toHaveAttribute(
+      'href',
+      '#/welcome',
+    );
+    // the workflow line under the header starts here
+    const flow = screen.getByRole('navigation', { name: 'Workflow' });
+    expect(within(flow).getByRole('link', { current: 'step' })).toHaveTextContent('Overview');
   });
 
   it('explains how the tool works and leads on to the workspace', () => {

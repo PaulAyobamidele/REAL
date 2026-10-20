@@ -61,6 +61,8 @@ export const scopeDecisionSchema = z
     kind: z.enum(['rule', 'artefact']),
     evidence: z.string(),
     reason: z.string().nullable(),
+    /** Out of scope with no rule to invert: the limit to state, written into R1 as an assumption. */
+    limit: z.string().nullable().optional(),
     rule: scopeRuleSchema.optional(),
     description: z.string().optional(),
     suggested_fix: z.string().optional(),

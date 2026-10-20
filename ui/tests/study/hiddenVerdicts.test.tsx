@@ -127,15 +127,40 @@ describe('the study menu', () => {
   });
 });
 
-describe('the fixes on the failure analysis step', () => {
-  it('lists only the study menu, never the catalogue', async () => {
+describe('the failure analysis step in the study build', () => {
+  it('has no fixes container: the fixes are chosen in the triage', async () => {
     window.location.hash = `#/review/${ROUND_2}/3`;
     render(<App autoOpenExample={false} initialSource={studyRound()} />);
     const row = (await screen.findByText('Obstacles:')).parentElement!;
     fireEvent.click(within(row).getAllByRole('button')[0]!);
-    const fixes = await screen.findByRole('region', { name: 'Fixes' });
-    await waitFor(() => expect(fixes).toHaveTextContent('Change the car: path-aware braking'));
-    for (const m of STUDY_MENU) expect(fixes).toHaveTextContent(m.label);
-    expect(fixes).not.toHaveTextContent(/Tool suggestions/);
+    await screen.findByRole('heading', { name: /^Evidence:/ });
+    expect(screen.queryByRole('region', { name: 'Fixes' })).toBeNull();
+    expect(document.body).not.toHaveTextContent(/Tool suggestions/);
+  });
+
+  it('opens on the diagram, offers no tree, and explains every container', async () => {
+    window.location.hash = `#/review/${ROUND_2}/3`;
+    render(<App autoOpenExample={false} initialSource={studyRound()} />);
+    await screen.findByText('Obstacles:');
+    const views = screen.getByRole('group', { name: 'Show the requirement as' });
+    expect(within(views).getByRole('button', { name: 'Diagram' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(within(views).queryByRole('button', { name: 'Tree' })).toBeNull();
+    const notes = screen.getAllByRole('note', { name: 'Instructions' });
+    expect(notes).toHaveLength(3); // goal model, evidence, patterns
+  });
+});
+
+describe('the obstacle triage in the study build', () => {
+  it('explains world or car above the obstacles', async () => {
+    window.location.hash = `#/review/${ROUND_2}/4`;
+    render(<App autoOpenExample={false} initialSource={studyRound()} />);
+    await screen.findByRole('heading', { name: '4. Obstacle triage' });
+    const notes = screen.getAllByRole('note', { name: 'Instructions' });
+    expect(notes).toHaveLength(3); // obstacles and fixes, scope, assumptions
+    expect(notes[0]).toHaveTextContent('the world explains these failures');
+    expect(notes[0]).toHaveTextContent('the car is at fault');
   });
 });

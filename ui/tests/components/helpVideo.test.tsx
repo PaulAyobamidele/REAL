@@ -26,7 +26,7 @@ describe('the help video', () => {
       /youtube-nocookie\.com\/embed\//,
     );
     fireEvent.keyDown(window, { key: 'Escape' });
-    fireEvent.click(screen.getByRole('button', { name: 'Close the video' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Close the introduction video' }));
     expect(onClose).toHaveBeenCalledTimes(2);
   });
 });

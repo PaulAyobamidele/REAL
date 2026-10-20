@@ -8,14 +8,38 @@ import { newId, newSession, saveSession, type StudySession } from './session';
 import { StudyHeader } from './StudyHeader';
 
 /** The study's first screen: the tool's name, the participant's expertise in their words, their anonymous ID. */
-export function StartScreen({ onStart }: { onStart: (s: StudySession) => void }) {
-  const id = useMemo(newId, []);
+export function StartScreen({
+  onStart,
+  existing = null,
+}: {
+  onStart: (s: StudySession) => void;
+  /** revisited (the REAL logo): the session goes on - same ID, expertise kept, Continue */
+  existing?: StudySession | null;
+}) {
+  const fresh = useMemo(newId, []);
+  const id = existing?.id ?? fresh;
   const fieldId = useId();
-  const [expertise, setExpertise] = useState('');
+  const [expertise, setExpertise] = useState(existing?.expertise ?? '');
   const value = expertise.trim();
 
   const start = () => {
     if (!value) return;
+    if (existing) {
+      // never a new session: that would lose the participant's work
+      if (value !== existing.expertise) {
+        const updated = { ...existing, expertise: value };
+        saveSession(updated);
+        logEvent({
+          screen: 'start',
+          event: 'expertise_changed',
+          old: { expertise: existing.expertise },
+          new: { expertise: value },
+        });
+        onStart(updated);
+      } else onStart(existing);
+      window.location.hash = '#/overview';
+      return;
+    }
     const session = newSession(id, value);
     saveSession(session);
     startLog(id);
@@ -38,10 +62,13 @@ export function StartScreen({ onStart }: { onStart: (s: StudySession) => void })
             A Tool for Refining Autonomous Systems Requirements through Compliance Failure Analysis
           </p>
         </div>
-        <Instructions className="w-full">
-          You will review one test round of an automated-braking car and decide what its failures
-          mean and what to do about them. There are no right answers. We are interested in your
-          judgement.
+        <Instructions label={false} className="w-full">
+          <p className="mb-1 font-semibold">Welcome, and thank you for taking part.</p>
+          <p>
+            You will review one test round of an automated-braking car and decide what its failures
+            mean and what to do about them. There are no right answers: we are interested in your
+            judgement.
+          </p>
         </Instructions>
         <form
           className="flex w-full flex-col items-center gap-3"
@@ -66,7 +93,7 @@ export function StartScreen({ onStart }: { onStart: (s: StudySession) => void })
             (shown on every screen)
           </p>
           <Button variant="primary" type="submit" disabled={!value}>
-            Start
+            {existing ? 'Continue' : 'Start'}
           </Button>
         </form>
       </main>

@@ -1,10 +1,12 @@
 import { buildDecisions } from '@/domain/decisions';
 import { isToolProposal } from '@/domain/lineage';
+import { triageOfSaved } from '@/domain/triage';
 import type {
   AnalysisReport,
   AssumptionVerdict,
   DecisionsDoc,
   Mitigation,
+  ObstacleDecision,
   ObstacleVerdict,
   ScopeVerdict,
 } from '@/services/schemas';
@@ -55,7 +57,11 @@ export interface Draft {
 export type VerdictState = 'empty' | 'prefilled' | 'confirmed';
 
 export function obstacleState(draft: Draft, id: string): VerdictState {
-  const entry = draft.doc.obstacles[id];
+  const entry = draft.doc.obstacles[id] as
+    (ObstacleDecision & { explained_by?: unknown }) | undefined;
+  // the study's triage: "the car is at fault" is a decision, resolved later in step 5
+  if (entry && entry.verdict === null && entry.explained_by === 'car')
+    return draft.confirmed.obstacles[id] ? 'confirmed' : 'prefilled';
   if (!entry || entry.verdict === null) return 'empty';
   return draft.confirmed.obstacles[id] ? 'confirmed' : 'prefilled';
 }
@@ -95,13 +101,17 @@ export function createDraft(
   const doc = buildDecisions(report, { previous, round: round ?? existing?.round ?? null });
   let prefill: Prefill | null = null;
   if (existing) {
+    const byId = new Map(report.obstacles.map((o) => [o.id, o]));
     for (const [oid, entry] of Object.entries(doc.obstacles)) {
       const saved = existing.obstacles[oid];
       if (!saved) continue;
-      entry.verdict = saved.verdict;
-      entry.renamed_to = saved.renamed_to;
+      // read as the triage reads it (domain/triage.ts): world or car, and how the car's is resolved
+      const t = triageOfSaved(saved, byId.get(oid));
+      entry.verdict = t.verdict;
+      entry.renamed_to = null;
       entry.reason = saved.reason;
-      entry.mitigation = saved.mitigation;
+      entry.mitigation = t.mitigation;
+      Object.assign(entry, { explained_by: t.explained_by, resolution: t.resolution });
     }
     for (const [sid, entry] of Object.entries(doc.scope)) {
       const saved = existing.scope[sid];
@@ -143,8 +153,23 @@ export type DraftAction =
   | { type: 'obstacle/reason'; id: string; value: string }
   | { type: 'obstacle/mitigation'; id: string; mitigation: Mitigation | null }
   | { type: 'obstacle/confirm'; id: string }
+  /** study triage, step 4: does the world explain it (its line goes into R1), or is the car at fault? */
+  | {
+      type: 'obstacle/explained';
+      id: string;
+      by: 'world' | 'car' | null;
+      mitigation: Mitigation | null;
+    }
+  /** study, step 5: what to do with a failure that remains */
+  | {
+      type: 'obstacle/resolve';
+      id: string;
+      resolution: 'refine' | 'system' | 'later' | null;
+      mitigation: Mitigation | null;
+    }
   | { type: 'scope/verdict'; id: string; verdict: ScopeVerdict | null }
   | { type: 'scope/reason'; id: string; value: string }
+  | { type: 'scope/limit'; id: string; value: string }
   | { type: 'scope/confirm'; id: string }
   | { type: 'assumption/verdict'; text: string; verdict: AssumptionVerdict | null }
   | { type: 'assumption/new_text'; text: string; value: string }
@@ -195,6 +220,35 @@ export function draftReducer(draft: Draft, action: DraftAction): Draft {
     case 'obstacle/confirm':
       next.confirmed.obstacles[action.id] = true;
       return next;
+    case 'obstacle/explained': {
+      // stored with the values decisions.validate accepts (domain/triage.ts)
+      const o = next.doc.obstacles[action.id] as ObstacleDecision & Record<string, unknown>;
+      if (!o) return draft;
+      // the same side again (a proposal being confirmed): confirm, keep what came with it
+      if (action.by !== null && o.explained_by === action.by) {
+        next.confirmed.obstacles[action.id] = true;
+        return next;
+      }
+      o.explained_by = action.by;
+      o.resolution = null;
+      o.renamed_to = null;
+      o.verdict = action.by === 'world' ? 'accept' : null;
+      o.mitigation = action.by === 'world' ? action.mitigation : null;
+      next.confirmed.obstacles[action.id] = action.by !== null;
+      return next;
+    }
+    case 'obstacle/resolve': {
+      const o = next.doc.obstacles[action.id] as ObstacleDecision & Record<string, unknown>;
+      if (!o) return draft;
+      o.resolution = action.resolution;
+      // later: deferred, no fix; refine / system: accepted, with the participant's change
+      o.verdict =
+        action.resolution === 'later' ? 'defer' : action.resolution === null ? null : 'accept';
+      o.mitigation =
+        action.resolution === 'refine' || action.resolution === 'system' ? action.mitigation : null;
+      next.confirmed.obstacles[action.id] = true;
+      return next;
+    }
     case 'scope/verdict': {
       const s = next.doc.scope[action.id];
       if (!s) return draft;
@@ -206,6 +260,12 @@ export function draftReducer(draft: Draft, action: DraftAction): Draft {
       const s = next.doc.scope[action.id];
       if (!s) return draft;
       s.reason = orNull(action.value);
+      return next;
+    }
+    case 'scope/limit': {
+      const s = next.doc.scope[action.id];
+      if (!s) return draft;
+      s.limit = orNull(action.value);
       return next;
     }
     case 'scope/confirm':

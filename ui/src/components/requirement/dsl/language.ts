@@ -502,3 +502,96 @@ function hover(catalog: AuthoringCatalog) {
     };
   }
 }
+
+// ------------------------------------------------------------------ text -> goal model
+
+/**
+ * The goal-model boxes drawn from the part of the text at `pos`, as id
+ * prefixes of the layout (domain/kaosLayout.ts: goal, sub.i, op.i.k,
+ * agent.i.k, domain.j, soft.j). A string maps to its own box, counted in the
+ * order the layout counts them; a keyword to the boxes it introduces
+ * ("assuming": every domain property). Null outside anything drawn.
+ */
+export function targetAt(text: string, pos: number): string[] | null {
+  const p = parser(new Set());
+  const state = p.startState!(2);
+  const n = { sub: -1, op: -1, dom: -1, soft: -1 };
+  let offset = 0;
+  for (const line of text.split('\n')) {
+    if (pos < offset) break;
+    const stream = new StringStream(line, 4, 2);
+    if (state.inString) state.inString = false;
+    while (!stream.eol()) {
+      stream.start = stream.pos;
+      const token = p.token(stream, state);
+      if (stream.pos === stream.start) {
+        stream.next();
+        continue;
+      }
+      const word = stream.current();
+      if (token === 'keyword' || token === 'temporal') {
+        if (state.clause === 'subgoal') {
+          n.sub++;
+          n.op = -1;
+        } else if (state.clause === 'task') n.op++;
+        else if (state.clause === 'assuming') n.dom++;
+        else if (state.clause === 'ensuring') n.soft++;
+      } else if (token === 'operator' && word === '&') {
+        if (state.clause === 'assuming') n.dom++;
+        else if (state.clause === 'ensuring') n.soft++;
+      }
+      const from = offset + stream.start;
+      if (pos >= from && pos < offset + stream.pos) {
+        if (!token || token === 'comment' || token === 'invalid') return null;
+        if (token === 'keyword' && word === 'assuming') return ['domain'];
+        if (token === 'keyword' && word === 'ensuring') return ['soft'];
+        return boxesOf(state.clause, n);
+      }
+    }
+    offset += line.length + 1;
+  }
+  return null;
+}
+
+function boxesOf(
+  clause: Clause,
+  n: { sub: number; op: number; dom: number; soft: number },
+): string[] | null {
+  switch (clause) {
+    case 'goal':
+    case 'scenario':
+      return ['goal'];
+    case 'subgoal':
+      return [`sub.${n.sub}`];
+    case 'agent':
+      return [`sub.${n.sub}`, `agent.${n.sub}`];
+    case 'task':
+    case 'condition':
+    case 'input':
+    case 'output':
+      return [`op.${n.sub}.${Math.max(n.op, 0)}`];
+    case 'module':
+      return [`agent.${n.sub}.${Math.max(n.op, 0)}`];
+    case 'assuming':
+      return [`domain.${Math.max(n.dom, 0)}`];
+    case 'ensuring':
+      return [`soft.${Math.max(n.soft, 0)}`];
+    default:
+      return null;
+  }
+}
+
+/** No catalog (a review shows the requirement read only, without the helper): colours, no suggestions. */
+export const NO_CATALOG: AuthoringCatalog = {
+  temporal_ops: ['ACHIEVE', 'MAINTAIN'],
+  operators: ['<=', '>=', '==', '!=', '<', '>'],
+  roles: {
+    perception: { task: 'Detect Pedestrian', modules: [], default: null, source: '' },
+    braking: { task: 'Apply Brakes', modules: [], default: null, source: '' },
+  },
+  assumption_quantities: [],
+  soft_goal_quantities: [],
+  scenario_vocab: {},
+  examples: {},
+  not_covered: [],
+};

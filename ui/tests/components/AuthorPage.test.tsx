@@ -86,9 +86,42 @@ function renderPage() {
   );
 }
 
+/** The page opens on the REAL-DSL editor; these tests use the gaps. */
+async function renderGaps() {
+  const page = renderPage();
+  fireEvent.click(await screen.findByRole('button', { name: 'Fill the gaps' }));
+  return page;
+}
+
+describe('AuthorPage: the REAL-DSL editor', () => {
+  it('opens on the editor, with the instructions, the manual and Run test centred below', async () => {
+    renderPage();
+    const editor = await screen.findByLabelText('Requirement text');
+    expect(editor).toHaveAttribute('contenteditable', 'true');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      'Requirements Compliance to Validate',
+    );
+    expect(screen.getByRole('note', { name: 'Instructions' })).toHaveTextContent(
+      /Load a requirement written in REAL-DSL/,
+    );
+    expect(screen.getByText('REAL-DSL')).toBeInTheDocument();
+    expect(screen.queryByText(/Results for this requirement/)).toBeNull();
+    expect(screen.getByRole('button', { name: /Start Running Compliance Test/ })).toBeDisabled();
+    expect(screen.getByRole('link', { name: 'See manual' })).toHaveAttribute('href', '#/manual');
+  });
+
+  it('switches the editor between light and dark', async () => {
+    renderPage();
+    const toggle = await screen.findByRole('button', { name: 'Dark editor' });
+    expect(toggle).toHaveAttribute('aria-pressed', 'false');
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  });
+});
+
 describe('AuthorPage: the requirement as text with gaps', () => {
   it('starts from the skeleton: the fixed words, the key tasks, the default modules', async () => {
-    renderPage();
+    await renderGaps();
     const editor = await screen.findByRole('group', { name: 'Requirement, with gaps to fill' });
     expect(editor).toHaveTextContent('operationalized as');
     expect(editor).toHaveTextContent('"Detect Pedestrian"');
@@ -103,13 +136,13 @@ describe('AuthorPage: the requirement as text with gaps', () => {
   });
 
   it('offers only the modules the executor runs in the bounded gaps', async () => {
-    renderPage();
+    await renderGaps();
     const select = (await screen.findByLabelText('sub-goal 1 module')) as HTMLSelectElement;
     expect([...select.options].map((o) => o.value)).toEqual(['yolov5m', 'yolov5s']);
   });
 
   it('suggests wording from the example requirements, and the perception outputs as braking input', async () => {
-    renderPage();
+    await renderGaps();
     const goal = (await screen.findByLabelText('goal name')) as HTMLInputElement;
     const goalList = document.getElementById(goal.getAttribute('list')!)!;
     expect([...goalList.querySelectorAll('option')].map((o) => o.value)).toContain(
@@ -126,7 +159,7 @@ describe('AuthorPage: the requirement as text with gaps', () => {
   });
 
   it('marks a free-text assumption as not checked the moment it is added', async () => {
-    renderPage();
+    await renderGaps();
     fireEvent.click(await screen.findByRole('button', { name: 'add a free-text assuming item' }));
     expect(screen.getByTitle('not checked automatically')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'add a measurable assuming item' }));
@@ -135,7 +168,7 @@ describe('AuthorPage: the requirement as text with gaps', () => {
   });
 
   it('keeps Save disabled while the parser rejects the text, and marks the line', async () => {
-    renderPage();
+    await renderGaps();
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('line 2'), {
       timeout: 3000,
     });
@@ -144,7 +177,7 @@ describe('AuthorPage: the requirement as text with gaps', () => {
 
   it('draws the goal model live, and keeps the last good one dimmed when the text breaks', async () => {
     checkOk = true;
-    renderPage();
+    await renderGaps();
     const preview = await screen.findByRole('region', { name: 'Goal model preview' });
     await waitFor(
       () =>
@@ -168,8 +201,8 @@ describe('AuthorPage: the requirement as text with gaps', () => {
 describe('Run test', () => {
   it('asks before running a new requirement on the cluster, then follows the job', async () => {
     checkOk = true;
-    renderPage();
-    await screen.findByRole('button', { name: /Run test/ });
+    await renderGaps();
+    await screen.findByRole('button', { name: /Start Running Compliance Test/ });
     const fill: [string, string][] = [
       ['goal name', 'G'],
       ['sub-goal 1 name', 'S1'],
@@ -185,11 +218,14 @@ describe('Run test', () => {
     for (const [label, value] of fill)
       fireEvent.change(screen.getByLabelText(label), { target: { value } });
     await waitFor(
-      () => expect(screen.getByRole('button', { name: /Run test/ })).not.toBeDisabled(),
+      () =>
+        expect(
+          screen.getByRole('button', { name: /Start Running Compliance Test/ }),
+        ).not.toBeDisabled(),
       { timeout: 3000 },
     );
-    fireEvent.click(screen.getByRole('button', { name: /Run test/ }));
-    const dialog = await screen.findByRole('dialog', { name: 'Run test' });
+    fireEvent.click(screen.getByRole('button', { name: /Start Running Compliance Test/ }));
+    const dialog = await screen.findByRole('dialog', { name: 'Compliance test' });
     // 1. choose: no results yet, no scenario list -> the full test
     await waitFor(() =>
       expect(within(dialog).getByRole('radio', { name: /Full test/ })).toBeChecked(),

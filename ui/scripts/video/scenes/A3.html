@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>A3 · Results</title>
+    <link rel="stylesheet" href="scene.css" />
+    <style>
+      /* failures counted against the car, one bar per car, the same 288 scenarios x 3 runs */
+      .chart {
+        width: 72vw;
+        display: flex;
+        flex-direction: column;
+        gap: 2.6vh;
+      }
+      .bar {
+        display: grid;
+        grid-template-columns: 22vw 1fr 8vw;
+        align-items: center;
+        gap: 1.4vw;
+      }
+      .name {
+        font-size: 2.3vh;
+        font-weight: 600;
+        text-align: right;
+      }
+      .name small {
+        display: block;
+        font-size: 1.6vh;
+        font-weight: 400;
+        color: var(--muted);
+      }
+      .track {
+        height: 4.6vh;
+        background: #ebebd0;
+        border-radius: 1vh;
+        overflow: hidden;
+      }
+      .fill {
+        height: 100%;
+        width: 0;
+        border-radius: 1vh;
+        background: var(--ink);
+        transition: width 1.6s cubic-bezier(0.6, 0, 0.2, 1);
+      }
+      .num {
+        font-family: var(--mono);
+        font-size: 3vh;
+        font-weight: 600;
+        opacity: 0;
+        transition: opacity 0.4s;
+      }
+      .good .fill {
+        background: var(--lime);
+      }
+      .bad .fill {
+        background: var(--brick);
+      }
+      .bad .num {
+        color: var(--brick);
+      }
+      .note {
+        font-size: 2.4vh;
+        text-align: center;
+        min-height: 4vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <div class="label in">Failures counted against the car · 288 scenarios × 3 runs</div>
+      <div class="chart">
+        <div class="bar" data-n="22" data-at="900">
+          <div class="name">The car as tested<small>YOLOv5s + proportional braking</small></div>
+          <div class="track"><div class="fill"></div></div>
+          <div class="num">22</div>
+        </div>
+        <div class="bar good" data-n="6" data-at="3200">
+          <div class="name">A larger detector<small>YOLOv5m</small></div>
+          <div class="track"><div class="fill"></div></div>
+          <div class="num">6</div>
+        </div>
+        <div class="bar bad" data-n="349" data-at="6300">
+          <div class="name">
+            Path-aware braking<small>brakes only for a person in its lane</small>
+          </div>
+          <div class="track"><div class="fill"></div></div>
+          <div class="num">349</div>
+        </div>
+        <div class="bar bad" data-n="335" data-at="9000">
+          <div class="name">Both<small>larger detector + path-aware</small></div>
+          <div class="track"><div class="fill"></div></div>
+          <div class="num">335</div>
+        </div>
+      </div>
+      <div class="note" id="note"></div>
+    </div>
+    <script>
+      const MAX = 349;
+      for (const bar of document.querySelectorAll('.bar')) {
+        const n = Number(bar.dataset.n);
+        const at = Number(bar.dataset.at);
+        setTimeout(() => {
+          // a visible sliver even for the smallest count
+          bar.querySelector('.fill').style.width = `${Math.max((n / MAX) * 100, 1.2)}%`;
+        }, at);
+        setTimeout(() => (bar.querySelector('.num').style.opacity = '1'), at + 1400);
+      }
+      const note = document.getElementById('note');
+      setTimeout(() => (note.textContent = '22 → 6: the larger detector helps.'), 4800);
+      setTimeout(() => (note.textContent = '22 → 349: a plausible fix makes it far worse.'), 7900);
+      setTimeout(
+        () => (note.textContent = 'Every fix measured, every round linked to its decision.'),
+        11200,
+      );
+    </script>
+  </body>
+</html>

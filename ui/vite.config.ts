@@ -9,8 +9,10 @@ import { defineConfig } from 'vite';
 // serves it next to /workspace/; a reviewer may open it from a sub-folder).
 export default defineConfig({
   base: './',
-  // the study build serves the study rounds (npm run study:data) instead of the example
-  publicDir: process.env.VITE_STUDY === '1' ? 'study-public' : 'public',
+  // the study build serves the study rounds (npm run study:data) instead of the example;
+  // VITE_PUBLIC_DIR serves another folder (the demo video: the normal tool on round C1)
+  publicDir:
+    process.env.VITE_PUBLIC_DIR ?? (process.env.VITE_STUDY === '1' ? 'study-public' : 'public'),
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

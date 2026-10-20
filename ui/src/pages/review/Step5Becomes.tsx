@@ -16,7 +16,9 @@ import type { AnalysisReport } from '@/services/schemas';
 import { deliverSignedFiles, prepareSigning } from '@/services/signing';
 import { unconfirmedCount, type Draft, type DraftAction } from '@/state/draft';
 import { useWorkspace } from '@/state/WorkspaceContext';
+import { loadExpertise } from '@/state/expertise';
 import { STUDY } from '@/study/config';
+import { Refinement } from './Refinement';
 import { loadSession } from '@/study/session';
 import { signStudy, studyBlockers } from '@/study/signing';
 import { displayDate } from '@/utils/format';
@@ -102,6 +104,7 @@ export function Step5Becomes({
         report,
         r0,
         reviewer,
+        expertise: loadExpertise(),
         r1Override: edited ? r1 : null,
       });
       const outcome = await deliverSignedFiles(workspace.source, round.dir, result.files);
@@ -157,6 +160,27 @@ export function Step5Becomes({
         </Notice>
       ) : null}
 
+      {r0.trim() ? (
+        <Refinement
+          round={round}
+          report={report}
+          draft={draft}
+          dispatch={dispatch}
+          r0={r0}
+          r1={r1}
+          changes={plan.changes}
+        />
+      ) : null}
+
+      {r0.trim() ? (
+        <Instructions cta="Check every change, then sign below.">
+          <p>
+            Every change the refined requirement makes, each labelled by its kind: a change to the
+            system (S), to a domain assumption (D), to the requirement (R) or to the test (T). Below
+            it, the requirement before and after, side by side.
+          </p>
+        </Instructions>
+      ) : null}
       <section className="card flex flex-col gap-4 p-5" aria-label="Changes">
         <div className="flex flex-wrap items-center gap-3">
           <h2 className="text-lg">Changes</h2>
@@ -279,9 +303,10 @@ export function Step5Becomes({
           </Disclosure>
         ) : null}
         {error ? <Notice tone="error">{error}</Notice> : null}
-        <div>
+        <div className="flex justify-center pt-2">
           <Button
             variant="primary"
+            size="lg"
             disabled={blockers.length > 0 || busy || !workspace}
             busy={busy}
             onClick={sign}

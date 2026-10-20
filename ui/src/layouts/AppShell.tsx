@@ -1,19 +1,27 @@
 import type { ReactNode } from 'react';
 
+import { WorkflowBar } from '@/components/review/WorkflowBar';
 import { routeHash, type Route } from '@/state/route';
-import { useWorkspace } from '@/state/WorkspaceContext';
+import { useWorkflow } from '@/state/workflow';
+import { useTour } from '@/tour/useTour';
 import { STUDY } from '@/study/config';
-import { authorTitle } from '@/study/labels';
 import { loadSession } from '@/study/session';
 import { cx } from '@/utils/format';
 
 /**
- * One top bar for everything: the name, the two screens, and - inside a
- * review - the five steps. Nothing else on the chrome.
+ * The chrome, kept simple: the header holds the name, the Manual and the
+ * participant's ID (the normal tool: the Workspace, where saved rounds are
+ * opened); under it, the workflow as a progress track (WorkflowBar), the
+ * same on every page, scrolling with the page.
  */
 export function AppShell({ route, children }: { route: Route; children: ReactNode }) {
-  const { workspace } = useWorkspace();
-  const inReview = route.screen === 'review';
+  const workflow = useWorkflow();
+  // the page's guided tour: on its first visit, and from the header's ? (tour/useTour.ts)
+  const tour = useTour(route);
+  const links: { route: Route; label: string }[] = [
+    ...(STUDY ? [] : [{ route: { screen: 'workspace' } as Route, label: 'Workspace' }]),
+    { route: { screen: 'manual' }, label: 'Manual' },
+  ];
   return (
     <div className="min-h-dvh bg-surface text-text">
       <a
@@ -22,81 +30,60 @@ export function AppShell({ route, children }: { route: Route; children: ReactNod
       >
         Skip to content
       </a>
-      <header className="app-header sticky top-0 z-30">
-        <div className="mx-auto flex min-h-12 max-w-[80rem] flex-wrap items-center gap-x-5 gap-y-2 px-5 py-2 lg:px-8">
-          <a
-            href={STUDY ? routeHash({ screen: 'overview' }) : '#/'}
-            className="flex items-center gap-2 text-sm font-semibold tracking-tight text-white no-underline hover:no-underline"
-          >
-            <span aria-hidden="true" className="inline-block size-5 rounded-md bg-header-marker" />
-            REAL
-          </a>
-          <nav aria-label="Screens" className="flex items-center gap-0.5">
-            {[
-              {
-                route: { screen: 'overview' } as Route,
-                label: 'Overview',
-                active: route.screen === 'overview',
-              },
-              // the study has no Workspace: its one round opens from the run
-              ...(STUDY
-                ? []
-                : [
-                    {
-                      route: { screen: 'workspace' } as Route,
-                      label: 'Workspace',
-                      active: route.screen === 'workspace',
-                    },
-                  ]),
-              {
-                route: { screen: 'author' } as Route,
-                label: authorTitle(),
-                active: route.screen === 'author',
-              },
-              {
-                route: { screen: 'lineage' } as Route,
-                label: 'Rounds',
-                active: route.screen === 'lineage',
-              },
-              {
-                route: { screen: 'manual' } as Route,
-                label: 'Manual',
-                active: route.screen === 'manual',
-              },
-            ].map((item) => (
-              <a
-                key={item.label}
-                href={routeHash(item.route)}
-                aria-current={item.active ? 'page' : undefined}
-                className={cx(
-                  // white on the header (13.9:1); the active page is bold and carries a white bar
-                  'border-b-[3px] px-2.5 py-1 text-sm text-white no-underline transition-colors duration-fast hover:no-underline',
-                  item.active
-                    ? 'border-header-marker font-semibold'
-                    : 'border-transparent opacity-85 hover:border-white/50 hover:opacity-100',
-                )}
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-          {STUDY ? (
-            <span className="ml-auto max-w-[20rem] truncate text-xs text-white">
-              Participant <span className="font-mono font-semibold">{loadSession()?.id}</span>
-            </span>
-          ) : inReview ? (
-            <span className="ml-auto max-w-[20rem] truncate text-xs text-white">
-              Reviewing run <span className="font-mono">{route.runId.slice(0, 8)}</span>
-              {workspace?.source.isExample ? ' · example data' : ''}
-            </span>
-          ) : workspace ? (
-            <span className="ml-auto max-w-[20rem] truncate text-xs text-white">
-              {workspace.source.label}
-              {workspace.source.isExample ? ' · example data' : ''}
-            </span>
-          ) : null}
+      <header className="sticky top-0 z-30">
+        <div className="app-header">
+          <div className="mx-auto flex min-h-12 max-w-[80rem] items-center gap-5 px-5 py-2 lg:px-8">
+            <a
+              // each tool's first page: its welcome page (REAL, the user's expertise)
+              href={routeHash({ screen: 'welcome' })}
+              aria-label="REAL: back to the first page"
+              className="flex items-center gap-2 text-sm font-semibold tracking-tight text-white no-underline hover:no-underline"
+            >
+              <span
+                aria-hidden="true"
+                className="inline-block size-5 rounded-md bg-header-marker"
+              />
+              REAL
+            </a>
+            <button
+              type="button"
+              onClick={tour}
+              aria-label="Take the tour of this page"
+              title="Take the tour of this page"
+              className="ml-auto flex size-7 items-center justify-center rounded-full border border-white/60 text-sm font-semibold text-white transition-colors duration-fast hover:bg-white/15"
+            >
+              ?
+            </button>
+            <nav aria-label="Screens" className="flex items-center gap-0.5">
+              {links.map((item) => {
+                const active = route.screen === item.route.screen;
+                return (
+                  <a
+                    key={item.label}
+                    href={routeHash(item.route)}
+                    aria-current={active ? 'page' : undefined}
+                    className={cx(
+                      // white on the header (13.9:1); the active page is bold and carries a white bar
+                      'border-b-[3px] px-2.5 py-1 text-sm text-white no-underline transition-colors duration-fast hover:no-underline',
+                      active
+                        ? 'border-header-marker font-semibold'
+                        : 'border-transparent opacity-85 hover:border-white/50 hover:opacity-100',
+                    )}
+                  >
+                    {item.label}
+                  </a>
+                );
+              })}
+            </nav>
+            {STUDY ? (
+              <span className="text-xs text-white">
+                Participant <span className="font-mono font-semibold">{loadSession()?.id}</span>
+              </span>
+            ) : null}
+          </div>
         </div>
       </header>
+      <WorkflowBar route={route} workflow={workflow} />
       <main
         id="main"
         className={cx(

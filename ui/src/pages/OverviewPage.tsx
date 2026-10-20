@@ -1,7 +1,10 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 
 import architecture from '@/assets/real_architecture.png';
+import { buttonClass } from '@/components/ui/buttonClass';
 import { Instructions } from '@/components/ui/Instructions';
+import { Modal } from '@/components/ui/Modal';
+import { PageActions } from '@/components/ui/PageActions';
 import { HELP_VIDEO_URL, youtubeEmbed } from '@/config/help';
 import { routeHash } from '@/state/route';
 import { STUDY } from '@/study/config';
@@ -14,7 +17,7 @@ import { authorTitle } from '@/study/labels';
  */
 export function OverviewPage() {
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-8 [&>*]:w-full [&>*]:max-w-3xl">
+    <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-8 [&>*]:w-full [&>*]:max-w-6xl">
       <header className="flex flex-col items-center gap-1.5 text-center">
         <h1 className="text-2xl lg:text-3xl">{STUDY ? 'Overview' : 'How REAL works'}</h1>
         <p className="prose-width text-base text-text-muted">
@@ -22,14 +25,14 @@ export function OverviewPage() {
         </p>
       </header>
       {STUDY ? <StudyOverview /> : <ToolOverview />}
-      <div className="flex justify-center">
+      <PageActions>
         <a
           href={routeHash({ screen: STUDY ? 'author' : 'workspace' })}
-          className="rounded-full bg-action-primary px-5 py-2 text-sm font-medium text-action-primary-text no-underline hover:brightness-105"
+          className={buttonClass('primary', 'lg')}
         >
-          {STUDY ? `Continue to the ${authorTitle()}` : 'Continue to the Workspace'} →
+          {STUDY ? `Continue to ${authorTitle()}` : 'Continue to the Workspace'} →
         </a>
-      </div>
+      </PageActions>
     </div>
   );
 }
@@ -37,10 +40,14 @@ export function OverviewPage() {
 function StudyOverview() {
   return (
     <>
-      <Instructions>
-        Read this page first. It describes what you will do; the screens after it say what to do at
-        each step.
-      </Instructions>
+      <Instructions
+        page
+        className="!max-w-6xl"
+        steps={[
+          'Read this page first: it takes about 3 minutes, and the short video below shows the same if you prefer to watch.',
+          'When you are ready, press Continue at the bottom.',
+        ]}
+      />
       <HelpVideo />
       <Section title="What this study is about">
         <p>
@@ -68,12 +75,12 @@ function StudyOverview() {
               'Read the requirement under test: what the car must do, the modules that do it, the domain assumptions it relies on, and its soft goals.',
             ],
             [
-              'Run the test',
-              'Run the requirement against the scenarios. When the run is done, its Test Execution Result opens.',
+              'Start the compliance test',
+              'The requirement has been tested against the scenarios. Press Start Running Compliance Test and its review opens: first the requirement under test, then its Test Execution Report.',
             ],
             [
               'Review the results',
-              'Five steps: the requirement under test, the test execution result, the failure analysis (counts, failure rates, recorded simulations), obstacle triage, and requirement revision.',
+              'Five steps: the requirement under test, the test execution report, the failure analysis (counts, failure rates, recorded simulations), obstacle triage, and requirement revision.',
             ],
             [
               'Decide',
@@ -104,10 +111,14 @@ function StudyOverview() {
 function ToolOverview() {
   return (
     <>
-      <Instructions>
-        Start here, then open the Workspace to review a round, or Write a requirement to test a new
-        one.
-      </Instructions>
+      <Instructions
+        page
+        className="!max-w-6xl"
+        steps={[
+          'Read how REAL works (about 3 minutes), or watch the short introduction video below.',
+          `To test a requirement, open ${authorTitle()}; to review a round that has already run, open the Workspace.`,
+        ]}
+      />
       <HelpVideo />
       <Section title="What REAL is for">
         <p>
@@ -123,15 +134,15 @@ function ToolOverview() {
         <Steps
           items={[
             [
-              'Write a requirement',
-              'In the requirement language, with a live goal model. The parser checks every edit; module names must be ones the simulator implements.',
+              authorTitle(),
+              'In REAL-DSL, with a live goal model. The parser checks every edit; module names must be ones the simulator implements.',
             ],
             [
-              'Run the test',
+              'Start the compliance test',
               'A grammar generates the scenarios (an exhaustive grid, a list, or a search). Each runs in the CARLA simulator with the detector in the loop, as a job on a GPU cluster. Before submitting, the scenes and the cluster code are checked; partial results arrive while it runs.',
             ],
             [
-              'Test Execution Result',
+              'Test Execution Report',
               'Every simulation is judged from its recorded trace: the path-aware safety rule, each assumption held or broken, each soft goal met or missed. Runs that did not test anything are set aside, not counted as passes.',
             ],
             [
@@ -156,7 +167,8 @@ function ToolOverview() {
             way into each review.
           </li>
           <li>
-            <strong>Write a requirement</strong>: the editor, and Run test.
+            <strong>{authorTitle()}</strong>: the REAL-DSL editor, the goal model, and Start Running
+            Compliance Test.
           </li>
           <li>
             <strong>Rounds</strong>: how a requirement changed from round to round, and why.
@@ -229,56 +241,25 @@ function HelpVideo({ url = HELP_VIDEO_URL }: { url?: string }) {
 
 /** The video over the page; Escape, the × or a click outside closes it. */
 export function VideoDialog({ url, onClose }: { url: string; onClose: () => void }) {
-  const close = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    window.addEventListener('keydown', onKey);
-    close.current?.focus();
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
   const embed = youtubeEmbed(url);
   return (
-    // a click on the dimmed backdrop closes it too; the keyboard has Escape and the ×
-    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Introduction video"
-        className="card flex w-full max-w-5xl flex-col gap-3 p-4 shadow-xl"
-      >
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="text-lg">Introduction video</h2>
-          <button
-            ref={close}
-            type="button"
-            aria-label="Close the video"
-            onClick={onClose}
-            className="rounded-full px-2 text-2xl leading-none text-text-muted hover:bg-fill"
-          >
-            ×
-          </button>
-        </div>
-        <div className="aspect-video w-full overflow-hidden rounded-lg bg-black">
-          {embed ? (
-            <iframe
-              src={embed}
-              title="Introduction video"
-              allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-              allowFullScreen
-              className="size-full border-0"
-            />
-          ) : (
-            // a video file (not YouTube): its captions, if any, are in the file
-            // eslint-disable-next-line jsx-a11y/media-has-caption
-            <video src={url} controls autoPlay className="size-full" />
-          )}
-        </div>
+    <Modal title="Introduction video" onClose={onClose}>
+      <div className="aspect-video w-full overflow-hidden rounded-lg bg-black">
+        {embed ? (
+          <iframe
+            src={embed}
+            title="Introduction video"
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+            allowFullScreen
+            className="size-full border-0"
+          />
+        ) : (
+          // a video file (not YouTube): its captions, if any, are in the file
+          // eslint-disable-next-line jsx-a11y/media-has-caption
+          <video src={url} controls autoPlay className="size-full" />
+        )}
       </div>
-    </div>
+    </Modal>
   );
 }
 

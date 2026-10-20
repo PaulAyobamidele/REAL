@@ -182,7 +182,12 @@ function obstacleBox(
     w,
     h,
     lines: fitText(o.id, w - 2 * SLANT - 8, 1),
-    note: fitText(verdict, w - 2 * SLANT - 4, 1, 6.2)[0],
+    // the study build: no verdict in the box either (brief 4.4)
+    note: STUDY
+      ? status
+        ? fitText(status, w - 2 * SLANT - 4, 1, 6.2)[0]
+        : undefined
+      : fitText(verdict, w - 2 * SLANT - 4, 1, 6.2)[0],
     detail: fitText(evidenceText(o), w - 2 * SLANT - 4, 1, 6.2)[0],
     title: `${o.id} - ${counts}`,
     obstacle: o,

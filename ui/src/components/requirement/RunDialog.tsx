@@ -74,7 +74,7 @@ export function RunDialog({
         ref={box}
         role="dialog"
         aria-modal="true"
-        aria-label="Run test"
+        aria-label="Compliance test"
         className="card flex w-full max-w-2xl flex-col gap-4 p-5 shadow-xl"
       >
         <div className="flex items-start justify-between gap-4">
@@ -516,7 +516,7 @@ function Command({ text }: { text: string }) {
 
 function Run({ state, actions }: { state: RunTestState; actions: Actions }) {
   const job = 'job' in state ? state.job : undefined;
-  if (state.phase === 'opening') return <Muted>Opening the Test Execution Result…</Muted>;
+  if (state.phase === 'opening') return <Muted>Opening the review…</Muted>;
   if (!job) return null;
   const queued = job.state === 'PENDING';
   const ended = state.phase === 'fetching' || state.phase === 'ended';
@@ -545,7 +545,7 @@ function Run({ state, actions }: { state: RunTestState; actions: Actions }) {
           status={state.phase === 'fetching' ? 'now' : state.phase === 'ended' ? 'done' : 'next'}
           title="Bringing the results back"
         />
-        <Stage status="next" title="Opening the Test Execution Result" />
+        <Stage status="next" title="Opening the review" />
       </ol>
 
       {state.phase === 'tracking' && job.partial?.done != null && job.run_id ? (

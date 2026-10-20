@@ -61,7 +61,7 @@ function python(args: string[], input?: string): string {
   }).toString();
 }
 
-/** The parts of a report the Test Execution Result reads, in one comparable shape. */
+/** The parts of a report the Test Execution Report reads, in one comparable shape. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Python's dict and the page's report, compared field by field
 function shown(r: Record<string, any>) {
   const fm = r.failure_model;

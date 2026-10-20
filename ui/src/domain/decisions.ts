@@ -1,6 +1,7 @@
 import type { AnalysisReport, AssumptionSummary, Obstacle, ToolVerdict } from '@/services/schemas';
 import { STUDY } from '@/study/config';
 import { studyOptions } from '@/study/menu';
+import { explainedBy } from '@/domain/triage';
 import {
   ASSUMPTION_VERDICTS,
   LAYERS,
@@ -236,6 +237,12 @@ export function validateDecisions(doc: DecisionsDoc): string[] {
       problems.push(`assumption ${JSON.stringify(text)}: new_text is about the car under test`);
     }
   }
+  for (const [sid, s] of Object.entries(doc.scope ?? {})) {
+    if (s.limit && aboutTheCar(s.limit))
+      problems.push(
+        `scope ${sid}: the limit ${JSON.stringify(s.limit)} is about the car under test`,
+      );
+  }
   (doc.added_assumptions ?? []).forEach((added, i) => {
     const t = (added.text ?? '').trim();
     if (!t) problems.push(`added_assumptions[${i}]: text missing`);
@@ -257,7 +264,13 @@ export function validateDecisions(doc: DecisionsDoc): string[] {
  * has a mitigation. Why only those: a resolved or absent obstacle has nothing
  * to mitigate this round.
  */
-export function isComplete(doc: DecisionsDoc, everyAccepted = STUDY): boolean {
+// triage (domain/triage.ts), both builds: every accepted obstacle carries its change or fix
+/** An out-of-scope item with no rule to invert: its limit must be written out to go into R1. */
+export function needsLimit(s: DecisionsDoc['scope'][string]): boolean {
+  return s.verdict === 'out_of_scope' && !s.rule?.param;
+}
+
+export function isComplete(doc: DecisionsDoc, everyAccepted = true): boolean {
   for (const o of Object.values(doc.obstacles)) {
     if (o.verdict === null) return false;
     if (needsMitigation(o, everyAccepted) && o.mitigation === null) {
@@ -265,7 +278,9 @@ export function isComplete(doc: DecisionsDoc, everyAccepted = STUDY): boolean {
     }
   }
   if (!Object.values(doc.assumptions ?? {}).every((a) => a.verdict !== null)) return false;
-  return Object.values(doc.scope).every((s) => s.verdict !== null);
+  return Object.values(doc.scope).every(
+    (s) => s.verdict !== null && !(needsLimit(s) && !s.limit?.trim()),
+  );
 }
 
 /** What still blocks completion, in words a reviewer can act on. */
@@ -283,10 +298,22 @@ function needsMitigation(o: ObstacleDecision, everyAccepted: boolean): boolean {
   );
 }
 
-export function completionGaps(doc: DecisionsDoc, everyAccepted = STUDY): string[] {
+export function completionGaps(doc: DecisionsDoc, everyAccepted = true): string[] {
   const gaps: string[] = [];
-  const noVerdict = Object.entries(doc.obstacles).filter(([, o]) => o.verdict === null).length;
-  if (noVerdict) gaps.push(`${noVerdict} obstacle${noVerdict === 1 ? '' : 's'} without a verdict`);
+  const open = Object.entries(doc.obstacles).filter(([, o]) => o.verdict === null);
+  {
+    // triage (domain/triage.ts), both builds: step 4 asks world or car, step 5 resolves the car's
+    const remaining = open.filter(([, o]) => explainedBy(o) === 'car');
+    const untriaged = open.length - remaining.length;
+    if (untriaged)
+      gaps.push(
+        `${untriaged} obstacle${untriaged === 1 ? '' : 's'} not yet triaged: world or car? (step 4)`,
+      );
+    if (remaining.length)
+      gaps.push(
+        `${remaining.length} remaining failure${remaining.length === 1 ? '' : 's'} to decide: refine, system failure, or next round (${remaining.map(([id]) => id).join(', ')})`,
+      );
+  }
   const noMitigation = Object.entries(doc.obstacles).filter(
     ([, o]) => needsMitigation(o, everyAccepted) && o.mitigation === null,
   );
@@ -298,6 +325,11 @@ export function completionGaps(doc: DecisionsDoc, everyAccepted = STUDY): string
   const scopeOpen = Object.values(doc.scope).filter((s) => s.verdict === null).length;
   if (scopeOpen)
     gaps.push(`${scopeOpen} scope item${scopeOpen === 1 ? '' : 's'} without a verdict`);
+  const noLimit = Object.entries(doc.scope).filter(([, s]) => needsLimit(s) && !s.limit?.trim());
+  if (noLimit.length)
+    gaps.push(
+      `out of scope without the limit to state in the requirement (${noLimit.map(([id]) => id).join(', ')})`,
+    );
   const assumptionsOpen = Object.values(doc.assumptions ?? {}).filter(
     (a) => a.verdict === null,
   ).length;

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>S10 · Try it</title>
+    <link rel="stylesheet" href="scene.css" />
+    <style>
+      /* the one command a reviewer runs (the image name comes in ?image=, from record.mjs) */
+      .term {
+        width: 64vw;
+        border-radius: 1.6vh;
+        overflow: hidden;
+        background: #1b1d23;
+        box-shadow: 0 2vh 6vh rgb(23 32 51 / 0.3);
+      }
+      .bar {
+        display: flex;
+        gap: 0.7vw;
+        padding: 1.4vh 1.2vw;
+        background: #2a2d36;
+      }
+      .bar i {
+        width: 1.4vh;
+        height: 1.4vh;
+        border-radius: 50%;
+        background: #5b5f6b;
+      }
+      pre {
+        margin: 0;
+        padding: 3vh 2vw 4vh;
+        min-height: 26vh;
+        font-family: var(--mono);
+        font-size: 2.4vh;
+        line-height: 1.7;
+        color: #d6dae0;
+        white-space: pre-wrap;
+      }
+      .p {
+        color: #9eb200;
+      }
+      .ok {
+        color: #8b949e;
+      }
+      .caret {
+        display: inline-block;
+        width: 0.9ch;
+        background: #d6dae0;
+        animation: blink 1s steps(1) infinite;
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <div class="label in">No build needed</div>
+      <div class="term in" style="animation-delay: 200ms">
+        <div class="bar"><i></i><i></i><i></i></div>
+        <pre
+          id="out"
+        ><span class="p">$</span> <span id="cmd"></span><span class="caret">&nbsp;</span></pre>
+      </div>
+    </div>
+    <script>
+      const image = new URLSearchParams(location.search).get('image') || 'ghcr.io/…/real-tool';
+      const command = `docker run --rm -p 8080:80 ${image}`;
+      const cmd = document.getElementById('cmd');
+      const out = document.getElementById('out');
+      let i = 0;
+      setTimeout(function type() {
+        cmd.textContent = command.slice(0, ++i);
+        if (i < command.length) setTimeout(type, 45);
+        else
+          setTimeout(() => {
+            out.querySelector('.caret').remove();
+            out.insertAdjacentHTML(
+              'beforeend',
+              '\n<span class="ok">REAL is ready: open http://localhost:8080</span>\n',
+            );
+          }, 900);
+      }, 900);
+    </script>
+  </body>
+</html>

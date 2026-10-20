@@ -70,12 +70,12 @@ describe('following a job to its end', () => {
     expect(window.localStorage.getItem('real-av.run-test.job')).toBeNull();
   });
 
-  it('opens a complete run at its Test Execution Result', async () => {
+  it('opens a complete run at the requirement under test, before its report', async () => {
     partial = { ...base, state: 'COMPLETED' };
     fetched = { ...base, state: 'COMPLETED', fetched: true, complete: true };
     const open = vi.fn(async () => undefined);
     renderHook(() => useRunTest({ text: 'x', fileName: 'R_new.dsl', open }));
     await waitFor(() => expect(open).toHaveBeenCalled());
-    await waitFor(() => expect(window.location.hash).toContain(`${RUN}/2`));
+    await waitFor(() => expect(window.location.hash).toContain(`${RUN}/1`));
   });
 });

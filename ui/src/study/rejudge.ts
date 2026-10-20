@@ -4,7 +4,7 @@ import type { AnalysisReport } from '@/services/schemas';
 /**
  * Re-judging a run against a revised requirement in the study page - the
  * same simulations, the revised assumptions - as scripts/analysis/report.py
- * analyse(run, requirement=R1) does it, for what the Test Execution Result
+ * analyse(run, requirement=R1) does it, for what the Test Execution Report
  * shows. The steps before the assumptions (outcomes, trace measures, the
  * safety rule, test-scope rules) come from the project's own Python at build
  * time (ui/scripts/study_quantities.py); this file ports the rest line by
@@ -14,7 +14,7 @@ import type { AnalysisReport } from '@/services/schemas';
  * contract test compares it with Python on a real run.
  *
  * Not recomputed: the obstacles, the failure types by parameter and scenario,
- * the timing and the map - the parts of the report the Test Execution Result
+ * the timing and the map - the parts of the report the Test Execution Report
  * does not show. The re-judged report says so (`rejudged.partial`).
  */
 export type PyValue = number | string | boolean | null;

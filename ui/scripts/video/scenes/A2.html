@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>A2 · D, S ⊨ R</title>
+    <link rel="stylesheet" href="scene.css" />
+    <style>
+      /* the three parts REAL keeps apart; a failed run is counted only if D held */
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 3vw;
+      }
+      .part {
+        width: 20vw;
+        border-radius: 2vh;
+        padding: 3vh 1.6vw;
+        background: var(--white);
+        border: 0.25vh solid #dcdcb0;
+        text-align: center;
+        box-shadow: 0 1vh 3vh rgb(23 32 51 / 0.08);
+      }
+      .part b {
+        display: block;
+        font-family: var(--mono);
+        font-size: 6vh;
+        line-height: 1;
+      }
+      .part span {
+        display: block;
+        margin-top: 1.2vh;
+        font-size: 2.2vh;
+        font-weight: 600;
+      }
+      .part code {
+        display: block;
+        margin-top: 0.8vh;
+        font-family: var(--mono);
+        font-size: 1.8vh;
+        color: var(--muted);
+      }
+      .D {
+        border-left: 0.9vh solid #8b74b0;
+      }
+      .S {
+        border-left: 0.9vh solid #b9a64a;
+      }
+      .R {
+        border-left: 0.9vh solid #6f8fa8;
+      }
+      .op {
+        font-family: var(--mono);
+        font-size: 6vh;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .runs {
+        position: relative;
+        width: 70vw;
+        height: 12vh;
+      }
+      .run {
+        position: absolute;
+        top: 3vh;
+        left: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8vw;
+        padding: 1vh 1.2vw;
+        border-radius: 999px;
+        font-size: 2vh;
+        font-weight: 600;
+        background: var(--white);
+        border: 0.25vh solid var(--brick);
+        color: var(--brick);
+        opacity: 0;
+        transition:
+          left 1.8s cubic-bezier(0.6, 0, 0.2, 1),
+          opacity 0.4s,
+          color 0.4s,
+          border-color 0.4s;
+      }
+      .run.aside {
+        color: #8b8f99;
+        border-color: #c6c8cc;
+        text-decoration: line-through;
+      }
+      .rule {
+        font-size: 3vh;
+        font-weight: 600;
+        text-align: center;
+      }
+      .rule em {
+        font-style: normal;
+        color: var(--olive);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <div class="label in" style="animation-delay: 100ms">Requirements engineering</div>
+      <div class="row">
+        <div class="part D in" style="animation-delay: 400ms">
+          <b>D</b><span>Domain assumptions</span><code>assuming</code>
+        </div>
+        <div class="op in" style="animation-delay: 900ms">,</div>
+        <div class="part S in" style="animation-delay: 1100ms">
+          <b>S</b><span>The system</span><code>performed by</code>
+        </div>
+        <div class="op in" style="animation-delay: 1600ms">⊨</div>
+        <div class="part R in" style="animation-delay: 1800ms">
+          <b>R</b><span>The requirement</span><code>MAINTAIN · ensuring</code>
+        </div>
+      </div>
+      <div class="runs">
+        <div class="run" id="r1">✕ failed run · fog 70% (D broken)</div>
+        <div class="run" id="r2">✕ failed run · clear day (D held)</div>
+      </div>
+      <div class="rule in" style="animation-delay: 5600ms">
+        A failure counts against the car <em>only when the assumptions held.</em>
+      </div>
+    </div>
+    <script>
+      const r1 = document.getElementById('r1');
+      const r2 = document.getElementById('r2');
+      const show = (el, at, left) =>
+        setTimeout(() => {
+          el.style.opacity = '1';
+          el.style.left = left;
+        }, at);
+      // run 1: the fog assumption broke, so it is set aside, not blamed on the car
+      show(r1, 2800, '8vw');
+      setTimeout(() => r1.classList.add('aside'), 4300);
+      // run 2: the assumptions held, so it counts against S
+      show(r2, 6800, '0vw');
+      setTimeout(() => (r2.style.left = '38vw'), 7600);
+      setTimeout(() => {
+        r1.style.opacity = '0.4';
+      }, 9000);
+    </script>
+  </body>
+</html>

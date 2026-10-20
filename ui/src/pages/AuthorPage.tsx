@@ -2,12 +2,14 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 
 import { Loading } from '@/components/feedback';
 import { KaosDiagram } from '@/components/requirement/KaosDiagram';
-import { MatchingRuns } from '@/components/requirement/MatchingRuns';
+import { DslEditor } from '@/components/requirement/DslEditor';
 import { RunDialog } from '@/components/requirement/RunDialog';
 import { TemplateEditor } from '@/components/requirement/TemplateEditor';
 import { Button } from '@/components/ui/Button';
 import { Disclosure } from '@/components/ui/Disclosure';
+import { Instructions } from '@/components/ui/Instructions';
 import { Notice } from '@/components/ui/Notice';
+import { PageActions } from '@/components/ui/PageActions';
 import { FileName } from '@/components/ui/Section';
 import { buildGoalModel } from '@/domain/goalModel';
 import { layoutKaos, type KaosLayout } from '@/domain/kaosLayout';
@@ -29,6 +31,7 @@ import {
   type ClassifiedItem,
 } from '@/services/authoring';
 import { downloadText } from '@/services/signing';
+import { routeHash } from '@/state/route';
 import { useRunTest } from '@/state/runTest';
 import { useWorkspace } from '@/state/WorkspaceContext';
 import { cx } from '@/utils/format';
@@ -58,18 +61,55 @@ export function AuthorPage() {
   const load = useCallback(() => {
     setCatalogState({ status: 'loading' });
     // the study build opens with the requirement under test, read only
-    if (STUDY) void studyR0().then((r) => setStudyText(r.text));
+    if (STUDY)
+      void studyR0().then(
+        (r) => setStudyText(r.text),
+        (error: Error) => setCatalogState({ status: 'error', error }),
+      );
     fetchCatalog().then(
       (catalog) => setCatalogState({ status: 'ready', catalog }),
       (error: Error) => setCatalogState({ status: 'error', error }),
     );
   }, []);
   useEffect(load, [load]);
+  const seeManual = (
+    <>
+      (
+      <a
+        href={routeHash({ screen: 'manual' })}
+        className="font-semibold text-text underline underline-offset-2 hover:no-underline"
+      >
+        See manual
+      </a>
+      )
+    </>
+  );
 
   return (
-    <div className="flex w-full flex-col gap-5">
-      <header className="flex flex-col items-center gap-1 text-center">
+    <div className="flex w-full flex-col gap-6">
+      <header className="flex flex-col items-center gap-3 text-center">
         <h1 className="text-2xl lg:text-3xl">{authorTitle()}</h1>
+        <Instructions
+          page
+          steps={
+            STUDY
+              ? [
+                  <>
+                    This requirement has already been tested, so there is nothing to load. Its
+                    REAL-DSL is shown read only {seeManual}, with the same requirement drawn as a
+                    goal model beside it: point at any part of the text to see its box.
+                  </>,
+                  'When you have read both, press Start Running Compliance Test at the bottom: the review opens with the requirement under test, followed by its Test Execution Report.',
+                ]
+              : [
+                  <>
+                    Load a requirement written in REAL-DSL {seeManual} with Load a .dsl…, or write
+                    one in the editor; press Ctrl+Space for suggestions.
+                  </>,
+                  'The goal model redraws as you type, and pointing at any part of the text marks its box. When the editor shows ✓ parses, press Start Running Compliance Test at the bottom.',
+                ]
+          }
+        />
       </header>
       {catalogState.status === 'loading' ? <Loading what="the authoring lists" /> : null}
       {catalogState.status === 'error' ? (
@@ -111,7 +151,8 @@ function Author({
 }) {
   const { workspace, open } = useWorkspace();
   const [form, setForm] = useState<RequirementForm>(() => emptyForm(catalog));
-  const [mode, setMode] = useState<'template' | 'text'>(STUDY ? 'text' : 'template');
+  // REAL-DSL first: load it or write it; the gaps are the guided alternative
+  const [mode, setMode] = useState<'template' | 'text'>('text');
   const [raw, setRaw] = useState(studyText ?? '');
   const [check, setCheck] = useState<CheckState>({ status: 'idle' });
   const [fileName, setFileName] = useState(STUDY ? 'R0.dsl' : 'R_new.dsl');
@@ -119,6 +160,8 @@ function Author({
   const [saveError, setSaveError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [zoom, setZoom] = useState<'fit' | 'full'>('fit');
+  // the goal-model boxes of the part of the text under the mouse
+  const [pointed, setPointed] = useState<string[] | null>(null);
   const [lastGood, setLastGood] = useState<KaosLayout | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -168,27 +211,10 @@ function Author({
   const shown = layout?.ok ? layout : lastGood;
   const stale = !layout?.ok && Boolean(lastGood);
 
-  const loadText = async (dsl: string, from: string) => {
-    setNotice(null);
-    try {
-      const result = await checkRequirement(dsl);
-      const back = result.ok ? fromCheck(result, catalog) : null;
-      if (back && 'form' in back) {
-        setForm(back.form);
-        setMode('template');
-        setNotice(`Loaded ${from}.`);
-      } else {
-        setRaw(dsl);
-        setMode('text');
-        setNotice(
-          result.ok
-            ? `Loaded ${from} as plain text: ${(back as { reason: string }).reason}.`
-            : `Loaded ${from} as plain text: it does not parse yet.`,
-        );
-      }
-    } catch (error) {
-      setNotice(error instanceof Error ? error.message : String(error));
-    }
+  const loadText = (dsl: string, from: string) => {
+    setRaw(dsl);
+    setMode('text');
+    setNotice(`Loaded ${from}.`);
   };
 
   const save = async () => {
@@ -227,156 +253,148 @@ function Author({
             ? { tone: 'fail', text: `line ${current.error.line ?? '?'}: does not parse` }
             : { tone: 'muted', text: 'empty' };
 
+  const statusPill = (
+    <span
+      role="status"
+      className={cx(
+        'inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs',
+        status.tone === 'pass' && 'bg-pass-soft text-pass',
+        status.tone === 'fail' && 'bg-fail-soft text-fail',
+        status.tone === 'muted' && 'bg-fill text-text-muted',
+      )}
+    >
+      <span aria-hidden="true">
+        {status.tone === 'pass' ? '✓' : status.tone === 'fail' ? '✕' : '·'}
+      </span>
+      {status.text}
+    </span>
+  );
+  const unimplemented = current?.ok
+    ? (['perception', 'braking'] as const)
+        .map((role) => current.modules[role])
+        .filter((m) => m.module && !m.runs)
+        .map((m) => m.module!)
+    : [];
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="card flex flex-wrap items-center gap-2 px-4 py-2.5">
-        {/* the study build shows the requirement under test read only: no editing controls */}
-        {STUDY ? null : (
-          <>
-            <div className="flex rounded-lg bg-fill p-0.5" role="group" aria-label="Editing mode">
-              {(['template', 'text'] as const).map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  aria-pressed={mode === m}
-                  disabled={
-                    m === 'template' &&
-                    mode === 'text' &&
-                    !(backToTemplate && 'form' in backToTemplate)
-                  }
-                  title={
-                    m === 'template' && backToTemplate && 'reason' in backToTemplate
-                      ? `The gaps cannot hold this text: ${backToTemplate.reason}`
-                      : undefined
-                  }
-                  onClick={() => {
-                    if (m === mode) return;
-                    if (m === 'text') {
-                      setRaw(toDsl(form));
-                      setMode('text');
-                    } else if (backToTemplate && 'form' in backToTemplate) {
-                      setForm(backToTemplate.form);
-                      setMode('template');
-                    }
-                  }}
-                  className={cx(
-                    'rounded-md px-3 py-1 text-xs transition-all duration-fast disabled:cursor-not-allowed disabled:opacity-50',
-                    mode === m
-                      ? 'bg-surface-raised font-medium text-text shadow-[0_1px_3px_rgb(0_0_0/0.12)] dark:bg-[#5a5a5e]'
-                      : 'text-text-muted hover:text-text',
-                  )}
-                >
-                  {m === 'template' ? 'Fill the gaps' : 'Plain text'}
-                </button>
-              ))}
-            </div>
-            <input
-              ref={fileRef}
-              type="file"
-              accept=".dsl,text/plain"
-              className="sr-only"
-              aria-label="Load a requirement file"
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  setFileName(file.name);
-                  await loadText(await file.text(), file.name);
+      {/* the study build shows the requirement under test read only: no editing controls */}
+      {STUDY ? null : (
+        <div className="card flex flex-wrap items-center gap-2 px-4 py-2.5">
+          <div className="flex rounded-lg bg-fill p-0.5" role="group" aria-label="Editing mode">
+            {(['text', 'template'] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                aria-pressed={mode === m}
+                disabled={
+                  m === 'template' &&
+                  mode === 'text' &&
+                  raw.trim() !== '' &&
+                  !(backToTemplate && 'form' in backToTemplate)
                 }
-                e.target.value = '';
-              }}
-            />
-            <Button size="sm" onClick={() => fileRef.current?.click()}>
-              Load a .dsl…
-            </Button>
-            <Button
-              size="sm"
-              variant="quiet"
-              onClick={() => {
-                setForm(emptyForm(catalog));
-                setMode('template');
-                setNotice(null);
-              }}
-            >
-              Start blank
-            </Button>
-          </>
-        )}
-        <span
-          role="status"
-          className={cx(
-            'inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs',
-            status.tone === 'pass' && 'bg-pass-soft text-pass',
-            status.tone === 'fail' && 'bg-fail-soft text-fail',
-            status.tone === 'muted' && 'bg-fill text-text-muted',
-          )}
-        >
-          <span aria-hidden="true">
-            {status.tone === 'pass' ? '✓' : status.tone === 'fail' ? '✕' : '·'}
-          </span>
-          {status.text}
-        </span>
-        {notice ? <span className="text-xs text-text-muted">{notice}</span> : null}
-        <span className="ml-auto flex items-center gap-2">
-          {STUDY ? (
-            <span className="font-mono text-xs text-text-muted">{fileName}</span>
-          ) : (
+                title={
+                  m === 'template' && backToTemplate && 'reason' in backToTemplate
+                    ? `The gaps cannot hold this text: ${backToTemplate.reason}`
+                    : undefined
+                }
+                onClick={() => {
+                  if (m === mode) return;
+                  if (m === 'text') {
+                    setRaw(toDsl(form));
+                    setMode('text');
+                  } else if (!raw.trim()) {
+                    setForm(emptyForm(catalog)); // nothing written yet: the gaps from the start
+                    setMode('template');
+                  } else if (backToTemplate && 'form' in backToTemplate) {
+                    setForm(backToTemplate.form);
+                    setMode('template');
+                  }
+                }}
+                className={cx(
+                  'rounded-md px-3 py-1 text-xs transition-all duration-fast disabled:cursor-not-allowed disabled:opacity-50',
+                  mode === m
+                    ? 'bg-surface-raised font-medium text-text shadow-[0_1px_3px_rgb(0_0_0/0.12)]'
+                    : 'text-text-muted hover:text-text',
+                )}
+              >
+                {m === 'template' ? 'Fill the gaps' : 'REAL-DSL editor'}
+              </button>
+            ))}
+          </div>
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".dsl,text/plain"
+            className="sr-only"
+            aria-label="Load a requirement file"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                setFileName(file.name);
+                loadText(await file.text(), file.name);
+              }
+              e.target.value = '';
+            }}
+          />
+          <Button size="sm" onClick={() => fileRef.current?.click()}>
+            Load a .dsl…
+          </Button>
+          <Button
+            size="sm"
+            variant="quiet"
+            onClick={() => {
+              setRaw('');
+              setForm(emptyForm(catalog));
+              setNotice(null);
+            }}
+          >
+            Start blank
+          </Button>
+          {notice ? <span className="text-xs text-text-muted">{notice}</span> : null}
+          <span className="ml-auto flex items-center gap-2">
             <input
               aria-label="File name"
               value={fileName}
               onChange={(e) => setFileName(e.target.value)}
               className="w-40 rounded-lg border border-border bg-surface-raised px-2.5 py-1 font-mono text-xs text-text"
             />
-          )}
-          {problems.length || (current && !current.ok) ? (
-            <span className="text-xs text-human">
-              {problems.length
-                ? `Fill ${problems.length} gap${problems.length === 1 ? '' : 's'} to run`
-                : 'Fix the text to run'}
-            </span>
-          ) : null}
-          {STUDY ? null : (
             <Button size="sm" onClick={save} disabled={problems.length > 0 || !current?.ok}>
               Save
             </Button>
-          )}
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => void run.start()}
-            // a followed job can always be looked at; a new run needs a complete requirement
-            disabled={!run.running && (problems.length > 0 || !current?.ok)}
-            busy={Boolean(run.running)}
-            title="choose, check and run this requirement on the cluster, or open its latest result"
-          >
-            {run.running ?? 'Run test ▸'}
-          </Button>
-        </span>
-      </div>
+          </span>
+        </div>
+      )}
       {saveError ? <Notice tone="error">{saveError}</Notice> : null}
       {saved ? <Notice tone="success">{saved}</Notice> : null}
 
-      <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+      {/* the goal model as tall as the editor beside it */}
+      <div className="grid items-stretch gap-4 xl:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
         <section className="card flex min-w-0 flex-col gap-3 p-4" aria-label="Source">
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-            <h2 className="text-base font-semibold">Requirement</h2>
-          </div>
+          <h2 className="text-base font-semibold">Requirement in REAL-DSL</h2>
           {mode === 'template' ? (
-            <div className="overflow-x-auto">
-              <TemplateEditor form={form} setForm={setForm} catalog={catalog} check={current} />
-            </div>
+            <>
+              <div className="flex items-center gap-2">{statusPill}</div>
+              <div className="overflow-x-auto">
+                <TemplateEditor form={form} setForm={setForm} catalog={catalog} check={current} />
+              </div>
+            </>
           ) : (
-            <textarea
+            <DslEditor
               value={raw}
+              onChange={STUDY ? undefined : setRaw}
               readOnly={STUDY}
-              onChange={(e) => setRaw(e.target.value)}
-              spellCheck={false}
-              aria-label="Requirement text"
-              className="dsl min-h-[28rem] w-full resize-y border border-border font-mono focus-visible:border-human"
+              catalog={catalog}
+              problem={current && !current.ok ? current.error : null}
+              unimplemented={unimplemented}
+              fileName={fileName}
+              status={statusPill}
+              onPoint={setPointed}
             />
           )}
           {mode === 'text' && !STUDY ? (
             <p className="text-xs text-text-muted">
-              For what the gaps do not cover: {catalog.not_covered.join('; ')}.
+              The gaps cannot hold: {catalog.not_covered.join('; ')}. The editor can.
             </p>
           ) : null}
           <Disclosure
@@ -386,62 +404,86 @@ function Author({
           </Disclosure>
         </section>
 
-        <div className="flex min-w-0 flex-col gap-4 xl:sticky xl:top-16">
-          <section className="card flex min-w-0 flex-col gap-3 p-4" aria-label="Goal model preview">
-            <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-base font-semibold">Goal model</h2>
-              <span className={cx('text-xs', stale ? 'text-caution' : 'text-text-muted')}>
-                {stale ? 'last version that parsed - fix the marked line to update' : ''}
-              </span>
-              <div className="ml-auto flex rounded-lg bg-fill p-0.5" role="group" aria-label="Zoom">
-                {(['fit', 'full'] as const).map((z) => (
-                  <button
-                    key={z}
-                    type="button"
-                    aria-pressed={zoom === z}
-                    onClick={() => setZoom(z)}
-                    className={cx(
-                      'rounded-md px-2.5 py-0.5 text-[11px]',
-                      zoom === z
-                        ? 'bg-surface-raised font-medium text-text shadow-[0_1px_3px_rgb(0_0_0/0.12)] dark:bg-[#5a5a5e]'
-                        : 'text-text-muted',
-                    )}
-                  >
-                    {z === 'fit' ? 'Fit' : '100%'}
-                  </button>
-                ))}
-              </div>
+        <section className="card flex min-w-0 flex-col gap-3 p-4" aria-label="Goal model preview">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-base font-semibold">Goal model</h2>
+            <span className={cx('text-xs', stale ? 'text-caution' : 'text-text-muted')}>
+              {stale ? 'last version that parsed - fix the marked line to update' : ''}
+            </span>
+            <div className="ml-auto flex rounded-lg bg-fill p-0.5" role="group" aria-label="Zoom">
+              {(['fit', 'full'] as const).map((z) => (
+                <button
+                  key={z}
+                  type="button"
+                  aria-pressed={zoom === z}
+                  onClick={() => setZoom(z)}
+                  className={cx(
+                    'rounded-md px-2.5 py-0.5 text-[11px]',
+                    zoom === z
+                      ? 'bg-surface-raised font-medium text-text shadow-[0_1px_3px_rgb(0_0_0/0.12)]'
+                      : 'text-text-muted',
+                  )}
+                >
+                  {z === 'fit' ? 'Fit' : '100%'}
+                </button>
+              ))}
             </div>
-            {layout && !layout.ok ? (
-              <Notice tone="info" title="No diagram for this text">
-                {layout.reason}.
-              </Notice>
-            ) : null}
-            {shown ? (
-              <div
-                className={cx(
-                  'motion-safe:transition-opacity motion-safe:duration-base',
-                  stale && 'opacity-45',
-                )}
-              >
-                <KaosDiagram
-                  layout={shown}
-                  selectedObstacleId={null}
-                  onSelectObstacle={() => {}}
-                  fit={zoom === 'fit'}
-                  withObstacles={false}
-                  legend={false}
-                />
-              </div>
-            ) : (
-              <p className="py-16 text-center text-sm text-text-muted">
-                The goal model appears once the requirement parses.
-              </p>
-            )}
-          </section>
-          <MatchingRuns text={text} parses={Boolean(current?.ok)} />
-        </div>
+          </div>
+          {layout && !layout.ok ? (
+            <Notice tone="info" title="No diagram for this text">
+              {layout.reason}.
+            </Notice>
+          ) : null}
+          {shown ? (
+            <div
+              className={cx(
+                'flex-1 motion-safe:transition-opacity motion-safe:duration-base',
+                stale && 'opacity-45',
+              )}
+            >
+              <KaosDiagram
+                layout={shown}
+                selectedObstacleId={null}
+                onSelectObstacle={() => {}}
+                fit={zoom === 'fit'}
+                withObstacles={false}
+                highlight={stale ? null : pointed}
+                fill
+              />
+            </div>
+          ) : (
+            <p className="flex flex-1 items-center justify-center py-16 text-center text-sm text-text-muted">
+              The goal model appears once the requirement parses.
+            </p>
+          )}
+        </section>
       </div>
+
+      <PageActions
+        hint={
+          run.running
+            ? null
+            : problems.length
+              ? `Fill ${problems.length} gap${problems.length === 1 ? '' : 's'} to run.`
+              : current && !current.ok
+                ? 'Fix the marked line to run.'
+                : !current?.ok
+                  ? 'Start Running Compliance Test is available once the requirement parses.'
+                  : null
+        }
+      >
+        <Button
+          variant="primary"
+          size="lg"
+          onClick={() => void run.start()}
+          // a followed job can always be looked at; a new run needs a complete requirement
+          disabled={!run.running && (problems.length > 0 || !current?.ok)}
+          busy={Boolean(run.running)}
+          title="choose, check and run this requirement on the cluster, or open its latest result"
+        >
+          {run.running ?? 'Start Running Compliance Test ▸'}
+        </Button>
+      </PageActions>
       {run.shown ? (
         <RunDialog
           state={run.state}
@@ -514,7 +556,7 @@ function Checks({
                     {role === 'perception' ? 'Detector' : 'Braking'} <FileName>{m.module}</FileName>{' '}
                     {m.runs
                       ? 'is run by the executor.'
-                      : 'is not implemented by the executor: a run would use a different module.'}
+                      : 'is not implemented by the simulator: a run with it would fail.'}
                   </>
                 ) : (
                   <>

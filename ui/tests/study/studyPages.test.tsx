@@ -34,32 +34,38 @@ describe('the study build, before any run', () => {
       within(nav)
         .getAllByRole('link')
         .map((a) => a.textContent),
-    ).toEqual(['Overview', 'Requirement under Test', 'Rounds']);
+    ).toEqual(['Manual']);
+    expect(screen.getByText(/^Participant/)).toBeInTheDocument();
+    const flow = screen.getByRole('navigation', { name: 'Workflow' });
+    expect(within(flow).getByRole('link', { current: 'step' })).toHaveTextContent(
+      'Requirements Compliance to Validate',
+    );
   });
 
   it('shows the requirement under test read only, without the editing controls', async () => {
     window.location.hash = '#/author';
     render(<App />);
     const text = await screen.findByLabelText('Requirement text');
-    expect(text).toHaveValue(R0);
-    expect(text).toHaveAttribute('readonly');
+    // the same editor, read only: highlighted, no suggestions, no editing
+    await waitFor(() => expect(text.textContent).toContain(R0.trim().split('\n')[0]!.trim()));
+    expect(text).toHaveAttribute('aria-readonly', 'true');
+    expect(screen.getByText('read only')).toBeInTheDocument();
+    expect(screen.getByRole('note', { name: 'Instructions' })).toHaveTextContent(
+      'This requirement has already been tested',
+    );
     for (const name of [/Load a \.dsl/, 'Start blank', 'Save'])
       expect(screen.queryByRole('button', { name })).toBeNull();
     expect(screen.queryByRole('group', { name: 'Editing mode' })).toBeNull();
     expect(screen.queryByLabelText('File name')).toBeNull();
   });
 
-  it('offers only the saved full test in the run panel', async () => {
+  it('opens the review at once, at the requirement under test: no run panel', async () => {
     window.location.hash = '#/author';
     render(<App />);
-    const run = await screen.findByRole('button', { name: /Run test/ });
+    const run = await screen.findByRole('button', { name: /Start Running Compliance Test/ });
     await waitFor(() => expect(run).not.toBeDisabled());
     fireEvent.click(run);
-    const dialog = await screen.findByRole('dialog', { name: 'Run test' });
-    const full = await within(dialog).findByRole('radio', { name: /Full test/ });
-    expect(full).toHaveTextContent('288 scenarios × 3 runs');
-    expect(within(dialog).queryByRole('radio', { name: /Quick check/ })).toBeNull();
-    expect(within(dialog).queryByText(/More options/)).toBeNull();
-    expect(dialog).toHaveTextContent('requirements/R0.dsl');
+    await waitFor(() => expect(window.location.hash).toMatch(/^#\/review\/[0-9a-f]{32}\/1$/));
+    expect(screen.queryByRole('dialog', { name: 'Compliance test' })).toBeNull();
   });
 });

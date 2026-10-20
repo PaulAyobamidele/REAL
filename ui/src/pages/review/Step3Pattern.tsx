@@ -3,14 +3,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { ClusterMapView } from '@/components/evidence/ClusterMap';
 import { SimulationTable, type OutcomeFilter } from '@/components/evidence/SimulationTable';
 import { TraceView } from '@/components/evidence/TraceView';
+import { CarlaVideo } from '@/components/evidence/CarlaVideo';
 import { VideoPanel } from '@/components/evidence/VideoPanel';
 import { EmptyState, FileErrorNotice, Loading } from '@/components/feedback';
 import { RequirementViewBody, ViewSwitch } from '@/components/requirement/RequirementViews';
-import { MitigationList } from '@/components/review/MitigationMenu';
 import { ObstacleSummary } from '@/components/review/ObstacleSummary';
 import { Button } from '@/components/ui/Button';
-import { Chip, StatusChip, ToolVerdictChip } from '@/components/ui/Chip';
+import { StatusChip, ToolVerdictChip } from '@/components/ui/Chip';
 import { Disclosure } from '@/components/ui/Disclosure';
+import { Instructions } from '@/components/ui/Instructions';
 import { Notice } from '@/components/ui/Notice';
 import { FileName } from '@/components/ui/Section';
 import { reportedCounts, selectEvidence, type SimulationRow } from '@/domain/evidence';
@@ -21,11 +22,11 @@ import { useAsync } from '@/hooks/useAsync';
 import type { AnalysisReport } from '@/services/schemas';
 import type { Draft } from '@/state/draft';
 import { KNOWN_FILES } from '@/services/workspace';
+import { useBestScenario } from '@/hooks/useBestScenario';
 import { useRequirementView } from '@/state/requirementView';
+import { routeHash } from '@/state/route';
 import { useWorkspace } from '@/state/WorkspaceContext';
-import { cx } from '@/utils/format';
 import { STUDY } from '@/study/config';
-import { STUDY_MENU } from '@/study/menu';
 
 /**
  * Step 3, the sandbox: the goal model on the left, failures and their video
@@ -49,7 +50,8 @@ export function Step3Pattern({
   const model = useMemo(() => buildGoalModel(report), [report]);
   const focusObstacle = focus?.startsWith('obstacle:') ? focus.slice('obstacle:'.length) : null;
   const [selectedId, setSelectedId] = useState<string | null>(focusObstacle);
-  const [view, setView] = useRequirementView('step3', 'tree');
+  // opens on the diagram (owner, 2026-10-19); a new key, so an older remembered tree does not win
+  const [view, setView] = useRequirementView('step3.opens-on-diagram', 'diagram');
   const selectObstacle = (id: string | null) => {
     setSelectedId(id);
     setSelectedRow(null);
@@ -254,130 +256,115 @@ export function Step3Pattern({
     </>
   );
 
+  const video = <BestScenarioVideo round={round} />;
+
   return (
     <div className="flex flex-col gap-5">
-      {view === 'diagram' ? (
+      <Instructions cta="Select an obstacle, in the diagram or in the list above it, to see the evidence behind it below.">
+        <p>
+          The goal model shows the requirement with the obstacles found in this round, each attached
+          to the goal it blocks. An <strong>obstacle</strong> is a group of failed runs that share a
+          likely cause, such as the pedestrian being too small for the detector or being detected
+          too late.
+        </p>
+      </Instructions>
+      <section
+        className="card flex min-w-0 flex-col gap-3 p-5"
+        aria-label="Requirement as a goal model"
+      >
+        {goalPanel}
+      </section>
+
+      <div className="flex min-w-0 flex-col gap-3">
+        <Instructions cta="Open the simulations and select a run to see its distance, speed and detection over time.">
+          <p>
+            The evidence behind the selected obstacle: how many runs it covers, CARLA’s recording of
+            the round’s best scenario, and the simulations themselves. With no obstacle selected,
+            every simulation is listed.
+          </p>
+        </Instructions>
         <section
-          className="card flex min-w-0 flex-col gap-3 p-5"
-          aria-label="Requirement as a goal model"
+          className="card flex min-w-0 flex-col gap-4 p-5"
+          aria-label="Failures, video, evidence"
         >
-          {goalPanel}
-        </section>
-      ) : null}
-      <div className="card p-3">
-        <div
-          className={cx(
-            'grid gap-3 lg:h-[calc(100dvh-15rem)]',
-            view === 'diagram'
-              ? 'lg:min-h-[34rem] lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]'
-              : 'lg:min-h-[42rem] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:grid-rows-[minmax(0,1fr)_minmax(0,1fr)]',
-          )}
-        >
-          {view !== 'diagram' ? (
-            <section
-              className="panel flex min-w-0 flex-col gap-3 overflow-auto p-4 lg:row-span-2"
-              aria-label="Requirement as a goal model"
-            >
-              {goalPanel}
-            </section>
-          ) : null}
-
-          <section
-            className="panel flex min-w-0 flex-col gap-4 overflow-auto p-4"
-            aria-label="Failures, video, evidence"
-          >
-            {obstacle ? (
-              <>
-                <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-lg">Evidence: {obstacle.id}</h3>
-                  <ToolVerdictChip verdict={obstacle.verdict} sampling={report.sampling} />
-                  {entry ? (
-                    <StatusChip status={entry.status} hasPrevious={Boolean(previous)} />
-                  ) : null}
-                  <Button
-                    size="sm"
-                    variant="quiet"
-                    className="ml-auto"
-                    onClick={() => setSelectedId(null)}
-                  >
-                    Show all
-                  </Button>
-                </div>
-                <p className="num text-sm text-text-muted">{entry?.evidence}</p>
-                <Disclosure summary="What the tool says" compact>
-                  <ObstacleSummary
-                    obstacle={obstacle}
-                    report={report}
-                    previous={previous}
-                    draft={draft}
-                  />
-                </Disclosure>
-                <VideoPanel round={round} />
-                <Disclosure
-                  summary={`Simulations behind this${counts && counts.hits !== null ? ` (${counts.hits} of ${counts.scope})` : ''}`}
+          {obstacle ? (
+            <>
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="text-lg">Evidence: {obstacle.id}</h3>
+                <ToolVerdictChip verdict={obstacle.verdict} sampling={report.sampling} />
+                {entry ? (
+                  <StatusChip status={entry.status} hasPrevious={Boolean(previous)} />
+                ) : null}
+                <Button
+                  size="sm"
+                  variant="quiet"
+                  className="ml-auto"
+                  onClick={() => setSelectedId(null)}
                 >
-                  {table}
-                </Disclosure>
-              </>
-            ) : (
-              <>
-                <h3 className="text-lg">Failures · video · evidence</h3>
-                {noSupported && !STUDY ? (
-                  <Notice tone="success" title="No supported obstacle">
-                    Nothing is above the support bar this round. The counts and set-aside rows are
-                    still here.
-                  </Notice>
-                ) : (
-                  <p className="text-sm text-text-muted">
-                    Select an obstacle in the goal model. <Chip tone="tool">obstacle</Chip> marks
-                    the tool's findings.
-                  </p>
-                )}
-                <VideoPanel round={round} />
-                <Disclosure summary="All simulations">{table}</Disclosure>
-              </>
-            )}
-          </section>
-
-          <section
-            className="panel flex min-w-0 flex-col gap-3 overflow-auto p-4"
-            aria-label="Fixes"
-          >
-            <h3 className="text-lg">Fixes</h3>
-            {obstacle && STUDY ? (
-              // the study build offers only its own menu (brief 4.6), never the catalogue's
-              <>
-                <ul className="flex flex-col gap-1.5 text-sm">
-                  {STUDY_MENU.map((m) => (
-                    <li key={m.choice} className="rounded-lg bg-surface-raised px-3 py-2">
-                      <span className="font-medium">{m.label}</span>
-                      <span className="block text-xs text-text-muted">{m.hint}</span>
-                    </li>
-                  ))}
-                </ul>
-                <p className="text-xs text-text-faint">You choose in the next step.</p>
-              </>
-            ) : obstacle ? (
-              <>
-                <MitigationList
-                  options={Object.entries(obstacle.mitigations ?? {})
-                    .filter(([, v]) => v)
-                    .map(([layer, action]) => ({ layer, action: action as string }))}
-                  changes={obstacle.changes}
+                  Show all
+                </Button>
+              </div>
+              <p className="num text-sm text-text-muted">{entry?.evidence}</p>
+              <Disclosure summary="What the tool says" compact>
+                <ObstacleSummary
+                  obstacle={obstacle}
+                  report={report}
+                  previous={previous}
+                  draft={draft}
                 />
-                <p className="text-xs text-text-faint">
-                  Tool suggestions by layer. You choose in the next step.
-                </p>
-              </>
-            ) : (
-              <p className="text-sm text-text-muted">
-                Candidate fixes for the selected obstacle appear here.
-              </p>
-            )}
-          </section>
-        </div>
+              </Disclosure>
+              {video}
+              <Disclosure
+                summary={`Simulations behind this${counts && counts.hits !== null ? ` (${counts.hits} of ${counts.scope})` : ''}`}
+              >
+                {table}
+              </Disclosure>
+            </>
+          ) : (
+            <>
+              <h3 className="text-lg">Failures · video · evidence</h3>
+              {noSupported && !STUDY ? (
+                <Notice tone="success" title="No supported obstacle">
+                  Nothing is above the support bar this round. The counts and set-aside rows are
+                  still here.
+                </Notice>
+              ) : null}
+              {video}
+              <Disclosure summary="All simulations">{table}</Disclosure>
+            </>
+          )}
+        </section>
       </div>
+
+      <Instructions cta="Select a dot to open that run’s trace. With an obstacle selected, the runs behind it are ringed.">
+        <p>
+          Each dot is one counted run, placed so that runs which unfolded alike over time sit close
+          together; a group of dots is a recurring way the scenario played out.
+        </p>
+      </Instructions>
       {patterns}
+    </div>
+  );
+}
+
+/**
+ * CARLA's recording of the round's best scenario where the round has one
+ * (hooks/useBestScenario.ts); otherwise the round's own video or frames
+ * (VideoPanel).
+ */
+function BestScenarioVideo({ round }: { round: RoundSummary }) {
+  const { testCase, video } = useBestScenario(round);
+  if (!video || !testCase) return <VideoPanel round={round} />;
+  return (
+    <div className="flex flex-col gap-1.5">
+      <CarlaVideo
+        round={round}
+        file={video}
+        title={`Recording of the best scenario: test case ${testCase.id}`}
+      />
+      <a href={routeHash({ screen: 'example', runId: round.id })} className="text-xs">
+        See the worked example of this test case
+      </a>
     </div>
   );
 }

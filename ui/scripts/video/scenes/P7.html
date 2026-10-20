@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>P7 · Let's see it</title>
+    <link rel="stylesheet" href="slide.css" />
+    <style>
+      .track {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1.4vw;
+        width: 82vw;
+      }
+      .step {
+        text-align: center;
+        font-size: 2.8vh;
+        font-weight: 600;
+      }
+      .step .num {
+        display: grid;
+        margin: 0 auto 1.6vh;
+        width: 7vh;
+        height: 7vh;
+        font-size: 3vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="band"></div>
+    <div class="stage">
+      <div class="title in" style="animation-delay: 200ms">Let's see it</div>
+      <div class="track">
+        <div class="step in" style="animation-delay: 1200ms"><span class="num">1</span>Write</div>
+        <div class="step in" style="animation-delay: 1900ms"><span class="num">2</span>Test</div>
+        <div class="step in" style="animation-delay: 2600ms">
+          <span class="num">3</span>Understand
+        </div>
+        <div class="step in" style="animation-delay: 3300ms"><span class="num">4</span>Decide</div>
+        <div class="step in" style="animation-delay: 4000ms"><span class="num">5</span>Refine</div>
+      </div>
+    </div>
+  </body>
+</html>

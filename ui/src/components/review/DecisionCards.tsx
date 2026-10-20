@@ -1,5 +1,5 @@
 import { Chip, StatusChip, ToolVerdictChip } from '@/components/ui/Chip';
-import { Disclosure } from '@/components/ui/Disclosure';
+import { MeaningBox } from '@/components/ui/MeaningBox';
 import { TextAreaField, TextField } from '@/components/ui/Field';
 import { Notice } from '@/components/ui/Notice';
 import type {
@@ -8,12 +8,12 @@ import type {
   ObstacleVerdict,
   ScopeVerdict,
 } from '@/services/schemas';
+import { aboutTheCar, needsLimit } from '@/domain/decisions';
 import { assumptionState, obstacleState, scopeState, type Draft } from '@/state/draft';
 import type { DraftAction } from '@/state/draft';
 import { STUDY } from '@/study/config';
-import { StudyMitigationMenu } from '@/study/StudyMitigationMenu';
+import { TriageChoice } from '@/components/review/TriageChoice';
 
-import { MitigationMenu } from './MitigationMenu';
 import { VerdictControl } from './VerdictControl';
 
 /** The captions are the Streamlit page's, verbatim. */
@@ -53,23 +53,19 @@ export function ObstacleDecisionCard({
   dispatch,
   hasPrevious,
   sampling,
+  r0 = '',
 }: {
   obstacle: Obstacle;
   draft: Draft;
   dispatch: Dispatch;
   hasPrevious: boolean;
+  /** the requirement as run: the study's triage says what is already in it */
+  r0?: string;
   sampling?: string;
 }) {
   const entry = draft.doc.obstacles[obstacle.id];
   if (!entry) return null;
   const state = obstacleState(draft, obstacle.id);
-  const accepted = entry.verdict === 'accept' || entry.verdict === 'rename';
-  // the study build: every accepted obstacle needs a fix, with no reason shown
-  const mitigationRequired =
-    accepted &&
-    (STUDY ||
-      (entry.tool_verdict === 'supported' &&
-        (entry.status === 'new' || entry.status === 'persisting')));
   return (
     <article className="card flex flex-col gap-4 p-5" aria-labelledby={`obstacle-${obstacle.id}`}>
       <header className="flex flex-col gap-2">
@@ -81,30 +77,20 @@ export function ObstacleDecisionCard({
           <StatusChip status={entry.status} hasPrevious={hasPrevious} />
         </div>
         <p className="num text-sm text-text-muted">{entry.evidence}</p>
-        <Disclosure summary={STUDY ? 'What this means' : 'What the tool says'} compact>
-          <p className="prose-width text-sm text-text-muted">{obstacle.description}</p>
-        </Disclosure>
+        <MeaningBox label={STUDY ? 'What this means' : 'What the tool says'}>
+          <p>{obstacle.description}</p>
+        </MeaningBox>
       </header>
-      <VerdictControl<ObstacleVerdict>
-        legend="Verdict"
-        options={OBSTACLE_OPTIONS}
-        value={entry.verdict}
-        state={state}
-        prefill={draft.prefill}
-        onChange={(verdict) => dispatch({ type: 'obstacle/verdict', id: obstacle.id, verdict })}
-        onConfirm={() => dispatch({ type: 'obstacle/confirm', id: obstacle.id })}
-      />
-      {entry.verdict === 'rename' ? (
-        <TextField
-          label="New name"
-          required
-          value={entry.renamed_to ?? ''}
-          onChange={(e) =>
-            dispatch({ type: 'obstacle/renamed_to', id: obstacle.id, value: e.target.value })
-          }
-          error={!entry.renamed_to ? 'a renamed obstacle needs its new name' : undefined}
+      <div data-tour="decision">
+        {/* world or car (domain/triage.ts), in both builds; a remaining failure is resolved in step 5 */}
+        <TriageChoice
+          obstacle={obstacle}
+          entry={entry}
+          r0={r0}
+          prefilled={state === 'prefilled'}
+          dispatch={dispatch}
         />
-      ) : null}
+      </div>
       <TextAreaField
         label="Reason, in your own words"
         value={entry.reason ?? ''}
@@ -113,44 +99,10 @@ export function ObstacleDecisionCard({
         }
         hint={
           state === 'prefilled' && entry.reason
-            ? 'Came with the pre-filled verdict; replace it with yours.'
+            ? 'Came with the tool’s proposal; replace it with yours.'
             : undefined
         }
       />
-      {accepted ? (
-        <Disclosure
-          summary={
-            entry.mitigation
-              ? STUDY
-                ? 'Fix chosen'
-                : `Fix: ${entry.mitigation.layer} layer`
-              : 'Choose a fix'
-          }
-          defaultOpen={mitigationRequired && !entry.mitigation}
-        >
-          {STUDY ? (
-            <StudyMitigationMenu
-              obstacleId={obstacle.id}
-              value={entry.mitigation}
-              onChange={(m) =>
-                dispatch({ type: 'obstacle/mitigation', id: obstacle.id, mitigation: m })
-              }
-            />
-          ) : (
-            <MitigationMenu
-              legend="Mitigation"
-              obstacleId={obstacle.id}
-              obstacle={obstacle}
-              options={entry.options}
-              value={entry.mitigation}
-              onChange={(m) =>
-                dispatch({ type: 'obstacle/mitigation', id: obstacle.id, mitigation: m })
-              }
-              required={mitigationRequired}
-            />
-          )}
-        </Disclosure>
-      ) : null}
     </article>
   );
 }
@@ -178,23 +130,17 @@ export function ScopeDecisionCard({
         </div>
         <p className="num text-sm text-text-muted">{entry.evidence}</p>
         {entry.description || entry.suggested_fix || entry.rule?.param ? (
-          <Disclosure summary={STUDY ? 'What this means' : 'What the tool says'} compact>
-            {entry.description ? (
-              <p className="prose-width text-sm text-text-muted">{entry.description}</p>
-            ) : null}
-            {entry.suggested_fix ? (
-              <p className="prose-width text-sm text-text-muted">
-                Suggested fix: {entry.suggested_fix}
-              </p>
-            ) : null}
+          <MeaningBox label={STUDY ? 'What this means' : 'What the tool says'}>
+            {entry.description ? <p>{entry.description}</p> : null}
+            {entry.suggested_fix ? <p>Suggested fix: {entry.suggested_fix}</p> : null}
             {entry.rule?.param ? (
-              <p className="text-sm text-text-muted">
+              <p className="text-text-muted">
                 Rule:{' '}
                 <span className="font-mono">{`${entry.rule.param} ${entry.rule.op} ${String(entry.rule.value)}`}</span>
                 {entry.rule.source ? ` (${entry.rule.source})` : ''}
               </p>
             ) : null}
-          </Disclosure>
+          </MeaningBox>
         ) : null}
       </header>
       <VerdictControl<ScopeVerdict>
@@ -206,6 +152,22 @@ export function ScopeDecisionCard({
         onChange={(verdict) => dispatch({ type: 'scope/verdict', id: sid, verdict })}
         onConfirm={() => dispatch({ type: 'scope/confirm', id: sid })}
       />
+      {needsLimit(entry) ? (
+        <TextField
+          label="The limit to state in the requirement"
+          required
+          hint="Added to the refined requirement as an assumption about the world, never about the car."
+          value={entry.limit ?? ''}
+          onChange={(e) => dispatch({ type: 'scope/limit', id: sid, value: e.target.value })}
+          error={
+            !entry.limit?.trim()
+              ? 'out of scope needs the limit it states'
+              : aboutTheCar(entry.limit)
+                ? 'this is about the car under test, not the world'
+                : undefined
+          }
+        />
+      ) : null}
       <TextAreaField
         label="Reason"
         value={entry.reason ?? ''}

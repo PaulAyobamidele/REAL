@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>P5 · How REAL works</title>
+    <link rel="stylesheet" href="slide.css" />
+    <style>
+      /* the approach, built one step at a time; a star on each part REAL adds */
+      .flow {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 2.4vw;
+        margin-top: 2vh;
+      }
+      .node {
+        position: relative;
+        border-radius: 2vh;
+        padding: 2.6vh 1.2vw;
+        min-height: 22vh;
+        background: var(--white);
+        border: 0.25vh solid #dcdcb0;
+        box-shadow: 0 1vh 3vh rgb(23 32 51 / 0.06);
+      }
+      .node.real {
+        border: 0.35vh solid var(--olive);
+      }
+      .node .star {
+        position: absolute;
+        top: 1.2vh;
+        right: 1vw;
+        font-size: 3.4vh;
+      }
+      .node b {
+        display: block;
+        margin-top: 1.4vh;
+        font-size: 2.6vh;
+        line-height: 1.25;
+      }
+      .node span:not(.num):not(.star) {
+        display: block;
+        margin-top: 1.2vh;
+        font-size: 1.9vh;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+      .node .num {
+        display: grid;
+        margin: 0;
+      }
+      /* the arrow to the next step */
+      .node:not(:last-child)::after {
+        content: '→';
+        position: absolute;
+        right: -2.1vw;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 3.4vh;
+        color: var(--muted);
+      }
+      .loop {
+        margin-left: 22%;
+        width: 74%;
+        padding-top: 1.4vh;
+        border-top: 0.35vh dashed var(--olive);
+        text-align: center;
+        font-size: 2.2vh;
+        font-weight: 600;
+        color: var(--olive);
+      }
+      .legend {
+        font-size: 2vh;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="band"></div>
+    <div class="slide">
+      <div class="section in" style="animation-delay: 100ms">5 · How REAL works</div>
+      <div class="headline in" style="animation-delay: 300ms">
+        From a failed test to a better requirement
+      </div>
+      <div class="flow">
+        <div class="node real in" style="animation-delay: 2000ms">
+          <span class="star">★</span><span class="num">1</span> <b>Write the requirement</b
+          ><span>in REAL-DSL, with the world it assumes</span>
+        </div>
+        <div class="node in" style="animation-delay: 4500ms">
+          <span class="num">2</span>
+          <b>Test in simulation</b><span>CARLA, with the real detector in the loop</span>
+        </div>
+        <div class="node real in" style="animation-delay: 7000ms">
+          <span class="star">★</span><span class="num">3</span> <b>Check and group the failures</b
+          ><span>did the world hold? similar failures together</span>
+        </div>
+        <div class="node real in" style="animation-delay: 10000ms">
+          <span class="star">★</span><span class="num">4</span> <b>Decide: world or car?</b
+          ><span>the engineer, one group at a time</span>
+        </div>
+        <div class="node real in" style="animation-delay: 13000ms">
+          <span class="star">★</span><span class="num">5</span> <b>Refine and record</b
+          ><span>a refined requirement; every change with its reason</span>
+        </div>
+      </div>
+      <div class="loop in" style="animation-delay: 16000ms">
+        ↺ the refined requirement is tested again: the next round
+      </div>
+      <div class="legend in" style="animation-delay: 18500ms">
+        <span class="star">★</span> what REAL adds &nbsp;·&nbsp; the simulator and the detector are
+        existing tools
+      </div>
+      <div class="pageno">6</div>
+    </div>
+  </body>
+</html>

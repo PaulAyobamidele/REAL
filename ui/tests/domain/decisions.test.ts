@@ -69,7 +69,7 @@ describe('buildDecisions on the real round 2 report', () => {
   it('is valid but not complete until every verdict is in', () => {
     expect(validateDecisions(doc)).toEqual([]);
     expect(isComplete(doc)).toBe(false);
-    expect(completionGaps(doc).join(' ')).toMatch(/6 obstacles without a verdict/);
+    expect(completionGaps(doc).join(' ')).toMatch(/6 obstacles not yet triaged: world or car\?/);
   });
 });
 

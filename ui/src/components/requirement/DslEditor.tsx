@@ -8,7 +8,13 @@ import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { syntaxHighlighting } from '@codemirror/language';
 import { lintGutter, setDiagnostics, type Diagnostic } from '@codemirror/lint';
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
-import { Compartment, EditorState } from '@codemirror/state';
+import {
+  Compartment,
+  EditorState,
+  RangeSetBuilder,
+  StateEffect,
+  StateField,
+} from '@codemirror/state';
 import {
   drawSelection,
   EditorView,
@@ -27,9 +33,46 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { AuthoringCatalog } from '@/services/authoring';
 import { cx } from '@/utils/format';
 
-import { DSL_COLOURS, dslHighlight, realDsl } from './dsl/language';
+import { DSL_COLOURS, dslHighlight, NO_CATALOG, realDsl, targetAt } from './dsl/language';
 
 type Mode = 'light' | 'dark';
+
+/** A part of the requirement to mark: where it failed, broke, or is being pointed at. */
+export interface DslMark {
+  /** the text to find (the first occurrence is marked) */
+  needle: string;
+  tone: 'fail' | 'caution' | 'point' | 'added';
+}
+
+const setMarks = StateEffect.define<DecorationSet>();
+const marksField = StateField.define<DecorationSet>({
+  create: () => Decoration.none,
+  update: (value, tr) => {
+    for (const e of tr.effects) if (e.is(setMarks)) return e.value;
+    return value.map(tr.changes);
+  },
+  provide: (f) => EditorView.decorations.from(f),
+});
+
+function markSet(doc: string, marks: DslMark[]): DecorationSet {
+  const ranges: { from: number; to: number; tone: DslMark['tone'] }[] = [];
+  for (const m of marks) {
+    if (!m.needle) continue;
+    const quoted = doc.indexOf(`"${m.needle}"`);
+    const from = quoted >= 0 ? quoted : doc.indexOf(m.needle);
+    if (from < 0) continue;
+    ranges.push({
+      from,
+      to: from + (quoted >= 0 ? m.needle.length + 2 : m.needle.length),
+      tone: m.tone,
+    });
+  }
+  ranges.sort((a, b) => a.from - b.from || (a.tone === 'point' ? 1 : -1));
+  const builder = new RangeSetBuilder<Decoration>();
+  for (const r of ranges)
+    builder.add(r.from, r.to, Decoration.mark({ class: `cm-part-${r.tone}` }));
+  return builder.finish();
+}
 
 /**
  * A wrapped line continues under its own text, a little further in, as in
@@ -130,6 +173,24 @@ function themeOf(mode: Mode) {
           lineHeight: '1.5',
         },
         '.cm-diagnostic': { fontFamily: 'var(--font-sans)', fontSize: '12px' },
+        // parts of the requirement marked from the test report
+        '.cm-part-fail': {
+          backgroundColor: 'rgb(173 31 7 / 0.16)',
+          textDecoration: `underline 2px ${mode === 'dark' ? '#ff8f85' : '#ad1f07'}`,
+          textUnderlineOffset: '4px',
+        },
+        '.cm-part-caution': {
+          backgroundColor: 'rgb(240 180 41 / 0.22)',
+          textDecoration: `underline dotted 2px ${mode === 'dark' ? '#f3c969' : '#7a4a00'}`,
+          textUnderlineOffset: '4px',
+        },
+        '.cm-part-point': { outline: `2px solid ${c.text}`, borderRadius: '3px' },
+        // what the refinement added (the accepted assumptions and soft goals)
+        '.cm-part-added': {
+          outline: `2px solid ${mode === 'dark' ? '#c8d64a' : '#667d01'}`,
+          outlineOffset: '1px',
+          borderRadius: '3px',
+        },
       },
       { dark: mode === 'dark' },
     ),
@@ -153,18 +214,23 @@ export interface DslProblem {
 export function DslEditor({
   value,
   onChange,
-  catalog,
+  catalog = NO_CATALOG,
   readOnly = false,
+  marks = [],
   problem = null,
   unimplemented = [],
   fileName,
   status,
   actions,
+  onPoint,
 }: {
   value: string;
   onChange?: (text: string) => void;
-  catalog: AuthoringCatalog;
+  /** the authoring lists, for suggestions and hover notes; none in a review */
+  catalog?: AuthoringCatalog;
   readOnly?: boolean;
+  /** parts to mark: failed, broken, or pointed at */
+  marks?: DslMark[];
   /** the parser's error, marked on its line */
   problem?: DslProblem | null;
   /** module names the simulator does not run, marked where they are used */
@@ -173,6 +239,8 @@ export function DslEditor({
   status: ReactNode;
   /** buttons at the right of the editor's title bar */
   actions?: ReactNode;
+  /** the goal-model boxes drawn from the part of the text under the mouse (null: none) */
+  onPoint?: (boxes: string[] | null) => void;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<EditorView | null>(null);
@@ -182,7 +250,16 @@ export function DslEditor({
   const dsl = useMemo(() => realDsl(catalog), [catalog]);
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
+  const onPointRef = useRef(onPoint);
+  onPointRef.current = onPoint;
   const initial = useRef({ value, mode });
+  const last = useRef('');
+  const point = (boxes: string[] | null) => {
+    const key = boxes?.join(' ') ?? '';
+    if (key === last.current) return;
+    last.current = key;
+    onPointRef.current?.(boxes);
+  };
 
   useEffect(() => {
     if (!host.current) return;
@@ -211,6 +288,7 @@ export function DslEditor({
                 ),
               ],
           dsl.hover,
+          marksField,
           lintGutter(),
           highlightSelectionMatches(),
           keymap.of([
@@ -220,6 +298,21 @@ export function DslEditor({
             ...completionKeymap,
             ...searchKeymap,
           ]),
+          // the mouse over a part of the text marks its box in the goal model
+          EditorView.domEventHandlers({
+            mousemove: (e, view) => {
+              if (!onPointRef.current) return;
+              const pos = view.posAtCoords({ x: e.clientX, y: e.clientY }, false);
+              const boxes = pos === null ? null : targetAt(view.state.doc.toString(), pos);
+              // a part that has a box in the goal model shows it can be pointed at
+              view.contentDOM.style.cursor = boxes ? 'pointer' : '';
+              point(boxes);
+            },
+            mouseleave: (_, view) => {
+              view.contentDOM.style.cursor = '';
+              point(null);
+            },
+          }),
           EditorView.contentAttributes.of({
             'aria-label': 'Requirement text',
             ...(readOnly ? { 'aria-readonly': 'true' } : {}),
@@ -257,6 +350,14 @@ export function DslEditor({
       /* the choice is kept for this page only */
     }
   }, [mode, theme]);
+
+  const marksKey = JSON.stringify(marks);
+  useEffect(() => {
+    const v = view.current;
+    if (!v) return;
+    v.dispatch({ effects: setMarks.of(markSet(v.state.doc.toString(), marks)) });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the key holds the marks
+  }, [marksKey, value]);
 
   // the parser's error and the modules the simulator does not run, on their lines
   useEffect(() => {

@@ -1,13 +1,15 @@
 /*
  * Design tokens. The five-colour palette (owner, 2026-10-19), each colour
- * with one job, about 60 / 30 / 10:
- *   #EAEAAA canvas      the page background (60%)
- *   #667D01 brand       the instructions box ONLY, with white text - the eye
- *                       learns "read this first" (swapped with the bright green,
- *                       owner 2026-10-19)
+ * with one job - direction B, "Calm canvas" (owner, 2026-10-19; the palette
+ * study compared three):
+ *   #EAEAAA canvas      "where you are": the workflow band; the page takes a
+ *                       paler mix of it (#F5F5DC), so it never competes with content
+ *   #667D01 brand       "read this first": the instructions box's rule, label and
+ *                       step numbers ONLY; the instructions themselves are ink
  *   #9EB200 bright      the primary button, with dark text; selection tints
  *   #AD1F07 brick       failed / error (always with a word)
- *   #610000 deep        the header, the same on every page
+ *   #8A1538 wine        the header, the same on every page (brighter than the
+ *                       first #610000; leans crimson, so it stays apart from brick)
  * plus neutrals for reading: #172033 text, white cards. Light only.
  * Every text/background pair is contrast-checked (tests/styles/contrast.test.ts).
  * Neither green is a text colour: links, "passed", selected items and the focus
@@ -46,7 +48,7 @@
   --color-accent-bright: #9eb200;
   --color-brand-primary: #667d01;
   --color-accent-secondary: #ad1f07;
-  --color-accent-deep: #610000;
+  --color-accent-deep: #8a1538;
   --color-text-primary: #172033;
 
   /* roles */
@@ -54,10 +56,14 @@
   --color-header-text: #ffffff;
   --color-header-marker: #ffffff;
   --color-instructions: var(--color-brand-primary);
-  --color-instructions-text: #ffffff;
+  /* the instructions box: white, an olive rule and label, ink text */
+  --color-instructions-text: var(--color-text-primary);
+  --color-instructions-bg: #ffffff;
+  /* the workflow band: the palette's wheat, at full strength only here */
+  --color-band: var(--color-canvas);
 
   /* neutrals */
-  --color-surface: var(--color-canvas);
+  --color-surface: #f5f5dc;
   --color-surface-raised: #ffffff;
   --color-surface-sunken: #f8f8ea;
   --color-border: #dcdcae;

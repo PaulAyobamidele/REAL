@@ -32,6 +32,8 @@ import { createHash } from 'node:crypto';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
+import Papa from 'papaparse';
+
 import { listRound } from './workspaceFiles.mjs';
 
 const REVIEWED = { id: 'study_C1', from: 'presented/study_C1' };
@@ -163,6 +165,41 @@ export function pythonQuantities(study, roundDir) {
 
 export const QUANTITIES_FILE = 'study_quantities.json';
 
+/**
+ * CARLA's recordings for a round merged from several cluster jobs
+ * (run_meta `merged_from`): each job re-ran the worst scenario of its slice
+ * on camera (best_scenario.mp4). Those with a browser-playable copy
+ * (best_scenario_h264.mp4, from `python -m scripts.evolve.video <run>`) are
+ * copied next to the round as videos/<scenario id>.mp4, matched by the exact
+ * phenotype the job recorded (its run_meta `worst_phenotype`). Returns the
+ * files written, relative to the round's copy.
+ */
+export function copyRecordings(study, src, dest) {
+  const meta = JSON.parse(readFileSync(join(src, 'run_meta.json'), 'utf8'));
+  const jobs = meta.merged_from ?? [];
+  if (!jobs.length || !existsSync(join(src, 'simulations.csv'))) return [];
+  const rows = Papa.parse(readFileSync(join(src, 'simulations.csv'), 'utf8'), {
+    header: true,
+    skipEmptyLines: true,
+  }).data;
+  const byPhenotype = new Map(rows.map((r) => [r.phenotype, r.scenario_id]));
+  const runs = resolve(study, '..', 'runs');
+  const written = [];
+  for (const job of jobs) {
+    const dir = join(runs, job.run_id);
+    const video = join(dir, 'best_scenario_h264.mp4');
+    if (!existsSync(video) || !existsSync(join(dir, 'run_meta.json'))) continue;
+    const recorded = JSON.parse(readFileSync(join(dir, 'run_meta.json'), 'utf8')).worst_phenotype;
+    const id = byPhenotype.get(recorded);
+    if (id === undefined) continue;
+    const name = `videos/${id}.mp4`;
+    mkdirSync(join(dest, 'videos'), { recursive: true });
+    copyFileSync(video, join(dest, name));
+    written.push(name);
+  }
+  return written.sort();
+}
+
 export function makeStudySite(
   study,
   out,
@@ -177,11 +214,12 @@ export function makeStudySite(
   // a round, its copy and the file the page re-judges with (listed in the index like any file)
   const withQuantities = (folder, round) => {
     const entry = copyRound(study, folder, round);
+    const videos = copyRecordings(study, join(study, round.from), join(folder, entry.dir));
     writeFileSync(
       join(folder, entry.dir, QUANTITIES_FILE),
       quantities(study, join(study, round.from)),
     );
-    return { ...entry, files: [...entry.files, QUANTITIES_FILE].sort() };
+    return { ...entry, files: [...entry.files, QUANTITIES_FILE, ...videos].sort() };
   };
   const reviewed = withQuantities(workspace, REVIEWED);
   writeIndex(workspace, 'Test rounds', [reviewed]);

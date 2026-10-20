@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>A1 · The challenge</title>
+    <link rel="stylesheet" href="scene.css" />
+    <style>
+      /* failed runs pile up, then fall towards four places a fix could go; none is chosen */
+      .field {
+        position: relative;
+        width: 76vw;
+        height: 40vh;
+      }
+      .dot {
+        position: absolute;
+        width: 1.3vh;
+        height: 1.3vh;
+        border-radius: 50%;
+        background: var(--brick);
+        opacity: 0;
+        transition:
+          transform 1.6s cubic-bezier(0.6, 0, 0.2, 1),
+          opacity 0.4s ease;
+      }
+      .bins {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2vw;
+        width: 76vw;
+      }
+      .bin {
+        position: relative;
+        z-index: 2;
+        border: 0.3vh dashed #b9b98a;
+        border-radius: 1.6vh;
+        padding: 2.2vh 1vw;
+        text-align: center;
+        font-size: 2.6vh;
+        font-weight: 600;
+        background: var(--white);
+      }
+      .bin small {
+        display: block;
+        margin-top: 0.6vh;
+        font-size: 1.7vh;
+        font-weight: 400;
+        color: var(--muted);
+      }
+      .q {
+        position: absolute;
+        top: 41vh;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 9vh;
+        font-weight: 700;
+        color: var(--maroon);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <div class="title in" style="animation-delay: 200ms">Hundreds of failures</div>
+      <div class="field" id="field"></div>
+      <div class="bins">
+        <div class="bin in" style="animation-delay: 3400ms">
+          Data<small>retrain the detector?</small>
+        </div>
+        <div class="bin in" style="animation-delay: 3700ms">
+          Model<small>a larger detector?</small>
+        </div>
+        <div class="bin in" style="animation-delay: 4000ms">
+          System<small>other braking?</small>
+        </div>
+        <div class="bin in" style="animation-delay: 4300ms">
+          Requirement<small>narrow the conditions?</small>
+        </div>
+      </div>
+      <div class="q in" style="animation-delay: 6000ms">?</div>
+      <div class="lede in" style="animation-delay: 6300ms">
+        A failure doesn't say what to change.
+      </div>
+    </div>
+    <script>
+      // deterministic positions: the same frames every take
+      let seed = 7;
+      const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      const field = document.getElementById('field');
+      const dots = [];
+      for (let i = 0; i < 180; i++) {
+        const d = document.createElement('div');
+        d.className = 'dot';
+        d.style.left = `${rand() * 98}%`;
+        d.style.top = `${rand() * 92}%`;
+        field.appendChild(d);
+        dots.push(d);
+        setTimeout(() => (d.style.opacity = '1'), 300 + i * 14);
+      }
+      // then they drift down to just above the four bins, undecided
+      setTimeout(() => {
+        dots.forEach((d) => {
+          const lane = Math.floor(rand() * 4);
+          const x = (lane + 0.5) * 25 - parseFloat(d.style.left);
+          const top = parseFloat(d.style.top); // % of the 40vh field
+          const y = (100 - top) * 0.4 - 1.6 - rand() * 5; // land in a band above the bins
+          d.style.transform = `translate(${x * 0.76 + (rand() - 0.5) * 6}vw, ${y}vh)`;
+          d.style.opacity = '0.55';
+        });
+      }, 4600);
+    </script>
+  </body>
+</html>

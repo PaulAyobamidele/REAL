@@ -48,7 +48,8 @@ describe('draft decisions', () => {
     expect(draft.doc.obstacles.StandoffUnnecessaryStop?.mitigation?.layer).toBe('requirement');
     expect(obstacleState(draft, 'StandoffUnnecessaryStop')).toBe('prefilled');
     expect(scopeState(draft, 'artefact:crossing_trigger_8m')).toBe('prefilled');
-    expect(unconfirmedCount(draft)).toBe(9); // 6 obstacles + 3 artefacts
+    // 4 obstacles + 3 artefacts: the proposal's 2 rejects (the old "noise") start undecided in triage
+    expect(unconfirmedCount(draft)).toBe(7);
     expect(draft.reviewer).toBe(''); // the person signing now types their own name
 
     const confirmed = draftReducer(draft, {
@@ -56,7 +57,7 @@ describe('draft decisions', () => {
       id: 'StandoffUnnecessaryStop',
     });
     expect(obstacleState(confirmed, 'StandoffUnnecessaryStop')).toBe('confirmed');
-    expect(unconfirmedCount(confirmed)).toBe(8);
+    expect(unconfirmedCount(confirmed)).toBe(6);
     const changed = draftReducer(confirmed, {
       type: 'obstacle/verdict',
       id: 'DetectionTooLate',

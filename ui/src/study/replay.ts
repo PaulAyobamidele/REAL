@@ -166,6 +166,26 @@ export const replayApi = {
     return { ...jobAt(r, Date.now()), fetched: true, complete: true };
   },
 
+  /**
+   * The study's Start Running Compliance Test (owner, 2026-10-19): no panel, no
+   * replayed job - the saved round for this requirement is revealed and its
+   * review opens at once, at the requirement under test. Logged as a direct open.
+   */
+  async openDirect(text: string): Promise<string | null> {
+    const target = await targetFor(text);
+    logEvent({
+      screen: 'run',
+      event: 'run_opened',
+      target: target?.dir,
+      new: target
+        ? { replay: true, direct: true, study_round: target.studyRound, shown_run_id: target.dir }
+        : { ok: false },
+    });
+    if (!target) return null;
+    reveal(target.dir);
+    return target.dir;
+  },
+
   async projectRunsSource(): Promise<FileSource | null> {
     return StudySource.probe();
   },

@@ -36,7 +36,7 @@ function dialog(state: RunTestState) {
     dismiss: vi.fn(),
   };
   render(<RunDialog state={state} fileName="R_new.dsl" onFileName={vi.fn()} actions={actions} />);
-  return { actions, box: screen.getByRole('dialog', { name: 'Run test' }) };
+  return { actions, box: screen.getByRole('dialog', { name: 'Compliance test' }) };
 }
 
 const checks = (statuses: CheckState['status'][]): CheckState[] =>

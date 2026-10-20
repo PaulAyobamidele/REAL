@@ -37,12 +37,18 @@ describe('the study workspace', () => {
 
   it('never shows the Workspace, so no way to open, drop or swap one', async () => {
     started();
+    // the requirement page it leads to reads the site's files: none here
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response('', { status: 404 })),
+    );
     window.location.hash = '#/';
     render(<App autoOpenExample={false} initialSource={fixtureSource()} />);
     await waitFor(() => expect(window.location.hash).toBe('#/author'));
     expect(screen.queryByText('The test rounds of this requirement.')).toBeNull();
     expect(screen.queryByRole('heading', { name: 'Open a folder' })).toBeNull();
     expect(screen.queryByRole('heading', { name: 'Drop a folder' })).toBeNull();
+    vi.unstubAllGlobals();
   });
 
   it('does not show a report banner (a researcher note) to participants', async () => {

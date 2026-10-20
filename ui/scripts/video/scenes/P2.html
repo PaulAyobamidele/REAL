@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>P2 · The problem</title>
+    <link rel="stylesheet" href="slide.css" />
+    <style>
+      .cards {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .count {
+        font-size: 4vh;
+        font-weight: 700;
+        color: var(--brick);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="band"></div>
+    <div class="slide">
+      <div class="section in" style="animation-delay: 100ms">2 · The problem</div>
+      <div class="headline in" style="animation-delay: 300ms">
+        A failure doesn't say what to change
+      </div>
+      <div class="count in" style="animation-delay: 2200ms">Hundreds of failures. Fix what?</div>
+      <div class="cards">
+        <div class="card in" style="animation-delay: 4500ms">
+          <b>Data</b><span>retrain the detector?</span>
+        </div>
+        <div class="card in" style="animation-delay: 5300ms">
+          <b>Model</b><span>a larger detector?</span>
+        </div>
+        <div class="card in" style="animation-delay: 6100ms">
+          <b>System</b><span>brake differently?</span>
+        </div>
+        <div class="card in" style="animation-delay: 6900ms">
+          <b>Requirement</b><span>say when it must hold?</span>
+        </div>
+      </div>
+      <div class="punch in" style="animation-delay: 10000ms">
+        Today: decided by hand, and the reasons are lost.
+      </div>
+      <div class="punch warn in" style="animation-delay: 13000ms">
+        Or the requirement is loosened until the failures disappear.
+      </div>
+      <div class="pageno">3</div>
+    </div>
+  </body>
+</html>

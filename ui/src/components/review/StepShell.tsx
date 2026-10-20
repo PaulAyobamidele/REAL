@@ -1,96 +1,89 @@
 import type { ReactNode } from 'react';
 
+import { buttonClass } from '@/components/ui/buttonClass';
 import { Instructions } from '@/components/ui/Instructions';
-import { reviewHash, STEP_COUNT } from '@/state/route';
-import { cx } from '@/utils/format';
+import { PageActions } from '@/components/ui/PageActions';
+import { reviewHash, routeHash, STEP_COUNT } from '@/state/route';
+import { useReportWorkflow } from '@/state/workflow';
 
 import type { StepProgress } from '@/domain/reviewProgress';
 
-import { ProgressTracker } from './ProgressTracker';
-import { STEP_CAPTIONS, STEP_NAMES } from './stepNames';
+import { EXAMPLE_NAME, STEP_CAPTIONS, STEP_NAMES } from './stepNames';
 
 export { STEP_CAPTIONS, STEP_NAMES } from './stepNames';
 
 /**
- * The frame of the five-step review: the progress tracker, a title, one line under it,
- * and two round controls that float bottom right so Back / Next are always
- * in reach. The steps themselves live in the top bar.
+ * The frame of the five-step review: the title, what to do (the instructions
+ * box), the step, and Back / See <next step> centred under it, like the main
+ * action of every page. Where the review stands is in the header's workflow
+ * bar (WorkflowBar), fed from here. A step that puts an instruction above
+ * each of its containers says so with `ownInstructions`, and the box under
+ * the title is left out.
  */
 export function StepShell({
   runId,
   step,
-  roundLabel,
   progress,
+  ownInstructions = false,
+  example = false,
   children,
 }: {
   runId: string;
   step: number;
-  roundLabel: ReactNode;
-  /** Live status per step for the progress tracker above the page. */
+  /** Live status per step, for the workflow bar in the header. */
   progress: StepProgress[];
+  ownInstructions?: boolean;
+  /** the worked example between steps 1 and 2 */
+  example?: boolean;
   children: ReactNode;
 }) {
+  useReportWorkflow({ runId, step, steps: progress });
   const name = STEP_NAMES[step - 1] ?? '';
-  const back = () => (window.location.hash = reviewHash(runId, step - 1));
-  const next = () => (window.location.hash = reviewHash(runId, step + 1));
+  const exampleHash = routeHash({ screen: 'example', runId });
+  // the order: 1, the example, 2, 3, 4, 5
+  const back = example
+    ? reviewHash(runId, 1)
+    : step === 2
+      ? exampleHash
+      : step > 1
+        ? reviewHash(runId, step - 1)
+        : null;
+  const next = example
+    ? { href: reviewHash(runId, 2), label: STEP_NAMES[1] }
+    : step === 1
+      ? { href: exampleHash, label: EXAMPLE_NAME }
+      : step < STEP_COUNT
+        ? { href: reviewHash(runId, step + 1), label: STEP_NAMES[step] }
+        : null;
   return (
-    <div className="-mt-6 flex min-w-0 flex-col gap-8">
-      <ProgressTracker runId={runId} step={step} steps={progress} />
+    <div className="flex min-w-0 flex-col gap-8">
       <header className="flex flex-col items-center gap-1.5 text-center">
-        <p className="text-xs font-medium text-text-faint">{roundLabel}</p>
         <h1 className="text-2xl lg:text-3xl">
-          <span className="text-text-faint">{step}.</span> {name}
+          {example ? (
+            EXAMPLE_NAME
+          ) : (
+            <>
+              <span className="text-text-faint">{step}.</span> {name}
+            </>
+          )}
         </h1>
-        <Instructions className="prose-width mt-2">{STEP_CAPTIONS[step - 1]}</Instructions>
+        {ownInstructions ? null : (
+          <Instructions page className="mt-2" steps={STEP_CAPTIONS[step - 1]} />
+        )}
       </header>
       {children}
-      <div className="fixed right-5 bottom-5 z-30 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={back}
-          disabled={step <= 1}
-          aria-label="Back"
-          title="Back"
-          className={cx(
-            'float-btn bg-surface-raised/80 text-text',
-            'disabled:cursor-not-allowed disabled:opacity-40',
-          )}
-        >
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 16 16"
-            className="size-4"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M4 10l4-4 4 4" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          onClick={next}
-          disabled={step >= STEP_COUNT}
-          aria-label="Next"
-          title="Next"
-          className="float-btn bg-human text-white disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 16 16"
-            className="size-4"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M4 6l4 4 4-4" />
-          </svg>
-        </button>
-      </div>
+      <PageActions>
+        {back ? (
+          <a href={back} className={buttonClass('secondary', 'lg')}>
+            ← Back
+          </a>
+        ) : null}
+        {next ? (
+          <a href={next.href} className={buttonClass('primary', 'lg')}>
+            See {next.label} →
+          </a>
+        ) : null}
+      </PageActions>
     </div>
   );
 }
