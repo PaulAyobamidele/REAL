@@ -21,7 +21,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import Circle, FancyBboxPatch, Polygon, Rectangle, Wedge
+from matplotlib.patches import FancyBboxPatch, Polygon, Rectangle
 
 matplotlib.rcParams.update({
     "pdf.fonttype": 42, "ps.fonttype": 42,
@@ -60,6 +60,19 @@ def text(x, y, s, size=T_SUB, fit=None, **kw):
     if fit is not None and wid(t) > fit:
         OVERFLOWS.append(f"{s!r}: {wid(t):.2f} in > {fit:.2f} in")
     return t
+
+
+ICONS = {n: plt.imread(os.path.join(HERE, "icons", f"{n}.png")) for n in ("robot", "engineer")}
+
+
+def icon(name, cx, cy, h):
+    """A raster icon (RGBA, transparent background) h inches tall, centred at (cx, cy)."""
+    img = ICONS[name]
+    w = h * img.shape[1] / img.shape[0]
+    ax.imshow(img, extent=(cx - w / 2, cx + w / 2, cy - h / 2, cy + h / 2), zorder=9,
+              interpolation="lanczos")
+    ax.set_xlim(0, W)
+    ax.set_ylim(0, H)
 
 
 def star_after(t, size):
@@ -110,23 +123,20 @@ def artefact(x, y, w, h, title, lines=(), stack=False, mono_title=False):
         text(x + w / 2, top - (j + 1) * step, line, ha="center", va="center", fit=w - 2 * SKEW - 0.04)
 
 
-def person(x, y, s=1.0):
-    ax.add_patch(Circle((x, y + 0.045 * s), 0.028 * s, fc=INK, ec="none", zorder=8))
-    ax.add_patch(Wedge((x, y - 0.012 * s), 0.045 * s, 0, 180, fc=INK, ec="none", zorder=8))
-
-
 def frame(y0, y1, title, infra=None):
     ax.add_patch(Rectangle((FX0, y0), FX1 - FX0, y1 - y0, fc=FRAME_FILL, ec=INK, lw=0.6, zorder=1))
     t = text(FX0 + 0.06, y1 - 0.035, title, size=T_FRAME, weight="bold", va="top")
+    x = FX0 + 0.06 + wid(t) + 0.07              # the tool drives every stage: a robot in each title
+    icon("robot", x + 0.075, y1 - 0.085, 0.15)
     if infra:
-        text(FX0 + 0.06 + wid(t) + 0.08, y1 - 0.035, infra, style="italic", va="top")
+        text(x + 0.20, y1 - 0.035, infra, style="italic", va="top")
 
 
 def engineer_over(x, box_top, label_x):
     """The engineer glyph above a component, dotted line down to it."""
-    person(x, box_top + 0.125)
-    arrow([(x, box_top + 0.065), (x, box_top)], lw=0.6, ls=DOTTED, head_len=0.25)
-    text(label_x, box_top + 0.125, "engineer", style="italic", ha="right", va="center")
+    icon("engineer", x, box_top + 0.145, 0.18)
+    arrow([(x, box_top + 0.05), (x, box_top)], lw=0.6, ls=DOTTED, head_len=0.25)
+    text(label_x - 0.03, box_top + 0.145, "engineer", style="italic", ha="right", va="center")
 
 
 FX0, FX1 = 0.42, 6.96
@@ -173,7 +183,7 @@ artefact(5.50, y, 1.38, BH, "diagnosis", ["valid failures · obstacles", "assump
 arrow([(1.98, yc), (2.22, yc)])
 arrow([(3.44, yc), (3.70, yc)])
 arrow([(5.00, yc), (5.50 + SKEW / 2, yc)])
-arrow([(1.18, 1.715), (1.18, y + BH)])             # the run folder feeds the validity check
+arrow([(1.45, 1.715), (1.45, y + BH)])             # the run folder feeds the validity check (right of the stage title)
 
 # ---- band 4, right to left -------------------------------------------------
 y, yc = 0.30, 0.45
@@ -219,13 +229,14 @@ def mini_line(color, lw, ls="-"):
     return lambda lx, ly: ax.plot([lx, lx + 0.18], [ly, ly], color=color, lw=lw, ls=ls, zorder=3)
 
 
-ly = 0.145
+ly = 0.16
 lx = 0.42
 lx = legend_item(lx, ly, lambda a, b: mini_box(a, b), "component")
 lx = legend_item(lx, ly, lambda a, b: mini_art(a, b), "artefact")
 lx = legend_item(lx, ly, lambda a, b: mini_art(a, b, stack=True), "a set of many")
 lx = legend_item(lx, ly, lambda a, b: ax.add_patch(Rectangle((a, b - 0.04), 0.16, 0.08, fc=FRAME_FILL, ec=INK, lw=0.6, zorder=3)), "stage")
-lx = legend_item(lx, ly, lambda a, b: person(a + 0.08, b, 0.8), "the engineer")
+lx = legend_item(lx, ly, lambda a, b: icon("robot", a + 0.08, b, 0.12), "the tool, automated")
+lx = legend_item(lx, ly, lambda a, b: icon("engineer", a + 0.08, b, 0.12), "the engineer")
 if lx > W - 0.02:
     OVERFLOWS.append(f"legend line 1 ends at {lx:.2f} in")
 
