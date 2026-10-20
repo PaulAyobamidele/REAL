@@ -131,8 +131,8 @@ def component(x, y, w, h, kind, actor, title, lines=()):
     n = 1 + len(lines)
     top = y + h / 2 + (n - 1) / 2 * STEP
     slot = ICON_SLOT if actor else 0.04          # an icon only where a person acts
-    if actor:
-        icon(actor, x + 0.13, top)
+    if actor:                                    # same badge position in every box:
+        icon(actor, x + 0.13, y + h - 0.10)      # 0.13 in from the left, 0.10 in from the top
     star = kind == "new"
     cx = x + slot + (w - slot - 0.04) / 2 - (0.05 if star else 0)
     t = text(cx, top, title, size=T_BOX, weight="bold", ha="center", va="center",
