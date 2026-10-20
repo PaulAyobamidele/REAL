@@ -101,7 +101,7 @@ Draw C6→C7 as a solid arrow and C7⇄C8 as a double-headed solid arrow
 | C10 | Validity check (assumptions held / broken → valid vs spurious) | component | new ★ (concept Φ_valid: framework paper) | `scripts/analysis/admissibility.py` |
 | C11 | Failure classifier (failure types from traces) | component | new ★ | `scripts/analysis/failure_model.py` |
 | C12 | Obstacle analyser (obstacles with evidence; assumption verdicts) | component | new ★ (obstacle catalogue: framework paper) | `scripts/analysis/obstacles.py` |
-| C13 | Behaviour map (clustering) | component | new ★ | `scripts/analysis/cluster_map.py` |
+| C13 | Behaviour map (clustering) | component | new ★ | `scripts/analysis/cluster_map.py` — **not drawn** (text only): stage 3 shows the three components the diagnosis depends on |
 | F3 | Diagnosis: valid failures, obstacles + evidence, verdicts | artefact | — | `analysis_report.json`, `cluster_map.json` |
 
 ### Stage 4 — Decide and refine
@@ -121,7 +121,7 @@ four layers and Φ_valid come from the framework paper.
 
 ## 3. Layout: four bands, boustrophedon
 
-7.0 in wide, about 2.7 in high. Four stage frames stacked, each a band;
+7.0 in wide, 2.86 in high (drawn 2026-10-20 by `make_fig1_v2.py` → `fig1_architecture_v2.pdf`). Four stage frames stacked, each a band;
 the flow alternates direction so the end of one band sits above the start
 of the next and the connecting arrows are short verticals.
 
@@ -181,4 +181,13 @@ of the next and the connecting arrows are short verticals.
 - [ ] no [T], no study machinery, no job-control plumbing
 - [ ] legend covers shape, colour, line and actor; caption repeats the colours
 - [ ] vector PDF, fonts embedded, no Type 3, text ≥ 6 pt, reads in grayscale
-- [ ] 7.0 in wide, ≤ 2.8 in high
+- [x] 7.0 in wide, 2.86 in high (0.06 over the target, for 6-pt legibility)
+
+## 7. Drawn (2026-10-20)
+
+`make_fig1_v2.py` → `fig1_architecture_v2.pdf` (32 KB, TrueType only) + `.png`.
+Checked: no text overflow (measured), grayscale legible, fonts embedded.
+Loop labels as drawn: *[D] [R]: re-diagnosed, no new simulation*;
+*[S]: next round, R₁ is the new input*. The system under test touches the
+simulator box (one unit), as in the model figure; the caption says the
+detector and controller run in the loop.

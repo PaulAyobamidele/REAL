@@ -11,6 +11,8 @@
 \usepackage{url}
 \usepackage{cite}
 \usepackage{xcolor}
+\usepackage{amssymb}
+\providecommand{\toolname}{REAL}
 \newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
 
 \begin{document}
@@ -64,11 +66,19 @@ REAL's Identify--Analyse--Mitigate loop~\cite{real2026}.}
 % The call asks for the workflow required of users: make it a numbered list.
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{figures/fig1_workflow.pdf}
-\caption{REAL's loop as implemented by the tool. People write the requirement and
-decide (yellow); search, analysis and revision run on a laptop and in the Docker
-demo (blue); scenarios execute in CARLA on a GPU cluster (grey). Every run is linked
-to the decision that caused it. (Regenerate: \texttt{figures/make\_fig1.py}.)}
+\includegraphics[width=\textwidth]{figures/fig1_architecture_v2.pdf}
+\caption{\toolname{} in one round. (1)~The engineer writes the requirement $R_0$;
+the tool parses it and refuses assumptions about the system. (2)~A scenario grammar
+and a search (GRAPE or an exhaustive grid) derive test scenarios, executed in
+CARLA through Scenic with the detector and the braking controller in the loop; a
+safety monitor records every run. (3)~Each run is judged valid or spurious against
+$R_0$'s assumptions, failures are typed from their traces and grouped into
+obstacles with evidence. (4)~The engineer decides each obstacle and assumption in
+the review interface; the tool writes $R_1$ with every change labelled. [D] and [R]
+changes are re-diagnosed on the stored traces; an [S] change starts the next
+round. Violet~$\bigstar$: new in this paper. Orange: reused from the REAL framework
+package~\cite{real2026}. Grey, dashed: existing tools~\cite{carla2017,scenic2023,grape2022}.
+Yellow: artefacts. (Regenerate: \texttt{figures/make\_fig1\_v2.py}.)}
 \label{fig:arch}
 \end{figure*}
 \subsection{Requirement language}
