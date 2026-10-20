@@ -12,8 +12,8 @@ legend overflows the width.
 Flowchart rules (ISO 5807 / ANSI, as the owner stated them):
   rectangle = process (a component) · parallelogram = input/output (an
   artefact; stacked = a set of many) · diamond = decision · frame = stage
-Actors, one icon size everywhere, inside the box they index:
-  robot = the component runs automatically · engineer = a person operates it
+Actor: one glyph, inside the two components a person operates (the engineer);
+  every other component runs automatically, which the legend states once
 Colour = provenance: violet + star = new in this paper · orange = reused from
   the REAL framework package · grey, dashed border = existing tool · yellow =
   artefact
@@ -67,27 +67,6 @@ def text(x, y, s, size=T_SUB, fit=None, **kw):
     return t
 
 
-def glyph_robot(cx, cy, h):
-    """The tool: a robot (antenna, visor with two eyes, body), drawn as vector patches."""
-    s = h
-    ax.plot([cx, cx], [cy + 0.30 * s, cy + 0.41 * s], color=INK, lw=0.6, zorder=9)
-    ax.add_patch(Circle((cx, cy + 0.45 * s), 0.05 * s, fc="#D9402B", ec=INK, lw=0.4, zorder=9))
-    ax.add_patch(FancyBboxPatch((cx - 0.36 * s, cy - 0.10 * s), 0.72 * s, 0.40 * s,
-                                boxstyle=f"round,pad=0,rounding_size={0.08 * s}",
-                                fc="#ECECEC", ec=INK, lw=0.6, zorder=9))
-    ax.add_patch(FancyBboxPatch((cx - 0.26 * s, cy + 0.02 * s), 0.52 * s, 0.18 * s,
-                                boxstyle=f"round,pad=0,rounding_size={0.04 * s}", fc=INK, ec="none", zorder=10))
-    for dx in (-0.12, 0.12):
-        ax.add_patch(Circle((cx + dx * s, cy + 0.11 * s), 0.035 * s, fc="#BFD8F5", ec="none", zorder=11))
-    ax.add_patch(Rectangle((cx - 0.08 * s, cy - 0.17 * s), 0.16 * s, 0.07 * s, fc=INK, ec="none", zorder=9))
-    ax.add_patch(FancyBboxPatch((cx - 0.30 * s, cy - 0.50 * s), 0.60 * s, 0.33 * s,
-                                boxstyle=f"round,pad=0,rounding_size={0.06 * s}",
-                                fc="#ECECEC", ec=INK, lw=0.6, zorder=9))
-    for sx in (-1, 1):
-        ax.add_patch(Rectangle((cx + sx * 0.34 * s - 0.04 * s, cy - 0.42 * s), 0.08 * s, 0.17 * s,
-                               fc="#CFCFCF", ec=INK, lw=0.5, zorder=8))
-
-
 def glyph_engineer(cx, cy, h):
     """The engineer: hard hat with a brim, face, shoulders, drawn as vector patches."""
     s = h
@@ -102,7 +81,7 @@ def glyph_engineer(cx, cy, h):
 
 
 def icon(name, cx, cy, h=ICON_H):
-    (glyph_robot if name == "robot" else glyph_engineer)(cx, cy, h)
+    glyph_engineer(cx, cy, h)
 
 
 def star_after(t, size):
@@ -122,17 +101,20 @@ def arrow(points, color=INK, lw=0.8, ls="-", z=6, head_len=0.32):
 # ------------------------------------------------------------------ shapes
 def component(x, y, w, h, kind, actor, title, lines=()):
     """A process: rectangle. kind: 'new' (violet, star), 'framework' (orange),
-    'tool' (grey, dashed). actor: 'robot' (automated) or 'engineer' (operated)."""
+    'tool' (grey, dashed). actor: 'engineer' where a person operates it, else None
+    (every other component runs automatically; the legend says so once)."""
     fill = {"new": NEW, "framework": FRAMEWORK, "tool": TOOL}[kind]
     ax.add_patch(Rectangle((x, y), w, h, fc=fill, ec=INK, lw=0.6,
                            ls=DASHED if kind == "tool" else "-", zorder=3))
     n = 1 + len(lines)
     top = y + h / 2 + (n - 1) / 2 * STEP
-    icon(actor, x + 0.13, top)
+    slot = ICON_SLOT if actor else 0.04          # an icon only where a person acts
+    if actor:
+        icon(actor, x + 0.13, top)
     star = kind == "new"
-    cx = x + ICON_SLOT + (w - ICON_SLOT - 0.04) / 2 - (0.05 if star else 0)
+    cx = x + slot + (w - slot - 0.04) / 2 - (0.05 if star else 0)
     t = text(cx, top, title, size=T_BOX, weight="bold", ha="center", va="center",
-             fit=w - ICON_SLOT - 0.04 - (0.11 if star else 0))
+             fit=w - slot - 0.04 - (0.11 if star else 0))
     if star:
         star_after(t, T_BOX)
     for k, line in enumerate(lines):
@@ -184,8 +166,8 @@ frame(0.25, 0.85, "4. Decide and refine")
 # ---- band 1, left to right -------------------------------------------------
 y, yc = 2.29, 2.44
 component(0.52, y, 1.43, BH, "new", "engineer", "Requirement editor", ["REAL-DSL"])
-component(2.18, y, 1.02, BH, "framework", "robot", "DSL parser")
-component(3.45, y, 1.60, BH, "new", "robot", "Requirement check",
+component(2.18, y, 1.02, BH, "framework", None, "DSL parser")
+component(3.45, y, 1.60, BH, "new", None, "Requirement check",
           ["named modules exist", "no assumption about the system"])
 artefact(5.50, y, 1.38, BH, r"R$_0$: checked requirement", ["goal model (KAOS)"])
 arrow([(1.95, yc), (2.18, yc)])
@@ -194,11 +176,11 @@ arrow([(5.05, yc), (5.50 + SKEW / 2, yc)])
 
 # ---- band 2, right to left -------------------------------------------------
 y, yc = 1.715, 1.865
-component(5.50, y, 1.38, BH, "framework", "robot", "Scenario search", ["grammar → GE (GRAPE) or grid"])
+component(5.50, y, 1.38, BH, "framework", None, "Scenario search", ["grammar → GE (GRAPE) or grid"])
 artefact(4.58, y, 0.75, BH, "scenarios", stack=True)
-component(3.08, 1.75, 1.35, 0.23, "tool", "robot", "Scenario execution", ["Scenic → CARLA"])
-component(3.08, 1.52, 1.35, 0.23, "framework", "robot", "System under test", ["YOLOv5 detector + braking"])
-component(1.68, y, 1.27, BH, "new", "robot", "Safety monitor", ["+ telemetry recorder"])
+component(3.08, 1.75, 1.35, 0.23, "tool", None, "Scenario execution", ["Scenic → CARLA"])
+component(3.08, 1.52, 1.35, 0.23, "framework", None, "System under test", ["YOLOv5 detector + braking"])
+component(1.68, y, 1.27, BH, "new", None, "Safety monitor", ["+ telemetry recorder"])
 artefact(0.55, y, 1.00, BH, "execution traces", ["results · metadata"], stack=True)
 arrow([(5.50, yc), (5.33 - SKEW / 2, yc)])
 arrow([(4.58 + SKEW / 2, yc), (4.43, yc)])
@@ -208,10 +190,10 @@ arrow([(6.19, 2.29), (6.19, y + BH)])              # R0 feeds the scenario searc
 
 # ---- band 3, left to right -------------------------------------------------
 y, yc = 0.94, 1.09
-component(0.70, y, 1.45, BH, "new", "robot", "Validity check",
+component(0.70, y, 1.45, BH, "new", None, "Validity check",
           ["assumptions held / broken", "valid vs spurious failures"])
-component(2.35, y, 1.30, BH, "new", "robot", "Failure classifier", ["failure type per trace"])
-component(3.85, y, 1.40, BH, "new", "robot", "Obstacle analyser",
+component(2.35, y, 1.30, BH, "new", None, "Failure classifier", ["failure type per trace"])
+component(3.85, y, 1.40, BH, "new", None, "Obstacle analyser",
           ["obstacles with evidence", "assumption verdicts"])
 artefact(5.50, y, 1.38, BH, "diagnosis", ["valid failures · obstacles", "assumption verdicts"])
 arrow([(2.15, yc), (2.35, yc)])
@@ -222,7 +204,7 @@ arrow([(1.30, 1.715), (1.30, y + BH)])             # the traces feed the validit
 # ---- band 4, right to left -------------------------------------------------
 y, yc = 0.30, 0.45
 component(5.50, y, 1.38, BH, "new", "engineer", "Review interface", ["five steps · mitigation menu"])
-component(3.70, y, 1.45, BH, "new", "robot", "Requirement writer", [r"R$_1$ with labelled changes"])
+component(3.70, y, 1.45, BH, "new", None, "Requirement writer", [r"R$_1$ with labelled changes"])
 artefact(2.25, y, 1.20, BH, "signed decisions", [r"+ R$_1$ with its changes", "labelled [S] [D] [R]"])
 DX, DY, DHW, DHH = 1.70, yc, 0.30, 0.145
 decision(DX, DY, DHW, DHH, ["[S]", "changed?"])
@@ -279,8 +261,8 @@ lx = legend_item(lx, ly, lambda a, b: mini_art(a, b, stack=True), "a set of many
 lx = legend_item(lx, ly, mini_diamond, "decision")
 lx = legend_item(lx, ly, lambda a, b: ax.add_patch(Rectangle((a, b - 0.04), 0.16, 0.08, fc=FRAME_FILL,
                                                              ec=INK, lw=0.6, zorder=3)), "stage")
-lx = legend_item(lx, ly, lambda a, b: icon("robot", a + 0.08, b), "runs automatically")
-lx = legend_item(lx, ly, lambda a, b: icon("engineer", a + 0.08, b), "operated by the engineer")
+lx = legend_item(lx, ly, lambda a, b: icon("engineer", a + 0.08, b),
+                 "operated by the engineer; the rest is automatic")
 if lx > W - 0.02:
     OVERFLOWS.append(f"legend line 1 ends at {lx:.2f} in")
 

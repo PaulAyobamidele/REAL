@@ -204,10 +204,11 @@ detector and controller run in the loop.
   under the Validity check, so the *no* branch goes **straight up** into it
   and the *yes* branch is the only line in the left margin; nothing crosses,
   and both labels sit horizontally inside the frame beside their line.
-- **Actors inside the box they index, one icon size (0.14 in):** the robot
-  in every component that runs automatically; the engineer in the two
-  components a person operates (Requirement editor, Review interface). No
-  icons in stage titles or on artefacts.
+- **One actor glyph, only where it matters:** the engineer inside the two
+  components a person operates (Requirement editor, Review interface). The
+  robot glyph was tried in every automated component and dropped (owner,
+  2026-10-20): automation is the default and marking it everywhere was noise;
+  the legend states once that every other component runs automatically.
 - **Artefacts named by function:** `run folder` → *execution traces (results,
   metadata)*; `decisions.json` → *signed decisions (+ R₁ with its changes,
   labelled [S] [D] [R])*. File names belong in the text, not the figure.
