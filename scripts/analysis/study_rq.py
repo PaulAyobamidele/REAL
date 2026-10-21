@@ -144,6 +144,16 @@ def analyse_session(source, files):
             for c in r_changes(c0["tree"], c1["tree"]):
                 {"D": d_changes, "R": r_changes_, "S": s_changes}[c["kind"]].append(c["text"])
 
+    # R1 must be what the project's own refine derives from the decisions (reproducibility)
+    if "R0.dsl" in files and "R1.dsl" in files:
+        from scripts.analysis import refine
+        try:
+            derived = refine.apply_changes(files["R0.dsl"], refine.plan_changes(doc, files["R0.dsl"]))
+            if derived.strip() != files["R1.dsl"].strip():
+                problems.append("R1.dsl differs from what refine derives from decisions.json")
+        except ValueError as e:
+            problems.append(f"refine cannot derive R1 from decisions.json: {e}")
+
     obstacles = doc.get("obstacles") or {}
     scope = doc.get("scope") or {}
     assumptions = doc.get("assumptions") or {}
@@ -175,6 +185,14 @@ def analyse_session(source, files):
         events = Counter(e.get("event") for e in log)
         if not events.get("session_end"):
             problems.append("log has no session_end")
+        # the log's last triage value of each obstacle must be the one in the file
+        last = {}
+        for e in log:
+            if e.get("event") == "obstacle_explained" and isinstance(e.get("new"), dict):
+                last[e.get("target")] = e["new"].get("by")
+        for oid, o in obstacles.items():
+            if oid in last and last[oid] != o.get("explained_by"):
+                problems.append(f"{oid}: logged triage {last[oid]!r} differs from the file's {o.get('explained_by')!r}")
     else:
         events = Counter()
 

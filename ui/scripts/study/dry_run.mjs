@@ -3,10 +3,12 @@
  * a mix of decisions with reasons, an early sign attempt (must be refused), the
  * CARLA video played, the zip downloaded, the end screen after a reload.
  *   VITE_STUDY=1 npx vite --port 5174 --strictPort &   (in ui/)
- *   node scripts/study/dry_run.mjs <output folder>
+ *   [STUDY_URL=<published site>] node scripts/study/dry_run.mjs <output folder>
  */
 import { chromium } from 'playwright';
 const S = process.argv[2];
+// the study site to walk: the local study server, or the published one (STUDY_URL=...)
+const STUDY_URL = process.env.STUDY_URL ?? 'http://localhost:5174/';
 const b = await chromium.launch({ channel: 'chrome' });
 const ctx = await b.newContext({ viewport: { width: 1440, height: 900 }, acceptDownloads: true });
 const p = await ctx.newPage();
@@ -17,11 +19,12 @@ p.on('dialog', (d) => {
   bad.push('dialog: ' + d.message());
   d.dismiss();
 });
+// a page's guided tour opens once, a moment after the page (later on a published site): skip it
 const skip = async () => {
-  await p.waitForTimeout(1500);
-  const s = p.getByRole('button', { name: 'Skip tour' });
-  if (await s.count()) {
-    await s.click();
+  const button = p.getByRole('button', { name: 'Skip tour' });
+  await button.waitFor({ timeout: 6000 }).catch(() => undefined);
+  if (await button.count()) {
+    await button.click();
     await p.waitForTimeout(400);
   }
 };
@@ -34,7 +37,7 @@ const next = async () => {
 };
 const step = (m) => console.log('·', m);
 
-await p.goto('http://localhost:5174/');
+await p.goto(STUDY_URL);
 await p.getByLabel('Your expertise').fill('Dry run (requirements engineering)');
 await p.getByRole('button', { name: 'Start' }).click();
 await skip();

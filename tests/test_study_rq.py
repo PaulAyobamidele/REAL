@@ -40,12 +40,12 @@ def _zip(pid, r1, obstacles, scope=None, rated=True):
 
 def test_counts_refinements_ratings_and_reads_a_zip_of_zips(tmp_path):
     world = {"verdict": "accept", "explained_by": "world", "renamed_to": None, "status": "new",
-             "mitigation": {"layer": "requirement", "action": 'assuming "fog_density <= 30"'}}
+             "mitigation": {"layer": "requirement", "action": "fog_density <= 30"}}  # in own words (option C)
     refine = {"verdict": "accept", "explained_by": "car", "resolution": "refine", "renamed_to": None, "status": "new",
               "mitigation": {"layer": "requirement", "action": "resume within 10 s"}}
     a = _zip("S-AAAA", R0.replace('"fog_density <= 50"', '"fog_density <= 50" & "fog_density <= 30"'),
-             {"AdverseWeather": dict(world), "StandoffUnnecessaryStop": dict(refine)})
-    b = _zip("S-BBBB", R0, {"AdverseWeather": dict(refine), "StandoffUnnecessaryStop": dict(refine)}, rated=False)
+             {"PedestrianSizeTooSmall": dict(world), "StandoffUnnecessaryStop": dict(refine)})
+    b = _zip("S-BBBB", R0, {"PedestrianSizeTooSmall": dict(refine), "StandoffUnnecessaryStop": dict(refine)}, rated=False)
     (tmp_path / "study_S-AAAA.zip").write_bytes(a)
     outer = io.BytesIO()
     with zipfile.ZipFile(outer, "w") as z:  # the admin page's "Download all"
@@ -57,10 +57,10 @@ def test_counts_refinements_ratings_and_reads_a_zip_of_zips(tmp_path):
     assert set(by) == {"S-AAAA", "S-BBBB"}
     assert by["S-AAAA"]["assumptions_refined"] == 1          # fog_density <= 30 added to R1
     assert by["S-AAAA"]["requirements_refined"] == 1         # refined in own words
-    assert by["S-AAAA"]["unhelpful"] == ["AdverseWeather"]
+    assert by["S-AAAA"]["unhelpful"] == ["PedestrianSizeTooSmall"]
     assert by["S-AAAA"]["minutes"] == 30.0
     assert by["S-AAAA"]["seconds_per_step"] == {"overview": 120}
-    assert by["S-AAAA"]["problems"] == []
+    assert by["S-AAAA"]["problems"] == []  # incl. R1 = refine's derivation from the decisions
     assert any("no helpfulness rating" in p for p in by["S-BBBB"]["problems"])
     assert r["totals"]["diagnoses_unhelpful"] == 1
 

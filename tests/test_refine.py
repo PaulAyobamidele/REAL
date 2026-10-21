@@ -137,3 +137,19 @@ def test_change_for_is_the_single_source_of_plan_changes(tmp_path):
     assert refine.scope_change("artefact:a", {"verdict": "out_of_scope", "limit": "the ego approaches the crossing",
                                               "reason": "because I think so"})["item"] == "the ego approaches the crossing"
     assert refine.scope_change("rule:x", {"verdict": None}) is None
+
+
+def test_a_study_car_choice_names_its_module_swaps():
+    """The study records a chosen car (mitigation.choice); refine derives the same R1 the
+    study tool writes (ui/src/study/car.ts), not the obstacle x layer table's swap."""
+    doc = {"obstacles": {
+        "DetectionTooLate": {"verdict": "accept", "resolution": "system",
+                             "mitigation": {"layer": "system", "action": "a larger detector",
+                                            "choice": "car_larger_detector"}},
+        "PedestrianSizeTooSmall": {"verdict": "accept", "resolution": "system",
+                                   "mitigation": {"layer": "system", "action": "both", "choice": "car_both"}}},
+        "scope": {}}
+    texts = [c["text"] for c in refine.plan_changes(doc)]
+    assert texts == ['"Detect Pedestrian" performed by "yolov5m"', '"Apply Brakes" performed by "path_aware_braking"']
+    larger = refine.plan_changes(doc)[0]
+    assert larger["from"] == "DetectionTooLate, PedestrianSizeTooSmall"

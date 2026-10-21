@@ -195,6 +195,16 @@ def assumption_changes(doc, r0_assumptions):
     return changes
 
 
+# The study's car fixes (ui/src/study/menu.ts, car.ts): a participant picks a car, not a table
+# entry, so the choice - not the obstacle x layer table - names the module swaps. Recorded as
+# mitigation.choice in decisions.json; without it, the table applies as before.
+STUDY_CAR_CHOICES = {
+    "car_path_aware": [("Apply Brakes", "path_aware_braking")],
+    "car_larger_detector": [("Detect Pedestrian", "yolov5m")],
+    "car_both": [("Apply Brakes", "path_aware_braking"), ("Detect Pedestrian", "yolov5m")],
+}
+
+
 def plan_changes(doc, r0=None):
     """The list of changes the decisions imply. Each: {kind, from, layer,
     text, ...}; S-changes carry task/module/available, R-changes clause/item,
@@ -209,6 +219,18 @@ def plan_changes(doc, r0=None):
         # triage (ui/src/study/triage.ts): "refine the requirement" records the
         # reviewer's words; the edit itself is made in R1, never derived here
         if o.get("resolution") == "refine":
+            continue
+        swaps = STUDY_CAR_CHOICES.get(o["mitigation"].get("choice"))
+        if swaps:
+            for task, module in swaps:
+                text = f'"{task}" performed by "{module}"'
+                same = next((c for c in changes if c.get("text") == text), None)
+                if same:  # one swap, citing every obstacle that asked for it
+                    same["from"] = f'{same["from"]}, {oid}'
+                else:
+                    changes.append({"kind": "S", "from": oid, "layer": o["mitigation"]["layer"],
+                                    "task": task, "module": module,
+                                    "available": _is_available(task, module, avail), "text": text})
             continue
         change = change_for(oid, o["mitigation"]["layer"], o["mitigation"].get("action"), avail)
         if change:

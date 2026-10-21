@@ -27,6 +27,9 @@ function markSeen(key: string): void {
   }
 }
 
+/** The tour on screen, if any: in the study, leaving its page closes it (no stale tour). */
+let active: { destroy: () => void; leave: () => void } | null = null;
+
 /** Run the tour of a page, from its first stop that is on screen. */
 export function startTour(key: string): void {
   const steps = tourOf(key)
@@ -39,6 +42,7 @@ export function startTour(key: string): void {
   if (STUDY) logEvent({ screen: 'tour', event: 'tour_started', target: key });
   let reached = 0;
   let skipped = false;
+  let leftPage = false;
   const tour = driver({
     steps,
     showProgress: true,
@@ -70,16 +74,24 @@ export function startTour(key: string): void {
       reached = Math.max(reached, (state.activeIndex ?? 0) + 1);
     },
     onDestroyed: () => {
+      active = null;
       markSeen(key);
       if (STUDY)
         logEvent({
           screen: 'tour',
           event: 'tour_closed',
           target: key,
-          new: { stops_seen: reached, stops: steps.length, skipped },
+          new: { stops_seen: reached, stops: steps.length, skipped, left_page: leftPage },
         });
     },
   });
+  active = {
+    destroy: () => tour.destroy(),
+    leave: () => {
+      leftPage = true;
+      tour.destroy();
+    },
+  };
   tour.drive();
 }
 
@@ -94,7 +106,11 @@ export function useTour(route: Route): () => void {
     if (!key || seen(key) || import.meta.env?.MODE === 'test') return;
     // let the page draw first: its parts are what the tour points at
     const t = window.setTimeout(() => startTour(key), 900);
-    return () => window.clearTimeout(t);
+    return () => {
+      window.clearTimeout(t);
+      // the study: a tour still open when the participant leaves its page closes with it
+      if (STUDY) active?.leave();
+    };
   }, [key]);
   return useCallback(() => {
     if (key) startTour(key);

@@ -37,6 +37,11 @@ function value(a: DraftAction): unknown {
       return a.verdict;
     case 'obstacle/mitigation':
       return a.mitigation;
+    // the triage's side, and step 5's outcome, with what each carries
+    case 'obstacle/explained':
+      return { by: a.by, mitigation: a.mitigation };
+    case 'obstacle/resolve':
+      return { resolution: a.resolution, mitigation: a.mitigation };
     case 'added_assumptions/set':
       return a.lines;
     case 'signed':
@@ -60,6 +65,14 @@ function previous(d: Draft | undefined, a: DraftAction): unknown {
       return o?.reason ?? null;
     case 'obstacle/mitigation':
       return o?.mitigation ?? null;
+    case 'obstacle/explained': {
+      const x = o as (typeof o & { explained_by?: unknown }) | undefined;
+      return x ? { by: x.explained_by ?? null, mitigation: x.mitigation ?? null } : null;
+    }
+    case 'obstacle/resolve': {
+      const x = o as (typeof o & { resolution?: unknown }) | undefined;
+      return x ? { resolution: x.resolution ?? null, mitigation: x.mitigation ?? null } : null;
+    }
     case 'scope/verdict':
       return s?.verdict ?? null;
     case 'scope/reason':
