@@ -220,3 +220,12 @@ detector and controller run in the loop.
   by the script as vector patches (owner's choice, 2026-10-20, over Flaticon
   icons that would have needed a credit line). No licence, no raster: the
   PDF is fully vector.
+
+## 9. Revision of 2026-10-21 (owner)
+
+- Stage titles: *1. Requirement elicitation*, *3. Diagnose test results*.
+- *DSL parser* → *REAL-DSL parser*.
+- The *Requirement writer* box is removed; the *Review interface* carries both
+  glyphs (engineer and robot): a manual step with automatic support, and its
+  second line says it writes R₁ with labelled changes. Band 4 is now Review
+  interface → signed decisions → decision. Sec. III-D wording follows.

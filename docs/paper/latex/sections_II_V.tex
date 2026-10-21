@@ -32,7 +32,7 @@ everything else runs automatically, and each computed result is shown with
 the evidence behind it. The stages exchange four artefacts: the checked
 requirement, the execution traces, the diagnosis, and the signed decisions.
 
-\subsection{Stage 1: Specify}
+\subsection{Stage 1: Requirement Elicitation}
 \label{sec:specify}
 Requirements are written in the REAL DSL~\cite{real2026}, which
 \toolname{} extends with explicit slots for the three parts of the entailment:
@@ -47,7 +47,7 @@ measure, or as free text that is recorded but not checked;
 \end{itemize}
 The \emph{requirement editor} presents the requirement as text with gaps.
 Bounded choices are menus read from the code: the modules the executor
-implements, the measurable quantities, the operators. The \emph{DSL parser}
+implements, the measurable quantities, the operators. The \emph{REAL-DSL parser}
 checks every edit and marks the line it rejects, and the requirement can be
 viewed as a goal tree or a KAOS diagram. The \emph{requirement check} then
 applies two refusals that keep the entailment honest. An assumption about the
@@ -75,7 +75,7 @@ of the code is compared with the local one. The run panel follows the job,
 shows partial results as simulations finish, and retrieves the execution
 traces when it ends.
 
-\subsection{Stage 3: Diagnose}
+\subsection{Stage 3: Diagnose Test Results}
 \label{sec:diagnose}
 The diagnosis reads the execution traces, never the simulator. The outcome
 of each run is computed from its trace under a path-aware safety rule: the
@@ -118,9 +118,8 @@ In the \emph{review interface} the engineer decides each obstacle:
 in their own words; chooses, for each accepted obstacle, a mitigation from a
 menu spanning the data, model, system and requirement layers; and rules on
 each assumption: keep, tighten, loosen, drop, or add one. The tool's verdicts
-are suggestions only; nothing is decided without the engineer. From the
-decisions, the \emph{requirement writer} produces $R_1$ next to $R_0$ with
-every change labelled by the part of the entailment it touches: [S] the
+are suggestions only; nothing is decided without the engineer. From the decisions, the interface writes $R_1$ next to $R_0$ with every
+change labelled by the part of the entailment it touches: [S] the
 system, [D] an assumption, [R] the requirement, or [T] the test itself (a
 defect in the scene, which is fixed rather than blamed on the system). The
 engineer signs, which records the signed decisions: each verdict, reason and

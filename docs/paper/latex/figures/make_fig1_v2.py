@@ -124,23 +124,26 @@ def arrow(points, color=INK, lw=0.8, ls="-", z=6, head_len=0.32):
 def component(x, y, w, h, kind, actor, title, lines=()):
     """A process: rectangle. kind: 'new' (violet, star), 'framework' (orange),
     'tool' (grey, dashed). actor: 'engineer' where a person operates it, 'robot'
-    where the tool automates work the framework paper left to people, else None."""
+    where the tool automates work the framework paper left to people, both where a
+    manual step has automatic support, else None."""
     fill = {"new": NEW, "framework": FRAMEWORK, "tool": TOOL}[kind]
     ax.add_patch(Rectangle((x, y), w, h, fc=fill, ec=INK, lw=0.6,
                            ls=DASHED if kind == "tool" else "-", zorder=3))
     n = 1 + len(lines)
     top = y + h / 2 + (n - 1) / 2 * STEP
-    slot = ICON_SLOT if actor else 0.04          # an icon only where a person acts
-    if actor:                                    # same badge position in every box:
-        icon(actor, x + 0.13, y + h - 0.10)      # 0.13 in from the left, 0.10 in from the top
+    actors = [actor] if isinstance(actor, str) else list(actor or [])
+    slot = ICON_SLOT + 0.16 * (len(actors) - 1) if actors else 0.04
+    for k, a in enumerate(actors):               # same badge position in every box:
+        icon(a, x + 0.13 + 0.16 * k, y + h - 0.10)   # 0.13 in from the left, 0.10 in from the top
     star = kind == "new"
     cx = x + slot + (w - slot - 0.04) / 2 - (0.05 if star else 0)
     t = text(cx, top, title, size=T_BOX, weight="bold", ha="center", va="center",
              fit=w - slot - 0.04 - (0.11 if star else 0))
     if star:
         star_after(t, T_BOX)
-    for k, line in enumerate(lines):
-        text(x + w / 2, top - (k + 1) * STEP, line, ha="center", va="center", fit=w - 0.08)
+    for k, line in enumerate(lines):           # the whole text sits right of the badges
+        text(x + slot + (w - slot - 0.04) / 2, top - (k + 1) * STEP, line, ha="center", va="center",
+             fit=w - slot - 0.08)
 
 
 def artefact(x, y, w, h, title, lines=(), stack=False):
@@ -180,15 +183,15 @@ FX0, FX1 = 0.42, 6.96
 BH = 0.30
 
 # ------------------------------------------------------------------ stage frames (bands)
-frame(2.24, 2.82, "1. Specify")
+frame(2.24, 2.82, "1. Requirement elicitation")
 frame(1.43, 2.20, "2. Generate and execute tests", "runs as a job on a GPU cluster (Slurm, Apptainer image)")
-frame(0.89, 1.39, "3. Diagnose")
+frame(0.89, 1.39, "3. Diagnose test results")
 frame(0.25, 0.85, "4. Decide and refine")
 
 # ---- band 1, left to right -------------------------------------------------
 y, yc = 2.29, 2.44
 component(0.52, y, 1.43, BH, "new", "engineer", "Requirement editor", ["REAL-DSL"])
-component(2.18, y, 1.02, BH, "framework", None, "DSL parser")
+component(2.18, y, 1.02, BH, "framework", None, "REAL-DSL parser")
 component(3.45, y, 1.60, BH, "new", "robot", "Requirement check",
           ["named modules exist", "no assumption about the system"])
 artefact(5.50, y, 1.38, BH, r"R$_0$: checked requirement", ["goal model (KAOS)"])
@@ -202,37 +205,36 @@ component(5.50, y, 1.38, BH, "framework", None, "Scenario search", ["grammar →
 artefact(4.58, y, 0.75, BH, "scenarios", stack=True)
 component(3.08, 1.75, 1.35, 0.23, "tool", None, "Scenario execution", ["Scenic → CARLA"])
 component(3.08, 1.52, 1.35, 0.23, "framework", None, "System under test", ["YOLOv5 detector + braking"])
-component(1.68, y, 1.27, BH, "new", None, "Safety monitor", ["+ telemetry recorder"])
-artefact(0.55, y, 1.00, BH, "execution traces", ["results · metadata"], stack=True)
+component(1.75, y, 1.23, BH, "new", None, "Safety monitor", ["+ telemetry recorder"])
+artefact(0.62, y, 1.00, BH, "execution traces", ["results · metadata"], stack=True)
 arrow([(5.50, yc), (5.33 - SKEW / 2, yc)])
 arrow([(4.58 + SKEW / 2, yc), (4.43, yc)])
-arrow([(3.08, yc), (2.95, yc)])
-arrow([(1.68, yc), (1.55 - SKEW / 2, yc)])
+arrow([(3.08, yc), (2.98, yc)])
+arrow([(1.75, yc), (1.62 - SKEW / 2, yc)])
 arrow([(6.19, 2.29), (6.19, y + BH)])              # R0 feeds the scenario search
 
 # ---- band 3, left to right -------------------------------------------------
 y, yc = 0.94, 1.09
-component(0.70, y, 1.45, BH, "new", "robot", "Validity check",
+component(0.78, y, 1.40, BH, "new", "robot", "Validity check",
           ["assumptions held / broken", "valid vs spurious failures"])
-component(2.35, y, 1.30, BH, "new", "robot", "Failure classifier", ["failure type per trace"])
-component(3.85, y, 1.40, BH, "new", "robot", "Obstacle analyser",
+component(2.40, y, 1.28, BH, "new", "robot", "Failure classifier", ["failure type per trace"])
+component(3.88, y, 1.38, BH, "new", "robot", "Obstacle analyser",
           ["obstacles with evidence", "assumption verdicts"])
 artefact(5.50, y, 1.38, BH, "diagnosis", ["valid failures · obstacles", "assumption verdicts"])
-arrow([(2.15, yc), (2.35, yc)])
-arrow([(3.65, yc), (3.85, yc)])
-arrow([(5.25, yc), (5.50 + SKEW / 2, yc)])
-arrow([(1.30, 1.715), (1.30, y + BH)])             # the traces feed the validity check
+arrow([(2.18, yc), (2.40, yc)])
+arrow([(3.68, yc), (3.88, yc)])
+arrow([(5.26, yc), (5.50 + SKEW / 2, yc)])
+arrow([(1.56, 1.715), (1.56, y + BH)])             # the traces feed the validity check
 
 # ---- band 4, right to left -------------------------------------------------
 y, yc = 0.30, 0.45
-component(5.50, y, 1.38, BH, "new", "engineer", "Review interface", ["five steps · mitigation menu"])
-component(3.70, y, 1.45, BH, "new", "robot", "Requirement writer", [r"R$_1$ with labelled changes"])
-artefact(2.25, y, 1.20, BH, "signed decisions", [r"+ R$_1$ with its changes", "labelled [S] [D] [R]"])
+component(5.05, y, 1.83, BH, "new", ("engineer", "robot"), "Review interface",
+          ["five steps \u00b7 mitigation menu", r"writes R$_1$ with labelled changes"])
+artefact(2.95, y, 1.30, BH, "signed decisions", [r"+ R$_1$ with its changes", "labelled [S] [D] [R]"])
 DX, DY, DHW, DHH = 1.70, yc, 0.30, 0.145
 decision(DX, DY, DHW, DHH, ["[S]", "changed?"])
-arrow([(5.50, yc), (5.15, yc)])
-arrow([(3.70, yc), (3.45 - SKEW / 2, yc)])
-arrow([(2.25 + SKEW / 2, yc), (DX + DHW, yc)])
+arrow([(5.05, yc), (4.25 - SKEW / 2, yc)])
+arrow([(2.95 + SKEW / 2, yc), (DX + DHW, yc)])
 arrow([(6.19, 0.94), (6.19, y + BH)])              # the diagnosis opens in the review interface
 
 # ---- the two branches of the decision (red loops) --------------------------
