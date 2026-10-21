@@ -2559,6 +2559,21 @@ its sentence are hidden while no video is set, and the scope limit is logged per
 not per key. Normal tool unchanged. 269 UI tests. Dry run S-EXAP (upload off) checks it.
 Still open: the "1.2 m tall" world option (owner's decision), the analysis for the RQ,
 republishing, a dry run on the live link, the admin page.
+Then (owner): option C in both tools - the tool proposes no assumption for
+PedestrianSizeTooSmall (refine.R_CHANGES entry removed; ui WORLD_IN_OWN_WORDS for reports that
+still carry it); "the world explains it" there asks the engineer to write the assumption,
+stored as a requirement-layer mitigation and derived identically by Python and the UI, refused
+if about the car (validate, both sides). The RQ analysis scripts/analysis/study_rq.py
+(requirements and assumptions refined, unhelpful diagnoses with why, Fleiss' kappa over the
+triage paths, chosen cars with their measured C1-C4 results, time per step, evidence use, data
+quality incl. R1 = refine(decisions) and log = file); tested on dry runs and a zip of zips.
+Committed (3c3d3cf, 6dc13cc, 9ffc99b) and published; three live dry runs (S-4TJF, S-XZVV,
+S-R7SX; artifacts/study/dryrun_live_2026-10-21/) found and fixed: the study's car choices
+were recorded under layer "system", so refine could not re-derive R1 (refine now honours
+mitigation.choice); the triage side and revision outcome were logged without their values;
+a tour stayed open over the next page when the participant left (study: closed and logged
+left_page) and a fast Skip went unlogged (close recorded once, however it ends). Final live
+session: no problem. 321 Python, 270 UI tests. Published build 2d4d502.
 
 ### 8.7 The iteration loop (stages 7-9) — original design
 
