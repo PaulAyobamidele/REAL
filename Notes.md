@@ -2581,6 +2581,18 @@ R1. Now a candidate is listed only when it applies to the run's scene and has ev
 (obstacles.artefact_applies, mirrored in domain/decisions.ts artefactApplies); the stored
 reports are unchanged; on C1 the triage shows the six obstacles and four assumptions
 only. Tests on both sides; 322 Python, 273 UI. Republished; live dry run below.
+Live dry run S-72MB (f6714a2): six obstacles + four assumptions, every check passed.
+Docker image (owner asked to keep only code, setup and required data, no .md): a local
+build of Dockerfile.review failed - its allow-list Dockerfile.review.dockerignore never
+got docs/manual/ when the Manual page arrived, so COPY docs/manual found nothing (the next
+v* tag would have failed on GitHub the same way); fixed. The image never carried README,
+notes or docs: the manual is compiled into the interface bundle. The only .md files were
+two Markdown data files per bundled round (analysis_report.md, requirement_diff.md),
+which the interface never reads; dropped from workspaceFiles.mjs TOP_LEVEL (so also from
+the study site, whose report .md carried the researcher banner). Rebuilt: 416 MB
+(v0.1.0: 410 MB), zero .md/README anywhere, container serves the interface, the
+workspace index and /authoring/catalog. Not tagged or pushed. Still bundles rounds 1-2
+(scene v1); bundling C1 instead is a decision for the final image.
 
 ### 8.7 The iteration loop (stages 7-9) — original design
 

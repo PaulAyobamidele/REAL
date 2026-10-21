@@ -13,6 +13,7 @@
 !model/
 !infra/docker/review/
 !docs/examples/
+!docs/manual/
 !examples/demo_runs/
 !ui/
 ui/node_modules

@@ -123,13 +123,10 @@ describe('the study site data', () => {
     const q = JSON.parse(readFileSync(join(out, 'workspace', c1, 'study_quantities.json'), 'utf8'));
     expect(q.from).toBe(join(src, 'presented', 'study_C1'));
     expect(index.rounds[0].files).toContain('study_quantities.json');
-    for (const f of [
-      'analysis_report.json',
-      'analysis_report.md',
-      'cluster_map.json',
-      'simulations.csv',
-    ])
+    for (const f of ['analysis_report.json', 'cluster_map.json', 'simulations.csv'])
       expect(readFileSync(join(out, 'workspace', c1, f), 'utf8')).not.toContain('study_C');
+    // the researchers' Markdown (report, diff) is not part of the site: the interface never reads it
+    expect(existsSync(join(out, 'workspace', c1, 'analysis_report.md'))).toBe(false);
 
     const c2 = neutralId('study_C2');
     const report = JSON.parse(

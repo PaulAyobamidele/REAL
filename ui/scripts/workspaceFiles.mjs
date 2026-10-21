@@ -8,17 +8,18 @@ import { join } from 'node:path';
 export const TOP_LEVEL = [
   'run_meta.json',
   'analysis_report.json',
-  'analysis_report.md',
   'cluster_map.json',
   'simulations.csv',
   'scenarios.csv',
   'decisions.json',
   'R0.dsl',
   'R1.dsl',
-  'requirement_diff.md',
   'best_scenario_h264.mp4',
   'best_scenario.mp4',
 ];
+// Not copied: analysis_report.md and requirement_diff.md. The interface reads neither
+// (it renders the report and the diff from the JSON and the decisions); they are the
+// researchers' Markdown, and the study's report carries a researcher banner.
 
 export function listRound(dir) {
   const files = [];

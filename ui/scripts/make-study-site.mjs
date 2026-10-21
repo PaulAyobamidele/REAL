@@ -15,8 +15,9 @@
  *
  * The site shows neutral run ids: each study round gets a fixed id that looks
  * like any run (the first 32 hex characters of sha256("<study id>")),
- * replacing the study id in the copied run_meta.json, analysis_report.json/.md,
- * cluster_map.json and simulations.csv, and naming the copied folder. The
+ * replacing the study id in the copied run_meta.json, analysis_report.json,
+ * cluster_map.json and simulations.csv, and naming the copied folder (the
+ * researchers' Markdown report is not copied: workspaceFiles.mjs). The
  * copy's run_meta.json keeps "study_round": "<study id>" so a session records
  * which round it was; the interface never shows that field.
  *
@@ -43,13 +44,7 @@ const FOLLOWUPS = ['C2', 'C3', 'C4'].map((c) => ({
   report: `rounds/${c}/judged_v2`,
 }));
 const REFUSED = ['decisions.json', 'R1.dsl', 'requirement_diff.md'];
-const REWRITTEN = [
-  'run_meta.json',
-  'analysis_report.json',
-  'analysis_report.md',
-  'cluster_map.json',
-  'simulations.csv',
-];
+const REWRITTEN = ['run_meta.json', 'analysis_report.json', 'cluster_map.json', 'simulations.csv'];
 
 /**
  * The requirement texts carry the researchers' comment lines ("# Study
