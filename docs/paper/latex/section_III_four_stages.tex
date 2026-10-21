@@ -81,15 +81,16 @@ the recorded traces, without re-simulation (F8).
 
 \subsection{Implementation}
 \label{sec:impl}
-The back end is Python: the REAL-DSL parser, a FastAPI service that drives
-Scenic and CARLA, the analysis, and the job control (Slurm with an Apptainer
-image). The front end is a React/TypeScript single-page application. Every
-result is a file in a run folder (metadata with code and grammar hashes,
-per-simulation tables, traces), so any analysis can be recomputed from the
-traces without the simulator. A Docker image runs the complete review loop on
-recorded rounds without a GPU or simulator. The tool has \todo{N} automated
-tests, none of which needs the simulator.
-
+\tool{} comprises a Python back end and a React/TypeScript front end. The back
+end provides the REAL-DSL parser, a FastAPI service that orchestrates Scenic and
+CARLA, the analysis pipeline, and job control on Slurm clusters through an
+Apptainer image. Every run is persisted as a self-describing folder (metadata
+with template, grammar and scene hashes, per-simulation tables, and per-step
+traces), so that every analysis can be reproduced from the recorded traces
+without re-simulation. A Docker image packages the complete review loop on
+recorded runs and requires neither a GPU nor a simulator. The implementation is
+covered by 585 automated tests (317 for the back end and 268 for the
+front end), none of which requires the simulator.
 
 % ---------------------------------------------------------------------------
 \section{Features Beyond the REAL Framework}
