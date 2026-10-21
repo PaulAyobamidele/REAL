@@ -31,6 +31,13 @@ export default defineConfig({
   build: {
     target: 'es2022',
     sourcemap: true,
+    // the study build also ships the researchers' sessions page (admin.html)
+    rollupOptions: {
+      input:
+        process.env.VITE_STUDY === '1'
+          ? { main: 'index.html', admin: 'admin.html' }
+          : { main: 'index.html' },
+    },
   },
   test: {
     environment: 'jsdom',

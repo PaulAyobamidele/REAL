@@ -46,6 +46,20 @@ def test_plan_changes_labels(tmp_path):
     assert len(t_in_scope) == 2   # the two artefacts marked in_scope -> drop-rule notes
 
 
+def test_a_refine_resolution_records_words_but_adds_no_change(tmp_path):
+    """Triage (ui/src/study/triage.ts): "refine the requirement" keeps the
+    reviewer's words in decisions.json; R1 is edited by hand, so the words
+    never turn into an `assuming` line."""
+    run, doc = _decided_run(tmp_path)
+    doc["obstacles"]["StandoffUnnecessaryStop"].update(
+        explained_by="car", resolution="refine",
+        mitigation={"layer": "requirement", "action": "ask the car to move on once clear"})
+    changes = refine.plan_changes(doc)
+    assert not any(c["from"] == "StandoffUnnecessaryStop" for c in changes)
+    assert not any("ask the car to move on" in c["text"] for c in changes)
+    assert decisions.validate(doc) == []
+
+
 def test_apply_changes_edits_text_and_parses():
     changes = [
         {"kind": "S", "task": "Apply Brakes", "module": "latched_braking"},
@@ -119,4 +133,7 @@ def test_change_for_is_the_single_source_of_plan_changes(tmp_path):
     assert refine.rule_as_assumption(None) is None
     assert refine.scope_change("rule:x", {"verdict": "in_scope"})["layer"] == "scope"
     assert refine.scope_change("rule:x", {"verdict": "out_of_scope", "reason": "too dark"})["item"] == "too dark"
+    # the stated limit, not the reason, goes into R1 once the limit has its own field
+    assert refine.scope_change("artefact:a", {"verdict": "out_of_scope", "limit": "the ego approaches the crossing",
+                                              "reason": "because I think so"})["item"] == "the ego approaches the crossing"
     assert refine.scope_change("rule:x", {"verdict": None}) is None

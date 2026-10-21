@@ -4,6 +4,8 @@ import type { Obstacle, ObstacleDecision } from '@/services/schemas';
 import type { DraftAction } from '@/state/draft';
 import { cx } from '@/utils/format';
 
+import { TextField } from '@/components/ui/Field';
+import { aboutTheCar } from '@/domain/decisions';
 import { explainedBy, worldExplanation, worldMitigation } from '@/domain/triage';
 
 /**
@@ -34,18 +36,20 @@ export function TriageChoice({
       x.kind === 'R'
         ? 'The requirement leaves this out: it is not the car’s failure'
         : 'The world explains these failures, not the car',
-    caption: !x.usable
-      ? x.reason
-      : x.alreadyIn
-        ? `The requirement already says ${x.kind === 'R' ? 'ensuring' : 'assuming'} "${x.quoted}", so nothing is added.`
-        : `Adds to the refined requirement: ${x.kind === 'R' ? 'ensuring' : 'assuming'} "${x.quoted}"`,
+    caption: x.own
+      ? 'Write the assumption about the world that explains them; it is added to the refined requirement as you write it.'
+      : !x.usable
+        ? x.reason
+        : x.alreadyIn
+          ? `The requirement already says ${x.kind === 'R' ? 'ensuring' : 'assuming'} "${x.quoted}", so nothing is added.`
+          : `Adds to the refined requirement: ${x.kind === 'R' ? 'ensuring' : 'assuming'} "${x.quoted}"`,
   };
   const choose = (value: 'world' | 'car') =>
     dispatch({
       type: 'obstacle/explained',
       id: obstacle.id,
       by: value,
-      mitigation: value === 'world' ? worldMitigation(x) : null,
+      mitigation: value === 'world' ? worldMitigation(x, entry.mitigation?.action ?? '') : null,
     });
   return (
     <fieldset className="panel flex flex-col gap-2 rounded-xl p-3">
@@ -72,6 +76,24 @@ export function TriageChoice({
           caption="It remains a failure. You decide what to do with it in Requirement revision."
         />
       </div>
+      {x.own && by === 'world' ? (
+        <TextField
+          label="The assumption to add to the refined requirement"
+          required
+          hint="About the world, never the car (a quantity starting with ego is refused)."
+          value={entry.mitigation?.action ?? ''}
+          onChange={(e) =>
+            dispatch({ type: 'obstacle/world_text', id: obstacle.id, value: e.target.value })
+          }
+          error={
+            !(entry.mitigation?.action ?? '').trim()
+              ? 'write the assumption'
+              : aboutTheCar(entry.mitigation?.action ?? '')
+                ? 'this is about the car under test, not the world'
+                : undefined
+          }
+        />
+      ) : null}
     </fieldset>
   );
 }

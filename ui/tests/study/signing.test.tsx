@@ -52,6 +52,9 @@ function decided(choices: Record<string, string | null>): DecisionsDoc {
   }
   for (const s of Object.values(doc.scope)) s.verdict = 'in_scope';
   for (const a of Object.values(doc.assumptions ?? {})) a.verdict = 'keep';
+  // every diagnosis rated (study/helpfulness.ts): signing waits for it
+  for (const item of [...Object.values(doc.obstacles), ...Object.values(doc.scope)])
+    Object.assign(item, { helpful: { rating: 'helpful', why: null } });
   return doc;
 }
 
@@ -183,6 +186,15 @@ describe('signing in the study build', () => {
     doc.assumptions![text]!.verdict = 'tighten';
     doc.assumptions![text]!.new_text = 'fog "dense"';
     await expect(signStudy({ doc, report, r0: R0, round })).rejects.toThrow(/double quote/);
+  });
+
+  it('waits until every diagnosis is rated as helpful or not', async () => {
+    const doc = decided({});
+    const [first] = Object.keys(doc.obstacles);
+    Object.assign(doc.obstacles[first!]!, { helpful: { rating: null, why: null } });
+    await expect(signStudy({ doc, report, r0: R0, round })).rejects.toThrow(
+      new RegExp(`1 diagnosis not yet rated.*${first}`),
+    );
   });
 });
 

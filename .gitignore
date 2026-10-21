@@ -267,8 +267,13 @@ ui/public/workspace/
 ui/study-public/
 ui/dist-study/
 ui/.vite/
+# the study site's storage settings (project URL, publishable key): kept on this machine
+ui/.env.local
 
 # local cluster state: job ids, node names and cluster paths (anonymous repository)
 artifacts/jobs.json
 artifacts/job_logs/
 artifacts/runs/*/job_log.out
+
+# demo video clips (large, re-recordable: ui/scripts/video/)
+artifacts/video/

@@ -1,3 +1,4 @@
+import type { Helpful, HelpfulRating } from '@/study/helpfulness';
 import { buildDecisions } from '@/domain/decisions';
 import { isToolProposal } from '@/domain/lineage';
 import { triageOfSaved } from '@/domain/triage';
@@ -167,9 +168,14 @@ export type DraftAction =
       resolution: 'refine' | 'system' | 'later' | null;
       mitigation: Mitigation | null;
     }
+  /** the world explains it, in the engineer's own words (domain/triage.ts WORLD_IN_OWN_WORDS) */
+  | { type: 'obstacle/world_text'; id: string; value: string }
   | { type: 'scope/verdict'; id: string; verdict: ScopeVerdict | null }
   | { type: 'scope/reason'; id: string; value: string }
   | { type: 'scope/limit'; id: string; value: string }
+  // the study's "was this diagnosis helpful?" on an obstacle or scope item (study/helpfulness.ts)
+  | { type: 'helpful/rating'; id: string; value: HelpfulRating }
+  | { type: 'helpful/why'; id: string; value: string }
   | { type: 'scope/confirm'; id: string }
   | { type: 'assumption/verdict'; text: string; verdict: AssumptionVerdict | null }
   | { type: 'assumption/new_text'; text: string; value: string }
@@ -266,6 +272,24 @@ export function draftReducer(draft: Draft, action: DraftAction): Draft {
       const s = next.doc.scope[action.id];
       if (!s) return draft;
       s.limit = orNull(action.value);
+      return next;
+    }
+    case 'obstacle/world_text': {
+      const o = next.doc.obstacles[action.id] as ObstacleDecision & Record<string, unknown>;
+      if (!o || o.explained_by !== 'world') return draft;
+      o.mitigation = { layer: 'requirement', action: action.value, choice: 'assumption' } as never;
+      return next;
+    }
+    case 'helpful/rating':
+    case 'helpful/why': {
+      const item = (next.doc.obstacles[action.id] ?? next.doc.scope[action.id]) as
+        { helpful?: Helpful } | undefined;
+      if (!item) return draft;
+      const h: Helpful = item.helpful ?? { rating: null, why: null };
+      item.helpful =
+        action.type === 'helpful/rating'
+          ? { ...h, rating: action.value }
+          : { ...h, why: orNull(action.value) };
       return next;
     }
     case 'scope/confirm':

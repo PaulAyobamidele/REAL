@@ -100,11 +100,18 @@ describe('the five-step review on the real round 2', () => {
     await screen.findByRole('heading', { name: '4. Obstacle triage' });
     expect(screen.getByText(/Pre-filled decisions/)).toBeInTheDocument();
     const card = (id: string) => screen.getByRole('article', { name: id });
-    // the child obstacle: the world explains it, its assumption goes into R1
+    // the child obstacle: the tool proposes no assumption (it would scope children out);
+    // an engineer who says the world explains it writes the assumption, which goes into R1
     await user.click(
       within(card('PedestrianSizeTooSmall')).getByText(
         'The world explains these failures, not the car',
       ),
+    );
+    await user.type(
+      within(card('PedestrianSizeTooSmall')).getByLabelText(
+        /The assumption to add to the refined requirement/,
+      ),
+      'pedestrian is visible before stepping out',
     );
     // the car-side suggestion (ego_speed) cannot be chosen as the world's
     expect(
@@ -142,7 +149,7 @@ describe('the five-step review on the real round 2', () => {
     await user.click(screen.getAllByRole('link', { name: /^See .* →$/ })[0]!);
     await screen.findByRole('heading', { name: '5. Requirement revision' });
     const refined = screen.getByRole('region', { name: 'Refined requirement' });
-    expect(refined).toHaveTextContent('assuming "pedestrian is at least 1.2 m tall"');
+    expect(refined).toHaveTextContent('"pedestrian is visible before stepping out"');
     const remaining = (id: string) => screen.getByRole('article', { name: `Remaining: ${id}` });
     // a real system failure, with the analysis's model-layer fix
     await user.click(
@@ -176,7 +183,7 @@ describe('the five-step review on the real round 2', () => {
       `${ROUND_2}/requirement_diff.md`,
     ]);
     const r1 = written.get(`${ROUND_2}/R1.dsl`)!;
-    expect(r1).toContain('"pedestrian is at least 1.2 m tall"');
+    expect(r1).toContain('"pedestrian is visible before stepping out"');
     expect(r1).toContain('performed by "yolov5m"');
     const text = written.get(`${ROUND_2}/decisions.json`)!;
     const doc = parseWithSchema(text, decisionsSchema, 'decisions.json');

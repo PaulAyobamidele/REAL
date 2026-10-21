@@ -35,12 +35,10 @@ const obstacle = (id: string) => report.obstacles.find((o) => o.id === id)!;
 
 describe('the study triage: world or car', () => {
   it('says what "the world explains it" adds, or why it cannot', () => {
+    // a child is part of the world the car must handle: no proposed assumption; the
+    // engineer may still write one (option C), even though the old report proposes one
     const size = worldExplanation(obstacle('PedestrianSizeTooSmall'), R0);
-    expect(size).toMatchObject({
-      kind: 'D',
-      usable: true,
-      quoted: 'pedestrian is at least 1.2 m tall',
-    });
+    expect(size).toMatchObject({ own: true, kind: 'D', usable: true, quoted: null });
     // a soft goal where the analysis proposes one instead of an assumption
     expect(worldExplanation(obstacle('BrakingNotLatched'), R0)).toMatchObject({
       kind: 'R',
@@ -74,6 +72,11 @@ describe('the study triage: world or car', () => {
     const car = (id: string) =>
       (d = act(d, { type: 'obstacle/explained', id, by: 'car', mitigation: null }));
     world('PedestrianSizeTooSmall');
+    d = act(d, {
+      type: 'obstacle/world_text',
+      id: 'PedestrianSizeTooSmall',
+      value: 'pedestrian is visible before stepping out',
+    });
     world('BrakingNotLatched');
     world('AdverseWeather');
     car('DetectionTooLate');
@@ -129,7 +132,8 @@ describe('the study triage: world or car', () => {
     const plan = planChanges(d.doc, report, R0);
     expect(plan.problems).toEqual([]);
     const r1 = applyChanges(R0, plan.changes);
-    expect(r1).toContain('"pedestrian is at least 1.2 m tall"');
+    expect(r1).toContain('"pedestrian is visible before stepping out"');
+    expect(r1).not.toContain('1.2 m tall');
     expect(r1).toContain(
       '"once braking has started it continues until the vehicle has stopped or the pedestrian is clear"',
     );
@@ -150,5 +154,26 @@ describe('the study triage: world or car', () => {
       ).toString();
       expect(JSON.parse(problems)).toEqual([]);
     }
+  });
+});
+
+describe('the world explains it, in the engineer own words (option C)', () => {
+  it('writes nothing until the assumption is written, and refuses one about the car', () => {
+    const act = (d: Draft, a: DraftAction) => draftReducer(d, a);
+    let d = createDraft(report, null, null, 2);
+    const x = worldExplanation(obstacle('PedestrianSizeTooSmall'), R0);
+    d = act(d, {
+      type: 'obstacle/explained',
+      id: 'PedestrianSizeTooSmall',
+      by: 'world',
+      mitigation: worldMitigation(x),
+    });
+    expect(validateDecisions(d.doc).join(' ')).toMatch(/needs an action/);
+    d = act(d, {
+      type: 'obstacle/world_text',
+      id: 'PedestrianSizeTooSmall',
+      value: 'ego_speed <= 5',
+    });
+    expect(validateDecisions(d.doc).join(' ')).toMatch(/is about the car under test/);
   });
 });

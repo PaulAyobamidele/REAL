@@ -111,3 +111,17 @@ def test_review_interactive_menu(tmp_path):
     accepted = [o for o in doc["obstacles"].values() if o["verdict"] == "accept"]
     assert len(accepted) == 1 and accepted[0]["mitigation"]["layer"] == accepted[0]["options"][0]["layer"]
     assert (rb / decisions.FILENAME).exists() is False
+
+
+def test_world_assumption_in_own_words_is_never_about_the_car():
+    """Option C (2026-10-21): an engineer's own world assumption is refused if it
+    constrains the car, like any other assumption; small pedestrians get no proposal."""
+    from scripts.analysis import refine
+    doc = {"schema_version": 1, "run_id": "x", "obstacles": {"PedestrianSizeTooSmall": {
+        "verdict": "accept", "explained_by": "world", "renamed_to": None,
+        "mitigation": {"layer": "requirement", "action": "ego_speed <= 5"}}},
+        "scope": {}, "assumptions": {}}
+    assert any("about the car" in p for p in decisions.validate(doc))
+    assert ("PedestrianSizeTooSmall", "requirement") not in refine.R_CHANGES
+    own = refine.change_for("PedestrianSizeTooSmall", "requirement", "pedestrian is visible before stepping out")
+    assert own["text"] == 'assuming "pedestrian is visible before stepping out"'

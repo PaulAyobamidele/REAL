@@ -13,6 +13,16 @@ export interface Ended {
   zipName: string;
   files: Record<string, string>;
   at: string;
+  /** Sent to the online storage: sending, sent (where), or failed (why). Absent when not set up. */
+  upload?: {
+    status: 'sending' | 'sent' | 'failed';
+    path?: string;
+    message?: string;
+    at: string;
+    /** what a retry sends again */
+    car: string;
+    signedAt: string;
+  };
 }
 
 export function endSession(zipName: string, files: Record<string, string>): void {
@@ -29,6 +39,21 @@ export function endSession(zipName: string, files: Record<string, string>): void
 }
 
 let memory: Ended | null = null;
+
+/** Record how sending the session went, for the end screen (also after a reload). */
+export function setUpload(upload: NonNullable<Ended['upload']>): void {
+  const id = loadSession()?.id;
+  const now = ended();
+  if (!id || !now) return;
+  const next: Ended = { ...now, upload };
+  memory = next;
+  try {
+    window.localStorage.setItem(KEY + id, JSON.stringify(next));
+  } catch {
+    // shown while the page stays open
+  }
+  for (const l of listeners) l();
+}
 
 export function ended(): Ended | null {
   const id = loadSession()?.id;

@@ -237,6 +237,16 @@ export function validateDecisions(doc: DecisionsDoc): string[] {
       problems.push(`assumption ${JSON.stringify(text)}: new_text is about the car under test`);
     }
   }
+  for (const [oid, o] of Object.entries(doc.obstacles ?? {})) {
+    const own = o as { explained_by?: string | null };
+    if (own.explained_by === 'world' && o.mitigation?.layer === 'requirement') {
+      const a = o.mitigation.action ?? '';
+      if (!a.includes('"') && aboutTheCar(a))
+        problems.push(
+          `obstacle ${oid}: the assumption ${JSON.stringify(a)} is about the car under test`,
+        );
+    }
+  }
   for (const [sid, s] of Object.entries(doc.scope ?? {})) {
     if (s.limit && aboutTheCar(s.limit))
       problems.push(

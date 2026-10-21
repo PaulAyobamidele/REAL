@@ -59,7 +59,9 @@ S_CHANGES = {
 R_CHANGES = {
     ("DetectionTooLate", "requirement"): ("assuming", "ego_speed <= 5"),
     ("AdverseWeather", "requirement"): ("assuming", "fog_density <= 50"),
-    ("PedestrianSizeTooSmall", "requirement"): ("assuming", "pedestrian is at least 1.2 m tall"),
+    # no entry for PedestrianSizeTooSmall (owner, 2026-10-21, "option C"): a child is part of
+    # the world the car must handle, so the tool proposes no assumption that scopes children
+    # out; an engineer who thinks the world explains it writes one (change_for uses the words)
     ("PedestrianClothingNotVisible", "requirement"): ("assuming", "pedestrian clothing contrasts with the background"),
     ("StandoffUnnecessaryStop", "requirement"): ("ensuring", "vehicle resumes within 10 s once the crossing is clear"),
     ("BrakingNotLatched", "requirement"): ("ensuring", "once braking has started it continues until the vehicle has stopped or the pedestrian is clear"),
@@ -150,7 +152,8 @@ def scope_change(sid, s):
     test), or None without a verdict."""
     v = s.get("verdict")
     if v == "out_of_scope":
-        item = rule_as_assumption(s.get("rule")) or s.get("reason") or sid
+        # the stated limit; the reason only for documents written before the limit had its own field
+        item = rule_as_assumption(s.get("rule")) or s.get("limit") or s.get("reason") or sid
         return {"kind": "D", "from": sid, "layer": "requirement", "clause": "assuming",
                 "item": item, "text": f'assuming "{item}"'}
     if v == "in_scope":
@@ -202,6 +205,10 @@ def plan_changes(doc, r0=None):
     avail = available_modules()
     for oid, o in doc.get("obstacles", {}).items():
         if o.get("verdict") not in ("accept", "rename") or not o.get("mitigation"):
+            continue
+        # triage (ui/src/study/triage.ts): "refine the requirement" records the
+        # reviewer's words; the edit itself is made in R1, never derived here
+        if o.get("resolution") == "refine":
             continue
         change = change_for(oid, o["mitigation"]["layer"], o["mitigation"].get("action"), avail)
         if change:

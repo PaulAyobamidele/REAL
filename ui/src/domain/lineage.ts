@@ -156,6 +156,30 @@ export function headline(report: AnalysisReport): Headline {
 }
 
 /** The previous round in the chain, as recorded (`parent_run_id`) or by order. */
+/**
+ * Which run of the requirement a round is: 1 for a first run, 2 for the run of
+ * R1 (its parent recorded), and so on along the recorded parents; a recorded
+ * `round` number counts when it says more.
+ */
+export function runNumberOf(round: RoundSummary, rounds: readonly RoundSummary[]): number {
+  let n = 1;
+  let r: RoundSummary | undefined = round;
+  const seen = new Set<string>();
+  while (r?.meta.parent_run_id && !seen.has(r.id)) {
+    seen.add(r.id);
+    r = rounds.find((x) => x.id === r!.meta.parent_run_id);
+    if (!r) break;
+    n++;
+  }
+  return Math.max(n, round.meta.round ?? 1);
+}
+
+/** "Second run", "Third run" … for a run number. */
+export function runOrdinal(n: number): string {
+  const words = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth'];
+  return n >= 1 && n <= words.length ? `${words[n - 1]} run` : `Run ${n}`;
+}
+
 export function previousOf(
   round: RoundSummary,
   ordered: RoundSummary[],

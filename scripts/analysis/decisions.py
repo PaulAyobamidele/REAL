@@ -222,6 +222,15 @@ def validate(doc):
             problems.append(f"assumption {text!r}: {v} needs new_text")
         if v in ("tighten", "loosen") and a.get("new_text") and about_the_car(a["new_text"]):
             problems.append(f"assumption {text!r}: new_text is about the car under test")
+    for oid, o in (doc.get("obstacles") or {}).items():
+        m = o.get("mitigation") or {}
+        a = m.get("action") or ""
+        if (o.get("explained_by") == "world" and m.get("layer") == "requirement"
+                and '"' not in a and about_the_car(a)):
+            problems.append(f"obstacle {oid}: the assumption {a!r} is about the car under test")
+    for sid, s in (doc.get("scope") or {}).items():
+        if s.get("limit") and about_the_car(s["limit"]):
+            problems.append(f"scope {sid}: the limit {s['limit']!r} is about the car under test")
     for i, added in enumerate(doc.get("added_assumptions") or []):
         t = str(added.get("text") or "").strip()
         if not t:

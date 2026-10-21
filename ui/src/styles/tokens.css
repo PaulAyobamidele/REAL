@@ -8,8 +8,10 @@
  *                       step numbers ONLY; the instructions themselves are ink
  *   #9EB200 bright      the primary button, with dark text; selection tints
  *   #AD1F07 brick       failed / error (always with a word)
- *   #8A1538 wine        the header, the same on every page (brighter than the
- *                       first #610000; leans crimson, so it stays apart from brick)
+ *   #E30B5D raspberry   the header, the same on every page (owner, 2026-10-20; after
+ *                       #610000 and #8A1538). White text on it is 4.7:1 (AA); as
+ *                       small text on the page it is only 4.2:1, so it is used for
+ *                       fills and borders there, never for small text.
  * plus neutrals for reading: #172033 text, white cards. Light only.
  * Every text/background pair is contrast-checked (tests/styles/contrast.test.ts).
  * Neither green is a text colour: links, "passed", selected items and the focus
@@ -48,7 +50,7 @@
   --color-accent-bright: #9eb200;
   --color-brand-primary: #667d01;
   --color-accent-secondary: #ad1f07;
-  --color-accent-deep: #8a1538;
+  --color-accent-deep: #e30b5d;
   --color-text-primary: #172033;
 
   /* roles */

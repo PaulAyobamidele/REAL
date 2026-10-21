@@ -54,11 +54,13 @@ export function RunDialog({
   fileName,
   onFileName,
   actions,
+  title = 'Run this requirement on the cluster',
 }: {
   state: RunTestState;
   fileName: string;
   onFileName: (name: string) => void;
   actions: Actions;
+  title?: string;
 }) {
   const box = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -78,7 +80,7 @@ export function RunDialog({
         className="card flex w-full max-w-2xl flex-col gap-4 p-5 shadow-xl"
       >
         <div className="flex items-start justify-between gap-4">
-          <h2 className="text-lg font-semibold">Run this requirement on the cluster</h2>
+          <h2 className="text-lg font-semibold">{title}</h2>
           <button
             type="button"
             aria-label="Close"

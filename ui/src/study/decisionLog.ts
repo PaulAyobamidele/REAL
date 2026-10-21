@@ -10,8 +10,11 @@ import { logEvent } from './log';
 const TYPED = new Set([
   'obstacle/mitigation', // a fix in the participant's own words arrives key by key
   'obstacle/reason',
+  'obstacle/world_text',
   'obstacle/renamed_to',
   'scope/reason',
+  'scope/limit',
+  'helpful/why',
   'assumption/new_text',
   'assumption/reason',
   'added_assumptions/set',

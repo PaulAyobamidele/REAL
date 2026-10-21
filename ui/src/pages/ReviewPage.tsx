@@ -19,6 +19,7 @@ import { StepExample } from './review/StepExample';
 import { Step3Pattern } from './review/Step3Pattern';
 import { Step4Decide } from './review/Step4Decide';
 import { Step5Becomes } from './review/Step5Becomes';
+import { BANNER_TITLE, bannerKind } from '@/domain/banner';
 
 /** The round review: five steps, one per screen, over one round of the loaded workspace. */
 export function ReviewPage({
@@ -108,13 +109,16 @@ export function ReviewPage({
       ownInstructions={step >= 2}
     >
       {report.banner && step !== 1 && (!STUDY || report.banner.startsWith('PARTIAL')) ? (
-        // a run still running (PARTIAL) or ended early (INCOMPLETE): said on every step
-        <Notice
-          tone="warning"
-          title={report.banner.startsWith('PARTIAL') ? 'Results so far' : 'Incomplete run'}
-        >
-          {report.banner}
-        </Notice>
+        // a run still running (PARTIAL) or ended early (INCOMPLETE): said on every step;
+        // any other line (e.g. a re-judging note) is about the round, not a failed run
+        <div data-round-banner={bannerKind(report.banner)}>
+          <Notice
+            tone={bannerKind(report.banner) === 'note' ? 'info' : 'warning'}
+            title={BANNER_TITLE[bannerKind(report.banner)]}
+          >
+            {report.banner}
+          </Notice>
+        </div>
       ) : null}
       {version < 2 && step >= 3 ? (
         <Notice tone="warning" title="Older analysis report">

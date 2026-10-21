@@ -12,7 +12,7 @@ import { Notice } from '@/components/ui/Notice';
 import { SETTING_COLUMNS } from '@/domain/evidence';
 import { buildGoalModel } from '@/domain/goalModel';
 import { layoutKaos } from '@/domain/kaosLayout';
-import type { RoundSummary } from '@/domain/lineage';
+import { runNumberOf, runOrdinal, type RoundSummary } from '@/domain/lineage';
 import {
   isRecordingPass,
   requirementResults,
@@ -30,7 +30,7 @@ import { downloadText } from '@/services/signing';
 import { KNOWN_FILES } from '@/services/workspace';
 import { reviewHash } from '@/state/route';
 import { useWorkspace } from '@/state/WorkspaceContext';
-import { cx, displayPercent, shortId } from '@/utils/format';
+import { cx, displayDate, displayPercent, shortId } from '@/utils/format';
 
 /**
  * Step 2, the test execution result, written like a test report: how many
@@ -61,9 +61,36 @@ export function Step2Happened({
   const failedParts = parts.filter((p) => p.status === 'failed');
 
   const [pointed, setPointed] = useState<RequirementPart | null>(null);
+  const runNumber = runNumberOf(round, workspace?.rounds ?? []);
 
   return (
     <div className="flex flex-col gap-5">
+      {runNumber > 1 && previous && previousRecorded ? (
+        <section
+          className="flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-[color:var(--color-header)] bg-surface-raised px-5 py-3"
+          aria-label="Which run this is"
+        >
+          <div className="flex flex-col gap-0.5">
+            <p className="text-xs font-semibold tracking-[0.08em] text-text uppercase">
+              {runOrdinal(runNumber)} of this requirement
+            </p>
+            <p className="text-sm">
+              This report tests <strong>R{runNumber - 1}</strong>, the requirement refined after the{' '}
+              {runOrdinal(runNumber - 1).toLowerCase()}
+              {previous.round.meta.created_at
+                ? ` (${displayDate(previous.round.meta.created_at)})`
+                : ''}
+              . Its counts sit beside that run&rsquo;s in the table below.
+            </p>
+          </div>
+          <a
+            href={reviewHash(previous.round.id, 2)}
+            className="text-sm font-semibold whitespace-nowrap underline"
+          >
+            See the {runOrdinal(runNumber - 1).toLowerCase()}&rsquo;s report →
+          </a>
+        </section>
+      ) : null}
       <Instructions cta="Select any number to open the simulations behind it in the Failure Analysis.">
         <p>
           This report shows how the system under test performed against the requirement in

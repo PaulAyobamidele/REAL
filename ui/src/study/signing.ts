@@ -3,12 +3,14 @@ import type { AnalysisReport, DecisionsDoc } from '@/services/schemas';
 import { prepareSigning, type SigningResult } from '@/services/signing';
 
 import { carOf, CARS, savedCarOf, type CarId } from './car';
+import { unratedDiagnoses } from './helpfulness';
 import { flushDecisionLog } from './decisionLog';
-import { endSession } from './ended';
+import { endSession, setUpload } from './ended';
 import { logEvent, logLines } from './log';
 import { STUDY_MENU } from './menu';
 import { loadSession } from './session';
 import { StudySource } from './studySource';
+import { uploadConfigured, uploadSession } from './upload';
 import { downloadZip } from './zip';
 
 /**
@@ -26,6 +28,11 @@ export function studyBlockers(doc: DecisionsDoc, r1: string): string[] {
   for (const [text, a] of Object.entries(doc.assumptions ?? {}))
     if (a.new_text?.includes('"')) out.push(`the new text for "${text}" contains a double quote`);
   if (!savedCarOf(r1)) out.push('this car has no saved run in this study');
+  const unrated = unratedDiagnoses(doc);
+  if (unrated.length)
+    out.push(
+      `${unrated.length} diagnos${unrated.length === 1 ? 'is' : 'es'} not yet rated as helpful or not (${unrated.join(', ')})`,
+    );
   return out;
 }
 
@@ -111,5 +118,26 @@ export async function signStudy(input: {
   const zipName = `${folder}.zip`;
   downloadZip(zipName, files);
   endSession(zipName, files); // the session ends at signing
+  // sent to the research team as well (when the site has online storage); the download stays the backup
+  void sendSession(car, signedAt.toISOString(), files);
   return { result, zipName, files, car };
+}
+
+/** Send the signed session to the online storage, and say on the end screen how it went. */
+export async function sendSession(
+  car: string,
+  signedAt: string,
+  files: Record<string, string>,
+): Promise<void> {
+  const session = loadSession();
+  if (!uploadConfigured || !session) return;
+  const keep = { car, signedAt };
+  setUpload({ status: 'sending', at: new Date().toISOString(), ...keep });
+  const out = await uploadSession({ session, car, signedAt, files });
+  logEvent({ screen: 'end', event: out.ok ? 'upload_sent' : 'upload_failed', new: out });
+  setUpload(
+    out.ok
+      ? { status: 'sent', path: out.path, at: new Date().toISOString(), ...keep }
+      : { status: 'failed', message: out.message, at: new Date().toISOString(), ...keep },
+  );
 }

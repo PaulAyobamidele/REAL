@@ -18,8 +18,10 @@ import { unconfirmedCount, type Draft, type DraftAction } from '@/state/draft';
 import { useWorkspace } from '@/state/WorkspaceContext';
 import { loadExpertise } from '@/state/expertise';
 import { STUDY } from '@/study/config';
+import { RunNext } from '@/components/review/RunNext';
 import { Refinement } from './Refinement';
 import { loadSession } from '@/study/session';
+import { uploadConfigured } from '@/study/upload';
 import { signStudy, studyBlockers } from '@/study/signing';
 import { displayDate } from '@/utils/format';
 
@@ -277,8 +279,17 @@ export function Step5Becomes({
         ) : null}
         {STUDY ? (
           <Instructions>
-            When you sign, a file <FileName>{`study_${participant}.zip`}</FileName> downloads.
-            Please send it to the researcher. Nothing is uploaded.
+            {uploadConfigured ? (
+              <>
+                When you sign, your session is sent to the research team, and a copy,{' '}
+                <FileName>{`study_${participant}.zip`}</FileName>, downloads to your computer.
+              </>
+            ) : (
+              <>
+                When you sign, a file <FileName>{`study_${participant}.zip`}</FileName> downloads.
+                Please send it to the researcher. Nothing is uploaded.
+              </>
+            )}
           </Instructions>
         ) : (
           <Instructions>
@@ -315,6 +326,8 @@ export function Step5Becomes({
           </Button>
         </div>
       </section>
+      {/* the normal tool: once signed, the refined requirement can be run as the next run */}
+      {draft.signed && !STUDY && r1.trim() ? <RunNext round={round} r1={r1} /> : null}
     </div>
   );
 }

@@ -80,7 +80,7 @@ function Badges({ layout, badges }: { layout: KaosLayout; badges: Change[] }) {
             return (
               <span
                 key={i}
-                className="absolute rounded-full bg-[#8a1538] px-2 py-0.5 text-xs font-semibold whitespace-nowrap text-white shadow"
+                className="absolute rounded-full bg-[color:var(--color-header)] px-2 py-0.5 text-xs font-semibold whitespace-nowrap text-white shadow"
                 style={{
                   left: frame.left + (b.x + b.w - 8) * frame.scale,
                   top: frame.top + (b.y - 10 + stack * 22) * frame.scale,

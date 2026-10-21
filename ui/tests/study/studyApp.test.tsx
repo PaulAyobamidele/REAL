@@ -43,6 +43,6 @@ describe('the study build', () => {
     expect(screen.getByRole('heading', { name: 'Thank you' })).toBeInTheDocument();
     expect(screen.getByText(/study_S-7K3Q\.zip/)).toBeInTheDocument();
     expect(screen.queryByRole('navigation', { name: 'Screens' })).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: 'Download it again' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Download your copy again' }));
   });
 });

@@ -9,6 +9,7 @@ import { HELP_VIDEO_URL, youtubeEmbed } from '@/config/help';
 import { routeHash } from '@/state/route';
 import { STUDY } from '@/study/config';
 import { authorTitle } from '@/study/labels';
+import { uploadConfigured } from '@/study/upload';
 
 /**
  * The first page: what the tool is and how a round goes (normal build), or
@@ -44,11 +45,13 @@ function StudyOverview() {
         page
         className="!max-w-6xl"
         steps={[
-          'Read this page first: it takes about 3 minutes, and the short video below shows the same if you prefer to watch.',
+          HELP_VIDEO_URL
+            ? 'Read this page first: it takes about 3 minutes, and the short video below shows the same if you prefer to watch.'
+            : 'Read this page first: it takes about 3 minutes.',
           'When you are ready, press Continue at the bottom.',
         ]}
       />
-      <HelpVideo />
+      {HELP_VIDEO_URL ? <HelpVideo /> : null}
       <Section title="What this study is about">
         <p>
           When an autonomous system is tested in simulation, some tests fail. Deciding what a
@@ -84,11 +87,13 @@ function StudyOverview() {
             ],
             [
               'Decide',
-              'For each obstacle: accept, rename, reject or defer it, and say why in your own words. For each obstacle you accept, choose one fix. Decide whether each domain assumption stays as it is.',
+              'For each obstacle, decide whether the world explains its failures, the requirement leaves them out, or the car is at fault, and rate whether the diagnosis helped you. Then, for each failure that remains, refine the requirement, confirm a real system failure and choose a fix, or leave it for the next round. Decide whether each domain assumption stays as it is. Reasons in your own words are welcome but optional.',
             ],
             [
               'Sign',
-              'Check your revised requirement and sign. A file downloads; please send it to the researcher. Signing ends the session.',
+              uploadConfigured
+                ? 'Check your revised requirement and sign. Your session is sent to the research team, and a copy downloads to your computer. Signing ends the session.'
+                : 'Check your revised requirement and sign. A file downloads; please send it to the researcher. Signing ends the session.',
             ],
           ]}
         />
@@ -100,8 +105,10 @@ function StudyOverview() {
       <Section title="What is recorded">
         <p>
           Your decisions and your reasons, your revised requirement, and a log of what you open and
-          change, under an anonymous ID. Your name is not recorded. Nothing is uploaded: the file
-          you send is the only copy that leaves your computer.
+          change, under an anonymous ID. Your name is not recorded.{' '}
+          {uploadConfigured
+            ? 'When you sign, this file is sent to the research team’s secure online storage, which only the researchers can read, and a copy is downloaded to your computer.'
+            : 'Nothing is uploaded: the file you send is the only copy that leaves your computer.'}
         </p>
       </Section>
     </>

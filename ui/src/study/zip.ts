@@ -26,9 +26,9 @@ function dosTime(d: Date): { time: number; date: number } {
   };
 }
 
-/** The zip of these files (path -> text), as bytes. */
+/** The zip of these files (path -> text or bytes), as bytes. */
 export function zipFiles(
-  files: Record<string, string>,
+  files: Record<string, string | Uint8Array>,
   when = new Date(),
 ): Uint8Array<ArrayBuffer> {
   const enc = new TextEncoder();
@@ -38,7 +38,7 @@ export function zipFiles(
   let offset = 0;
   for (const [path, text] of Object.entries(files)) {
     const name = enc.encode(path);
-    const data = enc.encode(text);
+    const data = typeof text === 'string' ? enc.encode(text) : text;
     const crc = crc32(data);
     const head = new DataView(new ArrayBuffer(30));
     head.setUint32(0, 0x04034b50, true);

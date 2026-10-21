@@ -34,10 +34,21 @@ export function resolutionOf(entry: ObstacleDecision | undefined): Resolution | 
   return ((entry as Entry | undefined)?.resolution ?? null) as Resolution | null;
 }
 
+/**
+ * Obstacles for which the tool proposes no world-side line (owner, 2026-10-21,
+ * "option C"): a child is part of the world the car must handle, so the tool
+ * does not offer to scope children out; an engineer who still thinks the world
+ * explains these failures writes the assumption in their own words.
+ * scripts/analysis/refine.py's R_CHANGES has no entry for them either.
+ */
+export const WORLD_IN_OWN_WORDS = new Set(['PedestrianSizeTooSmall']);
+
 /** What "the world explains it" would add for this obstacle, or why it cannot. */
 export interface WorldExplanation {
+  /** no proposal: the engineer writes the assumption (WORLD_IN_OWN_WORDS) */
+  own: boolean;
   change: Change | null;
-  /** the quoted text that goes into R1, e.g. pedestrian is at least 1.2 m tall */
+  /** the quoted text that goes into R1, e.g. fog_density <= 50 */
   quoted: string | null;
   kind: 'D' | 'R' | null;
   usable: boolean;
@@ -48,11 +59,22 @@ export interface WorldExplanation {
 }
 
 export function worldExplanation(obstacle: Obstacle | undefined, r0: string): WorldExplanation {
+  if (obstacle && WORLD_IN_OWN_WORDS.has(obstacle.id))
+    return {
+      own: true,
+      change: null,
+      quoted: null,
+      kind: 'D',
+      usable: true,
+      alreadyIn: false,
+      reason: null,
+    };
   const change = (obstacle?.changes as Record<string, Change | undefined> | undefined)?.requirement;
   const quoted = change?.text.match(/"([^"]+)"/)?.[1] ?? null;
   const kind = change?.kind === 'D' || change?.kind === 'R' ? change.kind : null;
   if (!change || !kind || !quoted)
     return {
+      own: false,
       change: null,
       quoted: null,
       kind: null,
@@ -63,6 +85,7 @@ export function worldExplanation(obstacle: Obstacle | undefined, r0: string): Wo
   // an assumption about the car's own behaviour would define its failures away
   if (kind === 'D' && /^\s*ego[_ ]/i.test(quoted))
     return {
+      own: false,
       change,
       quoted,
       kind,
@@ -71,6 +94,7 @@ export function worldExplanation(obstacle: Obstacle | undefined, r0: string): Wo
       reason: `Only the car can be at fault here: the analysis’s one world-side idea, ${quoted}, limits the car itself. You can still ask for it in Requirement revision.`,
     };
   return {
+    own: false,
     change,
     quoted,
     kind,
@@ -98,7 +122,9 @@ export function carRequest(obstacle: Obstacle | undefined): string | null {
 }
 
 /** The mitigation stored for "the world explains it". */
-export function worldMitigation(x: WorldExplanation): StudyMitigation | null {
+export function worldMitigation(x: WorldExplanation, own = ''): StudyMitigation | null {
+  // the engineer's own assumption: stored as written (refine.change_for: assuming "<action>")
+  if (x.own) return { layer: 'requirement', action: own.trim(), choice: 'assumption' };
   if (!x.usable || !x.change) return null;
   return {
     layer: 'requirement',
@@ -122,6 +148,21 @@ export function worldChanges(doc: DecisionsDoc, obstacles: Obstacle[], r0: strin
   for (const [oid, o] of Object.entries(doc.obstacles)) {
     if (explainedBy(o) !== 'world' || o.verdict !== 'accept') continue;
     const x = worldExplanation(byId.get(oid), r0);
+    if (x.own) {
+      const item = (o.mitigation?.action ?? '').trim();
+      const text = `assuming "${item}"`;
+      if (!item || r0.includes(`"${item}"`) || seen.has(text)) continue;
+      seen.add(text);
+      out.push({
+        kind: 'D',
+        from: oid,
+        layer: 'requirement',
+        clause: 'assuming',
+        item,
+        text,
+      } as Change);
+      continue;
+    }
     if (!x.usable || !x.change || x.alreadyIn || seen.has(x.change.text)) continue;
     seen.add(x.change.text);
     out.push({ ...x.change, from: oid });

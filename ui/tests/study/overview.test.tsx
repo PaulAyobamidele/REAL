@@ -22,9 +22,8 @@ describe('the study overview', () => {
     render(<App autoOpenExample={false} />);
     expect(screen.getByRole('heading', { level: 1, name: 'Overview' })).toBeInTheDocument();
     expect(screen.getByRole('img', { name: /REAL's architecture/ })).toBeInTheDocument();
-    expect(screen.getByRole('region', { name: 'Help video' })).toHaveTextContent(
-      'Watch the introduction',
-    );
+    // no instruction video is set for the study yet: no card that plays nothing
+    expect(screen.queryByRole('region', { name: 'Help video' })).toBeNull();
     for (const name of [
       'What this study is about',
       'The system under test',

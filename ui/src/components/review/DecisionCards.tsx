@@ -12,6 +12,7 @@ import { aboutTheCar, needsLimit } from '@/domain/decisions';
 import { assumptionState, obstacleState, scopeState, type Draft } from '@/state/draft';
 import type { DraftAction } from '@/state/draft';
 import { STUDY } from '@/study/config';
+import { HelpfulQuestion } from '@/study/HelpfulQuestion';
 import { TriageChoice } from '@/components/review/TriageChoice';
 
 import { VerdictControl } from './VerdictControl';
@@ -91,6 +92,7 @@ export function ObstacleDecisionCard({
           dispatch={dispatch}
         />
       </div>
+      {STUDY ? <HelpfulQuestion id={obstacle.id} doc={draft.doc} dispatch={dispatch} /> : null}
       <TextAreaField
         label="Reason, in your own words"
         value={entry.reason ?? ''}
@@ -168,6 +170,7 @@ export function ScopeDecisionCard({
           }
         />
       ) : null}
+      {STUDY ? <HelpfulQuestion id={sid} doc={draft.doc} dispatch={dispatch} /> : null}
       <TextAreaField
         label="Reason"
         value={entry.reason ?? ''}
