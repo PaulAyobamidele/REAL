@@ -67,20 +67,23 @@ REAL's Identify--Analyse--Mitigate loop~\cite{real2026}.}
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig1_architecture_v2.pdf}
-\caption{\toolname{} in one round. (1)~The engineer writes the requirement $R_0$;
-the tool parses it and refuses assumptions about the system. (2)~A scenario grammar
-and a search (GRAPE or an exhaustive grid) derive test scenarios, executed in
-CARLA through Scenic with the detector and the braking controller in the loop; a
-safety monitor records every run. (3)~Each run is judged valid or spurious against
-$R_0$'s assumptions, failures are typed from their traces and grouped into
-obstacles with evidence. (4)~The engineer decides each obstacle and assumption in
-the review interface; the tool writes $R_1$ with every change labelled. If the
-system changed ([S]), the next round starts from stage~1 with $R_1$; if only
-assumptions or the requirement changed ([D], [R]), stage~3 re-diagnoses the
-stored traces without new simulation. A robot marks the steps the tool automates
-that the framework left to people, a hard hat the two the engineer operates. Violet~$\bigstar$: new in this paper. Orange: reused from the REAL framework
-package~\cite{real2026}. Grey, dashed: existing tools~\cite{carla2017,scenic2023,grape2022}.
-Yellow: artefacts. (Regenerate: \texttt{figures/make\_fig1\_v2.py}.)}
+\caption{Overview of \tool{}. \textcircled{\scriptsize 1}~The engineer
+  specifies $R_0$, which \tool{} parses and checks for well-formedness and for
+  assumptions about the system under test. \textcircled{\scriptsize 2}~\tool{}
+  derives test scenarios from the requirement's grammar by grammatical evolution
+  or exhaustive enumeration and executes them in CARLA via Scenic, with the
+  learned detector and the braking controller in the loop.
+  \textcircled{\scriptsize 3}~\tool{} classifies each failure as valid or
+  spurious against the domain assumptions of $R_0$ and abstracts valid failures
+  into obstacles with supporting evidence. \textcircled{\scriptsize 4}~The
+  engineer triages obstacles and assumptions, and \tool{} derives $R_1$ with
+  each change attributed to the system~[S], the domain~[D] or the
+  requirement~[R]. System changes trigger a new round; domain and requirement
+  changes are re-diagnosed on the recorded traces, without re-simulation.
+  Robots mark the activities that \tool{} automates and that the REAL framework
+  performs manually; hard hats mark the engineer's decisions. Components are
+  new~($\bigstar$, violet), reused from REAL~\cite{real2026} (orange), or
+  third-party~\cite{carla2017,scenic2023,grape2022} (grey).}
 \label{fig:arch}
 \end{figure*}
 \subsection{Requirement language}
