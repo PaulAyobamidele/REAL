@@ -3,7 +3,8 @@
  * a mix of decisions with reasons, an early sign attempt (must be refused), the
  * CARLA video played, the zip downloaded, the end screen after a reload.
  *   VITE_STUDY=1 npx vite --port 5174 --strictPort &   (in ui/)
- *   [STUDY_URL=<published site>] node scripts/study/dry_run.mjs <output folder>
+ *   [STUDY_URL=<published site>] [PAUSE_S=<seconds>] node scripts/study/dry_run.mjs <output folder>
+ * PAUSE_S: sit idle on step 5 that long before signing, as a participant reading it does
  */
 import { chromium } from 'playwright';
 const S = process.argv[2];
@@ -168,6 +169,11 @@ for (const r of await p.locator('article[aria-label^="Remaining: "]').all()) {
 await p.waitForTimeout(800);
 await p.screenshot({ path: `${S}/dry/12_revision_done.png`, fullPage: true });
 step('sign disabled now: ' + (await sign.isDisabled()));
+const pause = Number(process.env.PAUSE_S ?? 0);
+if (pause > 0) {
+  step(`idle on step 5 for ${pause} s`);
+  await p.waitForTimeout(pause * 1000);
+}
 const [dl] = await Promise.all([p.waitForEvent('download', { timeout: 20000 }), sign.click()]);
 await dl.saveAs(`${S}/dry/${dl.suggestedFilename()}`);
 step('downloaded ' + dl.suggestedFilename());

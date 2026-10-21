@@ -2,7 +2,7 @@ import { ClusterRefusal, type Job, type LaptopCheck, type RunOptions } from '@/s
 import type { FileSource } from '@/services/workspace';
 
 import { logEvent } from './log';
-import { reveal, StudySource, type BundledRound } from './studySource';
+import { bundledRounds, reveal, StudySource, type BundledRound } from './studySource';
 
 /**
  * Run Test in the study build: the same calls as the live cluster connection
@@ -60,9 +60,8 @@ function load(jobId: string): Replay | null {
 
 /** The saved round this requirement runs as: the round run with exactly this text. */
 async function targetFor(text: string): Promise<BundledRound | null> {
-  const source = await StudySource.probe();
-  if (!source) return null;
-  return (await source.bundled()).find((r) => r.requirement?.trim() === text.trim()) ?? null;
+  const rounds = await bundledRounds().catch(() => null);
+  return rounds?.find((r) => r.requirement?.trim() === text.trim()) ?? null;
 }
 
 /** The job as the status call reports it at time `now`. */

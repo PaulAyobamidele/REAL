@@ -9,7 +9,7 @@ import { endSession, setUpload } from './ended';
 import { logEvent, logLines } from './log';
 import { STUDY_MENU } from './menu';
 import { loadSession } from './session';
-import { StudySource } from './studySource';
+import { bundledRounds, type BundledRound } from './studySource';
 import { uploadConfigured, uploadSession } from './upload';
 import { downloadZip } from './zip';
 
@@ -34,6 +34,24 @@ export function studyBlockers(doc: DecisionsDoc, r1: string): string[] {
       `${unrated.length} diagnos${unrated.length === 1 ? 'is' : 'es'} not yet rated as helpful or not (${unrated.join(', ')})`,
     );
   return out;
+}
+
+/** At most this long before the zip downloads: the participant never waits on a spinner. */
+export const CHECK_MS = 10_000;
+
+/** The cars of the saved runs, or null when they could not be read in time. */
+async function savedCars(): Promise<(BundledRound['car'])[] | null> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const late = new Promise<null>((resolve) => {
+    timer = setTimeout(() => resolve(null), CHECK_MS);
+  });
+  try {
+    return await Promise.race([bundledRounds().then((rs) => rs.map((r) => r.car)), late]);
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export interface StudySigned {
@@ -94,8 +112,11 @@ export async function signStudy(input: {
   }
   const blockers = studyBlockers(input.doc, result.r1);
   if (savedCarOf(result.r1) !== car) blockers.push(`R1 does not run car ${car}`);
-  const source = await StudySource.probe();
-  const bundled = source ? (await source.bundled()).map((r) => r.car) : [];
+  const bundled = await savedCars();
+  if (!bundled)
+    return refuse([
+      'the study site could not be reached to check your choices: check your internet connection and press Sign again (nothing is lost)',
+    ]);
   if (
     !bundled.some(
       (c) => c?.braking_mode === CARS[car].braking && c.yolo_model === CARS[car].perception,

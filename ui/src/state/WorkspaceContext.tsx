@@ -14,7 +14,7 @@ import type { RoundSummary } from '@/domain/lineage';
 import { parseSimulationsCsv } from '@/services/csv';
 import type { ClusterMap } from '@/services/schemas';
 import { STUDY } from '@/study/config';
-import { StudySource } from '@/study/studySource';
+import { bundledRounds, StudySource } from '@/study/studySource';
 import {
   joinPath,
   KNOWN_FILES,
@@ -116,6 +116,8 @@ export function WorkspaceProvider({
     let live = true;
     // the study build opens the participant's own rounds (src/study/studySource.ts)
     (STUDY ? StudySource.probe() : StaticSource.probe(STATIC_WORKSPACE_URL)).then((found) => {
+      // the study: the saved rounds read now, while the connection is fresh, for signing later
+      if (STUDY && found) void bundledRounds().catch(() => undefined);
       if (!live) return;
       setExampleSource(found);
       setProbing(false);

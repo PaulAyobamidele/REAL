@@ -16,7 +16,9 @@ import { installClickLog } from '@/study/clickLog';
 import type * as StudyConfig from '@/study/config';
 import { flushDecisionLog, logDecision } from '@/study/decisionLog';
 import { logLines, startLog } from '@/study/log';
+import type * as Signing from '@/study/signing';
 import { signStudy } from '@/study/signing';
+import { bundledRounds } from '@/study/studySource';
 import { zipFiles } from '@/study/zip';
 
 import { fixtureText, ROUND_2 } from '../helpers/memorySource';
@@ -227,5 +229,32 @@ describe('the log reconstructs the session', () => {
       event: 'clicked',
       target: 'button: Trace 3_1',
     });
+  });
+});
+
+describe('signing after the page sat idle (the site slow or out of reach)', () => {
+  // every request hangs, as after minutes on step 5 with a stale connection
+  const hang = () => vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>(() => undefined)));
+
+  it('signs from the saved rounds read earlier, without waiting on the site', async () => {
+    await bundledRounds(); // read while the connection is fresh, as the study does when it opens
+    hang();
+    const signed = await signStudy({ doc: decided({ [A]: 'car_path_aware' }), report, r0: R0, round });
+    expect(signed.zipName).toBe('study_S-TEST.zip');
+  });
+
+  it('gives up after CHECK_MS with a clear message when they were never read', async () => {
+    vi.resetModules(); // a fresh page: nothing read yet
+    const fresh = await vi.importActual<typeof Signing>('@/study/signing');
+    hang();
+    vi.useFakeTimers();
+    try {
+      const signing = fresh.signStudy({ doc: decided({ [A]: 'car_path_aware' }), report, r0: R0, round });
+      const refused = expect(signing).rejects.toThrow(/could not be reached.*nothing is lost/);
+      await vi.advanceTimersByTimeAsync(fresh.CHECK_MS + 1);
+      await refused;
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

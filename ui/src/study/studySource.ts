@@ -47,6 +47,27 @@ export interface BundledRound {
   requirement: string | null;
 }
 
+let bundledOnce: Promise<BundledRound[]> | null = null;
+
+/**
+ * Every bundled round, read once per page load and kept: the site's rounds do not
+ * change while it is open, and signing must not wait on the network (a browser
+ * left idle on a page can take many seconds to reach the site again). Read early
+ * (when the study's rounds are first found); a failed read is tried again next time.
+ */
+export function bundledRounds(): Promise<BundledRound[]> {
+  bundledOnce ??= StudySource.probe()
+    .then((source) => {
+      if (!source) throw new Error('the study site could not be reached');
+      return source.bundled();
+    })
+    .catch((e: unknown) => {
+      bundledOnce = null;
+      throw e;
+    });
+  return bundledOnce;
+}
+
 export class StudySource implements FileSource {
   readonly kind = 'static' as const;
   readonly canWrite = false;
