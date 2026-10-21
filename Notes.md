@@ -2616,6 +2616,20 @@ round" re-judging note is the only one), 277 UI tests. The "Bundled example" car
 longer counts the rounds (the dev build serves two, the image three). Not tagged or
 pushed.
 
+### 8.57 2026-10-21 — release v0.2.0; histories rewritten
+
+Study site republished from the C1-bundling commit (no Markdown data files served any
+more). Public repo real-tool: a new export from that commit, same exclusions as v0.1.0 plus
+mlruns/ (gitignored but tracked here), duplicate detector weights, paper drafts and the
+video-production notes; 321 tests pass there (1 skipped: needs run 2b). Owner asked that no
+assistant or vendor name appear anywhere: the three old mentions (owner legends in two plans,
+the reviewer string of the scripted review) were replaced in every commit of both repos with
+git filter-repo, and all branches and tags force-pushed; commit ids quoted in earlier entries
+no longer exist (the study site's build stamp still names the old one). Tag v0.2.0 built on
+GitHub in 8 min, amd64 + arm64, 537 MB; the published image passes the same walk as the local
+build (1,208/1,208 files, no error or warning banner, catalog answers). Other clones (the
+cluster's) must be reset to the rewritten history before any push.
+
 ### 8.7 The iteration loop (stages 7-9) — original design
 
 Per round: requirement R_n → run (grid) → `simulations.csv` → report →
