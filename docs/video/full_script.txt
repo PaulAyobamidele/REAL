@@ -1,0 +1,63 @@
+A self-driving car meets a pedestrian. Here it came within three point six metres; the requirement asks for five. So who failed: the world, the promise, or the car?
+<break time="1.5s" />
+This is Real: a tool that helps engineers decide what to change when a self-driving car fails a test.
+<break time="1.5s" />
+Self-driving cars learn to see. A detector learns to spot pedestrians, and we can't read it like ordinary code.
+<break time="1.5s" />
+So it is tested in simulation, over thousands of drives in rain, fog and low sun,
+<break time="1.5s" />
+each one passing or failing a requirement.
+<break time="1.5s" />
+For example: stop at least five metres before a pedestrian.
+<break time="1.5s" />
+Simulation finds failures by the hundred. But a failure doesn't say what to change.
+<break time="1.5s" />
+Retrain the detector? Use a larger one? Brake differently? Or narrow the requirement?
+<break time="1.5s" />
+Today this is decided by hand, and the rationale is lost. Worse, a requirement can be loosened until the failures disappear.
+<break time="1.5s" />
+In requirements engineering, a promise holds only in the world we assume.
+<break time="1.5s" />
+There is the world we assume, the car, and the promise we made.
+<break time="1.5s" />
+So every failure points to one of three.
+<break time="1.5s" />
+The world: the test went beyond what we assumed. The car: it must be fixed. Or the promise: it asked for the wrong thing, and must be refined.
+<break time="1.5s" />
+Testing tools find failures;
+<break time="1.5s" />
+requirements tools specify promises. The two are rarely connected.
+<break time="1.5s" />
+Real closes the loop.
+<break time="1.5s" />
+With one firm rule: an assumption may describe the world, never the car, so failures are much harder to define away. Real is for requirements engineers and machine-learning engineers.
+<break time="1.5s" />
+Here is how Real works. The engineer writes the requirement.
+<break time="1.5s" />
+It is tested in Carla, with the real detector in the loop.
+<break time="1.5s" />
+Real checks whether the world held, and groups the failures. The engineer decides: world, promise, or car. And Real writes the refined requirement, every change with its reason, ready for the next round.
+<break time="1.5s" />
+Let's see it.
+<break time="1.5s" />
+The engineer writes the requirement in Real-DSL. The editor completes it, offering only modules the simulator runs. Point at the text, and the goal model shows where it sits. One button checks it, and runs it in Carla.
+<break time="1.5s" />
+First, one example. On the left, the car's camera; on the right, a replay drawn from the recorded trace. Here the car brakes, here it sees the pedestrian, and here it enters the safety margin.
+<break time="1.5s" />
+The report judges each part of the requirement, and shows where it sits. Runs where a world assumption broke are set aside, not blamed on the car.
+<break time="1.5s" />
+Real groups the failures into obstacles, each attached to the goal it blocks, with its evidence. Runs that unfolded alike sit together on the map.
+<break time="1.5s" />
+Then the engineer decides, obstacle by obstacle. Small pedestrians are part of the world the car must handle, so here the car is at fault. And a world assumption that would describe the car is refused.
+<break time="1.5s" />
+Each remaining failure gets one of three outcomes. This one is the car's: a larger detector. Here the promise asked the wrong thing, since the car stopped and never moved on, so the engineer refines it. The rest carry over to the next round. Signing records every decision, with its reason.
+<break time="1.5s" />
+Every change carries its reason, and is tested, so its effect is measured, not assumed.
+<break time="1.5s" />
+On the same scenarios, a larger detector cut the failures from twenty-two to six. But braking only for a person in the car's lane, a plausible fix, made it far worse: three hundred and forty-nine.
+<break time="1.5s" />
+Each review records the reviewer's expertise. Next, about ten practitioners will review the same round.
+<break time="1.5s" />
+Real runs in one Docker command, with a manual and example rounds to explore.
+<break time="1.5s" />
+Real. The link is on screen.

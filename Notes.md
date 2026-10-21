@@ -2336,6 +2336,229 @@ Then: "Start Running Compliance Test", step 2 renamed "Test Execution
 Report", the manual its own page (#/manual, in the top bar). Pending from the
 owner: a best-case example on the report (the scenario that optimizes for the
 failure), and a part of the study build to remove. 231 UI tests.
+Then: manual without LIMITATIONS / FILES; the limitations became the work
+list docs/design/real_dsl_robustness.md. Study: the run panel is gone - Start
+Running Compliance Test opens the Test Execution Report directly (logged as a
+direct open). Goal model as tall as the editor; hovering the REAL-DSL marks
+its box in the goal model. 233 UI tests.
+Then the instructions: two fuller steps per box instead of short clipped
+lines, and one wider width for every page's box. 233 UI tests.
+Then the owner's layout rules (instruction box above each container: context,
+explanation, call to action; optional actions as icons; one centred way on;
+side by side only when related) applied to the Test Execution Report, whose
+header is now the whole workflow (Overview -> Requirements Compliance to
+Validate -> steps 1-5, Manual / participant on the right); "What failed"
+sits beside the requirement with failed and broken parts marked. Steps 1, 3,
+4 and 5 still to follow. 234 UI tests.
+Then simplified: instruction boxes white with a green border and green text;
+the header back to logo, Manual, participant ID; the workflow as one quiet
+line under the header on every page. 234 UI tests.
+Then: the workflow back in the progress-tracker look (under the header, every
+page); the report's worked example is the round's best scenario (lowest pass
+rate, the test search's rule: the worst case for the car), replayed top-down
+from its trace (exact recorded distance, 5 m margin, detections, brakes,
+moments). No video for study round C1: it was merged from several jobs and
+no recording run was made. Palette study published for the owner to choose.
+238 UI tests.
+Then the owner chose direction B, Calm canvas: wheat only on the workflow band,
+a paler page, instruction boxes white with an olive rule and "What to do"
+label and ink text. 241 UI tests.
+Then a finished run opens the review at step 1 (the requirement under test),
+not step 2. 241 UI tests.
+Then the worked example became its own page between steps 1 and 2, with
+CARLA's real camera recording of the best scenario (job 8ee4732c recorded
+exactly C1's test case 6; re-stitched to H.264 with scripts.evolve.video,
+copied into the study site as videos/6.mp4) beside the trace replay, now
+captioned as a schematic. Open: LR shows the pedestrian on the car's right in
+both the camera and the trace, against util.py's "left kerb" comment.
+243 UI tests.
+Then the Failure Analysis: opens on the Diagram, no Tree in the study, an
+instruction box above every container (goal model, evidence, fixes, patterns),
+CARLA's best-scenario recording in the evidence. Caught on the way: the study
+diagram showed tool verdicts in obstacle boxes; now hidden, with a test.
+244 UI tests.
+Then the Fixes container left the Failure Analysis; the explanation of fixes
+moved to Obstacle triage, which now has an instruction box above each section
+(obstacles and fixes, scope, assumptions). 245 UI tests.
+Then the study's triage and refinement: step 4 asks "world or car?"; the
+world's choice adds the obstacle's assumption (or soft goal) to R1
+automatically, refused for car-side suggestions (ego_speed); step 5 shows R1
+with the added lines outlined, the re-judged failures, and the remaining
+failures with three choices (refine / real system failure + car fix / next
+round). Stored as values decisions.py accepts (+ explained_by, resolution);
+Python validate() checked in a test. Normal tool unchanged for now. 247 UI tests.
+Then "What this means" became an always-visible neutral box on every obstacle and
+scope card (not a dropdown; the olive stays the instructions' colour). 247 UI tests.
+Then a guided tour per page in both tools (driver.js 1.9.0): starts on a page's first
+visit, replayed from the header's ?, every stop checked to exist by a test, logged in
+the study. 254 UI tests.
+Then the "world or car?" triage became the flow of both tools (decision A): step 4
+world/car only; step 5 refined requirement + remaining failures (refine / real system
+failure with a catalogue or own fix / next round). "Refine" records words, adds nothing
+to R1 (refine.py skips it too, with a Python test). Old decisions and tool proposals are
+mapped onto it. The review test now checks that Python's refine derives the identical R1
+from the flow's decisions. DetectionTooLate: plainer reason in step 4, the speed idea
+offered under "Refine" in step 5 (A + C). The workflow band shows page titles only, in
+bold. 254 UI tests, 316 Python tests.
+Then the REAL logo leads to each tool's first page: the study's welcome page (#/welcome,
+the session kept, Continue) and the tool's Overview. 255 UI tests.
+Then the normal tool got its own welcome page (REAL, four statements of what it does,
+expertise, Get started); both tools open on it; expertise recorded as reviewer_expertise
+when signing. 257 UI tests.
+Then the ICSE video: script docs/video/icse_video.md (4:30, about 480 words of
+narration, one chapter per item the call asks for); 14 clips recorded by
+ui/scripts/video/record.mjs (the normal tool on round C1 via VITE_PUBLIC_DIR,
+125% page, a drawn cursor, tours off, no run submitted) and the scenes in
+ui/scripts/video/scenes/, converted to H.264 by ui/scripts/video/to_mp4.py;
+clips in artifacts/video/2026-10-19 (not committed). Results shown: on the
+same 288 scenarios, the larger detector cuts failures 22 -> 6 and path-aware
+braking raises them to 349 (both: 335), the trade-off noted in 8.49.
+Then (2026-10-20) the video became: opening slides, then the demonstration (owner).
+Five slides in plain words (big picture, problem, context, gap, the five steps) plus
+a title, shown inside the video with each point fading in as it is said:
+docs/video/slides.md (cues and narration), scene pages P0-P5 in
+ui/scripts/video/scenes/ (shared slide.css), clips P0-P5 in
+artifacts/video/2026-10-20. They replace the old opening (S1, A1, S2, A2); the
+script is now 4:45.
+Same day, the slides took the style of a reference ICSE tool demo (LEGOS-SLEEC,
+ICSE 2025), keeping what works there and not its unreadable full-screen IDE: a rule
+under each title and slide numbers; P5 "How REAL works", a diagram that builds step
+by step with a ★ on what REAL adds (CARLA and the detector are existing tools); P6
+"Before and after" (R0 -> R1: the added world assumption and yolov5s -> yolov5m, each
+with its reason; 22 -> 6 measured), shown in the results; the end card with a one-line
+result and a QR code to the repository (qrcodejs from cdnjs, only when the link is
+given). Slide 4's list was dropped (P5 says it). Script now 4:55: tight, trim holds
+in the edit.
+Then the header colour: wine #8A1538 replaces maroon #610000 (owner and supervisor,
+after comparing four brighter maroons). Wine leans crimson, so it stays apart from the
+failure brick #AD1F07 (a brighter true maroon or crimson nearly matched it); white text
+9.4:1. One token (--color-accent-deep) in ui/src/styles/tokens.css. 257 UI tests. The
+recorded video clips and the slide scenes still carry the old maroon.
+Then docs/video/slide_notes.md corrected after the review against the parent paper
+(slide_notes_review.md): three answers (world, promise, car) instead of "world or car";
+the "pedestrian is at least 1.2 m tall" before/after dropped (it scopes children out,
+which the paper counts as real violations, and the checker reads it as free text);
+slide 7 now shows only the measured car change (yolov5s -> yolov5m, 22 -> 6 of 376 on
+the same 288 scenarios, labelled an illustration); "rarely connected"; closest approach
+1.35 m (3.6 m is test case 6 only); no rain; 5 m in the car's path. Still to align:
+slides.md, the P0-P7 scenes, icse_video.md's S7 line, and the tool's own world
+suggestion for PedestrianSizeTooSmall (refine.py), which is the 1.2 m assumption.
+Then the demo clips re-recorded for the ElevenLabs edit (artifacts/video/2026-10-20/
+elevenlabs/, numbered, with docs/video/demo_voiceover.md): Wine header; S7 now gives
+PedestrianSizeTooSmall to the car (nothing scopes children away) and shows the refused
+world option on DetectionTooLate; S8 shows the three outcomes (DetectionTooLate a system
+failure with the larger detector, StandoffUnnecessaryStop refined in the reviewer's
+words, the rest to the next round). Found and fixed: every clip so far had a grey border
+(the recorder pads a 1536x864 page to the requested 1920x1080); now recorded at the
+viewport size and scaled to 1080p by to_mp4.py. The padded clips are kept in
+2026-10-20/old-padded. A cold open (C0) is cut from S5's replay, zoomed on test case 6.
+Then the study's welcome box lost its "What to do" label (owner): Instructions takes
+label={false} there, as the box only sets the scene. 257 UI tests. Clip 08 re-recorded.
+Then clip 08 moved to the normal tool's welcome page (owner), renamed 08_welcome.mp4.
+Then the full video assembled (artifacts/video/2026-10-20/elevenlabs/demo.mp4, 4:28,
+1080p, with demo.srt): the owner's 22 Google Slides frames (progressive copies) + the
+clips + one ElevenLabs voice-over (voice_over.mp3; a second take, voiceover2.mp3, reads
+the same words). ElevenLabs ignored the <break> pauses, so the voice was transcribed
+locally (faster-whisper small.en, word timings saved next to it) and aligned to the
+script; ui/scripts/video/assemble.py cuts each piece at the pause midpoints, holds each
+frame for its line, plays each clip at up to 1.35x (2x for the terminal) and spreads any
+extra time over the pauses between sentences. The narration was cut from 853 to 610
+words first (5:40 of speech was over the 5:00 limit). Frames f21/f22: the stray
+"1.2 m tall" text and a faint duplicate link painted out of the images.
+Then the study analysis, step 1 (owner chose "B": drawn afterwards, the study tool
+unchanged): scripts/analysis/study_goal_models.py reads each participant's zip, parses
+R1.dsl with the authoring parser and lists what R1 adds to R0 (assumptions D, soft goals
+R, module swaps S) and the refinements written in their own words (not in R1 by design);
+the combined model is R0 with every change, counted. ui/analysis.html (dev only, not in
+the build) draws them with the tool's own goal-model layout, and
+ui/scripts/analysis/render_goal_models.mjs saves combined.png and <participant>.png.
+tests/test_study_goal_models.py. Dry run on three synthetic sessions, labelled as such:
+artifacts/study/analysis_dryrun_SYNTHETIC_2026-10-20/.
+Then a dry run of the study build as one participant (ui/scripts/study/dry_run.mjs;
+outputs in artifacts/study/dryrun_2026-10-20/, ID S-45EY, labelled a dry run): every
+page, no page error or failed request, signing disabled until every remaining failure
+was decided, the zip downloaded (decisions.json, R0.dsl, R1.dsl, requirement_diff.md,
+log.jsonl), decisions.validate() empty, R1 parses (car C3), every reason saved, the end
+screen kept after a reload, the goal-model step runs on the zip. Found: (1) an "out of
+scope" verdict on a set-aside artefact without a machine rule writes the participant's
+REASON into R1 as an assumption (refine.scope_change and changes.scopeChange, by
+design, but the page asks only for a "Reason"; a reason can also describe the car,
+which the never-the-car rule does not catch for typed text); (2) playing the CARLA
+video is not logged; (3) the triage choice "the requirement leaves this out" is stored
+as explained_by "world" with an ensuring clause: the analysis must tell D from R by
+the clause. Fixes await the owner.
+Then both fixed (owner: "Yes"): an out-of-scope scope item with no rule to invert now
+asks for "The limit to state in the requirement" in its own field (`limit` in
+decisions.json); that, not the reason, goes into R1 (changes.scopeChange and
+refine.scope_change, the reason kept only as a fallback for older documents); signing
+waits for it (isComplete / completionGaps), and a limit about the car is refused by
+validate in both TS and Python. The CARLA video logs video_played / video_paused /
+video_ended with the time (study only). Tests: ui/tests/domain/scopeLimit.test.ts,
+tests/test_refine.py; 261 UI tests, 317 Python. Dry run repeated (S-FT2R): R1 carries
+the stated limit, no reason text, video_played logged, validate empty.
+Then (owner): the study's start box became a welcome and thank-you message ("Welcome,
+and thank you for taking part." above the same text); the Overview page's containers all
+take the width of "Overview of the tool" (max-w-6xl), in both builds. 261 UI tests.
+Then the normal tool's next run (owner: "Run Compliance Test on R1"): after signing, step 5
+shows "Run Compliance Test on R1 ▸" (R<n> for later runs) with the run panel
+(components/review/RunNext.tsx). useRunTest takes `provenance` (parent_run_id = this
+round, round = its run number + 1, merged into the submitted options; the helper and
+the cluster job already write both into run_meta.json) and `landOn: 2`, kept in
+localStorage with the job so a reload still lands there: the finished run opens on its
+Test Execution Report. The report shows a banner when its parent is recorded: "Second
+run of this requirement · This report tests R1, the requirement refined after the first
+run (date)", with a link to the first run's report (lineage.runNumberOf / runOrdinal).
+RunDialog takes a title. Tests: tests/state/runNext.test.ts; 264 UI tests. (A test
+that rebuilt `open` on every render looped the resume effect; the page passes the
+workspace's stable `open`, so it does not.) Not yet seen on screen with a real second
+run (Narval needed).
+Also the owner created the Supabase project for the study's uploads (EU region, not
+Canada: to be checked against the ethics approval).
+Then the study's online storage built (owner): Supabase project, EU region (to check
+against the ethics approval); docs/study/supabase_setup.sql run by the owner (table
+`submissions`, private bucket `sessions`, 10 MB zips only; anyone may insert, only a
+signed-in user may read; sign-ups off, one researcher account). At signing the zip is
+uploaded (src/study/upload.ts: `<ID>/study_<ID>_<UTC stamp>.zip`, never overwritten) and
+still downloaded as the backup; the end screen says sent / sending / could not be sent
+(with "Try sending again"); the Overview and the signing note say so instead of "Nothing
+is uploaded" (only when the build has the settings). The researcher's page admin.html
+(study build only): sign in, every session listed (ID, expertise, car, signed, minutes,
+size), Download per session and Download all (one zip of the session zips). Settings in
+ui/.env.local (git-ignored; the publishable key only); nothing is sent under test.
+@supabase/supabase-js 2.117.2. Live check: the dry run (S-GB63, expertise "Dry run")
+was sent and reported sent, also after a reload; with the public key alone, reading,
+listing, downloading, public links, changing and deleting are all refused, and a row
+or file that breaks the naming or type rules is rejected. 267 UI tests.
+Then, for the paper, an exhaustive inventory of what the tool adds, from two read-only
+sweeps (pipeline and analysis; interface and study), merged and deduplicated:
+docs/paper/feature_inventory.tex (LaTeX for Overleaf; 12-item shortlist, 169 features
+F1-F169 tagged NEW / PARENT / STUDY / INFRA with evidence, 6 findings E1-E6 usable as
+evaluation, 17 limitations L1-L17). For sieving, not final text.
+Then (owner): a report banner is titled by what it says (src/domain/banner.ts):
+"Results so far" (PARTIAL), "Incomplete run" (INCOMPLETE), "About this round" for any
+other note; before, the study rounds' re-judging note showed as "Incomplete run". The
+header colour became raspberry #E30B5D (white on it 4.7:1, AA; small text on the page
+4.2:1, so the second-run banner's label is ink, the colour kept for its border). The
+video's tool clips were re-recorded in it with the researchers' round note hidden
+(record.mjs), the cold open re-cut, and the video rebuilt with the same voice-over:
+demo.mp4 4:27; assemble.py now drops a clip's blank opening frames. Earlier versions
+kept in artifacts/video/2026-10-20/old-wine-8A1538/ and elevenlabs/previous/. 268 UI
+tests.
+
+2026-10-21 - study readiness for the evaluation (owner: changes in the study build only;
+reasons stay optional). The evaluation counts "diagnoses engineers report as unhelpful",
+which nothing recorded. Study build: every diagnosis shown (each obstacle and each
+set-aside scope item) asks "Was this diagnosis helpful to your decision?" (Helpful /
+Partly helpful / Not helpful, with an optional "What was missing or misleading?");
+stored on the item in decisions.json as `helpful: {rating, why}` (Python validate
+accepts it), logged (helpful_rating, helpful_why_written), and signing waits until every
+diagnosis is rated (studyBlockers). Also in the study build: the Overview's "Decide" step
+describes the current triage and revision (it still said accept/rename/reject), the Sign
+step says the session is sent when the build has online storage, the help-video card and
+its sentence are hidden while no video is set, and the scope limit is logged per field,
+not per key. Normal tool unchanged. 269 UI tests. Dry run S-EXAP (upload off) checks it.
+Still open: the "1.2 m tall" world option (owner's decision), the analysis for the RQ,
+republishing, a dry run on the live link, the admin page.
 
 ### 8.7 The iteration loop (stages 7-9) — original design
 

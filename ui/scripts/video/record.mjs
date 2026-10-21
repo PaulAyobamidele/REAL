@@ -60,7 +60,9 @@ const INIT = ({ expertise }) => {
     if (location.protocol === 'file:' || document.getElementById('demo-cursor')) return;
     // scrolled-to parts land below the sticky header, not under it
     const style = document.createElement('style');
-    style.textContent = '* { scroll-margin-top: 84px; }';
+    // the researchers' note about a round (e.g. its re-judging) is not for the video
+    style.textContent =
+      '* { scroll-margin-top: 84px; } [data-round-banner="note"] { display: none !important; }';
     document.head.appendChild(style);
     const c = document.createElement('div');
     c.id = 'demo-cursor';

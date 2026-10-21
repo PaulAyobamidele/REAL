@@ -1,0 +1,320 @@
+% =====================================================================
+% REAL: inventory of features (for sieving into the ICSE 2027 tool paper)
+% Generated 2026-10-20 from a read-only sweep of the code, docs and Notes.
+%
+% Use: \input{feature_inventory} inside the document body, or paste.
+% Needs no extra package. Every item has an ID (F1, F2, ...) for sieving.
+% Tags: [NEW] beyond the parent paper's manual process;
+%       [PARENT] realises a concept of Bennaceur et al. (arXiv:2606.31589);
+%       [STUDY] study build only; [INFRA] engineering, packaging, tooling.
+% Evidence (files, Notes.md sections) is given in brackets for checking;
+% delete it from the final text.
+% =====================================================================
+
+\providecommand{\tagnew}{\textsc{[new]}}
+\providecommand{\tagparent}[1]{\textsc{[parent: #1]}}
+\providecommand{\tagstudy}{\textsc{[study]}}
+\providecommand{\taginfra}{\textsc{[infra]}}
+\providecommand{\ev}[1]{{\footnotesize\,(#1)}}
+
+\section*{REAL: inventory of features}
+
+% ---------------------------------------------------------------------
+\subsection*{0. Shortlist for the tool paper (merged top items)}
+
+\begin{description}
+\item[S1] \textbf{Automated failure analysis replaces manual inspection.} A failure taxonomy, evidence-checked obstacles attached to the KAOS goals they obstruct, and a pattern map of every encounter close the parent paper's own limitation (Sec.~V-D: grouping and obstacle identification by hand). See F67--F84, F98--F99.
+\item[S2] \textbf{Validity computed from the requirement's own text.} Each simulation is valid or spurious according to the requirement's \texttt{assuming} clause (held / broken / not measured), so $\Phi_{valid}$ is no longer hand-labelled. See F52--F60.
+\item[S3] \textbf{An assumption may describe the world, never the car.} Enforced in the parser, the authoring catalogue, triage, scope limits and \texttt{validate}, so failures cannot be defined away. See F16, F55, F108, F112--F113.
+\item[S4] \textbf{Three-way, human-signed triage.} For each obstacle the engineer decides whether the world, the promise or the car is at fault; each answer maps to a labelled change ([D], [R], [S]), with sound refusals. See F106--F121.
+\item[S5] \textbf{Decisions become a labelled, parse-checked R1.} \texttt{decisions.json} $\rightarrow$ \texttt{R1.dsl} + \texttt{requirement\_diff.md}, every change labelled S/R/D/T, written byte-identical by the Python pipeline and the interface. See F122--F131.
+\item[S6] \textbf{Iteration with provenance and minimal re-simulation.} World and promise changes are re-judged on stored runs; only car changes need a new run, one variable at a time; each run records its parent and round, and the next run is one button. See F132--F141.
+\item[S7] \textbf{REAL-DSL with explicit S, D and R slots and a grammar-aware editor.} \texttt{performed by}, \texttt{assuming}, \texttt{ensuring}; completion from the code's real catalogue; pointing at text locates it in the goal model. See F1--F28.
+\item[S8] \textbf{Compliance testing on a real HPC cluster from the tool.} Choose, check (laptop and cluster), run, follow with partial results, bring back and analyse. See F42--F51.
+\item[S9] \textbf{Explaining one failure.} The search's own worst case, replayed top-down from its trace with the moments that decide the verdict, beside CARLA's camera recording. See F92--F94.
+\item[S10] \textbf{The tool exposes defects in the test itself.} A fifth, ``test/scope'' category ([T]) and scene repairs driven by the tool's evidence; the search shown to exploit an oracle flaw. See F38--F39, F57, F63--F65, F78, F111.
+\item[S11] \textbf{A built-in evaluation instrument.} A study build with hidden tool verdicts, anonymous IDs, a full interaction log, tool-made R1, upload to secured storage and an admin page. See F142--F158.
+\item[S12] \textbf{Runs without building anything, and is verified.} Multi-arch Docker image, static review site, Python$\leftrightarrow$interface contract tests, about 317 Python and 267 interface tests. See F159--F169.
+\end{description}
+
+% ---------------------------------------------------------------------
+\subsection*{1. Requirements language: REAL-DSL}
+
+\begin{description}
+\item[F1] \textbf{One KAOS-style grammar.} \texttt{MAINTAIN|ACHIEVE "<objective>" by ... in scenario where ... [assuming ...] [ensuring ...]}, the single grammar of the whole project. \tagparent{goal-oriented requirement; $D, S \models R$} \ev{scripts/redsl/grammar.py}
+\item[F2] \textbf{Refinement combinators.} Goals refine with \texttt{followed by} and \texttt{parallely}; operations chain with \texttt{triggering}, so the order perception $\rightarrow$ braking is written down. \tagparent{goal refinement}
+\item[F3] \textbf{Operations bound to modules.} \texttt{task [if condition] performed by "<module>" taking input ... producing output ...}: the system under test (S) is part of the requirement. \tagparent{specification S}
+\item[F4] \textbf{\texttt{assuming}: domain assumptions (D).} Optional, \texttt{\&}-separated; older requirements still parse. \tagparent{domain properties, $\Phi_{valid}$}
+\item[F5] \textbf{\texttt{ensuring}: soft goals (R).} Added after a round showed the car ``passing'' by never moving again. \tagparent{soft goal SmoothBraking} \tagnew{} as a language slot.
+\item[F6] \textbf{Goal-tree export.} The parser returns a JSON KAOS tree written into every analysis report, so no other component re-implements the grammar. \tagnew{} \ev{grammar.py get\_goal\_tree}
+\item[F7] \textbf{Exact module catalogue.} Braking modules (\texttt{emergency\_braking}, \texttt{proportional\_braking}, \texttt{path\_aware\_braking}) and detectors (any weights present: yolov5s, yolov5m, fine\_tune, few\_shot); unknown names are refused with the implemented list, never silently replaced. \tagnew{} \ev{util.py; Notes 8.44, 8.47}
+\item[F8] \textbf{The requirement drives the run.} \texttt{performed by} selects the braking behaviour and detector weights in the simulator (before, the baseline always ran). \tagparent{S changes drive runs} \ev{api\_app.py; tests/test\_requirement\_wiring.py}
+\item[F9] \textbf{Parse errors reported with line and column,} never swallowed; the service answers a stated error instead of crashing. \taginfra
+\item[F10] \textbf{Comments} (\texttt{\#}) for provenance headers; requirements compared modulo comments and layout. \taginfra
+\item[F11] \textbf{Reference requirements} (as run, baseline, full example, the four study cars), all parse-checked by tests. \taginfra
+\item[F12] \textbf{Manual} REAL-DSL(5), a man page whose every example is checked against the parser, shown inside the tool. \tagnew{} \ev{docs/manual/real-dsl.md; ManualPage.tsx}
+\end{description}
+
+% ---------------------------------------------------------------------
+\subsection*{2. Authoring: service, editor and goal model}
+
+\begin{description}
+\item[F13] \textbf{Authoring service.} Catalogue (modules, roles, assumption and soft-goal quantities, operators, scenario words, examples), check (parse, goal tree, classified assumptions and soft goals, resolved modules, coverage) and match (past runs of exactly this requirement, by equal goal trees). Every value is read from where the pipeline reads it. \tagnew{} \ev{scripts/redsl/serve.py}
+\item[F14] \textbf{Grammar-aware editor (CodeMirror 6).} Highlighting where each quoted string takes the colour of its goal-model shape; unknown words underlined. \tagnew{} \ev{ui/src/components/requirement/DslEditor.tsx}
+\item[F15] \textbf{Grammar-guided completion.} Offers only what the grammar allows next: keywords, modules the simulator implements, quantities with unit and meaning, operators; a whole-requirement skeleton on an empty editor. \tagnew{}
+\item[F16] \textbf{The catalogue never offers an assumption about the car} (no \texttt{ego*} quantity). \tagnew{} \ev{tests/contract/authoring.test.ts}
+\item[F17] \textbf{Hover help} on keywords, quantities and modules. \tagnew{}
+\item[F18] \textbf{Parser errors and unimplemented modules marked on their line,} with a live status bar. \tagnew{}
+\item[F19] \textbf{Pointing at the text marks the goal model} (and dims the rest): text and diagram are two views of one requirement. \tagnew{}
+\item[F20] \textbf{The diagram follows the last version that parsed,} dimmed while the text does not parse. \tagnew{}
+\item[F21] \textbf{``Fill the gaps'' template editor:} fixed words, suggested gaps, menus read from the code; falls back to plain text and names the construct it cannot hold; round-trip contract text $\rightarrow$ form $\rightarrow$ text. \tagnew{}
+\item[F22] \textbf{KAOS goal model in the parent paper's notation} (goals, soft goals, agents, domain properties, obstacles with obstruction links). \tagparent{KAOS goal model, Figs.~2 and 4}
+\item[F23] \textbf{Layout with no overlap,} checked pair by pair; otherwise the reason is shown and the Tree used. \taginfra
+\item[F24] \textbf{Obstacles attached to the goals they obstruct} by name, never inferred; the unattachable ones shown apart with the reason. \tagparent{obstacles obstruct goals} \tagnew{} placement.
+\item[F25] \textbf{Selecting an obstacle highlights its chain} (obstacle, obstructed node, responsible module). \tagnew{}
+\item[F26] \textbf{Results drawn on the model:} failed parts red, broken assumptions amber. \tagnew{}
+\item[F27] \textbf{A legend that names each shape and the REAL-DSL words that write it.} \tagnew{}
+\item[F28] \textbf{Text, Tree and Diagram views} sharing one selection; an accessible WAI-ARIA goal tree. \taginfra
+\end{description}
+
+% ---------------------------------------------------------------------
+\subsection*{3. Test generation and the test scene}
+
+\begin{description}
+\item[F29] \textbf{Grammar-described scenario space (BNF)} feeding both search modes: 32, 21{,}120 and 288-scenario spaces, the latest adding sun height, wetness, rain, cloud and a parked car hiding the pedestrian. \tagparent{grammar-guided exploration, Sec.~IV-A}
+\item[F30] \textbf{Search ranges deliberately exceed the assumptions,} so broken-assumption cases occur and assumptions get evidence. \tagnew{}
+\item[F31] \textbf{Exhaustive grid mode,} chosen over GE for fair failure analysis. \tagnew{} \ev{scripts/evolve/grid.py}
+\item[F32] \textbf{List mode:} a chosen list of scenarios, each run equally often (smoke tests, checks, study chunks). \tagnew{}
+\item[F33] \textbf{Grammatical evolution (falsification),} with a fitness cache and configurable trials, population and generations. \tagparent{GE exploration} \ev{scripts/evolve/ge.py}
+\item[F34] \textbf{Constraint-aware initial population:} words in the scenario sentence bias GE towards matching scenes while keeping diversity; fitness untouched. \tagnew{} \ev{scripts/evolve/constraints.py}
+\item[F35] \textbf{Seeding and global scenario numbering} across jobs and cars: a paired design (same scenario, same seed, different car). \tagnew{}
+\item[F36] \textbf{Best scenario by the search's own rule} (lowest pass rate), saved and re-run once with a camera recording. \tagparent{falsifying scenario}
+\item[F37] \textbf{``No blind spots'' rule for parameters:} every world parameter has a template slot, a telemetry column, an assumption quantity and a keyword. \tagnew{} \ev{docs/design/parameters.md}
+\item[F38] \textbf{Scenic test scene repaired from the tool's evidence} (v2--v3): kerb-to-kerb crossing both ways, car on the pedestrian's lane, ``meet the car'' timing, weather and occlusion verified in video. \tagnew{} \ev{Notes 8.19--8.49}
+\item[F39] \textbf{Laptop scene compile check} against the real map, with placement checks; run before every cluster submission. \tagnew{} \ev{tests/test\_scene\_compile.py}
+\item[F40] \textbf{Why a scenario could not be created} is logged (retry limit, rejection reasons, attempts column). \taginfra
+\item[F41] \textbf{Systems under test:} emergency braking (baseline), proportional braking, and a new path-aware braking that brakes only for a person estimated in the lane; detector variants; one ego speed for every mode (removing a confound). \tagparent{MLSv1, M1--M4} \tagnew{} path-aware braking.
+\end{description}
+
+% ---------------------------------------------------------------------
+\subsection*{4. Execution on a real HPC cluster (Run Test)}
+
+\begin{description}
+\item[F42] \textbf{Containerised simulation stack} (CARLA 0.9.13, Redis, MLflow, API in one Apptainer job), per-job ports, liveness checks and a watchdog. \taginfra
+\item[F43] \textbf{``Start Running Compliance Test'' panel: Choose, Check, Run.} The hand procedure, done by clicks; ``open the latest result'' when this requirement already ran; quick check or full test; every job variable available. \tagnew{} \ev{RunDialog.tsx; state/runTest.ts}
+\item[F44] \textbf{Laptop preflight:} parses, resolves modules exactly as the executor does, builds every scene the job will run. \tagnew{} \ev{scripts/redsl/preflight.py}
+\item[F45] \textbf{Cluster-copy integrity check} by a code manifest (md5 of 605 files) and spot hashes, in 1.3\,s; refuses with the differing files. \tagnew{} \ev{scripts/redsl/cluster\_jobs.py}
+\item[F46] \textbf{Safety by design:} nothing is sent before every check passes; the tool never syncs code and never cancels a job (it shows the command); the reviewer's own ssh session, no stored passwords. \taginfra
+\item[F47] \textbf{Exact, recorded submission:} the requirement saved, the \texttt{sbatch} line built from the job's variables, everything logged. \taginfra
+\item[F48] \textbf{Job timeline} (queued, started on a node, scenario $n$ of $N$, brought back, opened), resumable after a reload. \tagnew{}
+\item[F49] \textbf{Partial results every 5 minutes,} analysed and labelled PARTIAL; a job ending early is labelled INCOMPLETE. \tagnew{}
+\item[F50] \textbf{Final fetch and analysis} in any end state; the result opens on the requirement under test. \taginfra
+\item[F51] \textbf{Run Test checked end to end against a hand-submitted run} (same files, seeds and hashes; CARLA nondeterminism observed). \taginfra \ev{artifacts/cluster\_checks/2026-10-14\_end\_to\_end\_comparison.md}
+\end{description}
+
+% ---------------------------------------------------------------------
+\subsection*{5. Validity: domain assumptions ($\Phi_{valid}$)}
+
+\begin{description}
+\item[F52] \textbf{Assumption vocabulary:} 16 world quantities, each with level (scenario or run), unit and source. \tagnew{} \ev{scripts/analysis/admissibility.py}
+\item[F53] \textbf{Assumption classification:} scenario-checkable, run-checkable, free text, or rejected (about the car, or unknown quantity). \tagnew{}
+\item[F54] \textbf{Per-simulation held / broken / not measured;} only broken sets a run aside, with its reason; an unrecorded quantity never counts as held. \tagparent{valid vs spurious failures} \tagnew{} computed from the requirement.
+\item[F55] \textbf{Never about the car:} any quantity of the ego vehicle is refused as an assumption (Zave--Jackson: domain properties hold independently of the machine). \tagnew{}
+\item[F56] \textbf{Per-assumption verdicts:} failure rate when held vs broken gives load-bearing / not load-bearing / insufficient data / untested / not measured. \tagnew{}
+\item[F57] \textbf{Test-scope rules file} (the [T] lever), human-edited and kept apart from the requirement's D. \tagnew{}
+\item[F58] \textbf{Assumptions judge, never constrain:} checked after the run, never imposed on the simulator. \tagparent{Sec.~IV-A separation}
+\item[F59] \textbf{Retrospective baseline:} earlier rounds re-analysed against assumptions stated afterwards, originals untouched. \tagnew{}
+\item[F60] \textbf{``Not counted'' made explicit} (no encounter, car left the road, pedestrian never crossed, set aside by a rule or a broken assumption), never counted as a pass. \tagnew{}
+\end{description}
+
+% ---------------------------------------------------------------------
+\subsection*{6. Oracle, measures and telemetry}
+
+\begin{description}
+\item[F61] \textbf{Per-simulation telemetry} appended as each run ends (killed jobs keep their data): settings, verdict, closest distance, detections, inference time, first brake, reaction. \tagnew{} \ev{scripts/analysis/telemetry.py}
+\item[F62] \textbf{Per-step traces} (distance, speeds, detections, brakes, lane offsets, pedestrian position). \tagnew{}
+\item[F63] \textbf{Oracle fixed to score the pedestrian only} (a roadside object had tripped it). \tagnew{}
+\item[F64] \textbf{Path-aware safety rule:} the 5\,m margin counts while the pedestrian is in the car's path; the same per-step robustness in the monitor and the analysis, agreement tested on 200 random traces. \tagnew{}
+\item[F65] \textbf{Finding: the search exploited the old oracle} (near misses with pedestrians off the path), motivating F64. \tagnew{} finding.
+\item[F66] \textbf{Motion and soft-goal measures} (TTC, deceleration, jerk, stop, resume time), glitch-robust (median-filtered, raw kept). \tagparent{TTC, jerk named as threats} \tagnew{} measured.
+\end{description}
+
+% ---------------------------------------------------------------------
+\subsection*{7. Failure analysis}
+
+\begin{description}
+\item[F67] \textbf{Failure taxonomy per simulation:} passed, passed but stalled, never detected, detected but not braked, detected too late (against stopping distance), brake released, braking insufficient, stopped too close; and non-encounters. \tagnew{} \ev{scripts/analysis/failure\_model.py}
+\item[F68] \textbf{Encounters vs test defects:} no encounter, left road and not crossed are excluded from every rate. \tagnew{}
+\item[F69] \textbf{Stalled passes as their own outcome,} making ``the mitigation shifts the failure mode'' measurable. \tagparent{Sec.~IV-C claim, now measured}
+\item[F70] \textbf{Setting effects} (failure rate with vs without each setting), with stated bars. \tagnew{}
+\item[F71] \textbf{Timing summary} (first detection and first brake vs stopping distance). \tagnew{}
+\item[F72] \textbf{Data-sanity warnings} (``failures vary with no setting: suspect the oracle or the scene''). \tagnew{}
+\item[F73] \textbf{Completeness:} scenarios not simulated or short of their repeats are listed. \taginfra
+\item[F74] \textbf{Paper obstacles checked against evidence} (pedestrian size, clothing, adverse weather): supported / not supported / insufficient data, with numbers. \tagparent{Fig.~4 obstacles} \tagnew{} automated.
+\item[F75] \textbf{Behaviour obstacles discovered by the tool} (DetectionTooLate, BrakingNotLatched) and a soft-goal obstacle (StandoffUnnecessaryStop). \tagnew{}
+\item[F76] \textbf{Unnamed candidate obstacles} from any strong setting effect, for a human to name or reject. \tagnew{}
+\item[F77] \textbf{Mitigation menu per layer} (data, model, system, requirement) plus a fifth, scenario layer. \tagparent{four layers, M1--M5} \tagnew{} scenario layer.
+\item[F78] \textbf{Scenario-artefact candidates} with evidence and a suggested fix, offered as scope decisions. \tagnew{}
+\item[F79] \textbf{Obstacle status across rounds} (new / persisting / resolved / absent). \tagnew{}
+\item[F80] \textbf{GE-aware labels} (``lead: confirm on grid'') and a sampling banner on every report. \tagnew{}
+\item[F81] \textbf{Soft goals checked per encounter} (met / missed / not measured); unlike assumptions, they may name the car. \tagparent{SmoothBraking} \tagnew{} checked.
+\item[F82] \textbf{Event-sequence clustering of traces} (13-event alphabet, edit distance, medoids), scored against the rule-based types with a permutation null. \tagnew{} \ev{scripts/analysis/cluster.py}
+\item[F83] \textbf{Pattern map:} every valid encounter placed by MDS with its fidelity stated; silhouette-scored cuts with honest wording (below 0.25: neighbourhoods, not types); typical run per cluster. \tagnew{} \ev{cluster\_map.py; ClusterMap.tsx}
+\item[F84] \textbf{Analysis report (JSON and Markdown, schema v2)} ending with a ``for the human'' checklist. \tagnew{}
+\end{description}
+
+% ---------------------------------------------------------------------
+\subsection*{8. Evidence and explanation in the interface}
+
+\begin{description}
+\item[F85] \textbf{Five-step review plus a worked example,} following the loop: requirement under test $\rightarrow$ example $\rightarrow$ Test Execution Report $\rightarrow$ Failure Analysis $\rightarrow$ Obstacle triage $\rightarrow$ Requirement revision. \tagparent{human-in-the-loop refinement}
+\item[F86] \textbf{Workflow tracker} under the header on every page, showing where the reviewer is in the loop. \tagnew{}
+\item[F87] \textbf{Guided tours per page} (11 tours, 39 stops, skippable; stops found by accessible name, so they cannot drift). \tagnew{}
+\item[F88] \textbf{Instruction box above every container} (context, explanation, call to action) and one way on per page. \tagnew{} (usability)
+\item[F89] \textbf{Tool output and human judgement never look alike;} every number links to its simulations. \tagnew{}
+\item[F90] \textbf{Test Execution Report:} test cases, runs, passed, failed, not counted, each linked; ``What failed in the requirement'' (each goal, soft goal and assumption: failed / broken / not checked). \tagparent{compliance results} \tagnew{} per part.
+\item[F91] \textbf{``Where it failed'':} the same parts marked in the REAL-DSL and the goal model; pointing at a row outlines it in both. \tagnew{}
+\item[F92] \textbf{Best scenario explained} (``best for the search, worst for the car''). \tagnew{}
+\item[F93] \textbf{Scenario replay from the trace:} top-down, to scale, with the safety margin, detector cone and brake lights; jump to first detection, first brake and closest approach; switch runs to compare failed and passed. \tagnew{} \ev{ScenarioReplay.tsx}
+\item[F94] \textbf{CARLA camera recording} beside the replay, honestly captioned as a separate re-run. \taginfra
+\item[F95] \textbf{Trace view} per simulation. \tagparent{traces as evidence}
+\item[F96] \textbf{Evidence per obstacle,} joined from the report and the table, with a warning when they disagree. \tagnew{}
+\item[F97] \textbf{Test-cases table and downloads} (cases, every run, raw CSV). \taginfra
+\item[F98] \textbf{Pattern map in the page:} shape = outcome, colour = cluster (colour-blind-safe); the selected obstacle's runs ringed; click a dot to open its trace; cut slider with silhouette; cluster cards with outcomes, settings and a typical run step by step. \tagnew{}
+\item[F99] \textbf{Failure Analysis layout:} goal model with obstacles, evidence of the selected obstacle, then patterns. \tagnew{}
+\item[F100] \textbf{Rounds page:} each round's requirement version, system, counts and state (not analysed / awaiting signature / signed), with the labelled change between rounds. \tagparent{iterative rounds}
+\item[F101] \textbf{Count table beside the previous round.} \tagparent{round comparison}
+\item[F102] \textbf{Workspace:} open a folder (read and write), drop files, or open a bundled example; files validated by schemas, older reports in a stated reduced mode. \taginfra
+\item[F103] \textbf{Welcome page and expertise recorded with every signature} (decisions attributable to a background). \tagnew{}
+\item[F104] \textbf{Overview with the architecture figure} and a help video. \tagparent{Fig.~1}
+\item[F105] \textbf{PARTIAL and INCOMPLETE banners} on every review step. \tagnew{}
+\end{description}
+
+% ---------------------------------------------------------------------
+\subsection*{9. Human decisions}
+
+\begin{description}
+\item[F106] \textbf{Triage per obstacle:} ``the world explains these failures'' (adds the obstacle's assumption to R1), ``the requirement leaves this out'' (adds a soft goal), or ``the car is at fault'' (carried to revision). \tagparent{obstacle resolution; D, R, S changes} \tagnew{} as a three-way human step.
+\item[F107] \textbf{``Already in R0'':} the option says when nothing would be added. \tagnew{}
+\item[F108] \textbf{World option refused for car-side ideas,} with its reason, and the idea offered instead as a request on the car (``travel at most 5\,m/s where a pedestrian may cross''). \tagnew{}
+\item[F109] \textbf{Pre-filled tool verdicts stay unconfirmed until a person selects them.} \tagnew{}
+\item[F110] \textbf{``What the tool says'' / ``What this means'' panel} on every card, visually distinct from instructions. \tagnew{} (usability)
+\item[F111] \textbf{Scope decisions on set-aside rules and test artefacts:} out of scope (state the limit), in scope (drop the rule), or scenario defect (fix the test). \tagparent{test scope} \tagnew{} [T].
+\item[F112] \textbf{The limit to state is its own field;} it, never the reason, becomes the R1 assumption; signing waits for it. \tagnew{}
+\item[F113] \textbf{A limit or new assumption about the car is refused} in both the interface and Python. \tagnew{}
+\item[F114] \textbf{Assumption verdicts:} keep, tighten, loosen or drop (with new text), each with a reason; loosening an untested assumption is flagged. \tagparent{D changes}
+\item[F115] \textbf{Added assumptions.} \tagparent{D changes}
+\item[F116] \textbf{Revision of each remaining failure:} refine the requirement in your own words, confirm a real system failure and choose a fix, or leave it for the next round. \tagnew{}
+\item[F117] \textbf{Fix catalogue by layer,} each fix showing its REAL-DSL edit; rewording allowed and marked. \tagparent{refinement tables}
+\item[F118] \textbf{Re-judged count:} ``with the refined requirement, $k$ of $N$ failures still count against the car'', or why nothing changed. \tagnew{}
+\item[F119] \textbf{Completeness gaps:} signing is blocked with a list of what is left. \tagnew{}
+\item[F120] \textbf{Drafts survive a reload} and are never the signed file. \taginfra
+\item[F121] \textbf{Terminal review and an earlier Streamlit page} write the same files. \taginfra
+\end{description}
+
+% ---------------------------------------------------------------------
+\subsection*{10. From decisions to the refined requirement}
+
+\begin{description}
+\item[F122] \textbf{\texttt{decisions.json}:} the human decisions recorded as an artefact (verdicts, scope, assumptions, mitigations, reasons, reviewer and expertise); it records, nothing is applied. \tagparent{human-driven refinement} \tagnew{} recorded artefact.
+\item[F123] \textbf{Tool fields pre-filled, human fields left empty;} completeness requires a decision on every item. \tagnew{}
+\item[F124] \textbf{\texttt{validate()}} rejects unknown verdicts or layers, inconsistent mitigations, missing new text, and text about the car. \tagnew{}
+\item[F125] \textbf{Change kinds S/R/D/T:} [S] the car (\texttt{performed by}), [R] the promise (\texttt{ensuring}), [D] the assumptions (\texttt{assuming}), [T] the test or scope (not requirement text). \tagparent{$S'$, $R'$, $D''$} \tagnew{} [T].
+\item[F126] \textbf{Planning the changes:} tables map the paper's mitigations onto module slots (flagging modules the executor lacks); scope and assumption verdicts map to [D] or [T]. \tagnew{} \ev{scripts/analysis/refine.py}
+\item[F127] \textbf{R1 must parse or nothing is written;} a hand-edited R1 is flagged. \tagnew{}
+\item[F128] \textbf{Generated files:} \texttt{R0.dsl}, \texttt{R1.dsl}, \texttt{requirement\_diff.md} (labelled change list, side by side, unified diff). \tagnew{}
+\item[F129] \textbf{R0 and R1 side by side in the interface,} each change with its kind chip. \tagparent{change kinds}
+\item[F130] \textbf{Signing writes the four files} into the round folder, or offers them as downloads. \tagparent{signed refinement}
+\item[F131] \textbf{Byte-identical Python and interface:} the same \texttt{decisions.json}, \texttt{R1.dsl} and diff, under contract tests; the review flow checked by running Python's planner on its decisions. \taginfra
+\end{description}
+
+% ---------------------------------------------------------------------
+\subsection*{11. Iteration, lineage and comparison}
+
+\begin{description}
+\item[F132] \textbf{Re-judging on stored runs without new simulation:} world (D) and promise (R) changes are judged by re-analysis; only car (S) changes need a new run, one change per run. \tagnew{}
+\item[F133] \textbf{Re-judging in the page,} ported from Python and contract-tested to match it exactly (864 simulations). \tagnew{}
+\item[F134] \textbf{Alternative safety-rule reports,} each stating its rule; superseded analyses moved aside, never deleted. \tagnew{}
+\item[F135] \textbf{One-variable round comparison:} flags any difference other than the system under test, compares failure rates over true encounters, failure types, timing and obstacle verdicts. \tagnew{} \ev{scripts/analysis/compare.py}
+\item[F136] \textbf{Template, grammar and scene hashes in every run} so a hidden test change is flagged. \tagnew{}
+\item[F137] \textbf{Run provenance:} parent run, round, requirement, system under test, seed, scene and hashes. \tagparent{iteration and traceability}
+\item[F138] \textbf{``Run Compliance Test on R1'':} after signing, the refined requirement is run as the next run, recording its parent and round. \tagnew{} \ev{RunNext.tsx}
+\item[F139] \textbf{``Second run of this requirement'' banner} on the new report, linking back to the first. \tagnew{}
+\item[F140] \textbf{Pre-registered predictions} written before each run and checked after. \tagnew{} (method)
+\item[F141] \textbf{GE grid check:} GE's worst and safest scenarios re-run evenly to confirm its leads. \tagnew{}
+\end{description}
+
+% ---------------------------------------------------------------------
+\subsection*{12. Study mode: an evaluation instrument}
+
+\begin{description}
+\item[F142] \textbf{A separate study build,} stamped with its code version in every participant's file; the normal tool unchanged. \tagstudy
+\item[F143] \textbf{Welcome and expertise in the participant's own words.} \tagstudy
+\item[F144] \textbf{Anonymous participant IDs} (random, unambiguous letters), resumable sessions. \tagstudy
+\item[F145] \textbf{Tool verdicts hidden in 17 places;} obstacles listed alphabetically with all evidence kept. \tagstudy
+\item[F146] \textbf{Neutral run ids and wording;} a test checks the overview gives no hint. \tagstudy
+\item[F147] \textbf{Pre-computed rounds:} 288 scenarios $\times$ 3 runs $\times$ 4 cars (3{,}456 simulations), revealed when the participant runs the requirement. \tagstudy
+\item[F148] \textbf{A fix menu limited to cars with saved runs;} R1 made by the tool only. \tagstudy
+\item[F149] \textbf{Signing checks} (R1's car must have a saved run), every attempt logged. \tagstudy
+\item[F150] \textbf{Full interaction log:} pages entered and left, every decision and reason (with changes of mind), clicks, tours, video play, signing. \tagstudy
+\item[F151] \textbf{The session ends at signing;} a thank-you screen survives a reload. \tagstudy
+\item[F152] \textbf{One zip per participant} (four signed files plus the log), written without any dependency. \tagstudy
+\item[F153] \textbf{Online upload to secured storage:} anyone may add a session, only the researcher may read; nothing can be changed or deleted from the page; the download stays as backup; tested from outside. \tagstudy
+\item[F154] \textbf{Upload status and retry} on the end screen. \tagstudy
+\item[F155] \textbf{Admin page:} sign in, every session listed (expertise, car, time taken), download one or all. \tagstudy
+\item[F156] \textbf{Scripted dry run} of a whole session before every batch. \taginfra
+\item[F157] \textbf{Study analysis:} each participant's R1 drawn as a goal model, plus a combined model counting how many made each change. \tagnew{} \ev{scripts/analysis/study\_goal\_models.py}
+\item[F158] \textbf{Study design:} questions, about 10 participants reviewing the same round independently, decisions compared. \tagstudy \ev{docs/paper/experiment\_design.md}
+\end{description}
+
+% ---------------------------------------------------------------------
+\subsection*{13. Packaging, reproducibility and quality}
+
+\begin{description}
+\item[F159] \textbf{Static, serverless review:} the interface runs from files (Docker, GitHub Pages) with no backend. \taginfra
+\item[F160] \textbf{Multi-arch Docker image} (amd64, arm64) on a public registry, one command to run. \taginfra
+\item[F161] \textbf{Demo mode:} the whole laptop-side loop on bundled rounds in about 6\,s. \taginfra
+\item[F162] \textbf{Public release repository} with a clean history and licence. \taginfra
+\item[F163] \textbf{Configuration by settings with the old defaults.} \taginfra
+\item[F164] \textbf{Results discipline:} every result saved in its run folder, never overwritten, labelled when partial or hypothetical. \taginfra (method)
+\item[F165] \textbf{Tests:} about 317 Python tests (no CARLA needed: stand-ins), 267 interface tests; contract tests between Python and interface; continuous integration for the interface. \taginfra
+\item[F166] \textbf{Accessibility:} WCAG 2.2 AA contrast tests over the real palette, meaning never by colour alone, keyboard and screen-reader support, reduced motion. \taginfra
+\item[F167] \textbf{Design system:} one palette with one job per colour, tokens in one file, bundled fonts, code shown without ligatures. \taginfra
+\item[F168] \textbf{Carbon accounting} of the cluster use. \taginfra \ev{Notes 8.35}
+\item[F169] \textbf{Video pipeline:} the demo recorded and assembled by scripts (clips, voice aligned to word timings, captions). \taginfra
+\end{description}
+
+% ---------------------------------------------------------------------
+\subsection*{14. Findings the tool produced (usable as evaluation)}
+
+\begin{description}
+\item[E1] \textbf{The mitigation shifted the failure mode.} Emergency $\rightarrow$ proportional braking: failures 76\% $\rightarrow$ 3\% of encounters, but stalled passes 12 $\rightarrow$ 113.
+\item[E2] \textbf{Four cars on the same 288 scenarios $\times$ 3} (valid failures): as tested 22/376; larger detector 6/376; path-aware braking 349/375; both 335/375. A plausible fix made it far worse; the as-tested car stalled in 332 of 354 passes.
+\item[E3] \textbf{An assumption broken by the car itself} (pedestrian speed, set by the scene from the car's speed) excused 455 failures until found; removed and the rounds re-judged, not re-run.
+\item[E4] \textbf{The search exploited the oracle} (near misses off the car's path) until the path-aware rule.
+\item[E5] \textbf{Test defects surfaced} (a trigger at 8\,m, one direction never crossing, a dead distance parameter, the car leaving the road) and repaired.
+\item[E6] \textbf{The pattern map's structure is stated honestly} (e.g.\ silhouette 0.33 at best on one round; 84\% rank fidelity).
+\end{description}
+
+% ---------------------------------------------------------------------
+\subsection*{15. Limitations (for threats to validity)}
+
+\begin{description}
+\item[L1] Free-text assumptions are recorded but never checked; near misses in wording silently become free text.
+\item[L2] An assumption the car itself breaks is not detected automatically (found by hand, E3).
+\item[L3] The car is recognised only by an \texttt{ego} quantity; a typed limit or reason describing the car in words is not caught.
+\item[L4] The fix tables still propose ``pedestrian is at least 1.2\,m tall'' as a world explanation for small pedestrians, which scopes children away (against the parent paper) and is unchecked free text; to be resolved.
+\item[L5] Two proposed modules (latched braking, braking with resume) are not implemented.
+\item[L6] REAL-DSL quirks: one goal per file; \texttt{|} read as \texttt{\&}; empty refinements parse; only detector and braking affect the run; combinators do not change the simulation; internal token names in some errors.
+\item[L7] Evidence bars (15 points, 10 per side, 25\% share) are judgement calls, not significance tests.
+\item[L8] Few repeats per scenario; CARLA is nondeterministic (a borderline scenario flipped between identical runs).
+\item[L9] GE samples unevenly; its leads need the grid check.
+\item[L10] Path-aware braking assumes a 1.7\,m person height, so a child is estimated further out.
+\item[L11] Deceleration and jerk values are implausible in the simulator; comparable only between rounds.
+\item[L12] One case study: one learned component, one scene, one ego speed.
+\item[L13] Re-judging in the page recomputes verdicts and counts, not obstacles; in the normal tool it needs the study's quantities file.
+\item[L14] Running from the tool needs a live ssh session to the cluster; not available in Docker; the scenario offset cannot be set from the panel.
+\item[L15] ``Run Compliance Test on R1'' tested with fakes, not yet with a real second run.
+\item[L16] No continuous integration for the Python tests.
+\item[L17] Study participants' sessions not yet run; storage region (EU) to be checked against the ethics approval.
+\end{description}

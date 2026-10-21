@@ -386,35 +386,6 @@ MAINTAIN "Pedestrian Safety" & "Passenger Comfort"
     in scenario where "A pedestrian crossing the street in fog."
 ```
 
-## LIMITATIONS
-
-- One goal per file. The grammar declares `start : (goal)+`, but the parser starts at `goal`, so a second `MAINTAIN` or `ACHIEVE` is a parse error.
-- The executor runs only two roles, perception and braking, found by the task names `Detect Pedestrian`, `Apply Brakes` and `Brake`. Every other task, agent, input, output and condition is recorded in the goal tree but does not change the simulation.
-- Conditions after `if` are not evaluated. `&` and `|` are both read as `&` when the goal tree is built, so `|` is lost.
-- `followed by` and `parallely` do not change the simulation either. Mixing them in one refinement without grouping is ambiguous; the parser picks one grouping. Use one combinator per refinement.
-- The rules `refined_goal` and `operation` accept an empty sequence: `MAINTAIN "G" by in scenario where "fog"` parses, with an empty refinement.
-- Scenario words match as substrings: "walking along the road" sets `distance` to Long, "the crossing is clear" sets `fog_density` to 0.
-- An assumption or soft goal is measurable only as `<quantity> <op> <number>` with a one-word quantity from the tables. Ranges, units and words such as `and` are free text.
-- A string cannot contain a double quote except as `\"`.
-- The requirement editor's form cannot hold:
-  - several top-level goals in one file;
-  - `parallely` between sub-goals (the form writes `followed by`);
-  - `triggering` between operations;
-  - a sub-goal refined into further sub-goals;
-  - `&` between objectives;
-  - `|` in a condition.
-
-  Such a requirement still parses and runs; the editor keeps it as text.
-
-## FILES
-
-- `*.dsl` - a requirement is a plain text file; the extension is a convention, the tool reads the text.
-- `requirements/<name>` - where Run Test saves a requirement before submitting it.
-- `artifacts/runs/<run_id>/run_meta.json` - every run records the full requirement text in the field `requirement`, where it came from in `requirement_source`, and the modules actually run in `system_under_test`.
-- `scripts/redsl/grammar.py` - the grammar and the parser (class `DSL`).
-- `scripts/redsl/serve.py` - the authoring helper: `GET /authoring/catalog` lists the vocabulary of this page; `POST /authoring/check` with `{"text": ...}` parses a requirement and classifies its assumptions, soft goals and modules.
-- `scripts/analysis/admissibility.py`, `scripts/analysis/soft_goals.py` - the quantities and the measurable form.
-
 ## SEE ALSO
 
 `docs/examples/` - `R_baseline.dsl` (every clause, baseline assumptions and soft goals), `R0_rounds1_2.dsl` (no assumptions, no soft goals), `requirement_full_example.dsl` (short form of every clause).

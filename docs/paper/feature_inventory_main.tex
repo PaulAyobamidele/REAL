@@ -1,0 +1,28 @@
+% A standalone document around feature_inventory.tex, to compile it on its own
+% (Overleaf: upload both files, set this one as the main document, compile with pdfLaTeX).
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}        % so | < > and quotes in \texttt print as typed
+\usepackage{lmodern}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\setlist[description]{leftmargin=3.2em, labelindent=0pt, itemsep=2pt, font=\normalfont\bfseries}
+\usepackage[hidelinks]{hyperref}
+
+% the tags, in colour here (feature_inventory.tex only provides plain versions)
+\newcommand{\tagnew}{\textcolor{teal!70!black}{\textsc{[new]}}}
+\newcommand{\tagparent}[1]{\textcolor{blue!60!black}{\textsc{[parent: #1]}}}
+\newcommand{\tagstudy}{\textcolor{violet!70!black}{\textsc{[study]}}}
+\newcommand{\taginfra}{\textcolor{gray}{\textsc{[infra]}}}
+\newcommand{\ev}[1]{{\footnotesize\color{gray}\,(#1)}}
+
+\title{REAL: inventory of features\\[2pt]\large for sieving into the ICSE 2027 tool paper}
+\date{20 October 2026}
+
+\begin{document}
+\maketitle
+\input{feature_inventory}
+\end{document}

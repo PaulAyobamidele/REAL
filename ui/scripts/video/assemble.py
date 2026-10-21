@@ -95,6 +95,9 @@ def frames_of_clip(path):
         if not ok:
             break
         out.append(f if (f.shape[1], f.shape[0]) == SIZE else cv2.resize(f, SIZE))
+    # a recording can open on a frame or two before the page has drawn: a blank flash, dropped
+    while len(out) > 1 and out[0][60:1000:40, 100:1800:40].std() < 3:
+        out.pop(0)
     return out, cap.get(cv2.CAP_PROP_FPS) or FPS
 
 
