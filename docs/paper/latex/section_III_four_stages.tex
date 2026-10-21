@@ -41,7 +41,7 @@ iteration. The engineer intervenes at two points only: specifying $R_0$
 stages are automated, and every computed result is presented together with its
 supporting evidence. Consecutive stages communicate through a single artefact
 each: the checked requirement, the execution traces, the diagnosis, and the
-signed decisions. Section~\ref{sec:features} details the features, F1--F7,
+signed decisions. Section~\ref{sec:features} details the features, F1--F8,
 that realise each stage.
 
 \subsection{Stage 1: Requirement Elicitation}
@@ -64,18 +64,20 @@ and outputs the execution traces.
 \subsection{Stage 3: Diagnose Test Results}
 \label{sec:diagnose}
 \tool{} judges each run valid or spurious against the assumptions of $R_0$
-(F2), types each valid failure from its trace, and abstracts recurring failures
-into obstacles with supporting evidence (F5). The stage outputs the diagnosis:
+(F2), types each valid failure from its trace and abstracts recurring failures
+into obstacles with supporting evidence (F5), and clusters the traces by their
+event sequences to expose behaviour patterns that the taxonomy does not name
+(F6). The stage outputs the diagnosis:
 valid failures, obstacles, and a verdict on each assumption.
 
 \subsection{Stage 4: Decide and Refine}
 \label{sec:decide}
 In the review interface, the engineer triages each obstacle and assumption,
-supported by the tool's suggestions and evidence (F6). \tool{} then derives
+supported by the tool's suggestions and evidence (F7). \tool{} then derives
 $R_1$, attributing each change to the system~[S], the domain~[D] or the
-requirement~[R], and records the signed decisions (F7). System changes trigger
+requirement~[R], and records the signed decisions (F8). System changes trigger
 a new iteration from stage~1; domain and requirement changes are re-diagnosed on
-the recorded traces, without re-simulation (F7).
+the recorded traces, without re-simulation (F8).
 
 \subsection{Implementation}
 \label{sec:impl}
@@ -102,7 +104,7 @@ one such gap; the corresponding components carry a $\bigstar$ in
 Fig.~\ref{fig:real-architecture}.
 
 % F1 <- inventory F5-F7, F13-F21; F2 <- F52-F56, F59-F60; F3 <- F30-F39, F44-F49;
-% F4 <- F61-F66; F5 <- F67-F84; F6 <- F89-F119; F7 <- F122-F139.
+% F4 <- F61-F66; F5 <- F67-F81, F84; F6 <- F82-F83, F98; F7 <- F89-F119; F8 <- F122-F139.
 \paragraph*{F1 Entailment-aware specification (stage 1)} \tool{} extends the
 REAL DSL with an \dslkw{ensuring} slot for soft goals, so a requirement states
 the system (\dslkw{performed by}), the domain (\dslkw{assuming}) and the
@@ -141,10 +143,25 @@ run into a failure taxonomy (never detected, detected too late, brake released,
 stopped too close, passed but stalled, among others) and separates test defects
 from encounters. It checks REAL's catalogue obstacles against the evidence,
 proposes obstacles of its own (e.g.\ \textsc{DetectionTooLate}), and surfaces
-unnamed candidates from any factor that raises the failure rate. A behaviour
-map clusters all encounters by event sequence and reports its own fidelity.
+unnamed candidates from any factor that raises the failure rate.
 
-\paragraph*{F6 Human triage with automatic support (stage 4)} The review
+\paragraph*{F6 Clustering of failure traces (stage 3)} REAL leaves trace
+clustering to future work, pointing to DYNASTO~\cite{dynasto2026}. \tool{}
+encodes each run as the sequence of 13 events it exhibits (e.g.\ first
+detection, braking released while moving, pedestrian enters the lane), one
+\emph{set} of events per step, truncated at the closest approach so that runs
+ending alike align regardless of duration. Runs are compared by an edit
+distance whose substitution cost is the Jaccard distance between event sets,
+normalised by length; the repeats of a scenario are collapsed to their medoid.
+Hierarchical clustering is then calibrated rather than tuned: linkage and cut
+threshold are swept and scored by adjusted Rand index against the rule-based
+failure types, with a permutation null. For review, a behaviour map places
+every encounter by classical multidimensional scaling and states its own
+faithfulness (variance captured, rank correlation with the true distances);
+clusters are cut at the highest silhouette, and cuts below 0.25 are labelled
+neighbourhoods rather than failure types~\cite{kaufman1990}.
+
+\paragraph*{F7 Human triage with automatic support (stage 4)} The review
 interface walks the engineer through five steps, linking every number to its
 simulations and replaying any run from its trace. For each obstacle the engineer
 decides whether the world, the requirement or the system accounts for the
@@ -152,7 +169,7 @@ failures; the tool's suggestions remain unconfirmed until a person selects them,
 car-side changes are refused as domain assumptions, and signing is blocked until
 every item is decided.
 
-\paragraph*{F7 Traceable refinement (stage 4)} Decisions are recorded and
+\paragraph*{F8 Traceable refinement (stage 4)} Decisions are recorded and
 validated as an artefact, and $R_1$ is written only if it parses, with every
 change labelled [S], [D], [R], or [T] (a defect in the test itself). Domain and
 requirement changes are re-diagnosed on the stored traces in seconds; system
