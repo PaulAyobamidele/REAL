@@ -145,16 +145,18 @@ from encounters. It checks REAL's catalogue obstacles against the evidence,
 proposes obstacles of its own (e.g.\ \textsc{DetectionTooLate}), and surfaces
 unnamed candidates from any factor that raises the failure rate.
 
-\paragraph*{F6 Clustering of failure traces (stage 3)} REAL leaves trace
-clustering to future work, pointing to DYNASTO~\cite{dynasto2026}. \tool{}
+\paragraph*{F6 Clustering of failure traces (stage 3)} Following the direction
+set out in REAL~\cite{real2026}, \tool{} automates failure grouping by
+clustering traces, adapting the approach of DYNASTO~\cite{dynasto2026}. \tool{}
 encodes each run as the sequence of 13 events it exhibits (e.g.\ first
 detection, braking released while moving, pedestrian enters the lane), one
 \emph{set} of events per step, truncated at the closest approach so that runs
 ending alike align regardless of duration. Runs are compared by an edit
 distance whose substitution cost is the Jaccard distance between event sets,
 normalised by length; the repeats of a scenario are collapsed to their medoid.
-Hierarchical clustering is then calibrated rather than tuned: linkage and cut
-threshold are swept and scored by adjusted Rand index against the rule-based
+To make the choice of
+hierarchical clustering parameters explicit, linkage and cut threshold are
+swept and scored by adjusted Rand index against the rule-based
 failure types, with a permutation null. For review, a behaviour map places
 every encounter by classical multidimensional scaling and states its own
 faithfulness (variance captured, rank correlation with the true distances);
