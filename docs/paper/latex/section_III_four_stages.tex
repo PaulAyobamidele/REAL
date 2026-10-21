@@ -117,13 +117,18 @@ refuses unknown module names instead of silently substituting another system.
 
 \paragraph*{F2 Admissibility derived from the requirement (stages 1, 3)}
 Where REAL states the admissibility predicate $\Phi_{\mathit{valid}}$ apart
-from the requirement, \tool{} derives it from the \dslkw{assuming} clauses over a vocabulary of 16
-world quantities. Each run records every assumption as held, broken or not
-measured, and a failure is spurious only if an assumption was broken. Following
-Zave and Jackson~\cite{zave1997}, assumptions over the system under test are
-rejected, so failures cannot be defined away. Each assumption further receives
-a verdict (load-bearing, not load-bearing, untested, insufficient data),
-answering empirically whether it was needed.
+from the requirement, \tool{} derives it from the \dslkw{assuming} clauses.
+Each clause of the form \emph{quantity operator value} is matched against a
+vocabulary of measurable world quantities and checked, for every run, against
+either the scenario's settings (e.g.\ fog density, sun altitude) or the run's
+measurements (e.g.\ the initial separation); the assumption is recorded as
+held, broken or not measured, and a failure is spurious only if an assumption
+was broken. Clauses outside this form are kept as free text for the engineer.
+Following Zave and Jackson~\cite{zave1997}, assumptions over the system under
+test are rejected, so failures cannot be defined away by constraining the
+system's own behaviour. Each assumption further receives a verdict
+(load-bearing, not load-bearing, untested, insufficient data), answering
+empirically whether it was needed.
 
 \paragraph*{F3 Requirement-driven, reproducible test generation (stage 2)}
 Besides grammatical evolution, \tool{} enumerates the scenario space
