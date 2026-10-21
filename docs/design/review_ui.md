@@ -1046,3 +1046,15 @@ Built as planned, with these differences:
 - The "Bundled example" card no longer counts the rounds (the dev build serves two, the
   image three); the index label under it names the set.
 
+### 2026-10-21 - study signing no longer waits on the network
+- A live dry run that sat on step 5 before signing never got its zip: signing first
+  re-read the site's round list to check the chosen car, and after a minute or more
+  idle the browser's connection to the site was stale (measured: every fetch after
+  30 s idle took about 10 s; at signing two of them hung over 45 s). The button span
+  with no message. Earlier dry runs passed only because they moved through step 5 fast.
+- `bundledRounds()` (`study/studySource.ts`) reads the saved rounds once, when the
+  study opens, and keeps them; signing and the replay use that list. Signing waits at
+  most `CHECK_MS` (10 s) for it, then refuses with "could not be reached ... press Sign
+  again (nothing is lost)". Two tests: signing with every request hanging after the
+  list was read; the 10 s refusal on a fresh page.
+- `scripts/study/dry_run.mjs`: `PAUSE_S=<s>` idles on step 5 before signing.

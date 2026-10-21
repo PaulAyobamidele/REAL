@@ -2630,6 +2630,17 @@ GitHub in 8 min, amd64 + arm64, 537 MB; the published image passes the same walk
 build (1,208/1,208 files, no error or warning banner, catalog answers). Other clones (the
 cluster's) must be reset to the rewritten history before any push.
 
+### 8.58 2026-10-21 — study: signing after an idle step 5
+
+The live dry run before the first participants found a blocker: on the published
+site, signing after a few minutes on step 5 span forever with no zip. Signing re-read
+the site's round list before making the zip, and an idle browser's connection to
+GitHub Pages was stale (fetches after 30 s idle: about 10 s; at signing: over 45 s).
+Fixed in the study build only: the list is read once when the study opens and kept;
+signing waits at most 10 s, then says the site could not be reached and to press Sign
+again. 279 UI tests. Republished; the live dry run repeated with a 3-minute idle on
+step 5 (PAUSE_S=180).
+
 ### 8.7 The iteration loop (stages 7-9) — original design
 
 Per round: requirement R_n → run (grid) → `simulations.csv` → report →

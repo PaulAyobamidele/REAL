@@ -1,0 +1,7 @@
+participant,kind,diagnosis,decision,rating,why,reason
+S-D8SD,obstacle,PedestrianSizeTooSmall,car:later,helpful,,Dry run: reason for PedestrianSizeTooSmall.
+S-D8SD,obstacle,PedestrianClothingNotVisible,car:later,helpful,,Dry run: reason for PedestrianClothingNotVisible.
+S-D8SD,obstacle,AdverseWeather,world,not_helpful,Dry run: no data behind it.,Dry run: reason for AdverseWeather.
+S-D8SD,obstacle,DetectionTooLate,car:system,helpful,,Dry run: reason for DetectionTooLate.
+S-D8SD,obstacle,BrakingNotLatched,promise,helpful,,Dry run: reason for BrakingNotLatched.
+S-D8SD,obstacle,StandoffUnnecessaryStop,car:refine,helpful,,Dry run: reason for StandoffUnnecessaryStop.

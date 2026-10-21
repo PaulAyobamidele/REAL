@@ -1,0 +1,210 @@
+{
+ "participants": [
+  {
+   "source": "study_S-D8SD.zip",
+   "id": "S-D8SD",
+   "expertise": "Dry run (requirements engineering)",
+   "car": "C3",
+   "build": "m-study-mode-57-g22caae8",
+   "signed_at": "2026-10-21T13:23:12.255Z",
+   "minutes": 3.4,
+   "requirements_refined": 2,
+   "promise_lines_added": [
+    "once braking has started it continues until the vehicle has stopped or the pedestrian is clear"
+   ],
+   "refined_in_own_words": [
+    "The car must resume within 10 s once the crossing is clear."
+   ],
+   "assumptions_refined": 0,
+   "assumption_lines_added": [],
+   "assumption_verdicts": {
+    "keep": 4
+   },
+   "system_changes": [
+    "yolov5m"
+   ],
+   "test_fixes": 0,
+   "deferred": 2,
+   "ratings": {
+    "helpful": 5,
+    "not_helpful": 1
+   },
+   "unhelpful": [
+    "AdverseWeather"
+   ],
+   "diagnoses": [
+    {
+     "participant": "S-D8SD",
+     "kind": "obstacle",
+     "diagnosis": "PedestrianSizeTooSmall",
+     "decision": "car:later",
+     "rating": "helpful",
+     "why": null,
+     "reason": "Dry run: reason for PedestrianSizeTooSmall."
+    },
+    {
+     "participant": "S-D8SD",
+     "kind": "obstacle",
+     "diagnosis": "PedestrianClothingNotVisible",
+     "decision": "car:later",
+     "rating": "helpful",
+     "why": null,
+     "reason": "Dry run: reason for PedestrianClothingNotVisible."
+    },
+    {
+     "participant": "S-D8SD",
+     "kind": "obstacle",
+     "diagnosis": "AdverseWeather",
+     "decision": "world",
+     "rating": "not_helpful",
+     "why": "Dry run: no data behind it.",
+     "reason": "Dry run: reason for AdverseWeather."
+    },
+    {
+     "participant": "S-D8SD",
+     "kind": "obstacle",
+     "diagnosis": "DetectionTooLate",
+     "decision": "car:system",
+     "rating": "helpful",
+     "why": null,
+     "reason": "Dry run: reason for DetectionTooLate."
+    },
+    {
+     "participant": "S-D8SD",
+     "kind": "obstacle",
+     "diagnosis": "BrakingNotLatched",
+     "decision": "promise",
+     "rating": "helpful",
+     "why": null,
+     "reason": "Dry run: reason for BrakingNotLatched."
+    },
+    {
+     "participant": "S-D8SD",
+     "kind": "obstacle",
+     "diagnosis": "StandoffUnnecessaryStop",
+     "decision": "car:refine",
+     "rating": "helpful",
+     "why": null,
+     "reason": "Dry run: reason for StandoffUnnecessaryStop."
+    }
+   ],
+   "seconds_per_step": {
+    "overview": 2,
+    "author": 2,
+    "1 requirement": 1,
+    "example": 5,
+    "2 report": 2,
+    "3 failure analysis": 2,
+    "4 triage": 3
+   },
+   "evidence": {
+    "video_played": 1,
+    "runs_switched": 1,
+    "obstacles_selected": 1,
+    "typical_runs_opened": 0,
+    "tours_skipped": 8
+   },
+   "problems": []
+  }
+ ],
+ "duplicates": [],
+ "per_diagnosis": {
+  "obstacle:PedestrianSizeTooSmall": {
+   "decisions": {
+    "car:later": 1
+   },
+   "ratings": {
+    "helpful": 1
+   },
+   "why": []
+  },
+  "obstacle:PedestrianClothingNotVisible": {
+   "decisions": {
+    "car:later": 1
+   },
+   "ratings": {
+    "helpful": 1
+   },
+   "why": []
+  },
+  "obstacle:AdverseWeather": {
+   "decisions": {
+    "world": 1
+   },
+   "ratings": {
+    "not_helpful": 1
+   },
+   "why": [
+    "S-D8SD: Dry run: no data behind it."
+   ]
+  },
+  "obstacle:DetectionTooLate": {
+   "decisions": {
+    "car:system": 1
+   },
+   "ratings": {
+    "helpful": 1
+   },
+   "why": []
+  },
+  "obstacle:BrakingNotLatched": {
+   "decisions": {
+    "promise": 1
+   },
+   "ratings": {
+    "helpful": 1
+   },
+   "why": []
+  },
+  "obstacle:StandoffUnnecessaryStop": {
+   "decisions": {
+    "car:refine": 1
+   },
+   "ratings": {
+    "helpful": 1
+   },
+   "why": []
+  }
+ },
+ "agreement": {
+  "fleiss_kappa_triage": null,
+  "categories": [
+   "world",
+   "promise",
+   "car:refine",
+   "car:system",
+   "car:later",
+   "undecided"
+  ]
+ },
+ "outcomes": {
+  "C1": {
+   "failures": 22,
+   "encounters": 376,
+   "passes": 354
+  },
+  "C2": {
+   "failures": 349,
+   "encounters": 375,
+   "passes": 26
+  },
+  "C3": {
+   "failures": 6,
+   "encounters": 376,
+   "passes": 370
+  },
+  "C4": {
+   "failures": 335,
+   "encounters": 375,
+   "passes": 40
+  }
+ },
+ "totals": {
+  "participants": 1,
+  "requirements_refined": 2,
+  "assumptions_refined": 0,
+  "diagnoses_rated": 6,
+  "diagnoses_unhelpful": 1,
+  "sessions_with_problems": 0
+ }
+}
