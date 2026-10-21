@@ -1,0 +1,69 @@
+% REAL-DSL typesetting for the paper: one listing of R0 and inline macros that
+% match it. Paste the PREAMBLE block into the preamble and the LISTING block
+% where R0 is first mentioned (stage 1). Compiles with pdfLaTeX, IEEEtran.
+
+% ---------------------------------------------------------------- PREAMBLE
+\usepackage[T1]{fontenc}
+\usepackage[scaled=0.86]{inconsolata}   % a clean typewriter face; 0.86 matches Times' x-height
+\usepackage{upquote}                      % straight quotes " in \texttt and listings, never ``''
+\usepackage{listings}
+\usepackage{xcolor}
+\definecolor{dslkw}{HTML}{1D1D1F}
+\definecolor{dslstr}{HTML}{4A5161}
+\definecolor{dslcmt}{HTML}{8A8F98}
+
+% the DSL as a listings language: keywords exactly as the grammar spells them
+\lstdefinelanguage{realdsl}{
+  morekeywords={MAINTAIN,ACHIEVE,by,using,operationalized,as,performed,
+    taking,input,producing,output,followed,if,in,scenario,where,assuming,ensuring},
+  sensitive=true,
+  morestring=[b]",
+  morecomment=[l]{\#},
+}
+\lstset{
+  language=realdsl,
+  basicstyle=\ttfamily\scriptsize,
+  keywordstyle=\bfseries\color{dslkw},
+  stringstyle=\color{dslstr},
+  commentstyle=\itshape\color{dslcmt},
+  columns=fullflexible, keepspaces=true, upquote=true,
+  breaklines=true, breakatwhitespace=true, breakindent=1.5em,
+  xleftmargin=0.6em, aboveskip=3pt, belowskip=3pt, frame=none,
+  numbers=left, numberstyle=\tiny\color{dslcmt}, numbersep=5pt,
+  showstringspaces=false,
+}
+
+% inline: the same look as the listing, in running text
+\newcommand{\dslkw}[1]{\textbf{\texttt{#1}}}          % keyword:   \dslkw{assuming}
+\newcommand{\dsllit}[1]{{\color{dslstr}\texttt{#1}}}   % quoted string: \dsllit{"fog\_density <= 50"}
+\newcommand{\dslid}[1]{\texttt{#1}}                    % identifier, no quotes: \dslid{fog\_density}
+
+% ---------------------------------------------------------------- LISTING
+% (abridged: the input/output declarations of the two tasks are omitted)
+\begin{figure}[t]
+\begin{lstlisting}[caption={The requirement $R_0$ of the study, in the REAL DSL
+  (abridged: the tasks' input/output declarations are omitted). Lines 2--7
+  name the system $S$, line 9 the scenario, lines 10--11 the domain
+  assumptions $D$, lines 12--13 the soft goals in $R$.},label={lst:r0}]
+MAINTAIN "Pedestrian Safety"
+  by "Pedestrian Check" using "Perception Module"
+     operationalized as
+       "Detect Pedestrian" performed by "yolov5s"
+  followed by "braking" using "braking module"
+     operationalized as "Apply Brakes"
+       if "pedestrian detection flag=True"
+       performed by "proportional_braking"
+  in scenario where "A pedestrian trying to cross the street."
+  assuming "fog_density <= 50" & "sun_altitude_angle >= 0"
+         & "initial_separation_m >= 15" & "pedestrian on foot"
+  ensuring "resume_within_s <= 10"
+         & "braking is smooth unless an emergency stop is needed"
+\end{lstlisting}
+\end{figure}
+
+% ---------------------------------------------------------------- USAGE
+% In the prose, refer to the listing instead of re-quoting the whole clause:
+%   ... \dslkw{assuming} clauses (the domain $D$), e.g.\ \dsllit{"fog\_density <= 50"}
+%   (Listing~\ref{lst:r0}, line~10), written over quantities the simulator can measure ...
+% Operators stay ASCII inside DSL literals ("<=") because that is what the tool
+% parses; use $\leq$ only in mathematics, never inside a DSL string.
