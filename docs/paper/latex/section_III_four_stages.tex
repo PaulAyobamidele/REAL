@@ -94,7 +94,8 @@ tests, none of which needs the simulator.
 \label{sec:features}
 
 The REAL framework~\cite{real2026} defines the loop but leaves its central
-steps to manual analysis: admissibility is encoded by hand, and \emph{``failure
+steps to manual analysis: the admissibility predicate is stated apart from the
+requirement, and \emph{``failure
 grouping and obstacle identification were performed primarily through manual
 inspection of traces''}~\cite[Sec.~V-D]{real2026}. Each feature below closes
 one such gap; the corresponding components carry a $\bigstar$ in
@@ -111,8 +112,8 @@ operators), links each phrase to its node in the live KAOS goal model, and
 refuses unknown module names instead of silently substituting another system.
 
 \paragraph*{F2 Admissibility derived from the requirement (stages 1, 3)}
-Where REAL hand-codes the admissibility predicate $\Phi_{\mathit{valid}}$,
-\tool{} derives it from the \dslkw{assuming} clauses over a vocabulary of 16
+Where REAL states the admissibility predicate $\Phi_{\mathit{valid}}$ apart
+from the requirement, \tool{} derives it from the \dslkw{assuming} clauses over a vocabulary of 16
 world quantities. Each run records every assumption as held, broken or not
 measured, and a failure is spurious only if an assumption was broken. Following
 Zave and Jackson~\cite{zave1997}, assumptions over the system under test are
@@ -156,5 +157,5 @@ validated as an artefact, and $R_1$ is written only if it parses, with every
 change labelled [S], [D], [R], or [T] (a defect in the test itself). Domain and
 requirement changes are re-diagnosed on the stored traces in seconds; system
 changes start a new run that records its parent and the decision that caused
-it. Code, grammar and scene hashes in every run flag hidden changes between
+it. Template, grammar and scene hashes in every run flag hidden changes between
 iterations.
