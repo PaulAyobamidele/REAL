@@ -96,12 +96,13 @@ front end), none of which requires the simulator.
 \section{Key Features}
 \label{sec:features}
 
-The REAL framework~\cite{real2026} defines the loop but leaves its central
-steps to manual analysis: the admissibility predicate is stated apart from the
-requirement, and \emph{``failure
-grouping and obstacle identification were performed primarily through manual
-inspection of traces''}~\cite[Sec.~V-D]{real2026}. Each feature below closes
-one such gap; the corresponding components carry a $\bigstar$ in
+REAL~\cite{real2026} establishes the identify--analyse--mitigate loop and
+demonstrates it on an autonomous braking system, with the central analysis
+steps performed by hand: \emph{``failure grouping and obstacle identification
+were performed primarily through manual inspection of traces''}, which the
+authors identify as a natural candidate for automation~\cite[Sec.~V-D]{real2026}.
+\tool{} realises this automation through eight features, F1--F8, each
+implemented by the components marked $\bigstar$ in
 Fig.~\ref{fig:real-architecture}.
 
 % F1 <- inventory F5-F7, F13-F21; F2 <- F52-F56, F59-F60; F3 <- F30-F39, F44-F49;
