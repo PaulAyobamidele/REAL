@@ -167,8 +167,11 @@ def from_analysis(analysis, previous_analysis=None, reviewer=None, round_no=None
             "tool_verdict": a.get("verdict"), "kind": a["kind"],
             "evidence": _assumption_evidence(a), "reason": None,
         }
+    from scripts.analysis import obstacles   # here, not at the top: obstacles imports this module's neighbours
     fm = analysis["failure_model"]
     for a in artefacts or []:
+        if not obstacles.artefact_applies(a, analysis):
+            continue   # a defect of another scene version, or without evidence in this run
         value = fm.get(a["metric"])
         doc["scope"][f"artefact:{a['id']}"] = {
             "verdict": None, "kind": "artefact",

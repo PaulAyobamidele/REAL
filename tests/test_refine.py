@@ -43,7 +43,8 @@ def test_plan_changes_labels(tmp_path):
     r = next(c for c in changes if c["kind"] == "R")
     assert r["clause"] == "ensuring" and "resumes within 10 s" in r["item"]
     t_in_scope = [c for c in changes if c["kind"] == "T" and c["layer"] == "scope"]
-    assert len(t_in_scope) == 2   # the two artefacts marked in_scope -> drop-rule notes
+    # the one other artefact of this (v1, no no-encounter run) scene, marked in_scope -> a drop-rule note
+    assert len(t_in_scope) == 1
 
 
 def test_a_refine_resolution_records_words_but_adds_no_change(tmp_path):

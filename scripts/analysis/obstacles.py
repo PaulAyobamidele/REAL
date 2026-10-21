@@ -183,6 +183,27 @@ SCENARIO_ARTEFACTS = [
     },
 ]
 
+
+def artefact_applies(artefact, analysis):
+    """Whether a scenario-artefact candidate is a defect of THIS run's test scene.
+    The scene is recorded in run_meta.scene from scene v2 on; a run without one ran
+    the v1 scene, on which every artefact was found. A candidate with no evidence in
+    the run (no run where the two never met) is not a diagnosis to put to a reviewer.
+    Mirrored in ui/src/domain/decisions.ts artefactApplies."""
+    scene = (analysis.get("run_meta") or {}).get("scene") or None
+    value = (analysis.get("failure_model") or {}).get(artefact["metric"])
+    aid = artefact["id"]
+    if aid == "no_encounter_geometry":
+        return bool(value)                               # runs where the two never met
+    if scene is None:
+        return True                                      # scene v1: found there
+    if aid == "crossing_trigger_8m":
+        return bool(scene.get("crossing_trigger_m"))     # a proximity trigger; 0 = meet the car
+    if aid == "distance_parameter_dead":
+        return (scene.get("version") or 1) < 2           # v2 places the pedestrian from `distance`
+    return True
+
+
 # A behaviour-based obstacle is supported when at least this share of the
 # encounter failures (or, for a pass-outcome obstacle, of the passes) ended that way.
 MIN_SHARE = 0.25

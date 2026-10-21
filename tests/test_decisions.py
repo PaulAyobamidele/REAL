@@ -47,7 +47,9 @@ def test_from_analysis_marks_resolved_and_new(tmp_path):
     assert "passes" in doc["obstacles"]["StandoffUnnecessaryStop"]["evidence"]
     layers = {o["layer"] for o in doc["obstacles"]["StandoffUnnecessaryStop"]["options"]}
     assert {"system", "requirement", "scenario"} <= layers
-    assert set(doc["scope"]) >= {"artefact:crossing_trigger_8m", "artefact:no_encounter_geometry"}
+    # the v1 scene's defects are listed; "never met" only when such runs exist (none here)
+    assert set(doc["scope"]) >= {"artefact:crossing_trigger_8m", "artefact:distance_parameter_dead"}
+    assert "artefact:no_encounter_geometry" not in doc["scope"]
     assert all(o["verdict"] is None for o in doc["obstacles"].values())
     assert decisions.validate(doc) == []
     assert not decisions.is_complete(doc)
@@ -94,7 +96,7 @@ def test_review_scripted_writes_decisions(tmp_path):
     assert saved["obstacles"]["DetectionTooLate"]["mitigation"] is None
     assert saved["obstacles"]["PedestrianSizeTooSmall"]["verdict"] == "reject"
     assert saved["scope"]["artefact:crossing_trigger_8m"]["verdict"] == "scenario_defect"
-    assert saved["scope"]["artefact:no_encounter_geometry"]["verdict"] is None    # skipped
+    assert saved["scope"]["artefact:distance_parameter_dead"]["verdict"] is None    # skipped
     text = "\n".join(out)
     assert "StandoffUnnecessaryStop" in text and "[vs previous round: new]" in text
     assert "[vs previous round: resolved]" in text
@@ -125,3 +127,24 @@ def test_world_assumption_in_own_words_is_never_about_the_car():
     assert ("PedestrianSizeTooSmall", "requirement") not in refine.R_CHANGES
     own = refine.change_for("PedestrianSizeTooSmall", "requirement", "pedestrian is visible before stepping out")
     assert own["text"] == 'assuming "pedestrian is visible before stepping out"'
+
+
+def test_only_artefacts_of_this_scene_are_put_to_the_reviewer():
+    """A test-defect candidate is listed only when it is a defect of the run's own scene
+    and has evidence in the run (2026-10-21: the study round, on scene v2, listed three
+    defects of scene v1, which participants then judged and 'fixed')."""
+    by_id = {a["id"]: a for a in obstacles.SCENARIO_ARTEFACTS}
+    v1 = {"run_meta": {}, "failure_model": {"passed_stalled": 113, "n_no_encounter": 32, "n_scenarios": 32}}
+    assert all(obstacles.artefact_applies(a, v1) for a in obstacles.SCENARIO_ARTEFACTS)
+    c1 = {"run_meta": {"scene": {"version": 2, "crossing_trigger_m": 0}},
+          "failure_model": {"passed_stalled": 332, "n_no_encounter": 0, "n_scenarios": 128}}
+    assert not any(obstacles.artefact_applies(a, c1) for a in obstacles.SCENARIO_ARTEFACTS)
+    v2_trigger = {"run_meta": {"scene": {"version": 2, "crossing_trigger_m": 20}},
+                  "failure_model": {"passed_stalled": 5, "n_no_encounter": 3, "n_scenarios": 10}}
+    assert obstacles.artefact_applies(by_id["crossing_trigger_8m"], v2_trigger)
+    assert obstacles.artefact_applies(by_id["no_encounter_geometry"], v2_trigger)
+    assert not obstacles.artefact_applies(by_id["distance_parameter_dead"], v2_trigger)
+    # and from_analysis lists none for the study's round
+    analysis = dict(c1, run_id="x", obstacles=[], admissibility={"rules": [], "spurious": [], "assumptions": []})
+    doc = decisions.from_analysis(analysis, artefacts=obstacles.SCENARIO_ARTEFACTS)
+    assert doc["scope"] == {}

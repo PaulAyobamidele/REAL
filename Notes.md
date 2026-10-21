@@ -2574,6 +2574,13 @@ mitigation.choice); the triage side and revision outcome were logged without the
 a tour stayed open over the next page when the participant left (study: closed and logged
 left_page) and a fast Skip went unlogged (close recorded once, however it ends). Final live
 session: no problem. 321 Python, 270 UI tests. Published build 2d4d502.
+The owner's look at the sent sessions found the three test-defect candidates (8 m
+trigger, never-met runs, dead distance) listed for round C1 although it ran scene v2
+where they are fixed (one even says n_no_encounter = 0): every dry run "fixed" them in
+R1. Now a candidate is listed only when it applies to the run's scene and has evidence
+(obstacles.artefact_applies, mirrored in domain/decisions.ts artefactApplies); the stored
+reports are unchanged; on C1 the triage shows the six obstacles and four assumptions
+only. Tests on both sides; 322 Python, 273 UI. Republished; live dry run below.
 
 ### 8.7 The iteration loop (stages 7-9) — original design
 

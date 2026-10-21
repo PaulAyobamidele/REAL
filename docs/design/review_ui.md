@@ -1012,3 +1012,14 @@ Built as planned, with these differences:
   run", and a link to the first run's report; the count table already sets the two
   side by side.
 
+### 2026-10-21 - test-defect candidates only when they apply
+- The three scenario-artefact candidates (the 8 m trigger, runs where the two never met,
+  the dead `distance` parameter) are defects of the v1 test scene. The study round ran
+  scene v2, where they were fixed, yet every report listed them and participants judged
+  and "fixed" them. Now a candidate is put to the reviewer only when it applies to the
+  run's own scene (`run_meta.scene`: a proximity trigger, scene version 1) and has
+  evidence in the run (a run where the two never met). One rule, `artefact_applies`, in
+  Python (`obstacles.py`, used by `decisions.from_analysis`) and in the tool
+  (`domain/decisions.ts`, used by `buildDecisions`); the stored reports are untouched.
+  On round C1 the triage lists the six obstacles and the four assumptions.
+

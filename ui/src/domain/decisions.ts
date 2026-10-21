@@ -98,6 +98,24 @@ export interface BuildOptions {
   round?: number | null;
 }
 
+/**
+ * Whether a scenario-artefact candidate is a defect of this run's test scene
+ * (obstacles.artefact_applies): the scene is recorded in run_meta.scene from
+ * scene v2 on; a run without one ran the v1 scene, on which every artefact was
+ * found. A candidate without evidence in the run is not put to a reviewer.
+ */
+export function artefactApplies(
+  a: { id: string; value?: unknown },
+  report: Pick<AnalysisReport, 'run_meta'>,
+): boolean {
+  const scene = (report.run_meta?.scene ?? null) as Record<string, unknown> | null;
+  if (a.id === 'no_encounter_geometry') return Boolean(a.value);
+  if (!scene) return true;
+  if (a.id === 'crossing_trigger_8m') return Boolean(scene.crossing_trigger_m);
+  if (a.id === 'distance_parameter_dead') return (Number(scene.version) || 1) < 2;
+  return true;
+}
+
 /** `from_analysis`: the document with the tool's fields filled and the human's null. */
 export function buildDecisions(report: AnalysisReport, options: BuildOptions = {}): DecisionsDoc {
   const previous = options.previous ?? null;
@@ -153,6 +171,7 @@ export function buildDecisions(report: AnalysisReport, options: BuildOptions = {
   }
 
   for (const a of report.scenario_artefacts ?? []) {
+    if (!artefactApplies(a, report)) continue;
     scope[`artefact:${a.id}`] = {
       verdict: null,
       kind: 'artefact',
