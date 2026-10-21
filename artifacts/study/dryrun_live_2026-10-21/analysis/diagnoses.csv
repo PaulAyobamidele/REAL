@@ -1,0 +1,34 @@
+participant,kind,diagnosis,decision,rating,why,reason
+S-4TJF,obstacle,PedestrianSizeTooSmall,car:later,helpful,,Dry run: reason for PedestrianSizeTooSmall.
+S-4TJF,obstacle,PedestrianClothingNotVisible,car:later,helpful,,Dry run: reason for PedestrianClothingNotVisible.
+S-4TJF,obstacle,AdverseWeather,world,not_helpful,Dry run: no data behind it.,Dry run: reason for AdverseWeather.
+S-4TJF,obstacle,DetectionTooLate,car:system,helpful,,Dry run: reason for DetectionTooLate.
+S-4TJF,obstacle,BrakingNotLatched,promise,helpful,,Dry run: reason for BrakingNotLatched.
+S-4TJF,obstacle,StandoffUnnecessaryStop,car:refine,helpful,,Dry run: reason for StandoffUnnecessaryStop.
+S-4TJF,scope,artefact:crossing_trigger_8m,scenario_defect,partly,,Dry run: reason 0.
+S-4TJF,scope,artefact:no_encounter_geometry,out_of_scope,partly,,Dry run: reason 1.
+S-4TJF,scope,artefact:distance_parameter_dead,in_scope,partly,,Dry run: reason 2.
+S-72MB,obstacle,PedestrianSizeTooSmall,car:later,helpful,,Dry run: reason for PedestrianSizeTooSmall.
+S-72MB,obstacle,PedestrianClothingNotVisible,car:later,helpful,,Dry run: reason for PedestrianClothingNotVisible.
+S-72MB,obstacle,AdverseWeather,world,not_helpful,Dry run: no data behind it.,Dry run: reason for AdverseWeather.
+S-72MB,obstacle,DetectionTooLate,car:system,helpful,,Dry run: reason for DetectionTooLate.
+S-72MB,obstacle,BrakingNotLatched,promise,helpful,,Dry run: reason for BrakingNotLatched.
+S-72MB,obstacle,StandoffUnnecessaryStop,car:refine,helpful,,Dry run: reason for StandoffUnnecessaryStop.
+S-R7SX,obstacle,PedestrianSizeTooSmall,car:later,helpful,,Dry run: reason for PedestrianSizeTooSmall.
+S-R7SX,obstacle,PedestrianClothingNotVisible,car:later,helpful,,Dry run: reason for PedestrianClothingNotVisible.
+S-R7SX,obstacle,AdverseWeather,world,not_helpful,Dry run: no data behind it.,Dry run: reason for AdverseWeather.
+S-R7SX,obstacle,DetectionTooLate,car:system,helpful,,Dry run: reason for DetectionTooLate.
+S-R7SX,obstacle,BrakingNotLatched,promise,helpful,,Dry run: reason for BrakingNotLatched.
+S-R7SX,obstacle,StandoffUnnecessaryStop,car:refine,helpful,,Dry run: reason for StandoffUnnecessaryStop.
+S-R7SX,scope,artefact:crossing_trigger_8m,scenario_defect,partly,,Dry run: reason 0.
+S-R7SX,scope,artefact:no_encounter_geometry,out_of_scope,partly,,Dry run: reason 1.
+S-R7SX,scope,artefact:distance_parameter_dead,in_scope,partly,,Dry run: reason 2.
+S-XZVV,obstacle,PedestrianSizeTooSmall,car:later,helpful,,Dry run: reason for PedestrianSizeTooSmall.
+S-XZVV,obstacle,PedestrianClothingNotVisible,car:later,helpful,,Dry run: reason for PedestrianClothingNotVisible.
+S-XZVV,obstacle,AdverseWeather,world,not_helpful,Dry run: no data behind it.,Dry run: reason for AdverseWeather.
+S-XZVV,obstacle,DetectionTooLate,car:system,helpful,,Dry run: reason for DetectionTooLate.
+S-XZVV,obstacle,BrakingNotLatched,promise,helpful,,Dry run: reason for BrakingNotLatched.
+S-XZVV,obstacle,StandoffUnnecessaryStop,car:refine,helpful,,Dry run: reason for StandoffUnnecessaryStop.
+S-XZVV,scope,artefact:crossing_trigger_8m,scenario_defect,partly,,Dry run: reason 0.
+S-XZVV,scope,artefact:no_encounter_geometry,out_of_scope,partly,,Dry run: reason 1.
+S-XZVV,scope,artefact:distance_parameter_dead,in_scope,partly,,Dry run: reason 2.

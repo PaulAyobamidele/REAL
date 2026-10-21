@@ -1,0 +1,5 @@
+id,expertise,car,build,minutes,requirements_refined,assumptions_refined,test_fixes,deferred,system_changes,helpful,partly,not_helpful,problems
+S-4TJF,Dry run (requirements engineering),C3,m-study-mode-48-g9ffc99b-dirty,0.5,2,1,2,2,yolov5m,5,3,1,
+S-72MB,Dry run (requirements engineering),C3,m-study-mode-52-gf6714a2-dirty,0.4,2,0,0,2,yolov5m,5,0,1,
+S-R7SX,Dry run (requirements engineering),C3,m-study-mode-50-g2d4d502-dirty,0.5,2,1,2,2,yolov5m,5,3,1,
+S-XZVV,Dry run (requirements engineering),C3,m-study-mode-49-g775f1e8-dirty,0.5,2,1,2,2,yolov5m,5,3,1,
