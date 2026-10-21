@@ -43,6 +43,22 @@ export function startTour(key: string): void {
   let reached = 0;
   let skipped = false;
   let leftPage = false;
+  // recorded once, however the tour ends (Done, Skip, Escape, leaving the page): a Skip
+  // pressed while the tour is still drawing does not always reach onDestroyed
+  let closed = false;
+  const finish = () => {
+    if (closed) return;
+    closed = true;
+    active = null;
+    markSeen(key);
+    if (STUDY)
+      logEvent({
+        screen: 'tour',
+        event: 'tour_closed',
+        target: key,
+        new: { stops_seen: reached, stops: steps.length, skipped, left_page: leftPage },
+      });
+  };
   const tour = driver({
     steps,
     showProgress: true,
@@ -66,6 +82,7 @@ export function startTour(key: string): void {
       skip.textContent = 'Skip tour';
       skip.addEventListener('click', () => {
         skipped = true;
+        finish();
         tour.destroy();
       });
       popover.footer.insertBefore(skip, popover.footerButtons);
@@ -73,22 +90,13 @@ export function startTour(key: string): void {
     onHighlightStarted: (_el, _step, { state }) => {
       reached = Math.max(reached, (state.activeIndex ?? 0) + 1);
     },
-    onDestroyed: () => {
-      active = null;
-      markSeen(key);
-      if (STUDY)
-        logEvent({
-          screen: 'tour',
-          event: 'tour_closed',
-          target: key,
-          new: { stops_seen: reached, stops: steps.length, skipped, left_page: leftPage },
-        });
-    },
+    onDestroyed: finish,
   });
   active = {
     destroy: () => tour.destroy(),
     leave: () => {
       leftPage = true;
+      finish();
       tour.destroy();
     },
   };
