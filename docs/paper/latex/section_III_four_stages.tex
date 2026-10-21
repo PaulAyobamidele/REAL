@@ -33,12 +33,14 @@
   \label{fig:real-architecture}
 \end{figure*}
 
-\tool{} supports one round of the loop in four stages
-(Fig.~\ref{fig:real-architecture}). The engineer acts twice: writing the
-requirement (stage~1) and deciding what the failures mean (stage~4).
-Everything in between runs automatically, and every computed result is shown
-with the evidence behind it. Each stage hands the next a single artefact: the
-checked requirement $R_0$, the execution traces, the diagnosis, and the signed
+\tool{} automates one iteration of the REAL identify--analyse--mitigate
+loop~\cite{real2026}, from an initial requirement $R_0$ to a refined
+requirement $R_1$, in four stages (Fig.~\ref{fig:real-architecture}). The
+engineer intervenes at two points only: specifying $R_0$ (stage~1) and
+interpreting the diagnosed failures (stage~4). All intermediate stages are
+automated, and every computed result is presented together with its supporting
+evidence. Consecutive stages communicate through a single artefact each: the
+checked requirement, the execution traces, the diagnosis, and the signed
 decisions.
 
 \subsection{Stage 1: Requirement Elicitation}
