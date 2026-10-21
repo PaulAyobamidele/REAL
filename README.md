@@ -71,7 +71,7 @@ next to the original video. To run it without building anything:
 
 ```bash
 docker build -f Dockerfile.review -t real-review . && docker run --rm -p 8080:80 real-review
-# open http://localhost:8080 - the two bundled rounds, analysed, as an example workspace
+# open http://localhost:8080 - an example workspace: demo rounds 1 and 2, analysed, and round C1 (the paper's round)
 ```
 
 With the authoring helper running (`sim_env/bin/python -m scripts.redsl.serve`),

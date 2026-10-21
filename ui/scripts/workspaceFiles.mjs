@@ -16,6 +16,7 @@ export const TOP_LEVEL = [
   'R1.dsl',
   'best_scenario_h264.mp4',
   'best_scenario.mp4',
+  'study_quantities.json', // per-run quantities the page re-judges a revised requirement with
 ];
 // Not copied: analysis_report.md and requirement_diff.md. The interface reads neither
 // (it renders the report and the diff from the JSON and the decisions); they are the
@@ -29,6 +30,10 @@ export function listRound(dir) {
     if (st.isFile() && TOP_LEVEL.includes(name)) files.push(name);
     if (st.isDirectory() && name === 'traces') {
       for (const t of readdirSync(full)) if (t.endsWith('.json')) files.push(`traces/${t}`);
+    }
+    // the camera recording of a scenario, videos/<scenario id>.mp4 (hooks/useBestScenario.ts)
+    if (st.isDirectory() && name === 'videos') {
+      for (const v of readdirSync(full)) if (v.endsWith('.mp4')) files.push(`videos/${v}`);
     }
     if (st.isDirectory() && name === 'frames') {
       for (const sensor of readdirSync(full)) {

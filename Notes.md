@@ -2594,6 +2594,28 @@ the study site, whose report .md carried the researcher banner). Rebuilt: 416 MB
 workspace index and /authoring/catalog. Not tagged or pushed. Still bundles rounds 1-2
 (scene v1); bundling C1 instead is a decision for the final image.
 
+### 8.56 2026-10-21 — the review image bundles round C1 (what the final image carries)
+
+Owner asked for all three rounds in the image, labelled. examples/round_C1/ holds C1 as
+presented to the study (not re-analysed; demo.py still processes rounds 1-2 only):
+run_meta, analysis_report, cluster_map, scenarios, simulations, study_quantities, the 864
+traces and the best scenario's camera recording - 96 MB raw, about 21 MB packed in git.
+Dockerfile.review copies it beside the demo rounds; the workspace index carries a label for
+the set and a note per round (make-workspace-index.mjs --note), shown on the Workspace
+list, the Rounds page and step 1. Rounds of different test scenes are no longer compared
+by date (previousOf: the nearest earlier round of the same scene version; a recorded
+parent wins), so C1 (scene v2) stands as version B after the two v1 rounds, with "Another
+test scene: not compared" between, and its report has no "beside the previous round"
+fold. Found on the way: a locally built image answered 403 for 1,198 files - this
+machine's copies are mode 640 (the cluster's umask), COPY keeps the mode and nginx's worker
+is not the owner; a CI build from a checkout never had it (git resets modes). Fixed with
+chmod -R a+rX in the interface build stage, so a local build equals the CI build. Image
+537 MB (416 before C1), zero .md; a scripted walk over Workspace, Rounds and all six pages
+of each round: 1,208/1,208 files served, no error or warning banner (C1's "About this
+round" re-judging note is the only one), 277 UI tests. The "Bundled example" card no
+longer counts the rounds (the dev build serves two, the image three). Not tagged or
+pushed.
+
 ### 8.7 The iteration loop (stages 7-9) — original design
 
 Per round: requirement R_n → run (grid) → `simulations.csv` → report →

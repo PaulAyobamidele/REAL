@@ -64,6 +64,7 @@ export function RoundRow({
             Open →
           </a>
         </div>
+        {round.note ? <p className="text-sm">{round.note}</p> : null}
         <p className="text-sm text-text-muted">
           {sut ? (
             <>
@@ -140,7 +141,11 @@ export function ChangeRow({ link }: { link: Link }) {
       aria-label="Change between rounds"
     >
       <p className="text-xs text-text-muted">
-        {link.recorded ? 'Lineage recorded.' : 'No recorded lineage; shown in date order.'}
+        {link.recorded
+          ? 'Lineage recorded.'
+          : link.sameScene
+            ? 'No recorded lineage; shown in date order.'
+            : 'Another test scene: not compared with the round above.'}
         {link.signedBy ? ` Signed by ${link.signedBy} on ${displayDate(link.decidedAt)}.` : ''}
       </p>
       {link.changes.length ? (

@@ -46,6 +46,7 @@ export function Step1Asked({ round, report }: { round: RoundSummary; report: Ana
             <ViewSwitch view={view} onChange={setView} />
           </span>
         </div>
+        {round.note ? <p className="text-sm">{round.note}</p> : null}
         {text || view !== 'text' ? (
           <RequirementViewBody
             view={view}

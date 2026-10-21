@@ -165,7 +165,7 @@ export function WorkspacePage({ focusRuns = null }: { focusRuns?: string[] | nul
               {probing
                 ? 'Looking…'
                 : exampleSource
-                  ? 'Two real rounds, labelled as example data.'
+                  ? 'Real rounds from the project, labelled as example data.'
                   : 'None served next to this build.'}
             </p>
             {exampleSource ? (
@@ -250,6 +250,7 @@ export function WorkspacePage({ focusRuns = null }: { focusRuns?: string[] | nul
                     Open →
                   </a>
                 </div>
+                {round.note ? <p className="text-sm">{round.note}</p> : null}
                 <Disclosure
                   summary={`Files (${top.length}${traces ? ` + ${traces} traces` : ''}${frames ? ` + ${frames} frames` : ''})`}
                   compact

@@ -214,7 +214,7 @@ export function makeStudySite(
       join(folder, entry.dir, QUANTITIES_FILE),
       quantities(study, join(study, round.from)),
     );
-    return { ...entry, files: [...entry.files, QUANTITIES_FILE, ...videos].sort() };
+    return { ...entry, files: [...new Set([...entry.files, QUANTITIES_FILE, ...videos])].sort() };
   };
   const reviewed = withQuantities(workspace, REVIEWED);
   writeIndex(workspace, 'Test rounds', [reviewed]);

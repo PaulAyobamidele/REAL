@@ -7,8 +7,9 @@
 #   docker run --rm -p 8080:80 ghcr.io/paulayobamidele/real-tool   # published image
 #
 # Stage 1 runs the laptop-side demo (analysis, comparison, scripted review,
-# proposed requirement) on the two bundled rounds; stage 2 builds the
-# interface and lists that workspace for static serving; stage 3 serves both
+# proposed requirement) on the two bundled rounds; stage 2 adds round C1 (the
+# paper's round, copied as presented, never re-analysed), builds the interface
+# and lists that workspace for static serving, each round labelled; stage 3 serves both
 # with nginx and runs the authoring helper (scripts/redsl/serve.py) behind
 # /authoring, so the requirement editor parses with the project's own parser.
 # Signing inside the container offers the files as downloads (the served
@@ -39,9 +40,17 @@ COPY ui/ ./
 # the REAL-DSL manual, shown in the tool (imported as @docs/manual/real-dsl.md)
 COPY docs/manual/ /docs/manual/
 COPY --from=demo /work/demo/runs /work/runs
-RUN rm -rf public/workspace \
+# round C1 beside them: the study's round (the paper's and the video's), as presented
+COPY examples/round_C1/ /work/runs/
+# readable whoever builds it: the copies keep the modes they had on the building
+# machine, and nginx's worker in the final image is not their owner
+RUN chmod -R a+rX /work/runs \
+ && rm -rf public/workspace \
  && node scripts/make-workspace-index.mjs /work/runs --out public/workspace --example \
-      --label "Example workspace: rounds 1 and 2 (bundled demo data)" \
+      --label "Example workspace: demo rounds 1 and 2 (test scene v1) and round C1 (the paper's round, scene v2)" \
+      --note "35acc09e8c224fdc953e3bf82ba57e96=Demo round 1: emergency braking on the first test scene (v1, later repaired). Analysed, compared with round 2." \
+      --note "882fb2fe00bf4568bdb480a281db9e8b=Demo round 2: proportional braking on test scene v1. Signed by the scripted review: its decisions, R1 and diff are on file." \
+      --note "fbf8bbcfe2d759778e6ba73d9bd43412=Round C1: the round in the paper and the video. Proportional braking with the yolov5s detector on test scene v2, 288 scenarios x 3 runs, judged against the study requirement. Not yet reviewed: start at the requirement under test." \
  && npm run build
 
 # The catalog lists the detector modules by the names of the weights files;

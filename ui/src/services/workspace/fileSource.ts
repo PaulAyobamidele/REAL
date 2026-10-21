@@ -18,6 +18,8 @@ export interface RoundEntry {
   dir: string;
   /** Files inside it, relative to the folder: 'run_meta.json', 'traces/0_0.json', ... */
   files: string[];
+  /** A line about the round from the workspace index (a bundled example says what it is). */
+  note?: string;
 }
 
 export interface Listing {

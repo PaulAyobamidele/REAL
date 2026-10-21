@@ -3,6 +3,7 @@
  * Write the index.json a statically served workspace needs.
  *
  *   node scripts/make-workspace-index.mjs <workspace folder> [--out <folder>] [--label "..."] [--example]
+ *        [--note <round folder>=<text>]...   a line about that round, shown wherever it is listed
  *
  * The workspace folder holds one sub-folder per round (each with a
  * run_meta.json). With --out, the rounds are copied there (only the files
@@ -16,13 +17,17 @@ import { join, resolve } from 'node:path';
 import { listRound } from './workspaceFiles.mjs';
 
 function parseArgs(argv) {
-  const args = { out: null, label: null, example: false, workspace: null };
+  const args = { out: null, label: null, example: false, workspace: null, notes: {} };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--out') args.out = argv[++i];
     else if (a === '--label') args.label = argv[++i];
     else if (a === '--example') args.example = true;
-    else if (!args.workspace) args.workspace = a;
+    else if (a === '--note') {
+      const v = argv[++i] ?? '';
+      const k = v.indexOf('=');
+      if (k > 0) args.notes[v.slice(0, k)] = v.slice(k + 1);
+    } else if (!args.workspace) args.workspace = a;
   }
   if (!args.workspace) {
     console.error(
@@ -46,7 +51,9 @@ for (const name of readdirSync(workspace)) {
     continue;
   }
   const files = listRound(dir);
-  rounds.push({ dir: name, files });
+  rounds.push(
+    args.notes[name] ? { dir: name, files, note: args.notes[name] } : { dir: name, files },
+  );
   if (out !== workspace) {
     mkdirSync(join(out, name), { recursive: true });
     for (const f of files) {

@@ -1023,3 +1023,26 @@ Built as planned, with these differences:
   (`domain/decisions.ts`, used by `buildDecisions`); the stored reports are untouched.
   On round C1 the triage lists the six obstacles and the four assumptions.
 
+### 2026-10-21 - the review image bundles round C1 beside the demo rounds
+- `examples/round_C1/<neutral id>/` is round C1 as presented to the study (never
+  re-analysed; `scripts/demo.py` still processes rounds 1 and 2 only), with the per-run
+  quantities the page re-judges with and the camera recording of its best scenario.
+  `Dockerfile.review` copies it next to the demo rounds.
+- The workspace index can carry a **note per round** (`make-workspace-index.mjs --note
+  <folder>=<text>`), shown on the Rounds page, the Workspace list and the requirement
+  page, so a bundled round says what it is. The index's label names the whole set.
+- Rounds of different test scenes are not compared by date: `previousOf` looks for the
+  nearest earlier round of the same scene version, and the link between two rounds of
+  different scenes says "Another test scene: not compared" instead of carrying the
+  earlier round's changes. A recorded parent always wins.
+- `workspaceFiles.mjs` now lists `videos/*.mp4` and `study_quantities.json`, so a static
+  workspace carries them (the study site added them separately; it dedupes now).
+- Found on the way: an image built on a machine whose copies are mode 640 served 403 for
+  every such file (`COPY` keeps modes; nginx's worker is not the owner), while the CI build
+  from a checkout never had it (git resets modes). `Dockerfile.review` now `chmod -R a+rX`
+  the runs in the build stage, so a local build equals the CI build. The check that caught
+  it: every indexed file HEAD-fetched, then Workspace, Rounds and all six pages of every
+  round walked with no `role=alert`, no warning notice and no "Not in the chain" line.
+- The "Bundled example" card no longer counts the rounds (the dev build serves two, the
+  image three); the index label under it names the set.
+

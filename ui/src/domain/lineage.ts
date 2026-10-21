@@ -34,6 +34,8 @@ export interface RoundSummary {
   decisionsError: FileError | null;
   requirementText: string | null;
   files: string[];
+  /** A line about the round from the workspace index, when it has one. */
+  note?: string | null;
 }
 
 /** Is a decisions file the tool's own proposal rather than a person's signature? */
@@ -107,6 +109,8 @@ export interface Link {
   to: RoundSummary;
   /** True when `to.meta.parent_run_id === from.id`. */
   recorded: boolean;
+  /** False when the two ran different test scenes with no recorded parent: not compared. */
+  sameScene: boolean;
   /** The parent's recorded decision, if it carries one. */
   changes: NonNullable<DecisionsDoc['requirement_changes']>;
   signedBy: string | null;
@@ -118,11 +122,15 @@ export function links(ordered: RoundSummary[]): Link[] {
   for (let i = 1; i < ordered.length; i++) {
     const from = ordered[i - 1] as RoundSummary;
     const to = ordered[i] as RoundSummary;
-    const d = from.decisions;
+    const recorded = to.meta.parent_run_id === from.id;
+    const sameScene = recorded || sceneVersion(from) === sceneVersion(to);
+    // another scene is another test: the earlier round's decision did not lead here
+    const d = sameScene ? from.decisions : null;
     out.push({
       from,
       to,
-      recorded: to.meta.parent_run_id === from.id,
+      recorded,
+      sameScene,
       changes: d?.requirement_changes ?? [],
       signedBy: d && !isToolProposal(d) ? (d.reviewer ?? null) : null,
       decidedAt: d?.decided_at ?? null,
@@ -180,6 +188,12 @@ export function runOrdinal(n: number): string {
   return n >= 1 && n <= words.length ? `${words[n - 1]} run` : `Run ${n}`;
 }
 
+/** The recorded test scene version (run_meta.scene.version); null before scene v2 recorded itself. */
+export function sceneVersion(round: RoundSummary): number | null {
+  const scene = round.meta.scene as { version?: unknown } | null | undefined;
+  return typeof scene?.version === 'number' ? scene.version : null;
+}
+
 export function previousOf(
   round: RoundSummary,
   ordered: RoundSummary[],
@@ -188,7 +202,11 @@ export function previousOf(
     ? ordered.find((r) => r.id === round.meta.parent_run_id)
     : undefined;
   if (parent) return { round: parent, recorded: true };
+  // by date, only among rounds of the same test scene: another scene is another test
   const i = ordered.findIndex((r) => r.id === round.id);
-  if (i > 0) return { round: ordered[i - 1] as RoundSummary, recorded: false };
+  for (let j = i - 1; j >= 0; j--) {
+    const earlier = ordered[j] as RoundSummary;
+    if (sceneVersion(earlier) === sceneVersion(round)) return { round: earlier, recorded: false };
+  }
   return null;
 }

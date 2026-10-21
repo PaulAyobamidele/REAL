@@ -19,7 +19,9 @@ export const workspaceIndexSchema = z.object({
   label: z.string().optional(),
   example: z.boolean().optional(),
   generated_at: z.string().optional(),
-  rounds: z.array(z.object({ dir: z.string().min(1), files: z.array(z.string()) })),
+  rounds: z.array(
+    z.object({ dir: z.string().min(1), files: z.array(z.string()), note: z.string().optional() }),
+  ),
   ignored: z.array(z.string()).optional(),
 });
 export type WorkspaceIndex = z.infer<typeof workspaceIndexSchema>;
