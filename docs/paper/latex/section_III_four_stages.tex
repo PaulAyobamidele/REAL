@@ -83,12 +83,12 @@ the recorded traces, without re-simulation (F8).
 \label{sec:impl}
 \tool{} comprises a Python back end and a React/TypeScript front end. The back
 end provides the REAL-DSL parser, a FastAPI service that orchestrates Scenic and
-CARLA, the analysis pipeline, and job control on Slurm clusters through an
-Apptainer image. Every run is persisted as a self-describing folder (metadata
-with template, grammar and scene hashes, per-simulation tables, and per-step
-traces), so that every analysis can be reproduced from the recorded traces
-without re-simulation. A Docker image packages the complete review loop on
-recorded runs and requires neither a GPU nor a simulator. The implementation is
+CARLA, the analysis pipeline, and job control on a Slurm cluster through an
+Apptainer image. Every run is persisted as a self-describing folder (metadata with
+the hashes of the scene template and grammar and the scene settings,
+per-simulation tables, and per-step traces), so that every analysis can be reproduced from the recorded traces
+without re-simulation. A Docker image packages the review interface and the requirement check with
+recorded runs, and requires neither a GPU nor a simulator. The implementation is
 covered by 585 automated tests (317 for the back end and 268 for the
 front end), none of which requires the simulator.
 
@@ -177,5 +177,6 @@ validated as an artefact, and $R_1$ is written only if it parses, with every
 change labelled [S], [D], [R], or [T] (a defect in the test itself). Domain and
 requirement changes are re-diagnosed on the stored traces in seconds; system
 changes start a new run that records its parent and the decision that caused
-it. Template, grammar and scene hashes in every run flag hidden changes between
+it. The hashes of the scene template and grammar, recorded in every run, flag
+hidden changes between
 iterations.
