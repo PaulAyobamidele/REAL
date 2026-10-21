@@ -13,6 +13,7 @@
 \usepackage{xcolor}
 \usepackage{amssymb}
 \providecommand{\toolname}{REAL}
+\providecommand{\tool}{\toolname}
 \newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
 
 \begin{document}
@@ -67,15 +68,15 @@ REAL's Identify--Analyse--Mitigate loop~\cite{real2026}.}
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig1_architecture_v2.pdf}
-\caption{Overview of \tool{}. \textcircled{\scriptsize 1}~The engineer
+\caption{Overview of \tool{}. (1)~The engineer
   specifies $R_0$, which \tool{} parses and checks for well-formedness and for
-  assumptions about the system under test. \textcircled{\scriptsize 2}~\tool{}
+  assumptions about the system under test. (2)~\tool{}
   derives test scenarios from the requirement's grammar by grammatical evolution
   or exhaustive enumeration and executes them in CARLA via Scenic, with the
   learned detector and the braking controller in the loop.
-  \textcircled{\scriptsize 3}~\tool{} classifies each failure as valid or
+  (3)~\tool{} classifies each failure as valid or
   spurious against the domain assumptions of $R_0$ and abstracts valid failures
-  into obstacles with supporting evidence. \textcircled{\scriptsize 4}~The
+  into obstacles with supporting evidence. (4)~The
   engineer triages obstacles and assumptions, and \tool{} derives $R_1$ with
   each change attributed to the system~[S], the domain~[D] or the
   requirement~[R]. System changes trigger a new round; domain and requirement
