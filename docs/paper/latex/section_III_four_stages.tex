@@ -41,7 +41,7 @@ iteration. The engineer intervenes at two points only: specifying $R_0$
 stages are automated, and every computed result is presented together with its
 supporting evidence. Consecutive stages communicate through a single artefact
 each: the checked requirement, the execution traces, the diagnosis, and the
-signed decisions. Section~\ref{sec:features} details the features, F1--F8,
+signed decisions. Section~\ref{sec:features} details the features, F1--F14,
 that realise each stage.
 
 \subsection{Stage 1: Requirement Elicitation}
@@ -101,7 +101,7 @@ demonstrates it on an autonomous braking system, with the central analysis
 steps performed by hand: \emph{``failure grouping and obstacle identification
 were performed primarily through manual inspection of traces''}, which the
 authors identify as a natural candidate for automation~\cite[Sec.~V-D]{real2026}.
-\tool{} realises this automation through eight features, F1--F8, each
+\tool{} realises this automation through the features F1--F14, each
 implemented by the components marked $\bigstar$ in
 Fig.~\ref{fig:real-architecture}.
 
@@ -186,3 +186,63 @@ changes start a new run that records its parent and the decision that caused
 it. The hashes of the scene template and grammar, recorded in every run, flag
 hidden changes between
 iterations.
+
+% F9 <- inventory F14-F15, F19-F20, F24-F27, F90-F91
+\paragraph*{F9 Traceability between text, model and evidence (stages 1, 3)}
+\tool{} presents each requirement as a single artefact with two synchronised
+views. In the editor, every quoted phrase adopts the colour of its element in
+the KAOS goal model (module, domain property, soft goal), and selecting a
+phrase highlights the corresponding node. After execution, \tool{} judges each
+part of the requirement individually (failed, broken, not checked) and marks
+the verdict in both views. Obstacles are attached to the goals they obstruct;
+selecting one highlights its chain from obstacle through obstructed goal to
+responsible module. Every reported count links to the simulations behind it.
+
+% F10 <- inventory F36, F92-F95
+\paragraph*{F10 Explaining an individual failure (stage 3)} Before presenting
+aggregates, \tool{} grounds the diagnosis in a concrete failure: the scenario
+ranked worst for the system. A to-scale, top-down replay is reconstructed from
+the recorded trace, overlaying the safety margin, in-path detections and brake
+commands, and the decisive moments (first detection, first brake, closest
+approach) are one action away. The engineer can switch between runs of the
+scenario to contrast a failure with a pass, and inspect a camera recording of
+a separate run of the same scenario.
+
+% F11 <- inventory F83, F98
+\paragraph*{F11 An adjustable behaviour map (stage 3)} \tool{} exposes the
+clustering of F6 as an interactive map rather than a fixed partition. Each
+encounter is a point encoding its outcome and cluster; the runs supporting the
+selected obstacle are highlighted, and any point opens its trace. The engineer
+moves between coarser and finer cuts, each annotated with its silhouette, and
+thus decides how much structure to read into the data. Each cluster is
+summarised by its outcomes, its over-represented settings and a representative
+run.
+
+% F12 <- inventory F43-F50, F126, F146-F147
+\paragraph*{F12 Closing the loop from the interface (stages 2, 4)} Testing a
+requirement takes a single action from the editor: \tool{} reuses the results
+of an identical requirement if they exist, and otherwise validates the
+requirement and the cluster, submits the job, and streams partial results as
+they arrive. During revision, the effect of domain and requirement changes is
+re-judged immediately on the stored runs (``$k$ of $N$ failures still count
+against the system''). After signing, the refined requirement is executed as
+the next iteration in one action, and its report is linked to its
+predecessor.
+
+% F13 <- inventory F12, F85-F89, F180
+\paragraph*{F13 A self-explaining interface} A workflow tracker locates the
+engineer in the loop, and per-page guided tours and contextual instructions
+state what to inspect and what to decide. Tool output and human judgement are
+visually distinct throughout. A built-in reference manual, REAL-DSL(5), in the
+style of Unix manual pages, documents the syntax, the measurable quantities and
+the available modules, with every example validated against the parser and the
+diagnostics for common mistakes. The interface meets WCAG~2.2 AA contrast,
+verified by automated tests, and never encodes meaning by colour alone.
+
+% F14 <- inventory F150-F166
+\paragraph*{F14 A built-in evaluation instrument} A study configuration of
+\tool{} hides the tool's verdicts, assigns each participant an anonymous
+identifier, and records every decision, rationale and interaction. Signed
+sessions are uploaded to storage that participants can append to but not read.
+This makes the human decision step itself an object of study: whether
+engineers reach the same decisions from the same evidence.
