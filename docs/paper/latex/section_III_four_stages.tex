@@ -131,13 +131,16 @@ system's own behaviour. Each assumption further receives a verdict
 empirically whether it was needed.
 
 \paragraph*{F3 Requirement-driven, reproducible test generation (stage 2)}
-Besides grammatical evolution, \tool{} enumerates the scenario space
-exhaustively, so failure rates are not biased by the search. Parameter ranges
-deliberately exceed the stated assumptions, so that every assumption is
-exercised. Scenarios carry global identifiers and seeds, giving paired
-comparisons across system variants. Before cluster time is spent, \tool{}
-compiles every scene against the map and verifies the cluster's code copy; it
-then streams partial results as the job progresses.
+\tool{} offers two complementary strategies over the scenario grammar. For
+large spaces, grammatical evolution~\cite{oneill2001,grape2022} searches for
+failures; since its sampling is biased towards them, every report states the
+sampling used, and the leads it finds can be confirmed by re-running the
+selected scenarios evenly. When the space is tractable, exhaustive enumeration
+yields unbiased failure rates. In both cases, parameter ranges deliberately
+extend beyond the stated assumptions, so that every assumption is both held
+and broken and thus receives a verdict (F2), and scenarios carry global
+identifiers and seeds, enabling paired comparisons of system variants on
+identical scenarios.
 
 \paragraph*{F4 A single oracle (stages 2, 3)} One path-aware safety rule (a
 5\,m margin while the pedestrian is in the vehicle's path) scores runs in the
