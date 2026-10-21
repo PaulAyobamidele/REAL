@@ -79,6 +79,11 @@ for (const [id, choice] of Object.entries(pick)) {
   }
   await card.getByText(choice).first().click();
   await card.locator('textarea').first().fill(`Dry run: reason for ${id}.`);
+  // the study's question on each diagnosis: rate it (one "not helpful", with why)
+  const rating = id === 'AdverseWeather' ? 'Not helpful' : 'Helpful';
+  await card.getByLabel(rating, { exact: true }).check();
+  if (rating === 'Not helpful')
+    await card.getByLabel(/What was missing or misleading/).fill('Dry run: no data behind it.');
 }
 // scope items and assumptions: every other fieldset with radios, first option unless said
 const sets = p.locator('fieldset', {
@@ -100,6 +105,7 @@ for (let i = 0; i < n; i++) {
   else await f.locator('label', { hasText: /^keep/ }).first().click();
   const card = f.locator('xpath=ancestor::article[1]');
   await card.locator('textarea').last().fill(`Dry run: reason ${i}.`);
+  if (/Scope/.test(legend)) await card.getByLabel('Partly helpful', { exact: true }).check();
   const limit = card.getByLabel(/The limit to state in the requirement/);
   if (await limit.count()) {
     limits.push(card);
@@ -162,6 +168,14 @@ step('sign disabled now: ' + (await sign.isDisabled()));
 const [dl] = await Promise.all([p.waitForEvent('download', { timeout: 20000 }), sign.click()]);
 await dl.saveAs(`${S}/dry/${dl.suggestedFilename()}`);
 step('downloaded ' + dl.suggestedFilename());
+// with online storage: the end screen reports the session sent (or why not)
+const sent = await p
+  .getByText(/has been sent to the research team|could not be sent/)
+  .first()
+  .waitFor({ timeout: 20000 })
+  .then(async () => (await p.locator('main').innerText()).replace(/\s+/g, ' ').slice(0, 260))
+  .catch(() => 'no sending status shown (online storage not set up for this build)');
+step('sending: ' + sent);
 await p.waitForTimeout(1500);
 step('end url ' + p.url());
 await p.screenshot({ path: `${S}/dry/13_end.png` });
